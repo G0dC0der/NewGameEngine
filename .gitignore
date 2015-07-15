@@ -1,1 +1,4 @@
 /bin/
+/lib/gdx-backend-lwjgl-natives.jar
+/lin/gdx-backend-lwjgl.jar
+/lib/gdx.jar
