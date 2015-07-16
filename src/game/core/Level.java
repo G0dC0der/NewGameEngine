@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import game.essentials.Entry;
+import game.essentials.Utils;
 import game.events.Event;
 import game.events.TaskEvent;
 
@@ -13,33 +14,24 @@ public abstract class Level {
 	public static final byte HOLLOW = 0;
 	public static final byte SOLID = 0;
 	
-	static final Comparator<Object> Z_INDEX_SORT = (obj1, obj2) ->  {
-		if(obj1 instanceof Entity && obj2 instanceof Entity){
-			Entity e1 = (Entity) obj1;
-			Entity e2 = (Entity) obj2;
-			
-			return e1.getZIndex() - e2.getZIndex();
-		}
-		return 0;
-	};
+	static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) ->  obj1.getZIndex() - obj2.getZIndex();
 
 	protected Engine engine;
-	private List<Object> gameObjects;
-	private List<Entry<Integer, Object>> awatingObjects;
-	private List<Entry<Integer, Object>> deleteObjects;
+	private List<Entry<Integer, Entity>> awatingObjects, deleteObjects;
+	List<Entity> gameObjects;
 	boolean sort;
 	
-	abstract byte get(int x, int y);
+	public abstract byte get(int x, int y);
 	
-	abstract boolean isSolid(int x, int y);
+	public abstract boolean isSolid(int x, int y);
 
-	abstract boolean isHollow(int x, int y);
+	public abstract boolean isHollow(int x, int y);
 	
-	abstract void init();
+	public abstract void init();
 	
-	abstract void build();
+	public abstract void build();
 	
-	abstract void dispose();
+	public abstract void dispose();
 	
 	void gameLoop(){
 		insertDelete();
@@ -53,20 +45,22 @@ public abstract class Level {
 	}
 	
 	public void add(Entity entity){
-		awatingObjects.add(new Entry<Integer, Object>(0, entity));
+		awatingObjects.add(new Entry<Integer, Entity>(0, entity));
 	}
 	
 	public void addAfter(Entity entity, int framesDelay){
-		awatingObjects.add(new Entry<Integer, Object>(framesDelay, entity));
+		awatingObjects.add(new Entry<Integer, Entity>(framesDelay, entity));
 	}
 	
 	public void addWhen(Entity entity, TaskEvent addEvent){
-		Event wrapper = ()->{
+		Entity wrapper = new Entity();
+		wrapper.addEvent(()->{
 			if(addEvent.eventHandling()){
-				add(entity);
-				discard(this);
+				wrapper.getLevel().add(entity);
+				wrapper.getLevel().discard(wrapper);
 			}
-		};
+		});
+		
 		add(wrapper);
 	}
 	
@@ -81,103 +75,111 @@ public abstract class Level {
 	}
 	
 	public void add(Event event){
-		addAfter(event, 0);		
+		addAfter(Utils.wrap(event), 0);		
 	}
 	
 	public void addAfter(Event event, int framesDelay){
-		awatingObjects.add(new Entry<Integer, Object>(framesDelay, event));
+		addAfter(Utils.wrap(event), framesDelay);
 	}
 	
 	public void addWhen(Event event, TaskEvent addEvent){
-		Event wrapper = ()->{
-			if(addEvent.eventHandling()){
-				add(event);
-				discard(this);
-			}
-		};
-		add(wrapper);
+		addWhen(Utils.wrap(event), addEvent);
 	}
 	
 	public void addTemp(Event event, int lifeFrames){
-		add(event);
-		discardAfter(event, lifeFrames);
+		Entity wrapper = Utils.wrap(event);
+		add(wrapper);
+		discardAfter(wrapper, lifeFrames);
 	}
 	
 	public void addTemp(Event event, TaskEvent discardEvent){
-		add(event);
-		discardWhen(event, discardEvent);
+		Entity wrapper = Utils.wrap(event);
+		add(wrapper);
+		discardWhen(wrapper, discardEvent);
 	}
 	
 	public void addShort(Event event){
-		add(()->{
+		Entity wrapper = Utils.wrap(event);
+		wrapper.addEvent(()->{
 			event.eventHandling();
-			discard(this);
+			wrapper.getLevel().discard(wrapper);
 		});
 	}
 	
-	public void discard(Object object){
-		discardAfter(object, 0);
+	public void discard(Entity entity){
+		discardAfter(entity, 0);
 	}
 	
-	public void discardAfter(Object object, int framesDelay){
-		deleteObjects.add(new Entry<Integer, Object>(framesDelay, object));
+	public void discardAfter(Entity entity, int framesDelay){
+		deleteObjects.add(new Entry<Integer, Entity>(framesDelay, entity));
 	}
 	
-	public void discardWhen(Object object, TaskEvent discardEvent){
-		Event wrapper = ()->{
+	public void discardWhen(Entity entity, TaskEvent discardEvent){
+		Entity wrapper = new Entity();
+		wrapper.addEvent(()->{
 			if(discardEvent.eventHandling()){
-				discard(this);
-				discard(object);
+				discard(entity);
+				discard(wrapper);
 			}
-		};
+		});
+		
 		add(wrapper);
 	}
 	
+	public Entity findWrapper(Event event){
+		for(int i = 0; i < gameObjects.size(); i++){
+			Entity entity = gameObjects.get(i);
+			
+			if(entity.id.equals("WRAPPER") && entity.events.contains(event))
+				return entity;
+		}
+		
+		return null;
+	}
+	
+	public List<PlayableEntity> getMainCharacters(){
+		return null;
+	}
+	
+	public List<PlayableEntity> getAliveMainCharacters(){
+		return null;
+	}
+	
 	private void update(){
-		for(Object object : gameObjects){
-			if(object instanceof PlayableEntity){
+		for(Entity entity : gameObjects){
+			if(entity instanceof PlayableEntity){
 				
-			} else if(object instanceof MobileEntity){
-				MobileEntity entity = (MobileEntity) object;
+			} else if(entity instanceof MobileEntity){
 				
-			} else if(object instanceof Entity){
-				Entity entity = (Entity) object;
-				entity.runEvent();
+			} else {
+				entity.runEvents();
 			}
 		}
 	}
 	
 	private void insertDelete(){
 		for(int i = 0; i < awatingObjects.size(); i++){
-			Entry<Integer, Object> entry = awatingObjects.get(i);
+			Entry<Integer, Entity> entry = awatingObjects.get(i);
 			
 			if(entry.key-- <= 0){
 				gameObjects.add(entry.value);
 				awatingObjects.remove(i);
 				sort = true;
 				i--;
-				
-				if(entry.value instanceof Entity){
-					Entity entity = (Entity)entry.value;
-					entity.level = this;
-					entity.engine = engine;
-					entity.init();
-				}
+				entry.value.level = this;
+				entry.value.engine = engine;
+				entry.value.init();
 			}
 		}
 		
 		for(int i = 0; i < deleteObjects.size(); i++){
-			Entry<Integer, Object> entry = deleteObjects.get(i);
+			Entry<Integer, Entity> entry = deleteObjects.get(i);
 			
 			if(entry.key-- <= 0){
 				gameObjects.remove(entry.value);
 				deleteObjects.remove(i);
 				i--;
-				
-				if(entry.value instanceof Entity){
-					Entity entity = (Entity)entry.value;
-					entity.dispose();
-				}
+				entry.value.dispose();
 			}
 		}
 	}

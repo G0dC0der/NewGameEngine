@@ -5,5 +5,6 @@ public enum Hitbox {
 	RECTANGLE,
 	CIRCLE,
 	POLYGON,
-	EXACT
+	PIXEL,
+	NONE
 }

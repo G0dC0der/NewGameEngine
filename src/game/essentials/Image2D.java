@@ -7,12 +7,22 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Image2D extends Texture{
 	
+	private int[][] pixelData;
+	
 	public Image2D(FileHandle file) {
 		this(file, false);
 	}
 	
 	public Image2D(FileHandle file, boolean createPixelData) {
 		super(file);
+	}
+	
+	public int getPixel(int x, int y){
+		return pixelData[x][y];
+	}
+	
+	public boolean hasPixelData(){
+		return pixelData != null;
 	}
 	
 	public static Image2D[] loadAnimation(FileHandle directory) throws IOException{

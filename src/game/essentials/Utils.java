@@ -3,6 +3,7 @@ package game.essentials;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import game.core.Entity;
+import game.events.Event;
 import game.events.RenderEvent;
 
 public class Utils {
@@ -14,6 +15,7 @@ public class Utils {
 	public static Entity wrap(RenderEvent renderEvent, int zIndex){
 		return new Entity(){{
 				this.zIndex(zIndex);
+				this.id = "WRAPPER";
 			}
 			
 			@Override
@@ -22,5 +24,13 @@ public class Utils {
 				renderEvent.eventHandling(batch);
 			}
 		};
+	}
+	
+	public static Entity wrap(Event event){
+		Entity entity = new Entity();
+		entity.addEvent(event);
+		entity.id = "WRAPPER";
+		
+		return entity;
 	}
 }

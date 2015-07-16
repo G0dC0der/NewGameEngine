@@ -3,21 +3,24 @@ package game.core;
 import java.util.List;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import game.essentials.CurrentKeys;
+import game.essentials.CurrentKeys.MultiCurrentKeys;
 
 public final class Engine implements ApplicationListener{
 
 	public float delta = 1.0f / 60.0f;
 	private Level level;
-	private List<CurrentKeys> replayData;
+	private List<MultiCurrentKeys> replayData;
+	private SpriteBatch batch;
 	private boolean replaying;
 	
-	Engine(Class<Level> level, List<CurrentKeys> replayData) throws InstantiationException, IllegalAccessException{
+	Engine(Class<? extends Level> level, List<MultiCurrentKeys> replayData) throws Exception{
 		this.level = level.newInstance();
 		this.level.engine = this;
 		this.replayData = replayData;
 		this.replaying = replayData != null;
+		batch = new SpriteBatch();
 	}
 	
 	@Override
@@ -27,12 +30,26 @@ public final class Engine implements ApplicationListener{
 
 	@Override
 	public void render() {
-		
+		progress();
+		paint();
 	}
 
 	@Override
 	public void dispose() {
 		
+	}
+	
+	private void progress(){
+		
+	}
+	
+	private void paint(){
+		batch.begin();
+		
+		for(Entity entity : level.gameObjects)
+			entity.render(batch);
+		
+		batch.end();
 	}
 
 	@Override public void resize(int x, int u) {}
