@@ -216,6 +216,14 @@ public class Collisions {
 		return false;
 	}
 	
+	public static double getAngle(float x1, float y1, float x2, float y2)
+	{
+		float deltaX = x2 - x1;
+		float deltaY = y2 - y1;
+		
+		return Math.toDegrees(Math.atan2(deltaY, deltaX));
+	}
+	
 	private static void addVectors2D(Vector2 v1, Vector2 v2)
 	{
 		v1.x += v2.x;

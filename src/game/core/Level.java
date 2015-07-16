@@ -147,9 +147,9 @@ public abstract class Level {
 	
 	private void update(){
 		for(Entity entity : gameObjects){
-			if(entity instanceof PlayableEntity){
+			if(entity instanceof MobileEntity){
 				
-			} else if(entity instanceof MobileEntity){
+			} else if(entity instanceof PlayableEntity){
 				
 			} else {
 				entity.runEvents();
