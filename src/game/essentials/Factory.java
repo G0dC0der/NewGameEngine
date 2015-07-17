@@ -1,11 +1,11 @@
 package game.essentials;
 
+import com.badlogic.gdx.math.Vector2;
+
 import game.core.Collisions;
 import game.core.Entity;
 import game.core.MobileEntity;
 import game.events.Event;
-
-import com.badlogic.gdx.math.Vector2;
 
 public class Factory {
 
@@ -58,5 +58,16 @@ public class Factory {
 		entity.getLevel().addTemp(()->{
 			entity.rotate(speed);
 		}, ()-> entity.getRotation() > 360);
+	}
+	
+	public static void follow(Entity src, Entity tail, float offsetX, float offsetY){
+		src.addEvent(()->{
+			tail.bounds.x = src.bounds.x + offsetX;
+			tail.bounds.y = src.bounds.y + offsetY;
+		});
+	}
+	
+	public static void follow(Entity src, Entity tail){
+		follow(src, tail, 0, 0);
 	}
 }

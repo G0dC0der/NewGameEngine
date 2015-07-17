@@ -1,9 +1,11 @@
 package game.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -17,7 +19,7 @@ public class Entity {
 
 	public final Rectangle bounds;
 	public String id;
-	public int alpha, scaleX, scaleY, offsetX, offsetY;
+	public float alpha, scaleX, scaleY, offsetX, offsetY;
 	public boolean flipX, flipY;
 	
 	Level level;
@@ -27,13 +29,32 @@ public class Entity {
 	
 	private Animation<Image2D> image;
 	private Hitbox hitbox;
-	private boolean quickCollision;
+	private boolean quickCollision, visible, active;
 	private float rotation;
-	private int zIndex;
+	private int zIndex, badge;
 	
 	public Entity(){
 		bounds = new Rectangle();
-		offsetX = offsetY = 1;
+		alpha = scaleX = scaleY = offsetX = offsetY = 1;
+		events = new ArrayList<>();
+		deleteEvents = new ArrayList<>();
+		badge = MathUtils.random(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+	
+	public void setImage(Image2D... images){
+		setImage(3, images);
+	}
+	
+	public void setImage(int speed, Image2D... images){
+		image = new Animation<>(speed, images);
+	}
+	
+	public void setImage(Animation<Image2D> image){
+		this.image = image;
+	}
+	
+	public Animation<Image2D> getImage(){
+		return image;
 	}
 	
 	public void init() {}
@@ -41,6 +62,9 @@ public class Entity {
 	public void dispose() {}
 	
 	public void render(SpriteBatch batch){
+		if(!visible)
+			return;
+		
 		Vector2 center = getCenterCord();
 		Color defColor = batch.getColor();
 		Color newColor = new Color(defColor);
@@ -78,6 +102,22 @@ public class Entity {
 		return level;
 	}
 	
+	public boolean isVisible(){
+		return visible;
+	}
+	
+	public void setVisible(boolean visible){
+		this.visible = visible;
+	}
+	
+	public boolean isActive(){
+		return active;
+	}
+	
+	public void activate(boolean actibe){
+		this.active = actibe;
+	}
+	
 	public void addEvent(Event event){
 		events.add(event);
 	}
@@ -109,7 +149,7 @@ public class Entity {
 			return Collisions.circleVsCircle(this, entity);
 		} else if(hitbox == Hitbox.POLYGON || entity.hitbox == Hitbox.POLYGON){
 			if(poly == null || entity.poly == null)
-				throw new RuntimeException("Both subjects must have a polygon to perform a polygon collision!");
+				throw new RuntimeException("Both subjects must have a polygon in order to perform a collision test!");
 			
 			return false;//TODO:
 		} else if(hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL){
@@ -161,7 +201,6 @@ public class Entity {
 	public float height(){
 		return bounds.height;
 	}
-	
 	
 	public Image2D nextImage(){
 		return null;

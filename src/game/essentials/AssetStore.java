@@ -30,7 +30,7 @@ public class AssetStore {
 		images.put(stripString(path.toString()), new Image2D(path, createPixelData));
 	}
 	
-	public Image2D getImage(String key){
+	public Image2D get(String key){
 		return images.get(key);
 	}
 	
