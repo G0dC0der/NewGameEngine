@@ -56,7 +56,7 @@ public final class Engine implements ApplicationListener{
 	}
 	
 	private void progress(){
-		
+		level.gameLoop();
 	}
 	
 	private void paint(){

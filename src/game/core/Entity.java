@@ -1,5 +1,11 @@
 package game.core;
 
+import game.essentials.Animation;
+import game.essentials.CloneEvent;
+import game.essentials.Hitbox;
+import game.essentials.Image2D;
+import game.events.Event;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,17 +16,14 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import game.essentials.Animation;
-import game.essentials.Hitbox;
-import game.essentials.Image2D;
-import game.events.Event;
-
 public class Entity {
 
 	public final Rectangle bounds;
 	public String id;
 	public float alpha, scaleX, scaleY, offsetX, offsetY;
 	public boolean flipX, flipY;
+	
+	protected CloneEvent cloneEvent;
 	
 	Level level;
 	Engine engine;
@@ -41,20 +44,36 @@ public class Entity {
 		badge = MathUtils.random(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	
+	public Entity(Entity src, float x, float y){
+		this();
+		copyData(src);
+		move(x, y);
+		if(src.cloneEvent != null)
+			src.cloneEvent.handleClonded(this);
+	}
+	
 	public void setImage(Image2D... images){
 		setImage(3, images);
 	}
 	
 	public void setImage(int speed, Image2D... images){
-		image = new Animation<>(speed, images);
+		setImage(new Animation<>(speed, images));
 	}
 	
 	public void setImage(Animation<Image2D> image){
 		this.image = image;
+		
+		bounds.width  = image.getArray()[0].getWidth();
+		bounds.height = image.getArray()[0].getHeight();
 	}
 	
 	public Animation<Image2D> getImage(){
 		return image;
+	}
+	
+	public void move(float x, float y){
+		bounds.x = x;
+		bounds.y = y;
 	}
 	
 	public void init() {}
@@ -202,8 +221,48 @@ public class Entity {
 		return bounds.height;
 	}
 	
+	public float halfWidth(){
+		return bounds.width / 2;
+	}
+	
+	public float halfHeight(){
+		return bounds.height / 2;
+	}
+	
 	public Image2D nextImage(){
-		return null;
+		return visible && image != null ? image.getObject() : null;
+	}
+	
+	public boolean cloneOf(Entity parent){
+		return parent.id == id;
+	}
+	
+	public void setCloneEvent(CloneEvent cloneEvent){
+		this.cloneEvent = cloneEvent;
+	}
+	
+	protected void copyData(Entity src){
+		badge = src.badge;
+		bounds.x = src.bounds.x;
+		bounds.y = src.bounds.y;
+		bounds.width = src.bounds.width;
+		active = src.active;
+		visible = src.visible;
+		alpha = src.alpha;
+		rotation = src.rotation;
+		zIndex = src.zIndex;
+		hitbox = src.hitbox;
+		quickCollision = src.quickCollision;
+		offsetX = src.offsetX;
+		offsetY = src.offsetY;
+		flipX = src.flipX;
+		flipY = src.flipY;
+		scaleX = src.scaleX;
+		scaleY = src.scaleY;
+		if(src.image != null)
+			image = src.image.getClone();
+		if(src.poly != null)
+			poly = new Polygon(src.poly.getTransformedVertices());
 	}
 	
 	void runEvents(){
