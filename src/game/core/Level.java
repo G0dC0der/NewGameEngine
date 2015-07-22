@@ -1,23 +1,30 @@
 package game.core;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import game.essentials.Entry;
+import game.essentials.PressedButtons;
 import game.essentials.Utils;
+import game.essentials.Vitality;
 import game.events.Event;
 import game.events.TaskEvent;
 
 public abstract class Level {
 	
 	public static final byte HOLLOW = 0;
-	public static final byte SOLID = 0;
+	public static final byte SOLID = 1;
 	
 	static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) ->  obj1.getZIndex() - obj2.getZIndex();
 
 	protected Engine engine;
+	
 	private List<Entry<Integer, Entity>> awatingObjects, deleteObjects;
+	private List<PlayableEntity> mainCharacters;
+	
 	List<Entity> gameObjects;
 	boolean sort;
 	
@@ -27,21 +34,20 @@ public abstract class Level {
 
 	public abstract boolean isHollow(int x, int y);
 	
-	public abstract void init();
+	public abstract void init(Object data);
 	
-	public abstract void build();
+	public abstract void build(Object data);
 	
 	public abstract void dispose();
 	
-	void gameLoop(){
-		insertDelete();
-		
-		if(sort){
-			Collections.sort(gameObjects, Z_INDEX_SORT);
-			sort = false;
-		}
-		
-		update();
+	public Serializable getMeta(){
+		return null;
+	}
+	
+	public void processMeta(Serializable meta) {}
+	
+	public boolean safeRestart(){
+		return false;
 	}
 	
 	public void add(Entity entity){
@@ -138,22 +144,69 @@ public abstract class Level {
 	}
 	
 	public List<PlayableEntity> getMainCharacters(){
-		return null;
+		return mainCharacters;
+	}
+	
+	public List<PlayableEntity> getNonDeadMainCharacters(){
+		return mainCharacters.stream()
+				.filter(el -> el.getState() == Vitality.ALIVE || el.getState() == Vitality.COMPLETED)
+				.collect(Collectors.toList());
 	}
 	
 	public List<PlayableEntity> getAliveMainCharacters(){
-		return null;
+		return mainCharacters.stream()
+				.filter(el -> el.getState() == Vitality.ALIVE)
+				.collect(Collectors.toList());
+	}
+	
+	
+	void gameLoop(){
+		insertDelete();
+		
+		if(sort){
+			Collections.sort(gameObjects, Z_INDEX_SORT);
+			sort = false;
+		}
+		
+		update();
+	}
+	
+	void clean(){
+		awatingObjects.clear();
+		deleteObjects.clear();
+		gameObjects.clear();
 	}
 	
 	private void update(){
+		mainCharacters.clear();
+		
 		for(Entity entity : gameObjects){
 			if(!entity.isActive())
 				continue;
 			
 			if(entity instanceof MobileEntity){
+				MobileEntity mobile = (MobileEntity) entity;
+				mobile.logics();
+				mobile.runEvents();
 				
+				mobile.prevX = mobile.x();
+				mobile.prevY = mobile.y();
 			} else if(entity instanceof PlayableEntity){
+				PlayableEntity play = (PlayableEntity) entity;
+				PressedButtons buttonsDown;
 				
+				if(play.isGhost()){
+					buttonsDown = play.nextReplayFrame();
+				} else{
+					buttonsDown = engine.playingReplay() ? engine.getReplayFrame(play) : PlayableEntity.checkButtons(play.getController());
+					mainCharacters.add(play);
+					
+					if(play.getState() == Vitality.ALIVE && !engine.playingReplay())
+						engine.registerReplayFrame(play, buttonsDown);
+				}
+				
+				play.setKeysDown(buttonsDown);
+				play.logics();
 			} else {
 				entity.runEvents();
 			}
@@ -165,6 +218,9 @@ public abstract class Level {
 			Entry<Integer, Entity> entry = awatingObjects.get(i);
 			
 			if(entry.key-- <= 0){
+				if(entry.value instanceof PlayableEntity && ((PlayableEntity)entry.value).isGhost() && (entry.value.id == null || entry.value.id.isEmpty()))
+					throw new RuntimeException("Non ghost PlayableEntity must have an id set.");
+				
 				gameObjects.add(entry.value);
 				awatingObjects.remove(i);
 				sort = true;

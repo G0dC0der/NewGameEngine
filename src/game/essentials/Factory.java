@@ -1,13 +1,33 @@
 package game.essentials;
 
+import java.util.List;
+
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import game.core.Collisions;
 import game.core.Entity;
+import game.core.Level;
 import game.core.MobileEntity;
 import game.events.Event;
 
 public class Factory {
+	
+	public static void cameraFocus(List<Entity> entities, OrthographicCamera camera){
+		Level level = entities.get(0).getLevel();
+		level.add(new Entity(){
+			
+			{
+				zIndex(Integer.MIN_VALUE);
+			}
+			
+			@Override
+			public void render(SpriteBatch batch) {
+				//TODO:
+			}
+		});
+	}
 
 	/**
 	 * Rotate the given unit towards its given direction.

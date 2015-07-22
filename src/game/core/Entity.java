@@ -1,11 +1,5 @@
 package game.core;
 
-import game.essentials.Animation;
-import game.essentials.CloneEvent;
-import game.essentials.Hitbox;
-import game.essentials.Image2D;
-import game.events.Event;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +10,13 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Entity {
+import game.essentials.Animation;
+import game.essentials.CloneEvent;
+import game.essentials.Hitbox;
+import game.essentials.Image2D;
+import game.events.Event;
+
+public class Entity{
 
 	public final Rectangle bounds;
 	public String id;
@@ -63,6 +63,7 @@ public class Entity {
 	public void setImage(Animation<Image2D> image){
 		this.image = image;
 		
+		visible = true;
 		bounds.width  = image.getArray()[0].getWidth();
 		bounds.height = image.getArray()[0].getHeight();
 	}
@@ -133,8 +134,8 @@ public class Entity {
 		return active;
 	}
 	
-	public void activate(boolean actibe){
-		this.active = actibe;
+	public void activate(boolean activate){
+		this.active = activate;
 	}
 	
 	public void addEvent(Event event){
@@ -227,6 +228,14 @@ public class Entity {
 	
 	public float halfHeight(){
 		return bounds.height / 2;
+	}
+	
+	public float centerX(){
+		return bounds.x + bounds.width / 2;
+	}
+	
+	public float centerY(){
+		return bounds.y + bounds.height / 2;
 	}
 	
 	public Image2D nextImage(){
