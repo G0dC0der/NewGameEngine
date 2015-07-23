@@ -230,14 +230,14 @@ public abstract class Level {
 				if(buttonsDown.suicide){
 					play.setState(Vitality.DEAD);
 				} else{
+					play.setKeysDown(buttonsDown);
+					play.logics();
+					play.runEvents();
+					
 					if(play.tileEvents.size() > 0){
 						Set<Byte> tiles = play.getOccupyingCells();
 						tileIntersection(play, tiles);
 					}
-					
-					play.setKeysDown(buttonsDown);
-					play.logics();
-					play.runEvents();
 					
 					play.prevX = play.x();
 					play.prevY = play.y();
@@ -248,13 +248,13 @@ public abstract class Level {
 			} else if(entity instanceof MobileEntity){
 				MobileEntity mobile = (MobileEntity) entity;
 				
+				mobile.logics();
+				mobile.runEvents();
+
 				if(mobile.tileEvents.size() > 0){
 					Set<Byte> tiles = mobile.getOccupyingCells();
 					tileIntersection(mobile, tiles);
 				}
-				
-				mobile.logics();
-				mobile.runEvents();
 				
 				mobile.prevX = mobile.x();
 				mobile.prevY = mobile.y();
