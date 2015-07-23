@@ -109,6 +109,10 @@ public class Entity{
 		batch.setColor(defColor);
 	}
 	
+	public Engine getEngine(){
+		return engine;
+	}
+	
 	public void zIndex(int zIndex){
 		this.zIndex = zIndex;
 		level.sort = true;

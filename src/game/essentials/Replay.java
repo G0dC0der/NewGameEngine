@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-import game.essentials.PressedButtons.PressedButtonsSession;
+import game.essentials.Keystrokes.KeystrokesSession;
 
 public class Replay {
 
@@ -13,7 +13,7 @@ public class Replay {
 	public String replayName, levelClass;
 	public ZonedDateTime date;
 	public Serializable meta;
-	public List<PressedButtonsSession> data;
+	public List<KeystrokesSession> data;
 	
 	public Replay(){
 		data = new LinkedList<>();

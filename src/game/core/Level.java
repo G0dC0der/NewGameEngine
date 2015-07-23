@@ -4,10 +4,14 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.badlogic.gdx.audio.Music;
+
 import game.essentials.Entry;
-import game.essentials.PressedButtons;
+import game.essentials.GameState;
+import game.essentials.Keystrokes;
 import game.essentials.Utils;
 import game.essentials.Vitality;
 import game.events.Event;
@@ -20,13 +24,17 @@ public abstract class Level {
 	
 	static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) ->  obj1.getZIndex() - obj2.getZIndex();
 
-	protected Engine engine;
-	
+	Engine engine;
+
 	private List<Entry<Integer, Entity>> awatingObjects, deleteObjects;
 	private List<PlayableEntity> mainCharacters;
 	
 	List<Entity> gameObjects;
 	boolean sort;
+	
+	public abstract int getWidth();
+
+	public abstract int getHeight();
 	
 	public abstract byte get(int x, int y);
 	
@@ -34,9 +42,9 @@ public abstract class Level {
 
 	public abstract boolean isHollow(int x, int y);
 	
-	public abstract void init(Object data);
+	public abstract void init();
 	
-	public abstract void build(Object data);
+	public abstract void build();
 	
 	public abstract void dispose();
 	
@@ -48,6 +56,14 @@ public abstract class Level {
 	
 	public boolean safeRestart(){
 		return false;
+	}
+	
+	public Music getStageMusic(){
+		return null;
+	}
+	
+	public Engine getEngine(){
+		return engine;
 	}
 	
 	public void add(Entity entity){
@@ -80,36 +96,55 @@ public abstract class Level {
 		discardWhen(entity, discardEvent);
 	}
 	
-	public void add(Event event){
-		addAfter(Utils.wrap(event), 0);		
+	public Entity add(Event event){
+		Entity wrapper = Utils.wrap(event);
+		addAfter(wrapper, 0);		
+		
+		return wrapper;
 	}
 	
-	public void addAfter(Event event, int framesDelay){
-		addAfter(Utils.wrap(event), framesDelay);
+	public Entity addAfter(Event event, int framesDelay){
+		Entity wrapper = Utils.wrap(event);
+		addAfter(wrapper, framesDelay);
+		
+		return wrapper;
 	}
 	
-	public void addWhen(Event event, TaskEvent addEvent){
-		addWhen(Utils.wrap(event), addEvent);
+	public Entity addWhen(Event event, TaskEvent addEvent){
+		Entity wrapper = Utils.wrap(event);
+		addWhen(wrapper, addEvent);
+		
+		return wrapper;
 	}
 	
-	public void addTemp(Event event, int lifeFrames){
+	public Entity addTemp(Event event, int lifeFrames){
 		Entity wrapper = Utils.wrap(event);
 		add(wrapper);
 		discardAfter(wrapper, lifeFrames);
+		
+		return wrapper;
 	}
 	
-	public void addTemp(Event event, TaskEvent discardEvent){
+	public Entity addTemp(Event event, TaskEvent discardEvent){
 		Entity wrapper = Utils.wrap(event);
 		add(wrapper);
 		discardWhen(wrapper, discardEvent);
+		
+		return wrapper;
 	}
 	
-	public void addShort(Event event){
-		Entity wrapper = Utils.wrap(event);
+	public Entity runOnceWhen(Event event, TaskEvent whenToRun){
+		Entity wrapper = new Entity();
 		wrapper.addEvent(()->{
-			event.eventHandling();
-			wrapper.getLevel().discard(wrapper);
+			if(whenToRun.eventHandling()){
+				event.eventHandling();
+				wrapper.getLevel().discard(wrapper);
+			}
 		});
+		
+		add(wrapper);
+		
+		return wrapper;
 	}
 	
 	public void discard(Entity entity){
@@ -130,17 +165,6 @@ public abstract class Level {
 		});
 		
 		add(wrapper);
-	}
-	
-	public Entity findWrapper(Event event){
-		for(int i = 0; i < gameObjects.size(); i++){
-			Entity entity = gameObjects.get(i);
-			
-			if(entity.id.equals("WRAPPER") && entity.events.contains(event))
-				return entity;
-		}
-		
-		return null;
 	}
 	
 	public List<PlayableEntity> getMainCharacters(){
@@ -184,31 +208,71 @@ public abstract class Level {
 			if(!entity.isActive())
 				continue;
 			
-			if(entity instanceof MobileEntity){
+			if(entity instanceof PlayableEntity){
+				PlayableEntity play = (PlayableEntity) entity;
+				Keystrokes buttonsDown;
+				
+				if(play.isGhost())
+					buttonsDown = play.nextReplayFrame();
+				else if(engine.playingReplay())
+					buttonsDown = engine.getReplayFrame(play);
+				else if(play.getState() != Vitality.ALIVE || engine.getGameState() == GameState.FINISHED || engine.getGameState() == GameState.DEAD)
+					buttonsDown = PlayableEntity.STILL;
+				else
+					buttonsDown = PlayableEntity.checkButtons(play.getController());
+				
+				if(!play.isGhost())
+					mainCharacters.add(play);
+				
+				if(play.getState() == Vitality.ALIVE && !engine.playingReplay())
+					engine.registerReplayFrame(play, buttonsDown);
+				
+				if(buttonsDown.suicide){
+					play.setState(Vitality.DEAD);
+				} else{
+					if(play.tileEvents.size() > 0){
+						Set<Byte> tiles = play.getOccupyingCells();
+						tileIntersection(play, tiles);
+					}
+					
+					play.setKeysDown(buttonsDown);
+					play.logics();
+					play.runEvents();
+					
+					play.prevX = play.x();
+					play.prevY = play.y();
+				}
+				
+				if(play.getState() == Vitality.DEAD)
+					play.deathAction();
+			} else if(entity instanceof MobileEntity){
 				MobileEntity mobile = (MobileEntity) entity;
+				
+				if(mobile.tileEvents.size() > 0){
+					Set<Byte> tiles = mobile.getOccupyingCells();
+					tileIntersection(mobile, tiles);
+				}
+				
 				mobile.logics();
 				mobile.runEvents();
 				
 				mobile.prevX = mobile.x();
 				mobile.prevY = mobile.y();
-			} else if(entity instanceof PlayableEntity){
-				PlayableEntity play = (PlayableEntity) entity;
-				PressedButtons buttonsDown;
-				
-				if(play.isGhost()){
-					buttonsDown = play.nextReplayFrame();
-				} else{
-					buttonsDown = engine.playingReplay() ? engine.getReplayFrame(play) : PlayableEntity.checkButtons(play.getController());
-					mainCharacters.add(play);
-					
-					if(play.getState() == Vitality.ALIVE && !engine.playingReplay())
-						engine.registerReplayFrame(play, buttonsDown);
-				}
-				
-				play.setKeysDown(buttonsDown);
-				play.logics();
 			} else {
 				entity.runEvents();
+			}
+		}
+	}
+	
+	private void tileIntersection(MobileEntity mobile, Set<Byte> tiles){
+		for(Byte b : tiles){
+			switch(b){
+			case HOLLOW:
+				/*/ Do nothing /*/
+				break;
+			case SOLID:
+				mobile.runTileEvents(b);
+				break;
 			}
 		}
 	}

@@ -2,11 +2,10 @@ package game.essentials;
 
 import java.util.List;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import game.core.Collisions;
+import game.core.Engine;
 import game.core.Entity;
 import game.core.Level;
 import game.core.MobileEntity;
@@ -14,17 +13,18 @@ import game.events.Event;
 
 public class Factory {
 	
-	public static void cameraFocus(List<Entity> entities, OrthographicCamera camera){
+	public static void cameraFocus(List<Entity> entities, int padding){
 		Level level = entities.get(0).getLevel();
-		level.add(new Entity(){
+		Engine engine = level.getEngine();
+		
+		level.add(new MobileEntity(){
 			
 			{
-				zIndex(Integer.MIN_VALUE);
+				zIndex(Integer.MAX_VALUE);
 			}
 			
 			@Override
-			public void render(SpriteBatch batch) {
-				//TODO:
+			public void logics() { //Executed after all entities have moved a step; before rendering.
 			}
 		});
 	}

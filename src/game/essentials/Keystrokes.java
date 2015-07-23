@@ -10,13 +10,13 @@ import game.core.PlayableEntity;
  * @author Pojahn M
  *
  */
-public class PressedButtons {
+public class Keystrokes {
 	
 	public boolean up, down, left, right, jump, pause, suicide, special1, special2, special3;
 	
-	public PressedButtons() {}
+	public Keystrokes() {}
 
-	public PressedButtons(boolean up, boolean down, boolean left, boolean right, boolean jump, boolean pause, boolean suicide,
+	public Keystrokes(boolean up, boolean down, boolean left, boolean right, boolean jump, boolean pause, boolean suicide,
 				boolean special1, boolean special2, boolean special3) {
 		this.up = up;
 		this.down = down;
@@ -31,20 +31,20 @@ public class PressedButtons {
 	}
 	
 	/**
-	 * An instance of this class describes the buttons that a specific PlayableEntity held down during a session(from start to GameState.COMPLETE).
+	 * An instance of this class describes the buttons that a specific PlayableEntity held down during a session(from start to GameState.FINISHED).
 	 * @author Pojahn M
 	 */
-	public static class PressedButtonsSession{
-		public List<PressedButtons> sessionKeys;
+	public static class KeystrokesSession{
+		public List<Keystrokes> sessionKeys;
 		public String id;
 		private int counter;
 		
-		public PressedButtonsSession(String id) {
+		public KeystrokesSession(String id) {
 			this.sessionKeys = new LinkedList<>();
 			this.id = id;
 		}
 		
-		public PressedButtons next(){
+		public Keystrokes next(){
 			return counter > sessionKeys.size() - 1 ? PlayableEntity.STILL : sessionKeys.get(counter++);
 		}
 	}
