@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.commons.lang3.time.StopWatch;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -30,6 +32,9 @@ public class Engine{
 	public float delta = 1.0f / 60.0f;
 	public BitmapFont timeFont;
 	public Color timeColor;
+	public String helpText = "";
+	public String failText = "";
+	public String winText  = "";
 	
 	private Level level;
 	private SpriteBatch batch;
@@ -131,9 +136,16 @@ public class Engine{
 		camera.update();
 	}
 	
-//	public boolean retry(){
-//		
-//	}
+	public void retry(){
+		retry(level.safeRestart());
+	}
+	
+	public void retry(boolean fromCheckpoint){
+		if(getGameState() == GameState.UNINITIALIZED)
+			throw new RuntimeException("Can not retry a game that hasn't ben initialized yet.");
+		
+		restart(fromCheckpoint);
+	}
 	
 	public void exit(){
 		Gdx.app.exit(); //Test: Should not exit other non-daemon threads. Should also call destroy()/dispose()
@@ -144,7 +156,7 @@ public class Engine{
 		batch = new SpriteBatch();
 		initCameras();
 		level.init();
-		restart();
+		restart(false);
 		if(playingReplay())
 			level.processMeta(replay.meta);
 		setGameState(GameState.PLAYING);
@@ -154,15 +166,7 @@ public class Engine{
 		if(getGameState() == GameState.DISPOSED)
 			throw new IllegalStateException("Can not play a disposed game.");
 		
-		if(!playingReplay() && Gdx.input.isKeyJustPressed(Keys.R) && (getGameState() == GameState.DEAD || getGameState() == GameState.FINISHED)){
-			if(Gdx.input.isKeyJustPressed(Keys.R))
-				restart();
-			else if(Gdx.input.isKeyJustPressed(Keys.Q)){
-				Gdx.app.exit(); //Test: Should not exit other non-daemon threads. Should also call destroy()/dispose()
-			}
-		}
-		
-		if(PlayableEntity.keysDown(level.getAliveMainCharacters()).pause && !playingReplay() && getGameState() != GameState.DEAD && getGameState() != GameState.FINISHED){
+		if(getGameState() != GameState.DEAD && getGameState() != GameState.FINISHED && !playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause){
 			if(!clock.isSuspended()){
 				clock.suspend();
 				setGameState(GameState.PAUSED);
@@ -226,21 +230,34 @@ public class Engine{
 		batch.end();
 	}
 	
-	private void restart(){
+	private void restart(boolean checkpointPresent){
+		if(checkpointPresent)
+			clock.stop();
+		else
+			clock.suspend();
+		
 		if(getGameState() == GameState.DEAD)
 			vars.put("deaths", ((int)vars.get("deaths")) + 1);
 		
 		setGameState(GameState.LOADING);
-		finalizeReplay();
-		if(!playingReplay()){
-			replayCache.add(replay);
-			replay = new Replay();
+		
+		if(!checkpointPresent){
+			time = 0;
+			finalizeReplay();
+			if(!playingReplay()){
+				replayCache.add(replay);
+				replay = new Replay();
+			}
 		}
-		time = 0;
 		level.clean();
 		level.build();
-		clock = new StopWatch();
-		clock.start();
+		
+		if(checkpointPresent)
+			clock.start();
+		else
+			clock.resume();
+		
+		setGameState(GameState.PLAYING);
 	}
 
 	private void setGameState(GameState state){
@@ -313,7 +330,7 @@ public class Engine{
 			}
 		}
 		
-		if(dead == total)
+		if(dead == total || alive == 0)
 			setGameState(GameState.DEAD);
 		else if(finished > 0)
 			setGameState(GameState.FINISHED);
@@ -383,12 +400,16 @@ public class Engine{
 		if(playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause)
 			vars.put("helpText", !((boolean)vars.get("helpText")));
 		
-		boolean helpText = (boolean) vars.get("helpText");
-		//Help text
-		
-		//Win text
-		
-		//Dead text
+		if((boolean) vars.get("helpText")){
+			String helpText = "You are viewing a replay and can not pause in this mode";
+			
+		}
+
+		if(!playingReplay() && getGameState() == GameState.FINISHED){
+			//Win text
+		} else if(!playingReplay() && getGameState() == GameState.DEAD){
+			//Dead text
+		}
 	}
 	
 	static class GDXApp extends ApplicationAdapter{

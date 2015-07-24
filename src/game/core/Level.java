@@ -48,11 +48,11 @@ public abstract class Level {
 	
 	public abstract void dispose();
 	
+	public void processMeta(Serializable meta) {}
+
 	public Serializable getMeta(){
 		return null;
 	}
-	
-	public void processMeta(Serializable meta) {}
 	
 	public boolean safeRestart(){
 		return false;
@@ -214,7 +214,7 @@ public abstract class Level {
 				
 				if(play.isGhost())
 					buttonsDown = play.nextReplayFrame();
-				else if(engine.playingReplay())
+				else if(engine.playingReplay() && play.getState() == Vitality.ALIVE)
 					buttonsDown = engine.getReplayFrame(play);
 				else if(play.getState() != Vitality.ALIVE || engine.getGameState() == GameState.FINISHED || engine.getGameState() == GameState.DEAD)
 					buttonsDown = PlayableEntity.STILL;
@@ -303,6 +303,7 @@ public abstract class Level {
 				deleteObjects.remove(i);
 				i--;
 				entry.value.dispose();
+				entry.value.move(-9999, -9999);
 			}
 		}
 	}

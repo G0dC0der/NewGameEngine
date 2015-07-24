@@ -11,7 +11,7 @@ import game.essentials.Image2D;
 import game.essentials.Keystrokes;
 import game.essentials.Vitality;
 
-public class PlayableEntity extends MobileEntity{
+public abstract class PlayableEntity extends MobileEntity{
 	
 	public static final Keystrokes STILL = new Keystrokes();
 
@@ -21,14 +21,33 @@ public class PlayableEntity extends MobileEntity{
 	private Vitality state;
 	private Controller controller;
 	private List<Keystrokes> ghostData;
-	private int ghostDataCounter, hp;
+	private int ghostDataCounter, hp, hurtCounter, counter;
+	
+	public PlayableEntity(){
+		hp = 1;
+		state = Vitality.ALIVE;
+	}
 	
 	public int getHP(){
 		return hp;
 	}
 	
-	public void touch(int hp){
+	public void touch(int strength){
+		if(strength >= 0){
+			hp += strength;
+			hurtCounter = 0;
+		}
+		else if(hurtCounter > 0){
+			hp += strength;
+			hurtCounter = 100;	
+		}
 		
+		if(0 >= hp)
+			setState(Vitality.DEAD);
+	}
+	
+	public boolean isHurt(){
+		return hurtCounter > 0;
 	}
 	
 	public Controller getController(){
@@ -60,18 +79,22 @@ public class PlayableEntity extends MobileEntity{
 		return keysDown;
 	}
 	
-	public void deathAction() {}
+	public void deathAction() {
+		activate(false);
+	}
 	
 	@Override
 	public void render(SpriteBatch batch) {
-		super.render(batch);
+		if(--hurtCounter > 0 && ++counter % 0 == 5)
+			return;
 		
-		if(deathImage != null){
+		if(deathImage != null && getState() == Vitality.DEAD){
 			Animation<Image2D> realImage = getImage();
 			setImage(deathImage);
 			super.render(batch);
 			setImage(realImage);
-		}
+		}else
+			super.render(batch);
 	}
 	
 	void setKeysDown(Keystrokes keysDown) {
@@ -126,6 +149,8 @@ public class PlayableEntity extends MobileEntity{
 	protected void revive(){
 		if(deathImage != null)
 			deathImage.reset();
+		
+		activate(true);
 	}
 	
 	Keystrokes nextReplayFrame()
