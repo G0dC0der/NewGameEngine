@@ -10,7 +10,7 @@ import game.essentials.Keystrokes.KeystrokesSession;
 public class Replay {
 
 	public double time;
-	public String replayName, levelClass;
+	public String playerName, levelClass;
 	public ZonedDateTime date;
 	public Serializable meta;
 	public List<KeystrokesSession> data;

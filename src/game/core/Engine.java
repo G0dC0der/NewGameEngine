@@ -30,11 +30,13 @@ import game.essentials.Vitality;
 public class Engine{
 
 	public float delta = 1.0f / 60.0f;
+	public boolean renderText;
 	public BitmapFont timeFont;
 	public Color timeColor;
-	public String helpText = "";
-	public String failText = "";
-	public String winText  = "";
+	public String helpText = "You are in replay mode thus can not pause.";
+	public String failText = "You are dead.";
+	public String winText  = "Congratulations! It took you %d seconds to complete the map!";
+	public String playerName = "Player";
 	
 	private Level level;
 	private SpriteBatch batch;
@@ -47,15 +49,15 @@ public class Engine{
 	private long time;
 	
 	public Engine(Level level, Replay replay){
-		state = GameState.UNINITIALIZED;
-
 		if(level == null)
 			throw new NullPointerException("The level can not be null.");
 		
+		state = GameState.UNINITIALIZED;
 		this.level = level;
 		this.level.engine = this;
 		this.replay = replay == null ? new Replay() : replay;
 		replayCache = new ArrayList<>();
+		renderText = true;
 		vars = new HashMap<>();
 		vars.put("replaying", replay != null);
 		vars.put("screenWidth", 800);
@@ -143,6 +145,8 @@ public class Engine{
 	public void retry(boolean fromCheckpoint){
 		if(getGameState() == GameState.UNINITIALIZED)
 			throw new RuntimeException("Can not retry a game that hasn't ben initialized yet.");
+		if(fromCheckpoint && getGameState() == GameState.SUCCESS)
+			throw new RuntimeException("Can not restart a finished game from checkpoint.");
 		
 		restart(fromCheckpoint);
 	}
@@ -156,6 +160,8 @@ public class Engine{
 		batch = new SpriteBatch();
 		initCameras();
 		level.init();
+		clock = new StopWatch();
+		clock.start();
 		restart(false);
 		if(playingReplay())
 			level.processMeta(replay.meta);
@@ -166,7 +172,7 @@ public class Engine{
 		if(getGameState() == GameState.DISPOSED)
 			throw new IllegalStateException("Can not play a disposed game.");
 		
-		if(getGameState() != GameState.DEAD && getGameState() != GameState.FINISHED && !playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause){
+		if(getGameState() != GameState.LOST && getGameState() != GameState.SUCCESS && !playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause){
 			if(!clock.isSuspended()){
 				clock.suspend();
 				setGameState(GameState.PAUSED);
@@ -203,7 +209,7 @@ public class Engine{
 	private void progress(){
 		statusControll();
 		
-		if(getGameState() == GameState.DEAD || getGameState() == GameState.FINISHED && !clock.isStopped()){
+		if(getGameState() == GameState.LOST || getGameState() == GameState.SUCCESS && !clock.isStopped()){
 			clock.stop();
 		}
 		
@@ -231,12 +237,12 @@ public class Engine{
 	}
 	
 	private void restart(boolean checkpointPresent){
-		if(checkpointPresent)
+		if(!checkpointPresent)
 			clock.stop();
 		else
 			clock.suspend();
 		
-		if(getGameState() == GameState.DEAD)
+		if(getGameState() == GameState.LOST)
 			vars.put("deaths", ((int)vars.get("deaths")) + 1);
 		
 		setGameState(GameState.LOADING);
@@ -252,7 +258,7 @@ public class Engine{
 		level.clean();
 		level.build();
 		
-		if(checkpointPresent)
+		if(!checkpointPresent)
 			clock.start();
 		else
 			clock.resume();
@@ -263,7 +269,7 @@ public class Engine{
 	private void setGameState(GameState state){
 		if(state == GameState.PAUSED && playingReplay())
 			throw new IllegalArgumentException("Can not pause when playing a replay.");
-		if(this.state == GameState.FINISHED && (state == GameState.DEAD || state == GameState.PAUSED))
+		if(this.state == GameState.SUCCESS && (state == GameState.LOST || state == GameState.PAUSED))
 			throw new IllegalArgumentException("Can not kill or pause a completed game.");
 		
 		this.state = state;
@@ -331,9 +337,9 @@ public class Engine{
 		}
 		
 		if(dead == total || alive == 0)
-			setGameState(GameState.DEAD);
+			setGameState(GameState.LOST);
 		else if(finished > 0)
-			setGameState(GameState.FINISHED);
+			setGameState(GameState.SUCCESS);
 		else if(alive > 0)
 			setGameState(GameState.PLAYING);
 		else
@@ -370,6 +376,7 @@ public class Engine{
 		replay.date = ZonedDateTime.now();;
 		replay.time = time;
 		replay.levelClass = level.getClass().getName();
+		replay.playerName = playerName;
 	}
 	
 	private void renderStatusBar(){
@@ -397,18 +404,20 @@ public class Engine{
 	}
 	
 	private void renderStatusText(){
+		if(!renderText)
+			return;
+		
 		if(playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause)
 			vars.put("helpText", !((boolean)vars.get("helpText")));
 		
 		if((boolean) vars.get("helpText")){
-			String helpText = "You are viewing a replay and can not pause in this mode";
-			
+			timeFont.draw(batch, helpText, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 2);
 		}
 
-		if(!playingReplay() && getGameState() == GameState.FINISHED){
-			//Win text
-		} else if(!playingReplay() && getGameState() == GameState.DEAD){
-			//Dead text
+		if(!playingReplay() && getGameState() == GameState.SUCCESS){
+			timeFont.draw(batch, String.format(winText, time), Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2);
+		} else if(!playingReplay() && getGameState() == GameState.LOST){
+			timeFont.draw(batch, failText, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 2);
 		}
 	}
 	

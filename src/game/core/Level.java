@@ -214,10 +214,10 @@ public abstract class Level {
 				
 				if(play.isGhost())
 					buttonsDown = play.nextReplayFrame();
+				else if(play.getState() != Vitality.ALIVE || engine.getGameState() == GameState.SUCCESS)
+					buttonsDown = PlayableEntity.STILL;
 				else if(engine.playingReplay() && play.getState() == Vitality.ALIVE)
 					buttonsDown = engine.getReplayFrame(play);
-				else if(play.getState() != Vitality.ALIVE || engine.getGameState() == GameState.FINISHED || engine.getGameState() == GameState.DEAD)
-					buttonsDown = PlayableEntity.STILL;
 				else
 					buttonsDown = PlayableEntity.checkButtons(play.getController());
 				

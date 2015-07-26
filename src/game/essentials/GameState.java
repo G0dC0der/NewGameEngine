@@ -6,7 +6,7 @@ public enum GameState {
 	LOADING,
 	PLAYING,
 	PAUSED,
-	DEAD,
-	FINISHED,
+	LOST,
+	SUCCESS,
 	DISPOSED
 }

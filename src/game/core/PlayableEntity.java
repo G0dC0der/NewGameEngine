@@ -79,10 +79,6 @@ public abstract class PlayableEntity extends MobileEntity{
 		return keysDown;
 	}
 	
-	public void deathAction() {
-		activate(false);
-	}
-	
 	@Override
 	public void render(SpriteBatch batch) {
 		if(--hurtCounter > 0 && ++counter % 0 == 5)
@@ -144,6 +140,10 @@ public abstract class PlayableEntity extends MobileEntity{
 		}
 		
 		return pb;
+	}
+	
+	final void deathAction() {
+		activate(false);
 	}
 	
 	protected void revive(){
