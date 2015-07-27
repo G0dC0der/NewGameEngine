@@ -1,4 +1,4 @@
-package game.essentials;
+package game.lang;
 
 public class Entry<K, V> {
 

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import game.core.Level.Tile;
 import game.events.TileEvent;
 
 public class MobileEntity extends Entity{
@@ -114,7 +115,7 @@ public class MobileEntity extends Entity{
 				realY = y();
 		move(targetX, targetY);
 		
-		boolean occupied = !getOccupyingCells().contains(Level.SOLID) && !obstacleCollision();
+		boolean occupied = !getOccupyingCells().contains(Tile.SOLID) && !obstacleCollision();
 		move(realX,realY);
 		return occupied;
 	}
@@ -135,10 +136,10 @@ public class MobileEntity extends Entity{
 		return false;
 	}
 	
-	public Set<Byte> getOccupyingCells()
+	public Set<Tile> getOccupyingCells()
 	{
 		Level l = getLevel();
-		Set<Byte> cells = new HashSet<>();
+		Set<Tile> cells = new HashSet<>();
 		
 		int 	x1  = (int) x() + 1,
 				y1  = (int) y() + 1,
@@ -146,12 +147,12 @@ public class MobileEntity extends Entity{
 				y2 = (int) (y1 + height() - 1);
 		
 		for(int lx = x1; lx < x2; lx++){
-			cells.add(l.get(y1, lx));
-			cells.add(l.get(y2, lx));
+			cells.add(l.tileAt(y1, lx));
+			cells.add(l.tileAt(y2, lx));
 		}
 		for(int ly = y1; ly < y2; ly++){
-			cells.add(l.get(ly, x1));
-			cells.add(l.get(ly, x2));
+			cells.add(l.tileAt(ly, x1));
+			cells.add(l.tileAt(ly, x2));
 		}
 		
 		return cells;
@@ -216,7 +217,7 @@ public class MobileEntity extends Entity{
 		return collides;
 	}
 	
-	void runTileEvents(byte tile){
+	void runTileEvents(Tile tile){
 		for(TileEvent tileEvent : tileEvents)
 			tileEvent.eventHandling(tile);
 	}

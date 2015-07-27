@@ -11,9 +11,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import game.essentials.Animation;
-import game.essentials.CloneEvent;
 import game.essentials.Hitbox;
 import game.essentials.Image2D;
+import game.events.CloneEvent;
 import game.events.Event;
 
 public class Entity{
@@ -82,7 +82,7 @@ public class Entity{
 	public void dispose() {}
 	
 	public void render(SpriteBatch batch){
-		if(!visible)
+		if(!visible || alpha == 0)
 			return;
 		
 		Vector2 center = getCenterCord();

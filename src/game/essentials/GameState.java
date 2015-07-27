@@ -4,7 +4,7 @@ public enum GameState {
 
 	UNINITIALIZED,
 	LOADING,
-	PLAYING,
+	ACTIVE,
 	PAUSED,
 	LOST,
 	SUCCESS,

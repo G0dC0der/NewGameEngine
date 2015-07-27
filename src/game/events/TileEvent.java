@@ -1,7 +1,9 @@
 package game.events;
 
+import game.core.Level.Tile;
+
 @FunctionalInterface
 public interface TileEvent {
 
-	void eventHandling(byte tile);
+	void eventHandling(Tile tile);
 }

@@ -9,18 +9,32 @@ import java.util.stream.Collectors;
 
 import com.badlogic.gdx.audio.Music;
 
-import game.essentials.Entry;
 import game.essentials.GameState;
 import game.essentials.Keystrokes;
 import game.essentials.Utils;
 import game.essentials.Vitality;
 import game.events.Event;
 import game.events.TaskEvent;
+import game.lang.Entry;
 
 public abstract class Level {
 	
-	public static final byte HOLLOW = 0;
-	public static final byte SOLID = 1;
+	public enum Tile{
+		SOLID,
+		HOLLOW,
+		GOAL,
+		LETHAL,
+		CUSTOM_1,
+		CUSTOM_2,
+		CUSTOM_3,
+		CUSTOM_4,
+		CUSTOM_5,
+		CUSTOM_6,
+		CUSTOM_7,
+		CUSTOM_8,
+		CUSTOM_9,
+		CUSTOM_10
+	}
 	
 	static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) ->  obj1.getZIndex() - obj2.getZIndex();
 
@@ -36,7 +50,9 @@ public abstract class Level {
 
 	public abstract int getHeight();
 	
-	public abstract byte get(int x, int y);
+	public abstract Tile tileAt(int x, int y);
+	
+	public abstract void setTileAt(int x, int y, Tile tile);
 	
 	public abstract boolean isSolid(int x, int y);
 
@@ -214,17 +230,18 @@ public abstract class Level {
 				
 				if(play.isGhost())
 					buttonsDown = play.nextReplayFrame();
-				else if(play.getState() != Vitality.ALIVE || engine.getGameState() == GameState.SUCCESS)
+				else if(engine.getGameState() == GameState.ACTIVE){
+					if(play.getState() == Vitality.ALIVE)
+						buttonsDown = engine.playingReplay() ? engine.getReplayFrame(play) : PlayableEntity.checkButtons(play.getController());
+					else
+						buttonsDown = PlayableEntity.STILL;
+				} else
 					buttonsDown = PlayableEntity.STILL;
-				else if(engine.playingReplay() && play.getState() == Vitality.ALIVE)
-					buttonsDown = engine.getReplayFrame(play);
-				else
-					buttonsDown = PlayableEntity.checkButtons(play.getController());
 				
 				if(!play.isGhost())
 					mainCharacters.add(play);
 				
-				if(play.getState() == Vitality.ALIVE && !engine.playingReplay())
+				if(play.getState() == Vitality.ALIVE && engine.getGameState() == GameState.ACTIVE && !engine.playingReplay())
 					engine.registerReplayFrame(play, buttonsDown);
 				
 				if(buttonsDown.suicide){
@@ -234,10 +251,8 @@ public abstract class Level {
 					play.logics();
 					play.runEvents();
 					
-					if(play.tileEvents.size() > 0){
-						Set<Byte> tiles = play.getOccupyingCells();
-						tileIntersection(play, tiles);
-					}
+					if(play.tileEvents.size() > 0)
+						tileIntersection(play, play.getOccupyingCells());
 					
 					play.prevX = play.x();
 					play.prevY = play.y();
@@ -251,10 +266,8 @@ public abstract class Level {
 				mobile.logics();
 				mobile.runEvents();
 
-				if(mobile.tileEvents.size() > 0){
-					Set<Byte> tiles = mobile.getOccupyingCells();
-					tileIntersection(mobile, tiles);
-				}
+				if(mobile.tileEvents.size() > 0)
+					tileIntersection(mobile, mobile.getOccupyingCells());
 				
 				mobile.prevX = mobile.x();
 				mobile.prevY = mobile.y();
@@ -264,14 +277,14 @@ public abstract class Level {
 		}
 	}
 	
-	private void tileIntersection(MobileEntity mobile, Set<Byte> tiles){
-		for(Byte b : tiles){
-			switch(b){
+	private void tileIntersection(MobileEntity mobile, Set<Tile> tiles){
+		for(Tile tile : tiles){
+			switch(tile){
 			case HOLLOW:
 				/*/ Do nothing /*/
 				break;
 			case SOLID:
-				mobile.runTileEvents(b);
+				mobile.runTileEvents(tile);
 				break;
 			}
 		}

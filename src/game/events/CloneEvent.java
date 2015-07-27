@@ -1,4 +1,4 @@
-package game.essentials;
+package game.events;
 
 import game.core.Entity;
 

@@ -1,26 +1,27 @@
 package game.essentials;
 
-import game.core.Collisions;
-import game.core.Engine;
-import game.core.Entity;
-import game.core.Level;
-import game.core.MobileEntity;
-import game.core.PlayableEntity;
-import game.events.Event;
-import game.events.TileEvent;
-
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
+import game.core.Collisions;
+import game.core.Engine;
+import game.core.Entity;
+import game.core.Level;
+import game.core.Level.Tile;
+import game.core.MobileEntity;
+import game.core.PlayableEntity;
+import game.events.Event;
+import game.events.TileEvent;
+
 public class Factory {
 	
-	public static void cameraFocus(List<Entity> entities, int padding){
+	public static MobileEntity cameraFocus(List<Entity> entities, int padding){
 		Level level = entities.get(0).getLevel();
 		Engine engine = level.getEngine();
 		
-		level.add(new MobileEntity(){{
+		return new MobileEntity(){{
 				zIndex(Integer.MAX_VALUE);
 			}
 			
@@ -36,7 +37,7 @@ public class Factory {
 						windowHeight = Gdx.graphics.getHeight();
 				
 				if(entities.size() == 1){
-					tx = Math.min(stageWidth   -windowWidth,   Math.max(0, first.centerX() - windowWidth  / 2)) + windowWidth  / 2; 
+					tx = Math.min(stageWidth  - windowWidth,   Math.max(0, first.centerX() - windowWidth  / 2)) + windowWidth  / 2; 
 					ty = Math.min(stageHeight - windowHeight,  Math.max(0, first.centerY() - windowHeight / 2)) + windowHeight / 2;
 				}
 				else if(entities.size() > 1){
@@ -95,7 +96,7 @@ public class Factory {
 					engine.setZoom(zoom);
 				}
 			}
-		});
+		};
 	}
 
 	/**
@@ -162,8 +163,15 @@ public class Factory {
 	
 	public static TileEvent crushable(PlayableEntity entity){
 		return (tile) ->{
-			if(tile == Level.SOLID)
+			if(tile == Tile.SOLID)
 				entity.setState(Vitality.DEAD);
+		};
+	}
+	
+	public static Event hitMain(Entity enemy, PlayableEntity play, int hp){
+		return ()->{
+			if(enemy.collidesWith(play))
+				play.touch(hp);
 		};
 	}
 }

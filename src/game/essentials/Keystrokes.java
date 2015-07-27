@@ -47,5 +47,9 @@ public class Keystrokes {
 		public Keystrokes next(){
 			return counter > sessionKeys.size() - 1 ? PlayableEntity.STILL : sessionKeys.get(counter++);
 		}
+		
+		public void reset(){
+			counter = 0;
+		}
 	}
 }

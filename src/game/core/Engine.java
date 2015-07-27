@@ -1,24 +1,23 @@
 package game.core;
 
+import java.awt.Dimension;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.RuntimeErrorException;
-
 import org.apache.commons.lang3.time.StopWatch;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 import game.essentials.GameState;
 import game.essentials.Image2D;
@@ -46,7 +45,6 @@ public class Engine{
 	private List<Replay> replayCache;
 	private Map<String, Object> vars;
 	private OrthographicCamera camera, gameCamera, hudCamera;
-	private long time;
 	
 	public Engine(Level level, Replay replay){
 		if(level == null)
@@ -80,11 +78,11 @@ public class Engine{
 	}
 	
 	public float getTimeInSeconds(){
-		return (float)time / 1000.0f;
+		return (float)clock.getTime() / 1000.0f;
 	}
 	
 	public long getTime(){
-		return time;
+		return clock.getTime();
 	}
 	
 	public int getDeathCounter(){
@@ -114,6 +112,10 @@ public class Engine{
 		vars.put("zoom", zoom);
 	}
 	
+	public float getZoom(){
+		return (float) vars.get("zoom");
+	}
+	
 	public void translate(float tx, float ty){
 		vars.put("tx", tx);
 		vars.put("ty", ty);
@@ -121,6 +123,18 @@ public class Engine{
 	
 	public void flipY(boolean flip){
 		vars.put("flipY", flip);
+	}
+	
+	public Vector2 getTranslation(){
+		return new Vector2((float)vars.get("tx"), (float)vars.get("ty"));
+	}
+	
+	public Vector2 getPreviousTranslation(){
+		return (Vector2) vars.get("prevTranslate");
+	}
+	
+	public Dimension getScreenSize(){
+		return new Dimension((int) Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 	
 	public void gameCamera(){
@@ -160,19 +174,46 @@ public class Engine{
 		batch = new SpriteBatch();
 		initCameras();
 		level.init();
+		level.build();
 		clock = new StopWatch();
-		clock.start();
-		restart(false);
+		
 		if(playingReplay())
 			level.processMeta(replay.meta);
-		setGameState(GameState.PLAYING);
+
+		clock.start();
+		setGameState(GameState.ACTIVE);
+	}
+	
+	private void restart(boolean checkpointPresent){
+		if(!clock.isSuspended())
+			clock.suspend();
+		
+		if(getGameState() == GameState.LOST)
+			vars.put("deaths", ((int)vars.get("deaths")) + 1);
+		
+		setGameState(GameState.LOADING);
+		
+		if(!checkpointPresent && !playingReplay()){
+			finalizeReplay();
+			replayCache.add(replay);
+			replay = new Replay();
+		}
+		
+		level.clean();
+		level.build();
+		clock.resume();
+		
+		if(!checkpointPresent)
+			clock.reset();
+		
+		setGameState(GameState.ACTIVE);
 	}
 
 	private void overview() {
 		if(getGameState() == GameState.DISPOSED)
 			throw new IllegalStateException("Can not play a disposed game.");
 		
-		if(getGameState() != GameState.LOST && getGameState() != GameState.SUCCESS && !playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause){
+		if((getGameState() == GameState.ACTIVE || getGameState() == GameState.PAUSED) && !playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause){
 			if(!clock.isSuspended()){
 				clock.suspend();
 				setGameState(GameState.PAUSED);
@@ -186,7 +227,7 @@ public class Engine{
 			renderPause();
 		} else{
 			if(clock.isSuspended()){
-				setGameState(GameState.PLAYING);
+				setGameState(GameState.ACTIVE);
 				Music music = level.getStageMusic();
 				if(music != null)
 					music.setVolume((float)vars.get("musicVolume"));
@@ -204,16 +245,17 @@ public class Engine{
 		batch.dispose();
 		level.dispose();
 		level = null;
+		batch = null;
 	}
 	
 	private void progress(){
 		statusControll();
 		
-		if(getGameState() == GameState.LOST || getGameState() == GameState.SUCCESS && !clock.isStopped()){
-			clock.stop();
+		if(getGameState() == GameState.LOST || getGameState() == GameState.SUCCESS && !clock.isSuspended()){
+			clock.suspend();
 		}
 		
-		time = clock.getTime();
+		vars.put("prevTranslate", getTranslation());
 		level.gameLoop();
 	}
 	
@@ -236,36 +278,6 @@ public class Engine{
 		batch.end();
 	}
 	
-	private void restart(boolean checkpointPresent){
-		if(!checkpointPresent)
-			clock.stop();
-		else
-			clock.suspend();
-		
-		if(getGameState() == GameState.LOST)
-			vars.put("deaths", ((int)vars.get("deaths")) + 1);
-		
-		setGameState(GameState.LOADING);
-		
-		if(!checkpointPresent){
-			time = 0;
-			finalizeReplay();
-			if(!playingReplay()){
-				replayCache.add(replay);
-				replay = new Replay();
-			}
-		}
-		level.clean();
-		level.build();
-		
-		if(!checkpointPresent)
-			clock.start();
-		else
-			clock.resume();
-		
-		setGameState(GameState.PLAYING);
-	}
-
 	private void setGameState(GameState state){
 		if(state == GameState.PAUSED && playingReplay())
 			throw new IllegalArgumentException("Can not pause when playing a replay.");
@@ -341,7 +353,7 @@ public class Engine{
 		else if(finished > 0)
 			setGameState(GameState.SUCCESS);
 		else if(alive > 0)
-			setGameState(GameState.PLAYING);
+			setGameState(GameState.ACTIVE);
 		else
 			throw new IllegalStateException("Game is in a unknown state.");
 	}
@@ -374,14 +386,14 @@ public class Engine{
 	
 	private void finalizeReplay(){
 		replay.date = ZonedDateTime.now();;
-		replay.time = time;
+		replay.time = clock.getTime();
 		replay.levelClass = level.getClass().getName();
 		replay.playerName = playerName;
 	}
 	
 	private void renderStatusBar(){
 		timeFont.setColor(state == GameState.PAUSED ? Color.WHITE : timeColor);
-		timeFont.draw(batch, time / 1000 + "", 10, 10);
+		timeFont.draw(batch, getTime() + "", 10, 10);
 
 		List<PlayableEntity> mains = level.getNonDeadMainCharacters();
 		
@@ -415,7 +427,7 @@ public class Engine{
 		}
 
 		if(!playingReplay() && getGameState() == GameState.SUCCESS){
-			timeFont.draw(batch, String.format(winText, time), Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2);
+			timeFont.draw(batch, String.format(winText, getTime()), Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2);
 		} else if(!playingReplay() && getGameState() == GameState.LOST){
 			timeFont.draw(batch, failText, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 2);
 		}
