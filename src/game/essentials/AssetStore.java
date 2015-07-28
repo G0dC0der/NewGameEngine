@@ -2,36 +2,30 @@ package game.essentials;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 
 public class AssetStore {
 
-	private HashMap<String, Image2D> images;
-	private HashMap<String, Image2D[]> animations;
-	private HashMap<String, Sound> sounds;
-	private HashMap<String, Music> music;
-	private HashMap<String, Object> other;
+	private HashMap<String, Object> stuff;
 	
 	public AssetStore(){
-		images = new HashMap<>();
-		animations = new HashMap<>();
-		sounds = new HashMap<>();
-		music = new HashMap<>();
-		other = new HashMap<>();
+		stuff = new HashMap<>();
 	}
 	
 	public void loadImage(FileHandle path){
-		images.put(stripString(path.toString()), new Image2D(path, false));
+		stuff.put(stripString(path.toString()), new Image2D(path, false));
 	}
 	
 	public void loadImage(FileHandle path, boolean createPixelData){
-		images.put(stripString(path.toString()), new Image2D(path, createPixelData));
+		stuff.put(stripString(path.toString()), new Image2D(path, createPixelData));
 	}
 	
-	public Image2D get(String key){
-		return images.get(key);
+	public Image2D getImage(String key){
+		return (Image2D) stuff.get(key);
+	}
+	
+	public void loadContentFromDirectory(FileHandle dir){
+		
 	}
 	
 	private static String stripString(String str){

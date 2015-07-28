@@ -1,8 +1,10 @@
 package game.core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,16 +45,21 @@ public abstract class Level {
 	private List<Entry<Integer, Entity>> awatingObjects, deleteObjects;
 	private List<PlayableEntity> mainCharacters;
 	
-	List<Entity> gameObjects;
+	List<Entity> gameObjects, soundListeners;
 	boolean sort;
+	
+	protected Level(){
+		awatingObjects = new LinkedList<>();
+		deleteObjects = new LinkedList<>();
+		mainCharacters = new ArrayList<>();
+		gameObjects = new LinkedList<>();
+	}
 	
 	public abstract int getWidth();
 
 	public abstract int getHeight();
 	
 	public abstract Tile tileAt(int x, int y);
-	
-	public abstract void setTileAt(int x, int y, Tile tile);
 	
 	public abstract boolean isSolid(int x, int y);
 
@@ -199,6 +206,10 @@ public abstract class Level {
 				.collect(Collectors.toList());
 	}
 	
+	public List<? extends Entity> getSoundListeners(){
+		return soundListeners.isEmpty() ? getNonDeadMainCharacters() : soundListeners;
+	}
+	
 	
 	void gameLoop(){
 		insertDelete();
@@ -214,6 +225,7 @@ public abstract class Level {
 	void clean(){
 		awatingObjects.clear();
 		deleteObjects.clear();
+		gameObjects.forEach(e -> e.dispose());
 		gameObjects.clear();
 	}
 	
@@ -283,7 +295,7 @@ public abstract class Level {
 			case HOLLOW:
 				/*/ Do nothing /*/
 				break;
-			case SOLID:
+			default:
 				mobile.runTileEvents(tile);
 				break;
 			}

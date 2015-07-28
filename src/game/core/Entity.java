@@ -13,12 +13,14 @@ import com.badlogic.gdx.math.Vector2;
 import game.essentials.Animation;
 import game.essentials.Hitbox;
 import game.essentials.Image2D;
+import game.essentials.SoundEmitter;
 import game.events.CloneEvent;
 import game.events.Event;
 
 public class Entity{
 
 	public final Rectangle bounds;
+	public final SoundEmitter sounds;
 	public String id;
 	public float alpha, scaleX, scaleY, offsetX, offsetY;
 	public boolean flipX, flipY;
@@ -38,16 +40,16 @@ public class Entity{
 	
 	public Entity(){
 		bounds = new Rectangle();
+		sounds = new SoundEmitter(this);
 		alpha = scaleX = scaleY = offsetX = offsetY = 1;
 		events = new ArrayList<>();
 		deleteEvents = new ArrayList<>();
 		badge = MathUtils.random(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	
-	public Entity(Entity src, float x, float y){
+	public Entity(Entity src){
 		this();
 		copyData(src);
-		move(x, y);
 		if(src.cloneEvent != null)
 			src.cloneEvent.handleClonded(this);
 	}
@@ -72,9 +74,11 @@ public class Entity{
 		return image;
 	}
 	
-	public void move(float x, float y){
+	public Entity move(float x, float y){
 		bounds.x = x;
 		bounds.y = y;
+		
+		return this;
 	}
 	
 	public void init() {}
@@ -242,11 +246,15 @@ public class Entity{
 		return bounds.y + bounds.height / 2;
 	}
 	
+	public float dist(Entity entity){
+		return (float) Collisions.distance(x(), y(), entity.x(), entity.y());
+	}
+	
 	public Image2D nextImage(){
 		return visible && image != null ? image.getObject() : null;
 	}
 	
-	public boolean cloneOf(Entity parent){
+	public boolean isCloneOf(Entity parent){
 		return parent.id == id;
 	}
 	
@@ -272,6 +280,10 @@ public class Entity{
 		flipY = src.flipY;
 		scaleX = src.scaleX;
 		scaleY = src.scaleY;
+		sounds.maxDistance = src.sounds.maxDistance;
+		sounds.maxVolume = src.sounds.maxVolume;
+		sounds.power = src.sounds.power;
+		sounds.useFalloff = src.sounds.useFalloff;
 		if(src.image != null)
 			image = src.image.getClone();
 		if(src.poly != null)
@@ -279,9 +291,7 @@ public class Entity{
 	}
 	
 	void runEvents(){
-		for(Event event : deleteEvents)
-			events.remove(event);
-		
+		events.removeAll(deleteEvents);
 		deleteEvents.clear();
 
 		for(Event event : events)

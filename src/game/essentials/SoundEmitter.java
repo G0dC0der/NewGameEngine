@@ -3,28 +3,37 @@ package game.essentials;
 import game.core.Collisions;
 import game.core.Entity;
 
-public interface SoundEmitter{
+public class SoundEmitter{
 
-	float getMaxVolume();
+	public float power, maxDistance, maxVolume;
+	public boolean useFalloff;
+	private final Entity emitter;
 	
-	void setMaxVolume(float maxVolume);
+	public SoundEmitter(Entity emitter){
+		this.emitter = emitter;
+		power = 20;
+		maxDistance = 700;
+		maxVolume = 1.0f;
+	}
 	
-	float getMaxDistance();
+	public float calc(){
+		if(!useFalloff)
+			return maxVolume;
+
+		return calc(Collisions.findClosest(emitter, emitter.getLevel().getSoundListeners()));
+	}
 	
-	void setMaxDistance(float maxDistance);
+	public float calc(Entity listener){
+		return calc(listener.x(), listener.y());
+	}
 	
-	float getPower();
-	
-	void setPower(float power);
-	
-	float x();
-	
-	float y();
-	
-	default float calc(Entity listener){
-		double distance = Collisions.distance(x(), y(), listener.centerX(), listener.centerY());
-		float candidate = (float) (getPower() * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(getMaxDistance())), 0));
+	public float calc(float listenerX, float listenerY){
+		if(!useFalloff)
+			return maxVolume;
 		
-		return Math.min(candidate, getMaxVolume());
+		double distance = Collisions.distance(emitter.x(), emitter.y(), listenerX, listenerY);
+		float candidate = (float) (power * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(maxDistance)), 0));
+		
+		return Math.min(candidate, maxVolume);
 	}
 }

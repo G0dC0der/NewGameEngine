@@ -11,10 +11,9 @@ public class Particle extends MobileEntity{
 	
 	public Particle(){}
 	
-	public Particle(Particle mother, float x, float y){
-		this.introSound = mother.introSound;
-		copyData(mother);
-		move(x,y);
+	public Particle(Particle src){
+		this.introSound = src.introSound;
+		copyData(src);
 	}
 	
 	public void setIntroSound(Sound introSound){
@@ -25,7 +24,7 @@ public class Particle extends MobileEntity{
 	public void logics() {
 		if(!soundPlayed && introSound != null){
 			soundPlayed = true;
-			introSound.play();//TODO: Calc volume
+			introSound.play(sounds.calc());
 		}
 		
 		if(!isVisible() || getImage().getIndex() >= getImage().getArray().length - 2)

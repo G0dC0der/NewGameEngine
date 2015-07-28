@@ -45,11 +45,13 @@ public class Collectable extends MobileEntity{
 				if(collectEvent != null)
 					collectEvent.eventHandling();
 				if(collectSound != null)
-					collectSound.play();//TODO: Calculate volume
+					collectSound.play(sounds.calc());
 				if(collectImage != null)
-					getLevel().add(new Particle(collectImage, x(),y()));
+					getLevel().add(new Particle(collectImage).move(x(), y()));
 				if(disposeCollected)
 					getLevel().discard(this);
+				
+				break;
 			}
 		}
 	}

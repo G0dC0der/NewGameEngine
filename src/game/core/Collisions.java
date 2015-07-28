@@ -1,5 +1,8 @@
 package game.core;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 
@@ -212,6 +215,39 @@ public class Collisions {
 	
 	public static double distance(float x1, float y1, float x2, float y2){
 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+	}
+	
+	public static double distance(Entity e1, Entity e2){
+		return distance(e1.x(), e1.y(), e2.x(), e2.y());
+	}
+	
+	public static Entity findClosest(Entity watcher, Entity... targets){
+		return findClosest(watcher, Arrays.asList(targets));
+	}
+	
+	public static Entity findClosest(Entity watcher, List<? extends Entity> targets){
+		if(targets.size() <= 0)
+			throw new IllegalArgumentException("The target list is empty.");
+		
+		if(targets.size() == 1)
+			return targets.get(0);
+		
+		int closestIndex  = -1; 
+		double closestLength = 0;
+		
+		for (int i = 0; i < targets.size(); i++){				
+			double distance = distance(watcher, targets.get(0));
+			
+			if (closestLength == 0){
+				closestLength = distance;
+				closestIndex = i;
+			}
+			if (distance < closestLength){
+				closestLength = distance;
+				closestIndex = i;
+			}
+		}
+		return targets.get(closestIndex);
 	}
 	
 	private static void addVectors2D(Vector2 v1, Vector2 v2){
