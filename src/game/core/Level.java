@@ -164,7 +164,6 @@ public abstract class Level {
 				wrapper.getLevel().discard(wrapper);
 			}
 		});
-		
 		add(wrapper);
 		
 		return wrapper;

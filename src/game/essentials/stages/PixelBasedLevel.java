@@ -3,6 +3,7 @@ package game.essentials.stages;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
 
@@ -25,6 +26,63 @@ public abstract class PixelBasedLevel extends Level{
 	private static final byte CUSTOM_9 = 12;
 	private static final byte CUSTOM_10 = 13;
 	
+	/**
+	 * Maps to Tile.HOLLOW. RGB:125,125,125.
+	 */
+	public static final Color GRAY 	  	  = Color.valueOf("7d7d7dff");
+	/**
+	 * Maps to Tile.SOLID. RGB:90,90,90
+	 */
+	public static final Color DARK_GRAY   = Color.valueOf("5a5a5aff");
+	/**
+	 * Maps to Tile.GOAL. RGB:255,0,0
+	 */
+	public static final Color RED		  = Color.valueOf("ff0000ff");
+	/**
+	 * Maps to Tile.LETHAL. RGB:255,255,0
+	 */
+	public static final Color YELLOW      = Color.valueOf("ffff00ff");
+	/**
+	 * Maps to Tile.CUSTOM_1. RGB:0,255,0
+	 */
+	public static final Color GREEN_1	  = Color.valueOf("00ff00ff");
+	/**
+	 * Maps to Tile.CUSTOM_2. RGB:0,220,0
+	 */
+	public static final Color GREEN_2	  = Color.valueOf("00dc00ff");
+	/**
+	 * Maps to Tile.CUSTOM_3. RGB:0,190,0
+	 */
+	public static final Color GREEN_3	  = Color.valueOf("00be00ff");
+	/**
+	 * Maps to Tile.CUSTOM_4. RGB:0,160,0
+	 */
+	public static final Color GREEN_4	  = Color.valueOf("00a000ff");
+	/**
+	 * Maps to Tile.CUSTOM_5. RGB:0,130,0
+	 */
+	public static final Color GREEN_5	  = Color.valueOf("008200ff");
+	/**
+	 * Maps to Tile.CUSTOM_6. RGB:0,100,0
+	 */
+	public static final Color GREEN_6	  = Color.valueOf("006400ff");
+	/**
+	 * Maps to Tile.CUSTOM_7. RGB:0,70,0
+	 */
+	public static final Color GREEN_7	  = Color.valueOf("004600ff");
+	/**
+	 * Maps to Tile.CUSTOM_8. RGB:0,40,0
+	 */
+	public static final Color GREEN_8	  = Color.valueOf("002800ff");
+	/**
+	 * Maps to Tile.CUSTOM_9. RGB:0,10,0
+	 */
+	public static final Color GREEN_9	  = Color.valueOf("000a00ff");
+	/**
+	 * Maps to Tile.CUSTOM_10. RGB:0,0,0
+	 */
+	public static final Color GREEN_10	  = Color.valueOf("000000ff");
+	
 	private byte[][] stageData;
 	private Map<Vector2, Byte> deforms; 
 	
@@ -33,31 +91,69 @@ public abstract class PixelBasedLevel extends Level{
 	}
 	
 	public final void generateData(Pixmap map){
+		stageData = new byte[map.getHeight()][map.getWidth()];
 		
+		for (int i = 0; i < map.getHeight(); i++){
+			for (int j = 0; j < map.getWidth(); j++)
+			{
+				Color c = new Color(map.getPixel(j, i));
+				
+				if (c.equals(GRAY))
+					stageData[i][j] = HOLLOW;
+				else if (c.equals(DARK_GRAY))
+					stageData[i][j] = SOLID;
+				else if (c.equals(RED))
+					stageData[i][j] = GOAL;
+				else if (c.equals(YELLOW))
+					stageData[i][j] = LETHAL;
+				else if (c.equals(GREEN_1))
+					stageData[i][j] = CUSTOM_1;
+				else if (c.equals(GREEN_2))
+					stageData[i][j] = CUSTOM_2;
+				else if (c.equals(GREEN_3))
+					stageData[i][j] = CUSTOM_3;
+				else if (c.equals(GREEN_4))
+					stageData[i][j] = CUSTOM_4;
+				else if (c.equals(GREEN_5))
+					stageData[i][j] = CUSTOM_5;
+				else if (c.equals(GREEN_6))
+					stageData[i][j] = CUSTOM_6;
+				else if (c.equals(GREEN_7))
+					stageData[i][j] = CUSTOM_7;
+				else if (c.equals(GREEN_8))
+					stageData[i][j] = CUSTOM_8;
+				else if (c.equals(GREEN_9))
+					stageData[i][j] = CUSTOM_9;
+				else if (c.equals(GREEN_10))
+					stageData[i][j] = CUSTOM_10;
+				else
+					stageData[i][j] = HOLLOW;
+			}
+		}
 	}
 	
 	
 	@Override
 	public boolean isHollow(int x, int y) {
-		return tileAt(x,y) == Tile.HOLLOW;
+		return tileAt(y,x) == Tile.HOLLOW;
 	}
 	
 	@Override
 	public boolean isSolid(int x, int y) {
-		return tileAt(x,y) == Tile.SOLID;
+		return tileAt(y,x) == Tile.SOLID;
 	}
 	
 	@Override
 	public Tile tileAt(int x, int y) {
 		Byte tile = deforms.get(new Vector2(x,y));
 		if(tile != null)
-			return map(tile);
+			return mapToTile(tile);
 		
-		return map(stageData[x][y]);
+		return mapToTile(stageData[y][x]);
 	}
 	
 	public void deform(int x, int y, Tile tile){
-		deforms.put(new Vector2(x,y), map(tile));
+		deforms.put(new Vector2(x,y), mapToByte(tile));
 	}
 	
 	public void restoreShape(){
@@ -74,7 +170,7 @@ public abstract class PixelBasedLevel extends Level{
 		return stageData.length;
 	}
 	
-	private static byte map(Tile tile){
+	private static byte mapToByte(Tile tile){
 		switch(tile){
 			case HOLLOW:
 				return HOLLOW;
@@ -109,7 +205,7 @@ public abstract class PixelBasedLevel extends Level{
 		}
 	}
 	
-	private static Tile map(byte tile){
+	private static Tile mapToTile(byte tile){
 		switch(tile){
 			case HOLLOW:
 				return Tile.HOLLOW;

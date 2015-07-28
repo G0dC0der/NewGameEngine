@@ -168,6 +168,20 @@ public class Factory {
 		};
 	}
 	
+	public static TileEvent completable(PlayableEntity entity){
+		return (tile)->{
+			if(tile == Tile.GOAL)
+				entity.setState(Vitality.COMPLETED);
+		};
+	}
+	
+	public static TileEvent hurtable(PlayableEntity entity, int damage){
+		return (tile)->{
+			if(tile == Tile.LETHAL)
+				entity.touch(damage);
+		};
+	}
+	
 	public static Event hitMain(Entity enemy, PlayableEntity play, int hp){
 		return ()->{
 			if(enemy.collidesWith(play))

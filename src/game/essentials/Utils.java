@@ -1,6 +1,7 @@
 package game.essentials;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 
 import game.core.Entity;
 import game.events.Event;
@@ -32,5 +33,13 @@ public class Utils {
 		entity.id = "WRAPPER";
 		
 		return entity;
+	}
+	
+	public static <T> T getRandomElement(T[] array)
+	{
+		if(array.length == 0)
+			return null;
+		
+		return array[MathUtils.random(array.length)];
 	}
 }

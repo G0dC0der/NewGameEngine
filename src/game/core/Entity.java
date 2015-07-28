@@ -246,8 +246,30 @@ public class Entity{
 		return bounds.y + bounds.height / 2;
 	}
 	
+	public Hitbox getHitbox() {
+		return hitbox;
+	}
+
+	public void setHitbox(Hitbox hitbox) {
+		this.hitbox = hitbox;
+	}
+
 	public float dist(Entity entity){
 		return (float) Collisions.distance(x(), y(), entity.x(), entity.y());
+	}
+	
+	public void expand(){
+		bounds.x--;
+		bounds.y--;
+		bounds.width += 2;
+		bounds.height += 2;
+	}
+	
+	public void contract(){
+		bounds.x++;
+		bounds.y++;
+		bounds.width -= 2;
+		bounds.height -= 2;
 	}
 	
 	public Image2D nextImage(){
