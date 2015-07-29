@@ -94,8 +94,7 @@ public abstract class PixelBasedLevel extends Level{
 		stageData = new byte[map.getHeight()][map.getWidth()];
 		
 		for (int i = 0; i < map.getHeight(); i++){
-			for (int j = 0; j < map.getWidth(); j++)
-			{
+			for (int j = 0; j < map.getWidth(); j++){
 				Color c = new Color(map.getPixel(j, i));
 				
 				if (c.equals(GRAY))

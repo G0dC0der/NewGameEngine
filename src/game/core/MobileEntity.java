@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import game.core.Level.Tile;
+import game.essentials.Direction;
 import game.events.TileEvent;
 
 public class MobileEntity extends Entity{
@@ -14,6 +15,7 @@ public class MobileEntity extends Entity{
 	List<TileEvent> tileEvents;
 	
 	private float moveSpeed;
+	private boolean frozen;
 	private Set<Entity> obstacles;
 	
 	public MobileEntity(){
@@ -30,6 +32,18 @@ public class MobileEntity extends Entity{
 
 	public void setMoveSpeed(float moveSpeed) {
 		this.moveSpeed = moveSpeed;
+	}
+	
+	public void freeze(){
+		frozen = true;
+	}
+	
+	public void unfreeze(){
+		frozen = false;
+	}
+	
+	public boolean isFrozen(){
+		return frozen;
 	}
 
 	public void moveToward(float targetX, float targetY){
@@ -48,6 +62,11 @@ public class MobileEntity extends Entity{
 
 	public void stepBack(){
 		move(prevX,prevY);
+	}
+	
+	public void forgetPast(){
+		prevX = bounds.x;
+		prevY = bounds.y;
 	}
 	
 	public float prevX(){
@@ -110,6 +129,34 @@ public class MobileEntity extends Entity{
 		return false;
 	}
 	
+	public void face(Direction dir){ //TODO:TEST! Complete
+		switch(dir){
+		case N:
+			setRotation(-90);
+			flipY = false;
+			break;
+		case NE:
+			setRotation(-45);
+			flipX = flipY = false;
+			break;
+		case E:
+			setRotation(0);
+			flipX = flipY = false;
+			break;
+		case SE:
+			setRotation(45);
+			flipX = flipY = false;
+			break;
+		case S:
+			setRotation(90);
+			flipY = false;
+		case SW:
+			setRotation(90 + 45);
+			flipX = true;
+			flipY = false;
+		}
+	}
+	
 	public boolean occupiedAt(float targetX, float targetY){
 		float 	realX = x(),
 				realY = y();
@@ -136,8 +183,7 @@ public class MobileEntity extends Entity{
 		return false;
 	}
 	
-	public Set<Tile> getOccupyingCells()
-	{
+	public Set<Tile> getOccupyingCells(){
 		Level l = getLevel();
 		Set<Tile> cells = new HashSet<>();
 		
@@ -158,8 +204,7 @@ public class MobileEntity extends Entity{
 		return cells;
 	}
 	
-	public void adjust(MobileEntity target, boolean harsh)
-	{
+	public void adjust(MobileEntity target, boolean harsh){
 		float nextX = target.x() + x() - prevX;
 		float nextY = target.y() + y() - prevY;
 		
@@ -170,8 +215,7 @@ public class MobileEntity extends Entity{
 			collisionRespone(target);
 	}
 	
-	public void collisionRespone(MobileEntity target)
-	{
+	public void collisionRespone(MobileEntity target){
 //		if(collidesWithMultiple(target) == null)
 //			return;
 		
@@ -181,15 +225,12 @@ public class MobileEntity extends Entity{
         double overX = ((target.width()  + width() ) /  2.0) - Math.abs((target.x() + target.width()  / 2) - centerX);
         double overY = ((target.height() + height()) /  2.0) - Math.abs((target.y() + target.height() / 2) - centerY);
        
-        if(overY > overX)
-        {
+        if(overY > overX){
             if(target.x() > centerX)
             	target.bounds.x += overX;
             else
             	target.bounds.x -= overX;
-        }
-        else
-        {
+        } else{
         	if(target.y() > centerY)
         		target.bounds.y += overY;
         	else

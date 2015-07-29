@@ -5,6 +5,9 @@ import java.io.IOException;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+
+import game.core.Collisions;
 
 public class Image2D extends Texture{
 	
@@ -26,6 +29,14 @@ public class Image2D extends Texture{
 	
 	public boolean hasPixelData(){
 		return pixelData != null;
+	}
+	
+	public void inheritData(Image2D other){
+		pixelData = other.pixelData;
+	}
+	
+	public void clearData(){
+		pixelData = null;
 	}
 	
 	public static Image2D[] loadAnimation(FileHandle directory) throws IOException{
@@ -51,8 +62,7 @@ public class Image2D extends Texture{
 		pixelData = new int[img.getWidth()][img.getHeight()];
 		
 		for (int x = 0; x < img.getWidth(); x++){
-			for (int y = 0; y < img.getHeight(); y++)
-			{
+			for (int y = 0; y < img.getHeight(); y++){
 				int value = img.getPixel(x, y);
 				
 				if((value & 0x000000ff) / 255f == 0.0f)
@@ -61,7 +71,6 @@ public class Image2D extends Texture{
 				pixelData[x][y] = value;
 			}
 		}
-		
 		img.dispose();
 	}
 }

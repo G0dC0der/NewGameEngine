@@ -176,15 +176,9 @@ public class Entity{
 		} else if(hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.CIRCLE){
 			return Collisions.circleVsCircle(this, entity);
 		} else if(hitbox == Hitbox.POLYGON || entity.hitbox == Hitbox.POLYGON){
-			if(poly == null || entity.poly == null)
-				throw new RuntimeException("Both subjects must have a polygon in order to perform a collision test!");
-			
-			return false;//TODO:
+			return Collisions.polygonsCollide(this, entity);
 		} else if(hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL){
-			if(rotated1 || rotated2)
-				throw new RuntimeException("Rotated elements with pixel perfect hitbox is not supported for collision detection.");
-			
-			return Collisions.pixelPerfect(this, entity);
+			return Collisions.rectanglesCollide(this, entity) && Collisions.pixelPerfect(this, entity);
 		}
 		
 		throw new IllegalStateException("No proper collision handling methods found.");
