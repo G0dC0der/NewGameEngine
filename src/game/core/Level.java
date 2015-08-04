@@ -52,6 +52,7 @@ public abstract class Level {
 		awatingObjects = new LinkedList<>();
 		deleteObjects = new LinkedList<>();
 		mainCharacters = new ArrayList<>();
+		soundListeners = new ArrayList<>();
 		gameObjects = new LinkedList<>();
 	}
 	
@@ -208,7 +209,6 @@ public abstract class Level {
 	public List<? extends Entity> getSoundListeners(){
 		return soundListeners.isEmpty() ? getNonDeadMainCharacters() : soundListeners;
 	}
-	
 	
 	void gameLoop(){
 		insertDelete();

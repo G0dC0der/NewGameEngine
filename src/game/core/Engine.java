@@ -152,6 +152,10 @@ public class Engine{
 		camera.update();
 	}
 	
+	public OrthographicCamera getCamera(){
+		return camera;
+	}
+	
 	public void retry(){
 		retry(level.safeRestart());
 	}
@@ -161,6 +165,8 @@ public class Engine{
 			throw new RuntimeException("Can not retry a game that hasn't ben initialized yet.");
 		if(fromCheckpoint && getGameState() == GameState.SUCCESS)
 			throw new RuntimeException("Can not restart a finished game from checkpoint.");
+		if(getGameState() == GameState.DISPOSED)
+			throw new RuntimeException("Can not restart if the resources are disposed.");
 		
 		restart(fromCheckpoint);
 	}
@@ -251,7 +257,7 @@ public class Engine{
 	private void progress(){
 		statusControll();
 		
-		if(getGameState() == GameState.LOST || getGameState() == GameState.SUCCESS && !clock.isSuspended()){
+		if((lost() || completed()) && !clock.isSuspended()){
 			clock.suspend();
 		}
 		
@@ -382,6 +388,22 @@ public class Engine{
 				return buttonSession.next();
 		
 		throw new RuntimeException("No replay found for the entity: " + play.id);
+	}
+	
+	boolean lost(){
+		return getGameState() == GameState.LOST;
+	}
+	
+	boolean completed(){
+		return getGameState() == GameState.SUCCESS;
+	}
+	
+	boolean paused(){
+		return getGameState() == GameState.PAUSED;
+	}
+	
+	boolean active(){
+		return getGameState() == GameState.ACTIVE;
 	}
 	
 	private void finalizeReplay(){

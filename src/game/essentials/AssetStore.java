@@ -1,5 +1,7 @@
 package game.essentials;
 
+import game.lang.IO;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -17,6 +19,10 @@ public class AssetStore {
 	
 	public void addAsset(String key, Object obj){
 		stuff.put(key, obj);
+	}
+	
+	public void addObject(FileHandle path) throws ClassNotFoundException, IOException{
+		stuff.put(stripString(path.toString()), IO.importObject(path.toString()));
 	}
 	
 	public void loadImage(FileHandle path){
@@ -45,10 +51,6 @@ public class AssetStore {
 	
 	public void loadMusic(FileHandle path){
 		stuff.put(stripString(path.toString()), Gdx.audio.newMusic(path));
-	}
-	
-	public void loadObject(FileHandle path){
-		
 	}
 	
 	public void loadContentFromDirectory(FileHandle dir){

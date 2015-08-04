@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 
 import game.essentials.Animation;
 import game.essentials.Controller;
@@ -25,6 +26,7 @@ public abstract class PlayableEntity extends MobileEntity{
 	
 	public PlayableEntity(){
 		hp = 1;
+		id = MathUtils.random() + "";
 		state = Vitality.ALIVE;
 	}
 	

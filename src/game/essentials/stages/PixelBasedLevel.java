@@ -90,43 +90,43 @@ public abstract class PixelBasedLevel extends Level{
 		deforms = new HashMap<>();
 	}
 	
-	public final void generateData(Pixmap map){
+	public void createMap(Pixmap map){
 		stageData = new byte[map.getHeight()][map.getWidth()];
 		
-		for (int i = 0; i < map.getHeight(); i++){
-			for (int j = 0; j < map.getWidth(); j++){
-				Color c = new Color(map.getPixel(j, i));
+		for (int y = 0; y < map.getHeight(); y++){
+			for (int x = 0; x < map.getWidth(); x++){
+				Color c = new Color(map.getPixel(x, y));
 				
 				if (c.equals(GRAY))
-					stageData[i][j] = HOLLOW;
+					stageData[y][x] = HOLLOW;
 				else if (c.equals(DARK_GRAY))
-					stageData[i][j] = SOLID;
+					stageData[y][x] = SOLID;
 				else if (c.equals(RED))
-					stageData[i][j] = GOAL;
+					stageData[y][x] = GOAL;
 				else if (c.equals(YELLOW))
-					stageData[i][j] = LETHAL;
+					stageData[y][x] = LETHAL;
 				else if (c.equals(GREEN_1))
-					stageData[i][j] = CUSTOM_1;
+					stageData[y][x] = CUSTOM_1;
 				else if (c.equals(GREEN_2))
-					stageData[i][j] = CUSTOM_2;
+					stageData[y][x] = CUSTOM_2;
 				else if (c.equals(GREEN_3))
-					stageData[i][j] = CUSTOM_3;
+					stageData[y][x] = CUSTOM_3;
 				else if (c.equals(GREEN_4))
-					stageData[i][j] = CUSTOM_4;
+					stageData[y][x] = CUSTOM_4;
 				else if (c.equals(GREEN_5))
-					stageData[i][j] = CUSTOM_5;
+					stageData[y][x] = CUSTOM_5;
 				else if (c.equals(GREEN_6))
-					stageData[i][j] = CUSTOM_6;
+					stageData[y][x] = CUSTOM_6;
 				else if (c.equals(GREEN_7))
-					stageData[i][j] = CUSTOM_7;
+					stageData[y][x] = CUSTOM_7;
 				else if (c.equals(GREEN_8))
-					stageData[i][j] = CUSTOM_8;
+					stageData[y][x] = CUSTOM_8;
 				else if (c.equals(GREEN_9))
-					stageData[i][j] = CUSTOM_9;
+					stageData[y][x] = CUSTOM_9;
 				else if (c.equals(GREEN_10))
-					stageData[i][j] = CUSTOM_10;
+					stageData[y][x] = CUSTOM_10;
 				else
-					stageData[i][j] = HOLLOW;
+					stageData[y][x] = HOLLOW;
 			}
 		}
 	}
@@ -151,7 +151,7 @@ public abstract class PixelBasedLevel extends Level{
 		return mapToTile(stageData[y][x]);
 	}
 	
-	public void deform(int x, int y, Tile tile){
+	public void reshape(int x, int y, Tile tile){
 		deforms.put(new Vector2(x,y), mapToByte(tile));
 	}
 	

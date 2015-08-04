@@ -218,12 +218,12 @@ public class Collisions {
 				
 				//TODO: Test this! - If this works, remove polygon
 				if(entity1.getRotation() != 0){
-					Vector2 rotated = getRotatedPoint(x1, y1, entity1.centerX(), entity1.centerY(), entity1.getRotation());
+					Vector2 rotated = rotatePoint(x1, y1, entity1.centerX(), entity1.centerY(), entity1.getRotation());
 					x1 = (int) rotated.x;
 					y1 = (int) rotated.y;
 				}
 				if(entity2.getRotation() != 0){
-					Vector2 rotated = getRotatedPoint(x2, y2, entity2.centerX(), entity2.centerY(), entity2.getRotation());
+					Vector2 rotated = rotatePoint(x2, y2, entity2.centerX(), entity2.centerY(), entity2.getRotation());
 					x2 = (int) rotated.x;
 					y2 = (int) rotated.y;
 				}
@@ -381,7 +381,7 @@ public class Collisions {
 	 * @param rotation The angle in degrees.
 	 * @return The point that contains the rotated coordinates.
 	 */
-	public static Vector2 getRotatedPoint(float x, float y, float cx, float cy, float rotation){
+	public static Vector2 rotatePoint(float x, float y, float cx, float cy, float rotation){
 		if(rotation == 0)
 			return new Vector2(x,y);
 		
