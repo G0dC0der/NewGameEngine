@@ -169,7 +169,7 @@ public abstract class PixelBasedLevel extends Level{
 		return stageData.length;
 	}
 	
-	private static byte mapToByte(Tile tile){
+	static byte mapToByte(Tile tile){
 		switch(tile){
 			case HOLLOW:
 				return HOLLOW;
@@ -204,7 +204,7 @@ public abstract class PixelBasedLevel extends Level{
 		}
 	}
 	
-	private static Tile mapToTile(byte tile){
+	static Tile mapToTile(byte tile){
 		switch(tile){
 			case HOLLOW:
 				return Tile.HOLLOW;
