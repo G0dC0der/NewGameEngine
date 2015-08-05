@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import game.essentials.GameState;
@@ -46,7 +47,15 @@ public class Engine{
 	private Map<String, Object> vars;
 	private OrthographicCamera camera, gameCamera, hudCamera;
 	
-	public Engine(Level level, Replay replay){
+	public static Engine playEngine(Level level){
+		return new Engine(level,null);
+	}
+	
+	public static Engine replayEngine(Level level, Replay replay){
+		return new Engine(level,replay);
+	}
+	
+	private Engine(Level level, Replay replay){
 		if(level == null)
 			throw new NullPointerException("The level can not be null.");
 		
@@ -158,6 +167,11 @@ public class Engine{
 	
 	public void retry(){
 		retry(level.safeRestart());
+	}
+	
+	public boolean onScreen(Entity entity){
+		Rectangle bbox = Collisions.getBoundingBox(entity);
+		return camera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2 , 0);
 	}
 	
 	public void retry(boolean fromCheckpoint){

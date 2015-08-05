@@ -14,6 +14,8 @@ public class Particle extends MobileEntity{
 	public Particle(Particle src){
 		this.introSound = src.introSound;
 		copyData(src);
+		if(src.cloneEvent != null)
+			src.cloneEvent.handleClonded(this);
 	}
 	
 	public void setIntroSound(Sound introSound){
@@ -27,7 +29,7 @@ public class Particle extends MobileEntity{
 			introSound.play(sounds.calc());
 		}
 		
-		if(!isVisible() || getImage().getIndex() >= getImage().getArray().length - 2)
+		if(!isVisible() || getImage().hasEnded())
 			getLevel().discard(this);
 	}
 }

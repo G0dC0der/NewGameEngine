@@ -43,6 +43,12 @@ public class EntityBuilder {
 		return this;
 	}
 	
+	public EntityBuilder move(float x, float y){
+		this.x = x;
+		this.y = y;
+		return this;
+	}
+	
 	public EntityBuilder y(float y){
 		this.y = y;
 		return this;

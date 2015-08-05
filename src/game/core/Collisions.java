@@ -310,7 +310,7 @@ public class Collisions {
 	 * @param entity The {@code GameObject} to calculate the bounding box on.
 	 * @return The bounding box.
 	 */
-	public static Rectangle getBoundingBox(Entity entity){
+	public static Rectangle getBoundingBox(Entity entity){ //TODO: Take scale into account.
 		if(entity.getRotation() == 0)
 			return new Rectangle(entity.x(), entity.y(), entity.width(), entity.height());
 		

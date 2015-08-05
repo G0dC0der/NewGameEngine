@@ -147,18 +147,21 @@ public class Factory {
 	public static void rotate360(Entity entity, float speed){
 		entity.getLevel().addTemp(()->{
 			entity.rotate(speed);
-		}, ()-> entity.getRotation() > 360);
-	}
-	
-	public static void follow(Entity src, Entity tail, float offsetX, float offsetY){
-		src.addEvent(()->{
-			tail.bounds.x = src.bounds.x + offsetX;
-			tail.bounds.y = src.bounds.y + offsetY;
+		}, ()-> {
+			if(entity.getRotation() > 360){
+				entity.setRotation(0);
+				return true;
+			}
+			return false;
 		});
 	}
 	
-	public static void follow(Entity src, Entity tail){
-		follow(src, tail, 0, 0);
+	public static Event follow(Entity src, Entity tail, float offsetX, float offsetY){
+		return ()-> tail.move(src.bounds.x + offsetX, src.bounds.y + offsetY);
+	}
+	
+	public static Event follow(Entity src, Entity tail){
+		return follow(src, tail, 0, 0);
 	}
 	
 	public static TileEvent crushable(PlayableEntity entity){

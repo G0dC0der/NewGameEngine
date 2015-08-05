@@ -1,5 +1,6 @@
 package game.entities;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.math.Vector2;
@@ -58,7 +59,7 @@ public class PathDrone extends MobileEntity {
 		}
 	}
 
-	private LinkedList<Waypoint> pathData;
+	private LinkedList<Waypoint> waypoints;
 	private boolean rock, skip;
 	private int dataCounter, stillCounter;
 	private boolean playEvent;
@@ -71,7 +72,7 @@ public class PathDrone extends MobileEntity {
 	 */
 	public PathDrone(float x, float y) {
 		move(x, y);
-		pathData = new LinkedList<>();
+		waypoints = new LinkedList<>();
 		dataCounter = stillCounter = 0;
 	}
 
@@ -84,7 +85,7 @@ public class PathDrone extends MobileEntity {
 
 	protected void copyData(PathDrone src) {
 		super.copyData(src);
-		pathData.addAll(src.pathData);
+		waypoints.addAll(src.waypoints);
 		skip = src.skip;
 		rock = src.rock;
 	}
@@ -99,11 +100,11 @@ public class PathDrone extends MobileEntity {
 	 * @param event The event to execute when the target has been reached.
 	 */
 	public void appendPath(float x, float y, int frames, boolean jump, Event event) {
-		pathData.add(new Waypoint(x, y, frames, jump, event));
+		waypoints.add(new Waypoint(x, y, frames, jump, event));
 	}
 
 	public void appendPath(Vector2 loc, int frames, boolean jump, Event event) {
-		pathData.add(new Waypoint(loc.x, loc.y, frames, jump, event));
+		waypoints.add(new Waypoint(loc.x, loc.y, frames, jump, event));
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class PathDrone extends MobileEntity {
 	 * @param pd The waypoint.
 	 */
 	public void appendPath(Waypoint pd) {
-		pathData.add(pd);
+		waypoints.add(pd);
 	}
 
 	/**
@@ -119,9 +120,7 @@ public class PathDrone extends MobileEntity {
 	 * @param list A list of waypoints.
 	 */
 	public void appendPath(Waypoint[] list) {
-		for (Waypoint pd : list)
-			if (pd != null)
-				pathData.add(pd);
+		waypoints.addAll(Arrays.asList(list));
 	}
 
 	/**
@@ -137,7 +136,7 @@ public class PathDrone extends MobileEntity {
 	 * Appends the current position to the waypoint list.
 	 */
 	public void appendPath() {
-		pathData.add(new Waypoint(x(), y(), 0, false, null));
+		waypoints.add(new Waypoint(x(), y(), 0, false, null));
 	}
 
 	/**
@@ -145,18 +144,18 @@ public class PathDrone extends MobileEntity {
 	 * @return The coordinate.
 	 */
 	public Vector2 getCurrentTarget() {
-		Waypoint pd = pathData.get(dataCounter >= pathData.size() ? 0 : dataCounter);
-		return new Vector2(pd.targetX, pd.targetY);
+		Waypoint wp = waypoints.get(dataCounter >= waypoints.size() ? 0 : dataCounter);
+		return new Vector2(wp.targetX, wp.targetY);
 	}
 
 	/**
 	 * Creates a clone of the current waypoint list, reverses the order and appends it to the list.
 	 */
 	public void appendReversed() {
-		int size = pathData.size();
+		int size = waypoints.size();
 		Waypoint[] reversed = new Waypoint[size];
 		for (int i = 1; i < size; i++)
-			reversed[i] = pathData.get(size - i - 1);
+			reversed[i] = waypoints.get(size - i - 1);
 
 		appendPath(reversed);
 	}
@@ -165,7 +164,7 @@ public class PathDrone extends MobileEntity {
 	 * Clears all the waypoints from this unit.
 	 */
 	public void clearData() {
-		pathData.clear();
+		waypoints.clear();
 		rollback();
 	}
 
@@ -178,33 +177,33 @@ public class PathDrone extends MobileEntity {
 
 	@Override
 	public void logics() {
-		if (!pathData.isEmpty() && getMoveSpeed() > 0 && !isFrozen()) {
-			if (dataCounter >= pathData.size())
+		if (!waypoints.isEmpty() && getMoveSpeed() > 0 && !isFrozen()) {
+			if (dataCounter >= waypoints.size())
 				dataCounter = 0;
 
-			Waypoint pd = pathData.get(dataCounter);
+			Waypoint wp = waypoints.get(dataCounter);
 
-			if (reached(pd)) {
-				if (++stillCounter > pd.frames)
+			if (reached(wp)) {
+				if (++stillCounter > wp.frames)
 					dataCounter++;
 
 				forgetPast();
 
-				bounds.x = pd.targetX;
-				bounds.y = pd.targetY;
+				bounds.x = wp.targetX;
+				bounds.y = wp.targetY;
 
-				if (playEvent && pd.event != null) {
-					pd.event.eventHandling();
+				if (playEvent && wp.event != null) {
+					wp.event.eventHandling();
 					playEvent = false;
 				}
 			} else {
 				playEvent = true;
 				stillCounter = 0;
 
-				if (pd.jump)
-					move(pd.targetX, pd.targetY);
+				if (wp.jump)
+					move(wp.targetX, wp.targetY);
 				else
-					moveToward(pd.targetX, pd.targetY);
+					moveToward(wp.targetX, wp.targetY);
 			}
 		}
 	}
