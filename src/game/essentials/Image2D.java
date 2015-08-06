@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.FileTextureData;
 
 public class Image2D extends Texture{
 	
@@ -28,18 +29,42 @@ public class Image2D extends Texture{
 		return pixelData != null;
 	}
 	
-	public void inheritData(Image2D other){
-		pixelData = other.pixelData;
+	public void sharePixelData(Image2D receiver){
+		receiver.pixelData = pixelData;
 	}
 	
 	public void clearData(){
 		pixelData = null;
 	}
 	
+	public void createPixelData(){
+		createPixelData(((FileTextureData)getTextureData()).getFileHandle());
+	}
+	
+	public void createPixelData(FileHandle file){
+		createPixelData(new Pixmap(file));
+	}
+	
+	public void createPixelData(Pixmap img){
+		pixelData = new int[img.getWidth()][img.getHeight()];
+		
+		for (int x = 0; x < img.getWidth(); x++){
+			for (int y = 0; y < img.getHeight(); y++){
+				int value = img.getPixel(x, y);
+				
+				if((value & 0x000000FF) != 0x00)
+					value = 0;
+				
+				pixelData[x][y] = value;
+			}
+		}
+		img.dispose();
+	}
+
 	public static Image2D[] loadAnimation(FileHandle directory) throws IOException{
 		return loadAnimation(directory, false);
 	}
-
+	
 	public static Image2D[] loadAnimation(FileHandle directory, boolean createPixelData) throws IOException{
 		if(!directory.isDirectory())
 			throw new IllegalArgumentException("The argument must be a directory.");
@@ -53,21 +78,9 @@ public class Image2D extends Texture{
 		return images;
 	}
 	
-	private void createPixelData(FileHandle file){
-		Pixmap img = new Pixmap(file);
-		
-		pixelData = new int[img.getWidth()][img.getHeight()];
-		
-		for (int x = 0; x < img.getWidth(); x++){
-			for (int y = 0; y < img.getHeight(); y++){
-				int value = img.getPixel(x, y);
-				
-				if((value & 0x000000ff) / 255f == 0.0f)
-					value = 0;
-				
-				pixelData[x][y] = value;
-			}
-		}
-		img.dispose();
+	public static void mergePixelData(Image2D... images){
+		int[][] first = images[0].pixelData;
+		for(int i = 1; i < images.length; i++)
+			images[i].pixelData = first;
 	}
 }

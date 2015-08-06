@@ -1,13 +1,14 @@
 package game.essentials;
 
-import game.lang.IO;
-
 import java.io.IOException;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.utils.Disposable;
+
+import game.lang.IO;
 
 public class AssetStore {
 
@@ -21,12 +22,16 @@ public class AssetStore {
 		stuff.put(key, obj);
 	}
 	
-	public void addObject(FileHandle path) throws ClassNotFoundException, IOException{
+	public void loadObject(FileHandle path) throws ClassNotFoundException, IOException{
 		stuff.put(stripString(path.toString()), IO.importObject(path.toString()));
 	}
 	
 	public void loadImage(FileHandle path){
 		loadImage(path, false);
+	}
+	
+	public void loadPixmap(FileHandle path){
+		stuff.put(stripString(path.toString()), new Pixmap(path));
 	}
 	
 	public void loadImage(FileHandle path, boolean createPixelData){
@@ -53,8 +58,39 @@ public class AssetStore {
 		stuff.put(stripString(path.toString()), Gdx.audio.newMusic(path));
 	}
 	
-	public void loadContentFromDirectory(FileHandle dir){
+	/**
+	 * Loads all the content from the given directory. For this to work, the content must follow a set of rules:
+	 * - sound files whose name contains "music" are loaded as a Music object instead of Sound
+	 * - png files whose name contains "pix" are loaded as Pixmap instead of Image2D
+	 * - other files whose name contains "non-obj" are ignored. The rest will be deserialized.
+	 * - subdirectories consist of images only. These are loaded as Image2D.
+	 */
+	public void loadContentFromDirectory(FileHandle dir) throws IOException{
+		if(!dir.isDirectory())
+			throw new IllegalArgumentException("Argument must be a directory!");
 		
+		for(FileHandle content : dir.list()){
+			String name = content.path();
+			if(name.endsWith(".png")){
+				if(name.contains("pix"))
+					loadPixmap(content);
+				else
+					loadImage(content);
+			} else if(name.endsWith(".wav") || name.endsWith(".ogg") || name.endsWith(".mp3")){
+				if(name.contains("music"))
+					loadMusic(content);
+				else
+					loadSound(content);
+			} else if(content.isDirectory()){
+				loadAnimation(content);
+			} else if(!name.contains("non-obj")){
+				try{
+					loadObject(content);
+				}catch(ClassNotFoundException e){
+					System.err.println("The following file could not be imported: " + content.toString());
+				}
+			}
+		}
 	}
 	
 	public void disposeAll(){
@@ -70,6 +106,13 @@ public class AssetStore {
 	
 	private static String stripString(String str){
 		return stripString(str, false);
+	}
+	
+	@Override
+	public String toString(){
+		StringBuilder bu = new StringBuilder();
+		stuff.forEach((key, value) -> bu.append(key).append(": ").append(value.getClass().getSimpleName()).append(System.lineSeparator()));
+		return bu.toString();
 	}
 	
 	private static String stripString(String str, boolean isDirectory){

@@ -1,18 +1,19 @@
 package game.essentials;
 
-import game.core.Entity;
-import game.events.Event;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import game.core.Entity;
+import game.events.Event;
 
 public class EntityBuilder {
 
-	protected int zIndex;
-	protected Animation<Image2D> image;
-	protected float x, y, width, height, offsetX, offsetY, alpha, rotation;
-	protected List<Event> events;
+	private int zIndex;
+	private Animation<Image2D> image;
+	private float x, y, width, height, offsetX, offsetY, alpha, rotation;
+	private List<Event> events;
 	
 	public EntityBuilder() {
 		events = new ArrayList<>();
@@ -88,9 +89,28 @@ public class EntityBuilder {
 		this.events.addAll(Arrays.asList(events));
 		return this;
 	}
-	
+
 	public Entity build(){
 		Entity entity = new Entity();
+		copyData(entity);
+		return entity;
+	}
+	
+	public <T extends Entity> T build(Class<T> clazz, Object... args) throws Exception{
+		T entity;
+		if(args.length == 0)
+			entity = clazz.newInstance();
+		else{
+			@SuppressWarnings("rawtypes")
+			Class[] clazzez = (Class[]) Arrays.stream(args).map(obj -> obj.getClass()).collect(Collectors.toList()).toArray();
+			entity = clazz.getDeclaredConstructor(clazzez).newInstance(args);
+		}
+		
+		copyData(entity);
+		return entity;
+	}
+	
+	private void copyData(Entity entity){
 		entity.bounds.x = x;
 		entity.bounds.y = y;
 		entity.bounds.width = width;
@@ -99,10 +119,10 @@ public class EntityBuilder {
 		entity.offsetY = offsetY;
 		entity.alpha = alpha;
 		entity.setRotation(rotation);
-
+		entity.zIndex(zIndex);
+		entity.setImage(image);
+		
 		for(Event event : events)
 			entity.addEvent(event);
-			
-		return entity;
 	}
 }

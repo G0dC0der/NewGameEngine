@@ -16,6 +16,7 @@ public class Collectable extends MobileEntity{
 	
 	public Collectable(float x, float y, Entity... collectors){
 		this.collectors = collectors;
+		disposeCollected = true;
 		move(x,y);
 	}
 	

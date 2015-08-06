@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -33,10 +32,11 @@ public class Entity{
 	Polygon poly;
 	
 	private Animation<Image2D> image;
+	private Entity mother;
 	private Hitbox hitbox;
 	private boolean quickCollision, visible, active;
 	private float rotation;
-	private int zIndex, badge;
+	private int zIndex;
 	
 	public Entity(){
 		bounds = new Rectangle();
@@ -44,7 +44,6 @@ public class Entity{
 		alpha = scaleX = scaleY = offsetX = offsetY = 1;
 		events = new ArrayList<>();
 		deleteEvents = new ArrayList<>();
-		badge = MathUtils.random(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	
 	public Entity(Entity src){
@@ -77,7 +76,6 @@ public class Entity{
 	public Entity move(float x, float y){
 		bounds.x = x;
 		bounds.y = y;
-		
 		return this;
 	}
 	
@@ -170,7 +168,7 @@ public class Entity{
 			Entity circle 		= hitbox == Hitbox.CIRCLE 		? this : entity;
 			
 			if(rectangle.rotation != 0 && !rectangle.quickCollision)
-				return false;//TODO
+				throw new RuntimeException("No collision method for rotated rectangle vs circle.");//TODO
 			else
 				return Collisions.circleRectangleCollide(circle, rectangle);
 		} else if(hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.CIRCLE){
@@ -271,7 +269,7 @@ public class Entity{
 	}
 	
 	public boolean isCloneOf(Entity parent){
-		return parent.id == id;
+		return mother == parent;
 	}
 	
 	public void setCloneEvent(CloneEvent cloneEvent){
@@ -279,7 +277,7 @@ public class Entity{
 	}
 	
 	protected void copyData(Entity src){
-		badge = src.badge;
+		mother = src;
 		bounds.x = src.bounds.x;
 		bounds.y = src.bounds.y;
 		bounds.width = src.bounds.width;
