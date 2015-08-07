@@ -315,6 +315,7 @@ public abstract class Level {
 				i--;
 				entry.value.level = this;
 				entry.value.engine = engine;
+				entry.value.present = true;
 				entry.value.init();
 			}
 		}
@@ -326,6 +327,7 @@ public abstract class Level {
 				gameObjects.remove(entry.value);
 				deleteObjects.remove(i);
 				i--;
+				entry.value.present = false;
 				entry.value.dispose();
 				entry.value.move(-9999, -9999);
 			}

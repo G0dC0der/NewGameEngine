@@ -193,17 +193,17 @@ public class Collisions {
 
 	/**
 	 * Performs a pixel perfect collision check.
-	 * Precondition: Rotation == 0, scaleX and scaleY == 1, offsetX and offsetY == 0
+	 * Precondition: Rotation == 0, scaleX and scaleY == 1, offsetX and offsetY == 0, bounds.width and height are equal to the size of the image.
 	 * @return True if the two entities are colliding.
 	 */
 	public static boolean pixelPerfect(Entity entity1, Entity entity2){	
 		Image2D image1 = entity1.getImage().getCurrentObject();
 		Image2D image2 = entity2.getImage().getCurrentObject();
 				
-		float width1  = image1.getWidth();
-		float width2  = image2.getWidth();
-		float height1 = image1.getHeight();
-		float height2 = image2.getHeight();
+		int width1  = image1.getWidth();
+		int width2  = image2.getWidth();
+		int height1 = image1.getHeight();
+		int height2 = image2.getHeight();
 		int top    = (int) Math.max(entity1.bounds.y, entity2.bounds.y);
 		int bottom = (int) Math.min(entity1.bounds.y + height1, entity2.bounds.y + height2);
 		int left   = (int) Math.max(entity1.bounds.x, entity2.bounds.x);
@@ -211,10 +211,10 @@ public class Collisions {
 		
 		for (int y = top; y < bottom; y++){
 			for (int x = left; x < right; x++){
-				int x1 = (int) ((entity1.flipX) ? width1  - (x - entity1.bounds.x) - 1 : x - entity1.bounds.x);
-				int y1 = (int) ((entity1.flipY) ? height1 - (y - entity1.bounds.y) - 1 : y - entity1.bounds.y);
-				int x2 = (int) ((entity2.flipX) ? width2  - (x - entity2.bounds.x) - 1 : x - entity2.bounds.x);
-				int y2 = (int) ((entity2.flipY) ? height2 - (y - entity2.bounds.y) - 1 : y - entity2.bounds.y);
+				int x1 = (int) (entity1.flipX ? width1  - (x - entity1.bounds.x) - 1 : x - entity1.bounds.x); //Why are there -1 on these? 
+				int y1 = (int) (entity1.flipY ? height1 - (y - entity1.bounds.y) - 1 : y - entity1.bounds.y);
+				int x2 = (int) (entity2.flipX ? width2  - (x - entity2.bounds.x) - 1 : x - entity2.bounds.x);
+				int y2 = (int) (entity2.flipY ? height2 - (y - entity2.bounds.y) - 1 : y - entity2.bounds.y);
 				
 				//TODO: Test this! - If this works, remove polygon
 				if(entity1.getRotation() != 0){

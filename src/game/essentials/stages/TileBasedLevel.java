@@ -1,10 +1,10 @@
 package game.essentials.stages;
 
 
-import game.core.Entity;
-import game.core.Level;
+import java.awt.Dimension;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,6 +15,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+
+import game.core.Entity;
+import game.core.Level;
 
 public abstract class TileBasedLevel extends Level{
 	
@@ -23,6 +27,7 @@ public abstract class TileBasedLevel extends Level{
 	private TiledMap map;
 	private TiledMapRenderer tiledMapRenderer;
 	private TiledMapTileLayer layer;
+	private OrthographicCamera camera;
 	private MapProperties props;
 	private byte[][] tiledata;
 	
@@ -39,6 +44,9 @@ public abstract class TileBasedLevel extends Level{
 		tileHeight = props.get("tileheight", Integer.class);
 		width = tilesX * tileWidth;
 		height = tilesY * tileHeight;
+		Dimension size = getEngine().getScreenSize();
+		camera = new OrthographicCamera();
+		camera.setToOrtho(true, size.width, size.height);
 		encode();
 	}
 	
@@ -97,7 +105,15 @@ public abstract class TileBasedLevel extends Level{
 					newColor.a = alpha;
 
 					batch.setColor(newColor);
-					tiledMapRenderer.setView(getEngine().getCamera());
+					
+					Vector2 trans = getEngine().getTranslation();
+					camera.position.x = trans.x;
+					camera.position.y = trans.y;
+					camera.zoom = getEngine().getZoom();
+					//TODO: Handle the damn rotation value
+					camera.update();
+					
+					tiledMapRenderer.setView(camera);
 					tiledMapRenderer.render();
 					
 					batch.setColor(color);

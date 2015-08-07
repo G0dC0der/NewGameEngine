@@ -30,9 +30,10 @@ public class Entity{
 	Engine engine;
 	List<Event> events, deleteEvents;
 	Polygon poly;
+	boolean present;
 	
 	private Animation<Image2D> image;
-	private Entity mother;
+	private Entity originator;
 	private Hitbox hitbox;
 	private boolean quickCollision, visible, active;
 	private float rotation;
@@ -87,27 +88,9 @@ public class Entity{
 		if(!visible || alpha == 0)
 			return;
 		
-		Vector2 center = getCenterCord();
 		Color defColor = batch.getColor();
-		Color newColor = new Color(defColor);
-		newColor.a = alpha;
-		
-		batch.setColor(newColor);
-		batch.draw(nextImage(), bounds.x + offsetX, 
-								bounds.y + offsetY, 
-								center.x, 
-								center.y, 
-								bounds.width, 
-								bounds.height, 
-								scaleX, 
-								scaleY, 
-								rotation, 
-								0, 
-								0, 
-								(int)bounds.width, 
-								(int)bounds.height,
-								flipX, 
-								flipY);
+		batch.setColor(new Color(defColor.r, defColor.g, defColor.b, alpha));
+		basicRender(batch);
 		batch.setColor(defColor);
 	}
 	
@@ -115,7 +98,7 @@ public class Entity{
 		return engine;
 	}
 	
-	public void zIndex(int zIndex){
+	public final void zIndex(int zIndex){
 		this.zIndex = zIndex;
 		level.sort = true;
 	}
@@ -168,7 +151,7 @@ public class Entity{
 			Entity circle 		= hitbox == Hitbox.CIRCLE 		? this : entity;
 			
 			if(rectangle.rotation != 0 && !rectangle.quickCollision)
-				throw new RuntimeException("No collision method for rotated rectangle vs circle.");//TODO
+				throw new RuntimeException("No collision method for rotated rectangle vs circle.");
 			else
 				return Collisions.circleRectangleCollide(circle, rectangle);
 		} else if(hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.CIRCLE){
@@ -264,12 +247,16 @@ public class Entity{
 		bounds.height -= 2;
 	}
 	
+	public boolean present(){
+		return present;
+	}
+	
 	public Image2D nextImage(){
 		return visible && image != null ? image.getObject() : null;
 	}
 	
-	public boolean isCloneOf(Entity parent){
-		return mother == parent;
+	public boolean isCloneOf(Entity originator){
+		return this.originator == originator;
 	}
 	
 	public void setCloneEvent(CloneEvent cloneEvent){
@@ -277,7 +264,7 @@ public class Entity{
 	}
 	
 	protected void copyData(Entity src){
-		mother = src;
+		originator = src;
 		bounds.x = src.bounds.x;
 		bounds.y = src.bounds.y;
 		bounds.width = src.bounds.width;
@@ -302,6 +289,25 @@ public class Entity{
 			image = src.image.getClone();
 		if(src.poly != null)
 			poly = new Polygon(src.poly.getTransformedVertices());
+	}
+	
+	protected void basicRender(SpriteBatch batch){
+		batch.draw(	nextImage(), 
+					bounds.x + offsetX, 
+					bounds.y + offsetY, 
+					centerX(), 
+					centerY(), 
+					bounds.width, 
+					bounds.height, 
+					scaleX, 
+					scaleY, 
+					rotation, 
+					0, 
+					0, 
+					(int)bounds.width, 
+					(int)bounds.height,
+					flipX, 
+					flipY);
 	}
 	
 	void runEvents(){

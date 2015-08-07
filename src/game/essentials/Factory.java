@@ -102,7 +102,7 @@ public class Factory {
 	/**
 	 * Rotate the given unit towards its given direction.
 	 */
-	public static Event rotateTowards(MobileEntity walker){
+	public static Event faceTarget(MobileEntity walker){
 		return ()->{
 			Vector2 center = walker.getCenterCord();
 			walker.setRotation((float)Collisions.getAngle(walker.prevX(), walker.prevY(), center.x, center.y));
@@ -112,7 +112,7 @@ public class Factory {
 	/**
 	 * Rotate the given unit towards its given direction, flipping it horizontally when necessary.
 	 */
-	public static Event rotateSmartTowards(MobileEntity walker){	//TODO: Test it
+	public static Event smartFaceTarget(MobileEntity walker){	//TODO: Test it
 		return ()->{
 			
 			Vector2 center = walker.getCenterCord();
@@ -132,7 +132,7 @@ public class Factory {
 		};
 	}
 	
-	public static Event flip(MobileEntity entity){
+	public static Event simpleFaceTarget(MobileEntity entity){
 		return ()-> {
 			float diffX = entity.x() - entity.prevX();
 			float diffY = entity.y() - entity.prevY();

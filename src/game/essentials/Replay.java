@@ -14,6 +14,7 @@ public class Replay {
 	public ZonedDateTime date;
 	public Serializable meta;
 	public List<KeystrokesSession> data;
+	public GameState result;
 	
 	public Replay(){
 		data = new LinkedList<>();

@@ -10,11 +10,11 @@ import com.badlogic.gdx.utils.Disposable;
 
 import game.lang.IO;
 
-public class AssetStore {
+public class ResourceBag {
 
 	private HashMap<String, Object> stuff;
 	
-	public AssetStore(){
+	public ResourceBag(){
 		stuff = new HashMap<>();
 	}
 	

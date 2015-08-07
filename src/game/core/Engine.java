@@ -114,20 +114,23 @@ public class Engine{
 	}
 	
 	public void setRotation(float rotation){
-		vars.put("rotation", rotation);
+		float oldrot = (float) vars.get("oldrot");
+		camera.rotate(-oldrot);
+		
+		camera.rotate(rotation);
+		vars.put("oldrot", rotation);
 	}
 	
 	public void setZoom(float zoom){
-		vars.put("zoom", zoom);
+		camera.zoom = zoom;
 	}
 	
 	public float getZoom(){
-		return (float) vars.get("zoom");
+		return camera.zoom;
 	}
 	
 	public void translate(float tx, float ty){
-		vars.put("tx", tx);
-		vars.put("ty", ty);
+		camera.position.set(tx, ty, 0);
 	}
 	
 	public void flipY(boolean flip){
@@ -135,7 +138,7 @@ public class Engine{
 	}
 	
 	public Vector2 getTranslation(){
-		return new Vector2((float)vars.get("tx"), (float)vars.get("ty"));
+		return new Vector2(camera.position.x, camera.position.y);
 	}
 	
 	public Vector2 getPreviousTranslation(){
@@ -156,13 +159,8 @@ public class Engine{
 		batch.setProjectionMatrix(camera.combined);
 	}
 	
-	public void updateCamera(){
-		adjustLens(camera);
-		camera.update();
-	}
-	
-	public OrthographicCamera getCamera(){
-		return camera;
+	public void updateGameCamera(){
+		gameCamera.update();
 	}
 	
 	public void retry(){
@@ -283,7 +281,7 @@ public class Engine{
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		updateCamera();
+		updateGameCamera();
 		gameCamera();
 		
 		batch.begin();
@@ -334,17 +332,6 @@ public class Engine{
 		
 		if(Gdx.graphics.getWidth() != windowWidth * scale || Gdx.graphics.getHeight() != windowHeight * scale)
 			Gdx.graphics.setDisplayMode((int)(windowWidth * scale), (int)(windowHeight * scale), false);
-	}
-	
-	private void adjustLens(OrthographicCamera camera){
-		float tx 		= (float) vars.get("tx");
-		float ty 		= (float) vars.get("ty");
-		float zoom 		= (float) vars.get("zoom");
-		float rotation 	= (float) vars.get("rotation");
-		
-		camera.position.set(tx,ty,0);
-		camera.rotate(rotation);
-		camera.zoom = zoom;
 	}
 	
 	private void statusControll(){
@@ -425,6 +412,7 @@ public class Engine{
 		replay.time = clock.getTime();
 		replay.levelClass = level.getClass().getName();
 		replay.playerName = playerName;
+		replay.result = getGameState();
 	}
 	
 	private void renderStatusBar(){
