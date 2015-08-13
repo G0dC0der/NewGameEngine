@@ -1,13 +1,13 @@
 package game.essentials.stages;
 
+import game.core.Level;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
-
-import game.core.Level;
 
 public abstract class PixelBasedLevel extends Level{
 	
@@ -91,42 +91,42 @@ public abstract class PixelBasedLevel extends Level{
 	}
 	
 	public void createMap(Pixmap map){
-		stageData = new byte[map.getHeight()][map.getWidth()];
+		stageData = new byte[map.getWidth()][map.getHeight()];
 		
-		for (int y = 0; y < map.getHeight(); y++){
-			for (int x = 0; x < map.getWidth(); x++){
+		for (int x = 0; x < map.getWidth(); x++){
+			for (int y = 0; y < map.getHeight(); y++){
 				Color c = new Color(map.getPixel(x, y));
 				
 				if (c.equals(GRAY))
-					stageData[y][x] = HOLLOW;
+					stageData[x][y] = HOLLOW;
 				else if (c.equals(DARK_GRAY))
-					stageData[y][x] = SOLID;
+					stageData[x][y] = SOLID;
 				else if (c.equals(RED))
-					stageData[y][x] = GOAL;
+					stageData[x][y] = GOAL;
 				else if (c.equals(YELLOW))
-					stageData[y][x] = LETHAL;
+					stageData[x][y] = LETHAL;
 				else if (c.equals(GREEN_1))
-					stageData[y][x] = CUSTOM_1;
+					stageData[x][y] = CUSTOM_1;
 				else if (c.equals(GREEN_2))
-					stageData[y][x] = CUSTOM_2;
+					stageData[x][y] = CUSTOM_2;
 				else if (c.equals(GREEN_3))
-					stageData[y][x] = CUSTOM_3;
+					stageData[x][y] = CUSTOM_3;
 				else if (c.equals(GREEN_4))
-					stageData[y][x] = CUSTOM_4;
+					stageData[x][y] = CUSTOM_4;
 				else if (c.equals(GREEN_5))
-					stageData[y][x] = CUSTOM_5;
+					stageData[x][y] = CUSTOM_5;
 				else if (c.equals(GREEN_6))
-					stageData[y][x] = CUSTOM_6;
+					stageData[x][y] = CUSTOM_6;
 				else if (c.equals(GREEN_7))
-					stageData[y][x] = CUSTOM_7;
+					stageData[x][y] = CUSTOM_7;
 				else if (c.equals(GREEN_8))
-					stageData[y][x] = CUSTOM_8;
+					stageData[x][y] = CUSTOM_8;
 				else if (c.equals(GREEN_9))
-					stageData[y][x] = CUSTOM_9;
+					stageData[x][y] = CUSTOM_9;
 				else if (c.equals(GREEN_10))
-					stageData[y][x] = CUSTOM_10;
+					stageData[x][y] = CUSTOM_10;
 				else
-					stageData[y][x] = HOLLOW;
+					throw new RuntimeException(String.format("Unknown color %s at %d:%d", c, x, y));
 			}
 		}
 	}
@@ -134,12 +134,12 @@ public abstract class PixelBasedLevel extends Level{
 	
 	@Override
 	public boolean isHollow(int x, int y) {
-		return tileAt(y,x) == Tile.HOLLOW;
+		return tileAt(x,y) == Tile.HOLLOW;
 	}
 	
 	@Override
 	public boolean isSolid(int x, int y) {
-		return tileAt(y,x) == Tile.SOLID;
+		return tileAt(x,y) == Tile.SOLID;
 	}
 	
 	@Override
@@ -148,7 +148,7 @@ public abstract class PixelBasedLevel extends Level{
 		if(tile != null)
 			return mapToTile(tile);
 		
-		return mapToTile(stageData[y][x]);
+		return outOfBounds(x,y) ? Tile.SOLID : mapToTile(stageData[x][y]);
 	}
 	
 	public void reshape(int x, int y, Tile tile){
@@ -161,12 +161,12 @@ public abstract class PixelBasedLevel extends Level{
 	
 	@Override
 	public int getWidth() {
-		return stageData[0].length;
+		return stageData.length;
 	}
 	
 	@Override
 	public int getHeight() {
-		return stageData.length;
+		return stageData[0].length;
 	}
 	
 	static byte mapToByte(Tile tile){

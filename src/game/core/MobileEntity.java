@@ -90,7 +90,7 @@ public class MobileEntity extends Entity{
 	}
 	
 	public boolean tryLeft(int steps){
-		for(int i = steps; i == 0; i--){
+		for(int i = steps; i > 0; i--){
 			if(!occupiedAt(x() - i, y())){
 				move(x() - i, y());
 				return true;
@@ -100,9 +100,9 @@ public class MobileEntity extends Entity{
 	}
 	
 	public boolean tryRight(int steps){
-		for(int i = steps; i == 0; i--){
-			if(!occupiedAt(x() + i, y())){
-				move(x() - i, y());
+		for(int i = steps; i > 0; i--){
+			if(!occupiedAt(x() + width() + i, y())){
+				move(x() + i, y());
 				return true;
 			}
 		}
@@ -110,7 +110,7 @@ public class MobileEntity extends Entity{
 	}
 	
 	public boolean tryUp(int steps){
-		for(int i = steps; i == 0; i--){
+		for(int i = steps; i > 0; i--){
 			if(!occupiedAt(x(), y() - i)){
 				move(x(), y() - i);
 				return true;
@@ -120,8 +120,8 @@ public class MobileEntity extends Entity{
 	}
 	
 	public boolean tryDown(int steps){
-		for(int i = steps; i == 0; i--){
-			if(!occupiedAt(x(), y() + i)){
+		for(int i = steps; i > 0; i--){
+			if(!occupiedAt(x(), y() + height() + i)){
 				move(x(), y() + i);
 				return true;
 			}
@@ -168,37 +168,26 @@ public class MobileEntity extends Entity{
 	}
 	
 	public boolean outOfBounds(){
-		return outOfBounds(x(), y());
-	}
-	
-	public boolean outOfBounds(float targetX, float targetY){
 		Level l = getLevel();
-
-		if(targetX >= l.getWidth() 	||
-		   targetY >= l.getHeight() || 
-		   targetX < 0 ||
-		   targetY < 0)
-			return true;
-		
-		return false;
+		return l.outOfBounds(x(), y()) || l.outOfBounds(x() + width(), y()) || l.outOfBounds(x() + width(), y() + height()) || l.outOfBounds(x(), y() + height());
 	}
 	
 	public Set<Tile> getOccupyingCells(){
 		Level l = getLevel();
 		Set<Tile> cells = new HashSet<>();
 		
-		int 	x1  = (int) x() + 1,
-				y1  = (int) y() + 1,
-				x2 = (int) (x1 + width()  - 1),
-				y2 = (int) (y1 + height() - 1);
+		int x = (int) x() + 1;
+		int y = (int) y() + 1;
+		int w = (int) width() - 1;
+		int h = (int) height() - 1;
 		
-		for(int lx = x1; lx < x2; lx++){
-			cells.add(l.tileAt(y1, lx));
-			cells.add(l.tileAt(y2, lx));
+		for(int xcord = x; xcord < x + w; xcord++){
+			cells.add(l.tileAt(xcord, y));
+			cells.add(l.tileAt(xcord, y + h));
 		}
-		for(int ly = y1; ly < y2; ly++){
-			cells.add(l.tileAt(ly, x1));
-			cells.add(l.tileAt(ly, x2));
+		for(int ycord = y; ycord < y + h; ycord++){
+			cells.add(l.tileAt(x, ycord));
+			cells.add(l.tileAt(x + w, ycord));
 		}
 		
 		return cells;
@@ -238,24 +227,12 @@ public class MobileEntity extends Entity{
         }
 	}
 	
-	protected boolean obstacleCollision(){
-		return obstacleCollision(x(), y());
-	}
-	
-	protected boolean obstacleCollision(float x, float y){
-		float realX = x();
-		float realY = y();
-		move(x,y);
-		boolean collides = false;
+	protected boolean obstacleCollision(){		
+		for(Entity obstacle : obstacles)
+			if(obstacle.isPresent() && collidesWith(obstacle))
+				return true;
 		
-		for(Entity e : obstacles)
-			if(collidesWith(e)){
-				collides = true;
-				break;
-			}
-		
-		move(realX, realY);
-		return collides;
+		return false;
 	}
 	
 	void runTileEvents(Tile tile){

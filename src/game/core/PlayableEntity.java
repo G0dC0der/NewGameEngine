@@ -1,22 +1,24 @@
 package game.core;
 
-import java.util.List;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
-
+import game.entities.Particle;
 import game.essentials.Animation;
 import game.essentials.Controller;
 import game.essentials.Image2D;
 import game.essentials.Keystrokes;
 import game.essentials.Vitality;
 
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+
 public abstract class PlayableEntity extends MobileEntity{
 	
 	public static final Keystrokes STILL = new Keystrokes();
 
-	public Animation<Image2D> healthHud, deathImage;
+	public Animation<Image2D> healthHud;
+	public Particle deathImage;
 	
 	private Keystrokes keysDown;
 	private Vitality state;
@@ -56,6 +58,10 @@ public abstract class PlayableEntity extends MobileEntity{
 		return controller;
 	}
 	
+	public void setController(Controller controller){
+		this.controller = controller;
+	}
+	
 	public boolean isGhost(){
 		return ghostData != null;
 	}
@@ -86,13 +92,7 @@ public abstract class PlayableEntity extends MobileEntity{
 		if(--hurtCounter > 0 && ++counter % 0 == 5)
 			return;
 		
-		if(deathImage != null && getState() == Vitality.DEAD){
-			Animation<Image2D> realImage = getImage();
-			setImage(deathImage);
-			super.render(batch);
-			setImage(realImage);
-		}else
-			super.render(batch);
+		super.render(batch);
 	}
 	
 	void setKeysDown(Keystrokes keysDown) {
@@ -115,7 +115,7 @@ public abstract class PlayableEntity extends MobileEntity{
 		return pb;
 	}
 	
-	public static Keystrokes keysDown(List<PlayableEntity> entities){
+	public static Keystrokes checkButtons(List<PlayableEntity> entities){
 		Keystrokes pb = new Keystrokes();
 
 		for(PlayableEntity play : entities){
@@ -144,15 +144,16 @@ public abstract class PlayableEntity extends MobileEntity{
 		return pb;
 	}
 	
-	final void deathAction() {
+	protected void deathAction() {
 		activate(false);
+		setVisible(false);
+		if(deathImage != null)
+			getLevel().add(new Particle(deathImage).move(x() - width() / 2, y() - height() / 2));
 	}
 	
 	protected void revive(){
-		if(deathImage != null)
-			deathImage.reset();
-		
 		activate(true);
+		setVisible(true);
 	}
 	
 	Keystrokes nextReplayFrame()

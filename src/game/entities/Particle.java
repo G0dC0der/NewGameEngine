@@ -1,8 +1,8 @@
 package game.entities;
 
-import com.badlogic.gdx.audio.Sound;
-
 import game.core.MobileEntity;
+
+import com.badlogic.gdx.audio.Sound;
 
 public class Particle extends MobileEntity{
 
@@ -12,7 +12,6 @@ public class Particle extends MobileEntity{
 	public Particle(){}
 	
 	public Particle(Particle src){
-		this.introSound = src.introSound;
 		copyData(src);
 		if(src.cloneEvent != null)
 			src.cloneEvent.handleClonded(this);
@@ -31,5 +30,9 @@ public class Particle extends MobileEntity{
 		
 		if(!isVisible() || getImage().hasEnded())
 			getLevel().discard(this);
+	}
+	
+	protected void copyData(Particle src){
+		introSound = src.introSound;
 	}
 }

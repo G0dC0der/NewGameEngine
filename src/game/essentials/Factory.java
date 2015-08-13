@@ -1,25 +1,21 @@
 package game.essentials;
 
-import java.util.List;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-
 import game.core.Collisions;
-import game.core.Engine;
 import game.core.Entity;
-import game.core.Level;
 import game.core.Level.Tile;
 import game.core.MobileEntity;
 import game.core.PlayableEntity;
 import game.events.Event;
 import game.events.TileEvent;
 
+import java.awt.Dimension;
+import java.util.List;
+
+import com.badlogic.gdx.math.Vector2;
+
 public class Factory {
 	
-	public static MobileEntity cameraFocus(List<Entity> entities, int padding){
-		Level level = entities.get(0).getLevel();
-		Engine engine = level.getEngine();
+	public static MobileEntity cameraFocus(List<Entity> entities, int padding, boolean discardDeadMains){
 		
 		return new MobileEntity(){{
 				zIndex(Integer.MAX_VALUE);
@@ -28,17 +24,19 @@ public class Factory {
 			@Override
 			public void logics() {
 				Entity first = entities.get(0);
+				Dimension size = getEngine().getScreenSize();
 				float 	tx = 0,
 						ty = 0,
 						zoom = 0,
-						stageWidth = level.getWidth(),
-						stageHeight = level.getHeight(),
-						windowWidth = Gdx.graphics.getWidth(),
-						windowHeight = Gdx.graphics.getHeight();
+						stageWidth = getLevel().getWidth(),
+						stageHeight = getLevel().getHeight(),
+						windowWidth = size.width,
+						windowHeight = size.height;
 				
 				if(entities.size() == 1){
 					tx = Math.min(stageWidth  - windowWidth,   Math.max(0, first.centerX() - windowWidth  / 2)) + windowWidth  / 2; 
 					ty = Math.min(stageHeight - windowHeight,  Math.max(0, first.centerY() - windowHeight / 2)) + windowHeight / 2;
+					getEngine().translate(tx, ty);
 				}
 				else if(entities.size() > 1){
 					final float marginX = windowWidth  / 2;
@@ -51,6 +49,9 @@ public class Factory {
 
 					for(int i = 1; i < entities.size(); i++){
 						Entity focus = entities.get(i);
+						
+						if(discardDeadMains && focus instanceof PlayableEntity && ((PlayableEntity)focus).getState() == Vitality.DEAD)
+							continue;
 						
 						boxX = Math.min( boxX, focus.x() );
 						boxY = Math.min( boxY, focus.y() );
@@ -92,8 +93,8 @@ public class Factory {
 					else if(ty > stageHeight - marginY)
 						ty = stageHeight - marginY;
 					
-					engine.translate(tx, ty);
-					engine.setZoom(zoom);
+					getEngine().translate(tx, ty);
+					getEngine().setZoom(zoom);
 				}
 			}
 		};
@@ -138,14 +139,14 @@ public class Factory {
 			float diffY = entity.y() - entity.prevY();
 			
 			if(diffX != 0)
-				entity.flipX = diffX > 0;
+				entity.flipX = diffX < 0;
 			if(diffY != 0)
 				entity.flipY = diffY > 0;
 		};
 	}
 	
 	public static void rotate360(Entity entity, float speed){
-		entity.getLevel().addTemp(()->{
+		entity.getLevel().temp(()->{
 			entity.rotate(speed);
 		}, ()-> {
 			if(entity.getRotation() > 360){

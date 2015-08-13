@@ -3,7 +3,7 @@ package game.entities;
 import game.core.MobileEntity;
 import game.core.Level.Tile;
 
-public class CrossMovement extends MobileEntity{
+public class CrossMovement extends MobileEntity{//TODO: Currently, this one ignores collisions with obstacles.
 	
 	public enum Movement{
 		VERTICAL,

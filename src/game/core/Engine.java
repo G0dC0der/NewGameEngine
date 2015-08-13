@@ -1,6 +1,14 @@
 package game.core;
 
+import game.essentials.GameState;
+import game.essentials.Image2D;
+import game.essentials.Keystrokes;
+import game.essentials.Keystrokes.KeystrokesSession;
+import game.essentials.Replay;
+import game.essentials.Vitality;
+
 import java.awt.Dimension;
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,13 +28,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import game.essentials.GameState;
-import game.essentials.Image2D;
-import game.essentials.Keystrokes;
-import game.essentials.Keystrokes.KeystrokesSession;
-import game.essentials.Replay;
-import game.essentials.Vitality;
-
 public class Engine{
 
 	public float delta = 1.0f / 60.0f;
@@ -36,7 +37,6 @@ public class Engine{
 	public String helpText = "You are in replay mode thus can not pause.";
 	public String failText = "You are dead.";
 	public String winText  = "Congratulations! It took you %d seconds to complete the map!";
-	public String playerName = "Player";
 	
 	private Level level;
 	private SpriteBatch batch;
@@ -44,8 +44,8 @@ public class Engine{
 	private StopWatch clock;
 	private Replay replay;
 	private List<Replay> replayCache;
+	private OrthographicCamera gameCamera, hudCamera;
 	private Map<String, Object> vars;
-	private OrthographicCamera camera, gameCamera, hudCamera;
 	
 	public static Engine playEngine(Level level){
 		return new Engine(level,null);
@@ -66,12 +66,15 @@ public class Engine{
 		replayCache = new ArrayList<>();
 		renderText = true;
 		vars = new HashMap<>();
+		timeColor = Color.WHITE;
 		vars.put("replaying", replay != null);
 		vars.put("screenWidth", 800);
 		vars.put("screenHeight", 600);
-		vars.put("sceenScale", 1);
+		vars.put("screenScale", 1.0f);
 		vars.put("helpText", false);
 		vars.put("deaths", -1);
+		vars.put("flipY", true);
+		vars.put("prevTranslate", new Vector2());
 	}
 	
 	public List<Replay> getRecordedReplays(){
@@ -87,7 +90,7 @@ public class Engine{
 	}
 	
 	public float getTimeInSeconds(){
-		return (float)clock.getTime() / 1000.0f;
+		return clock.getTime() / 1000.0f;
 	}
 	
 	public long getTime(){
@@ -115,30 +118,34 @@ public class Engine{
 	
 	public void setRotation(float rotation){
 		float oldrot = (float) vars.get("oldrot");
-		camera.rotate(-oldrot);
+		gameCamera.rotate(-oldrot);
 		
-		camera.rotate(rotation);
+		gameCamera.rotate(rotation);
 		vars.put("oldrot", rotation);
 	}
 	
 	public void setZoom(float zoom){
-		camera.zoom = zoom;
+		gameCamera.zoom = zoom;
 	}
 	
 	public float getZoom(){
-		return camera.zoom;
+		return gameCamera.zoom;
 	}
 	
 	public void translate(float tx, float ty){
-		camera.position.set(tx, ty, 0);
+		gameCamera.position.set(tx, ty, 0);
 	}
 	
-	public void flipY(boolean flip){
-		vars.put("flipY", flip);
+	public void flipY(){
+		boolean flipY = !(boolean)vars.get("flipY");
+		vars.put("flipY", flipY);
+		gameCamera.setToOrtho(flipY);
 	}
 	
 	public Vector2 getTranslation(){
-		return new Vector2(camera.position.x, camera.position.y);
+		if(gameCamera == null)
+			return new Vector2();
+		return new Vector2(gameCamera.position.x, gameCamera.position.y);
 	}
 	
 	public Vector2 getPreviousTranslation(){
@@ -150,13 +157,11 @@ public class Engine{
 	}
 	
 	public void gameCamera(){
-		camera = gameCamera;
-		batch.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(gameCamera.combined);
 	}
 	
 	public void hudCamera(){
-		camera = hudCamera;
-		batch.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(hudCamera.combined);
 	}
 	
 	public void updateGameCamera(){
@@ -168,8 +173,8 @@ public class Engine{
 	}
 	
 	public boolean onScreen(Entity entity){
-		Rectangle bbox = Collisions.getBoundingBox(entity);
-		return camera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2 , 0);
+		Rectangle bbox = Collisions.getBoundingBox(entity.bounds, entity.getRotation());
+		return gameCamera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2 , 0);
 	}
 	
 	public void retry(boolean fromCheckpoint){
@@ -184,10 +189,10 @@ public class Engine{
 	}
 	
 	public void exit(){
-		Gdx.app.exit(); //Test: Should not exit other non-daemon threads. Should also call destroy()/dispose()
+		destroy(); //TODO: Test
 	}
 	
-	private void setup() {
+	private void setup() throws IOException{
 		setGameState(GameState.LOADING);
 		batch = new SpriteBatch();
 		initCameras();
@@ -231,10 +236,12 @@ public class Engine{
 		if(getGameState() == GameState.DISPOSED)
 			throw new IllegalStateException("Can not play a disposed game.");
 		
-		if((getGameState() == GameState.ACTIVE || getGameState() == GameState.PAUSED) && !playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause){
+		if(PlayableEntity.checkButtons(level.getAliveMainCharacters()).pause && !playingReplay() && (active() || paused()))
+			setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
+		
+		if(paused()){
 			if(!clock.isSuspended()){
 				clock.suspend();
-				setGameState(GameState.PAUSED);
 				Music music = level.getStageMusic();
 				if(music != null){
 					vars.put("musicVolume", music.getVolume());
@@ -267,14 +274,15 @@ public class Engine{
 	}
 	
 	private void progress(){
-		statusControll();
-		
-		if((lost() || completed()) && !clock.isSuspended()){
-			clock.suspend();
+		if((lost() || completed()) && !clock.isStopped()){
+			clock.stop();
+			System.out.println("suspend!");
 		}
 		
 		vars.put("prevTranslate", getTranslation());
+		
 		level.gameLoop();
+		statusControll();
 	}
 	
 	private void paint(){
@@ -283,9 +291,8 @@ public class Engine{
 		
 		updateGameCamera();
 		gameCamera();
-		
 		batch.begin();
-		
+
 		for(Entity entity : level.gameObjects)
 			entity.render(batch);
 		
@@ -343,19 +350,19 @@ public class Engine{
 		
 		for(PlayableEntity play  : mains){
 			switch(play.getState()){
-			case ALIVE:
-				alive++;
-				break;
-			case DEAD:
-				dead++;
-				break;
-			case COMPLETED:
-				finished++;
-				break;
+				case ALIVE:
+					alive++;
+					break;
+				case DEAD:
+					dead++;
+					break;
+				case COMPLETED:
+					finished++;
+					break;
 			}
 		}
 		
-		if(dead == total || alive == 0)
+		if(dead == total || (alive == 0 && finished == 0))
 			setGameState(GameState.LOST);
 		else if(finished > 0)
 			setGameState(GameState.SUCCESS);
@@ -411,28 +418,25 @@ public class Engine{
 		replay.date = ZonedDateTime.now();;
 		replay.time = clock.getTime();
 		replay.levelClass = level.getClass().getName();
-		replay.playerName = playerName;
 		replay.result = getGameState();
 	}
 	
 	private void renderStatusBar(){
 		timeFont.setColor(state == GameState.PAUSED ? Color.WHITE : timeColor);
-		timeFont.draw(batch, getTime() + "", 10, 10);
-
+		timeFont.draw(batch, getTime() / 1000f + "", 10, 10);
+		
 		List<PlayableEntity> mains = level.getNonDeadMainCharacters();
 		
-		for(int index = 0, y = 40; index < mains.size(); index++)
-		{
+		for(int index = 0, y = 40; index < mains.size(); index++){
 			PlayableEntity main = mains.get(index);
 			int hp = main.getHP();
 			
-			if(main.healthHud != null && main.getState() != Vitality.DEAD && hp > 0)
-			{
+			if(main.healthHud != null && main.getState() != Vitality.DEAD && hp > 0){
 				Image2D healthHud = main.healthHud.getObject();
 				final float width = healthHud.getWidth() + 3;
 				
 				for(int i = 0, posX = 10; i < hp; i++, posX += width)
-					batch.draw(healthHud, posX, y);
+					batch.draw(healthHud, posX, y, healthHud.getWidth(), healthHud.getHeight(), 0, 0, healthHud.getWidth(), healthHud.getHeight(), false, true);
 				
 				y += healthHud.getHeight() + 3;
 			}
@@ -440,10 +444,10 @@ public class Engine{
 	}
 	
 	private void renderStatusText(){
-		if(!renderText)
+		if(!renderText || timeFont == null)
 			return;
 		
-		if(playingReplay() && PlayableEntity.keysDown(level.getAliveMainCharacters()).pause)
+		if(playingReplay() && PlayableEntity.checkButtons(level.getAliveMainCharacters()).pause)
 			vars.put("helpText", !((boolean)vars.get("helpText")));
 		
 		if((boolean) vars.get("helpText")){
@@ -463,7 +467,11 @@ public class Engine{
 		
 		@Override
 		public void create() {
-			engine.setup();
+			try{
+				engine.setup();
+			}catch(IOException ioe){
+				throw new RuntimeException(ioe);
+			}
 		}
 
 		@Override
@@ -473,7 +481,12 @@ public class Engine{
 
 		@Override
 		public void render() {
-			engine.overview();
+			try{
+				engine.overview();
+			}catch(Exception ioe){
+				dispose();
+				throw new RuntimeException(ioe);
+			}
 		}
 	}
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -21,7 +23,7 @@ public class Entity{
 	public final Rectangle bounds;
 	public final SoundEmitter sounds;
 	public String id;
-	public float alpha, scaleX, scaleY, offsetX, offsetY;
+	public float alpha, offsetX, offsetY;
 	public boolean flipX, flipY;
 	
 	protected CloneEvent cloneEvent;
@@ -42,7 +44,8 @@ public class Entity{
 	public Entity(){
 		bounds = new Rectangle();
 		sounds = new SoundEmitter(this);
-		alpha = scaleX = scaleY = offsetX = offsetY = 1;
+		alpha = offsetX = offsetY = 1;
+		active = true;
 		events = new ArrayList<>();
 		deleteEvents = new ArrayList<>();
 	}
@@ -100,7 +103,8 @@ public class Entity{
 	
 	public final void zIndex(int zIndex){
 		this.zIndex = zIndex;
-		level.sort = true;
+		if(level != null)
+			level.sort = true;
 	}
 	
 	public int getZIndex(){
@@ -132,7 +136,7 @@ public class Entity{
 	}
 	
 	public void removeEvent(Event event){
-		deleteEvents.remove(event);
+		deleteEvents.add(event);
 	}
 	
 	public boolean collidesWith(Entity entity){
@@ -143,9 +147,9 @@ public class Entity{
 			return false;
 		} else if(hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.RECTANGLE){
 			if(rotated1 || rotated2)
-				return Collisions.rotatedRectanglesCollide(this, entity);
+				return Collisions.rotatedRectanglesCollide(bounds, getRotation(), entity.bounds, entity.getRotation());
 			else
-				return Collisions.rectanglesCollide(this, entity);
+				return Intersector.overlaps(bounds, entity.bounds);
 		} else if((hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.CIRCLE) || (hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.RECTANGLE)){
 			Entity rectangle 	= hitbox == Hitbox.RECTANGLE 	? this : entity;
 			Entity circle 		= hitbox == Hitbox.CIRCLE 		? this : entity;
@@ -153,13 +157,13 @@ public class Entity{
 			if(rectangle.rotation != 0 && !rectangle.quickCollision)
 				throw new RuntimeException("No collision method for rotated rectangle vs circle.");
 			else
-				return Collisions.circleRectangleCollide(circle, rectangle);
+				return Collisions.circleRectangleCollide(new Circle(circle.centerX(), circle.centerY(), circle.width() / 2), rectangle.bounds);
 		} else if(hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.CIRCLE){
 			return Collisions.circleVsCircle(this, entity);
 		} else if(hitbox == Hitbox.POLYGON || entity.hitbox == Hitbox.POLYGON){
 			return Collisions.polygonsCollide(this, entity);
 		} else if(hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL){
-			return Collisions.rectanglesCollide(this, entity) && Collisions.pixelPerfect(this, entity);
+			return Intersector.overlaps(bounds, entity.bounds) && Collisions.pixelPerfect(this, entity);
 		}
 		
 		throw new IllegalStateException("No proper collision handling methods found.");
@@ -247,7 +251,7 @@ public class Entity{
 		bounds.height -= 2;
 	}
 	
-	public boolean present(){
+	public boolean isPresent(){
 		return present;
 	}
 	
@@ -279,8 +283,6 @@ public class Entity{
 		offsetY = src.offsetY;
 		flipX = src.flipX;
 		flipY = src.flipY;
-		scaleX = src.scaleX;
-		scaleY = src.scaleY;
 		sounds.maxDistance = src.sounds.maxDistance;
 		sounds.maxVolume = src.sounds.maxVolume;
 		sounds.power = src.sounds.power;
@@ -299,15 +301,15 @@ public class Entity{
 					centerY(), 
 					bounds.width, 
 					bounds.height, 
-					scaleX, 
-					scaleY, 
+					1, 
+					1, 
 					rotation, 
 					0, 
 					0, 
 					(int)bounds.width, 
 					(int)bounds.height,
 					flipX, 
-					flipY);
+					!flipY);
 	}
 	
 	void runEvents(){

@@ -1,22 +1,25 @@
 package game.essentials;
 
+import game.core.Entity;
+import game.events.Event;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import game.core.Entity;
-import game.events.Event;
-
 public class EntityBuilder {
 
 	private int zIndex;
 	private Animation<Image2D> image;
+	private Hitbox hitbox;
 	private float x, y, width, height, offsetX, offsetY, alpha, rotation;
 	private List<Event> events;
 	
 	public EntityBuilder() {
 		events = new ArrayList<>();
+		alpha = 1;
+		hitbox = Hitbox.RECTANGLE;
 	}
 	
 	public EntityBuilder zIndex(int zIndex){
@@ -89,40 +92,51 @@ public class EntityBuilder {
 		this.events.addAll(Arrays.asList(events));
 		return this;
 	}
+	
+	public EntityBuilder hitbox(Hitbox hitbox){
+		this.hitbox = hitbox;
+		return this;
+	}
 
 	public Entity build(){
 		Entity entity = new Entity();
-		copyData(entity);
+		pasteData(entity);
 		return entity;
 	}
 	
-	public <T extends Entity> T build(Class<T> clazz, Object... args) throws Exception{
+	public <T extends Entity> T build(Class<T> clazz, Object... args){
 		T entity;
-		if(args.length == 0)
-			entity = clazz.newInstance();
-		else{
-			@SuppressWarnings("rawtypes")
-			Class[] clazzez = (Class[]) Arrays.stream(args).map(obj -> obj.getClass()).collect(Collectors.toList()).toArray();
-			entity = clazz.getDeclaredConstructor(clazzez).newInstance(args);
+		try{
+			if(args.length == 0)
+				entity = clazz.newInstance();
+			else{
+				@SuppressWarnings("rawtypes")
+				Class[] clazzez = (Class[]) Arrays.stream(args).map(obj -> obj.getClass()).collect(Collectors.toList()).toArray();
+				entity = clazz.getDeclaredConstructor(clazzez).newInstance(args);
+			}
+		}catch(Exception e){
+			throw new RuntimeException(e);
 		}
 		
-		copyData(entity);
+		pasteData(entity);
 		return entity;
 	}
 	
-	private void copyData(Entity entity){
-		entity.bounds.x = x;
-		entity.bounds.y = y;
-		entity.bounds.width = width;
-		entity.bounds.height = height;
-		entity.offsetX = offsetX;
-		entity.offsetY = offsetY;
-		entity.alpha = alpha;
-		entity.setRotation(rotation);
-		entity.zIndex(zIndex);
-		entity.setImage(image);
+	private void pasteData(Entity dest){
+		dest.bounds.x = x;
+		dest.bounds.y = y;
+		dest.bounds.width = width;
+		dest.bounds.height = height;
+		dest.offsetX = offsetX;
+		dest.offsetY = offsetY;
+		dest.alpha = alpha;
+		dest.setRotation(rotation);
+		dest.zIndex(zIndex);
+		dest.setHitbox(hitbox);
+		if(image != null)
+			dest.setImage(image);
 		
 		for(Event event : events)
-			entity.addEvent(event);
+			dest.addEvent(event);
 	}
 }

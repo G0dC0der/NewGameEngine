@@ -21,6 +21,16 @@ public class Image2D extends Texture{
 			createPixelData(file);
 	}
 	
+	public Image2D(Pixmap map){
+		this(map,false);
+	}
+	
+	public Image2D(Pixmap map, boolean createPixelData){
+		super(map);
+		if(createPixelData)
+			createPixelData(map);
+	}
+	
 	public int getPixel(int x, int y){
 		return pixelData[x][y];
 	}

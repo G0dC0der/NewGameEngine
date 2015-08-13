@@ -97,7 +97,7 @@ public abstract class TileBasedLevel extends Level{
 					if(tiledMapRenderer == null)
 						tiledMapRenderer = new OrthogonalTiledMapRenderer(map, batch);
 					
-					if(getRotation() != 0 || scaleX != 0 || scaleY != 0 || flipX || flipY)
+					if(getRotation() != 0 || flipX || flipY)
 						throw new RuntimeException("Rotation, scale and flip are not supported for TileBased image.");
 
 					Color color = batch.getColor();

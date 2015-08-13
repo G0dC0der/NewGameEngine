@@ -12,16 +12,17 @@ public class FlyMan extends PlayableEntity{
 	@Override
 	public void logics() {
 		Keystrokes strokes = getKeysDown();
+		int speed = (int) getMoveSpeed();
 		
 		if(strokes.up || strokes.jump)
-			tryUp((int)getMoveSpeed());
+			tryUp(speed);
 		else if(strokes.down)
-			tryDown((int)getMoveSpeed());
+			tryDown(speed);
 		
 		if(strokes.left)
-			tryLeft((int)getMoveSpeed());
+			tryLeft(speed);
 		else if(strokes.right)
-			tryRight((int)getMoveSpeed());
+			tryRight(speed);
 		
 		moving = alwaysMove || strokes.up || strokes.left || strokes.right || strokes.down || strokes.jump;
 	}

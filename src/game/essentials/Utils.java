@@ -28,11 +28,7 @@ public class Utils {
 	}
 	
 	public static Entity wrap(Event event){
-		Entity entity = new Entity();
-		entity.addEvent(event);
-		entity.id = "WRAPPER";
-		
-		return entity;
+		return new EntityBuilder().events(event).build();
 	}
 	
 	public static <T> T getRandomElement(T[] array)

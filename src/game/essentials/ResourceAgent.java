@@ -1,20 +1,23 @@
 package game.essentials;
 
+import game.lang.IO;
+
 import java.io.IOException;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Disposable;
 
-import game.lang.IO;
-
-public class ResourceBag {
+public class ResourceAgent {
 
 	private HashMap<String, Object> stuff;
 	
-	public ResourceBag(){
+	public ResourceAgent(){
 		stuff = new HashMap<>();
 	}
 	
@@ -22,8 +25,20 @@ public class ResourceBag {
 		stuff.put(key, obj);
 	}
 	
+	public void loadFont(FileHandle path){
+		stuff.put(path.name(), new BitmapFont(path, true));
+	}
+	
+	public BitmapFont getFont(String key){
+		return (BitmapFont) stuff.get(key);
+	}
+	
 	public void loadObject(FileHandle path) throws ClassNotFoundException, IOException{
-		stuff.put(stripString(path.toString()), IO.importObject(path.toString()));
+		stuff.put(path.name(), IO.importObject(path.toString()));
+	}
+	
+	public Object getAsset(String key){
+		return stuff.get(key);
 	}
 	
 	public void loadImage(FileHandle path){
@@ -31,15 +46,15 @@ public class ResourceBag {
 	}
 	
 	public void loadPixmap(FileHandle path){
-		stuff.put(stripString(path.toString()), new Pixmap(path));
+		stuff.put(path.name(), new Pixmap(path));
 	}
 	
 	public void loadImage(FileHandle path, boolean createPixelData){
-		stuff.put(stripString(path.toString()), new Image2D(path, createPixelData));
+		stuff.put(path.name(), new Image2D(path, createPixelData));
 	}
 	
 	public void loadAnimation(FileHandle path, boolean createPixelData) throws IOException{
-		stuff.put(stripString(path.toString(), true), Image2D.loadAnimation(path, createPixelData));
+		stuff.put(path.name(), Image2D.loadAnimation(path, createPixelData));
 	}
 	
 	public void loadAnimation(FileHandle path) throws IOException{
@@ -50,12 +65,28 @@ public class ResourceBag {
 		return (Image2D) stuff.get(key);
 	}
 	
+	public Image2D[] getAnimation(String key){
+		return (Image2D[]) stuff.get(key);
+	}
+	
+	public Pixmap getPixmap(String key){
+		return (Pixmap) stuff.get(key);
+	}
+	
+	public Sound getSound(String key){
+		return (Sound) stuff.get(key);
+	}
+	
+	public Music getMusic(String key){
+		return (Music) stuff.get(key);
+	}
+	
 	public void loadSound(FileHandle path){
-		stuff.put(stripString(path.toString()), Gdx.audio.newSound(path));
+		stuff.put(path.name(), Gdx.audio.newSound(path));
 	}
 	
 	public void loadMusic(FileHandle path){
-		stuff.put(stripString(path.toString()), Gdx.audio.newMusic(path));
+		stuff.put(path.name(), Gdx.audio.newMusic(path));
 	}
 	
 	/**
@@ -83,10 +114,12 @@ public class ResourceBag {
 					loadSound(content);
 			} else if(content.isDirectory()){
 				loadAnimation(content);
+			} else if(name.endsWith(".fnt")){
+				loadFont(content);
 			} else if(!name.contains("non-obj")){
 				try{
 					loadObject(content);
-				}catch(ClassNotFoundException e){
+				}catch(ClassNotFoundException | IOException e){
 					System.err.println("The following file could not be imported: " + content.toString());
 				}
 			}
@@ -104,25 +137,10 @@ public class ResourceBag {
 		((Disposable)stuff.get(key)).dispose();
 	}
 	
-	private static String stripString(String str){
-		return stripString(str, false);
-	}
-	
 	@Override
 	public String toString(){
 		StringBuilder bu = new StringBuilder();
 		stuff.forEach((key, value) -> bu.append(key).append(": ").append(value.getClass().getSimpleName()).append(System.lineSeparator()));
 		return bu.toString();
-	}
-	
-	private static String stripString(String str, boolean isDirectory){
-		str = str.replace("\\", "/");
-		int startIndex = str.lastIndexOf("/");
-		if(startIndex > 0)
-			startIndex++;
-		
-		int endIndex = isDirectory ? str.length() : str.lastIndexOf(".") - 1;
-		
-		return str.substring(startIndex, endIndex);
 	}
 }

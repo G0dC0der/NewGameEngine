@@ -45,7 +45,7 @@ public class BigImage extends Entity{
 		
 	@Override
 	public void render(SpriteBatch batch) {
-		if(getRotation() != 0 || scaleX != 1 || scaleY != 1)
+		if(getRotation() != 0)
 			throw new RuntimeException("A big image must have rotation set to 0 and scaleX and scaleY set to 1.");
 		
 		Level level = getLevel();

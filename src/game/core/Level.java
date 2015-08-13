@@ -1,5 +1,14 @@
 package game.core;
 
+import game.essentials.GameState;
+import game.essentials.Keystrokes;
+import game.essentials.Utils;
+import game.essentials.Vitality;
+import game.events.Event;
+import game.events.TaskEvent;
+import game.lang.Entry;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,15 +18,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.badlogic.gdx.audio.Music;
+import org.apache.commons.lang3.mutable.MutableInt;
 
-import game.essentials.GameState;
-import game.essentials.Keystrokes;
-import game.essentials.Utils;
-import game.essentials.Vitality;
-import game.events.Event;
-import game.events.TaskEvent;
-import game.lang.Entry;
+import com.badlogic.gdx.audio.Music;
 
 public abstract class Level {
 	
@@ -51,9 +54,9 @@ public abstract class Level {
 	protected Level(){
 		awatingObjects = new LinkedList<>();
 		deleteObjects = new LinkedList<>();
-		mainCharacters = new ArrayList<>();
 		soundListeners = new ArrayList<>();
 		gameObjects = new LinkedList<>();
+		mainCharacters = new ArrayList<>();
 	}
 	
 	public abstract int getWidth();
@@ -66,7 +69,7 @@ public abstract class Level {
 
 	public abstract boolean isHollow(int x, int y);
 	
-	public abstract void init();
+	public abstract void init() throws IOException;
 	
 	public abstract void build();
 	
@@ -90,6 +93,16 @@ public abstract class Level {
 		return engine;
 	}
 	
+	public boolean outOfBounds(float targetX, float targetY){
+		if(targetX >= getWidth() ||
+		   targetY >= getHeight() || 
+		   targetX < 0 ||
+		   targetY < 0)
+			return true;
+		
+		return false;
+	}
+	
 	public void add(Entity entity){
 		awatingObjects.add(new Entry<Integer, Entity>(0, entity));
 	}
@@ -110,12 +123,12 @@ public abstract class Level {
 		add(wrapper);
 	}
 	
-	public void addTemp(Entity entity, int lifeFrames){
+	public void temp(Entity entity, int lifeFrames){
 		add(entity);
 		discardAfter(entity, lifeFrames);
 	}
 	
-	public void addTemp(Entity entity, TaskEvent discardEvent){
+	public void temp(Entity entity, TaskEvent discardEvent){
 		add(entity);
 		discardWhen(entity, discardEvent);
 	}
@@ -141,7 +154,7 @@ public abstract class Level {
 		return wrapper;
 	}
 	
-	public Entity addTemp(Event event, int lifeFrames){
+	public Entity temp(Event event, int lifeFrames){
 		Entity wrapper = Utils.wrap(event);
 		add(wrapper);
 		discardAfter(wrapper, lifeFrames);
@@ -149,7 +162,7 @@ public abstract class Level {
 		return wrapper;
 	}
 	
-	public Entity addTemp(Event event, TaskEvent discardEvent){
+	public Entity temp(Event event, TaskEvent discardEvent){
 		Entity wrapper = Utils.wrap(event);
 		add(wrapper);
 		discardWhen(wrapper, discardEvent);
@@ -163,6 +176,21 @@ public abstract class Level {
 			if(whenToRun.eventHandling()){
 				event.eventHandling();
 				wrapper.getLevel().discard(wrapper);
+			}
+		});
+		add(wrapper);
+		
+		return wrapper;
+	}
+	
+	public Entity runOnceAfter(Event event, int framesDelay){
+		MutableInt counter = new MutableInt();
+		Entity wrapper = new Entity();
+		wrapper.addEvent(()->{
+			counter.increment();
+			if(counter.intValue() > framesDelay){
+				event.eventHandling();
+				discard(wrapper);
 			}
 		});
 		add(wrapper);
@@ -206,7 +234,7 @@ public abstract class Level {
 				.collect(Collectors.toList());
 	}
 	
-	public List<? extends Entity> getSoundListeners(){
+	public List<? extends Entity> getSoundListeners(){ //TODO: This is incomplete
 		return soundListeners.isEmpty() ? getNonDeadMainCharacters() : soundListeners;
 	}
 	
@@ -218,7 +246,7 @@ public abstract class Level {
 			sort = false;
 		}
 		
-		update();
+		updateEntities();
 	}
 	
 	void clean(){
@@ -228,9 +256,7 @@ public abstract class Level {
 		gameObjects.clear();
 	}
 	
-	private void update(){
-		mainCharacters.clear();
-		
+	private void updateEntities(){
 		for(Entity entity : gameObjects){
 			if(!entity.isActive())
 				continue;
@@ -248,10 +274,7 @@ public abstract class Level {
 						buttonsDown = PlayableEntity.STILL;
 				} else
 					buttonsDown = PlayableEntity.STILL;
-				
-				if(!play.isGhost())
-					mainCharacters.add(play);
-				
+
 				if(play.getState() == Vitality.ALIVE && engine.getGameState() == GameState.ACTIVE && !engine.playingReplay())
 					engine.registerReplayFrame(play, buttonsDown);
 				
@@ -317,6 +340,12 @@ public abstract class Level {
 				entry.value.engine = engine;
 				entry.value.present = true;
 				entry.value.init();
+				
+				if(entry.value instanceof PlayableEntity){
+					PlayableEntity play = (PlayableEntity) entry.value;
+					if(!play.isGhost())
+						mainCharacters.add(play);
+				}
 			}
 		}
 		
@@ -329,7 +358,12 @@ public abstract class Level {
 				i--;
 				entry.value.present = false;
 				entry.value.dispose();
-				entry.value.move(-9999, -9999);
+				
+				if(entry.value instanceof PlayableEntity){
+					PlayableEntity play = (PlayableEntity) entry.value;
+					if(!play.isGhost())
+						mainCharacters.remove(play);
+				}
 			}
 		}
 	}

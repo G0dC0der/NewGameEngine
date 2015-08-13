@@ -30,6 +30,11 @@ public class Keystrokes {
 		this.special3 = special3;
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("Up: %b, Down: %b, Left: %b, Right: %b, Jump: %b, Pause: %b, Suicide: %b, Special1: %b, Special2: %b, Special3: %b", up, down, left, right, jump, pause, suicide, special1, special2, special3);
+	}
+	
 	/**
 	 * An instance of this class describes the buttons that a specific PlayableEntity held down during a session(from start to GameState.FINISHED).
 	 * @author Pojahn M
