@@ -27,6 +27,15 @@ public class BigImage extends Entity{
 	private RenderStrategy strategy;
 	private OrthographicCamera parallaxCamera;
 	private float ratioX, ratioY;
+
+	public BigImage(){
+		this(RenderStrategy.DEFAULT);
+	}
+	
+	public BigImage(RenderStrategy strategy){
+		this.strategy = strategy;
+		initParallaxCamer();
+	}
 	
 	public void setRenderStrategy(RenderStrategy strategy){
 		this.strategy = strategy;
@@ -129,11 +138,10 @@ public class BigImage extends Entity{
 		Engine e = getEngine();
 		Dimension screen = e.getScreenSize();
 		Vector2 t = e.getTranslation();
-		Vector2 prevT = e.getPreviousTranslation();
 		
 		parallaxCamera.zoom = getScale();
-		parallaxCamera.position.x = Math.max(screen.width  / 2, parallaxCamera.position.x + (t.x - prevT.x) * ratioX);
-		parallaxCamera.position.y = Math.max(screen.height / 2, parallaxCamera.position.y + (t.y - prevT.y) * ratioY);
+		parallaxCamera.position.x = Math.max(screen.width  / 2, parallaxCamera.position.x + (t.x - e.prevTx()) * ratioX);
+		parallaxCamera.position.y = Math.max(screen.height / 2, parallaxCamera.position.y + (t.y - e.prevTy()) * ratioY);
 		parallaxCamera.update();
 	}
 	

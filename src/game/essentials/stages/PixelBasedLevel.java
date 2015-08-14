@@ -1,13 +1,12 @@
 package game.essentials.stages;
 
-import game.core.Level;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
+
+import game.core.Level;
 
 public abstract class PixelBasedLevel extends Level{
 	
@@ -29,59 +28,59 @@ public abstract class PixelBasedLevel extends Level{
 	/**
 	 * Maps to Tile.HOLLOW. RGB:125,125,125.
 	 */
-	public static final Color GRAY 	  	  = Color.valueOf("7d7d7dff");
+	public static final int GRAY = 0x7d7d7dff;
 	/**
 	 * Maps to Tile.SOLID. RGB:90,90,90
 	 */
-	public static final Color DARK_GRAY   = Color.valueOf("5a5a5aff");
+	public static final int DARK_GRAY = 0x5a5a5aff;
 	/**
 	 * Maps to Tile.GOAL. RGB:255,0,0
 	 */
-	public static final Color RED		  = Color.valueOf("ff0000ff");
+	public static final int RED = 0xff0000ff;
 	/**
 	 * Maps to Tile.LETHAL. RGB:255,255,0
 	 */
-	public static final Color YELLOW      = Color.valueOf("ffff00ff");
+	public static final int YELLOW = 0xffff00ff;
 	/**
 	 * Maps to Tile.CUSTOM_1. RGB:0,255,0
 	 */
-	public static final Color GREEN_1	  = Color.valueOf("00ff00ff");
+	public static final int GREEN_1 = 0x00ff00ff;
 	/**
 	 * Maps to Tile.CUSTOM_2. RGB:0,220,0
 	 */
-	public static final Color GREEN_2	  = Color.valueOf("00dc00ff");
+	public static final int GREEN_2 = 0x00dc00ff;
 	/**
 	 * Maps to Tile.CUSTOM_3. RGB:0,190,0
 	 */
-	public static final Color GREEN_3	  = Color.valueOf("00be00ff");
+	public static final int GREEN_3 = 0x00be00ff;
 	/**
 	 * Maps to Tile.CUSTOM_4. RGB:0,160,0
 	 */
-	public static final Color GREEN_4	  = Color.valueOf("00a000ff");
+	public static final int GREEN_4 = 0x00a000ff;
 	/**
 	 * Maps to Tile.CUSTOM_5. RGB:0,130,0
 	 */
-	public static final Color GREEN_5	  = Color.valueOf("008200ff");
+	public static final int GREEN_5 = 0x008200ff;
 	/**
 	 * Maps to Tile.CUSTOM_6. RGB:0,100,0
 	 */
-	public static final Color GREEN_6	  = Color.valueOf("006400ff");
+	public static final int GREEN_6 = 0x006400ff;
 	/**
 	 * Maps to Tile.CUSTOM_7. RGB:0,70,0
 	 */
-	public static final Color GREEN_7	  = Color.valueOf("004600ff");
+	public static final int GREEN_7 = 0x004600ff;
 	/**
 	 * Maps to Tile.CUSTOM_8. RGB:0,40,0
 	 */
-	public static final Color GREEN_8	  = Color.valueOf("002800ff");
+	public static final int GREEN_8 = 0x002800ff;
 	/**
 	 * Maps to Tile.CUSTOM_9. RGB:0,10,0
 	 */
-	public static final Color GREEN_9	  = Color.valueOf("000a00ff");
+	public static final int GREEN_9 = 0x000a00ff;
 	/**
 	 * Maps to Tile.CUSTOM_10. RGB:0,0,0
 	 */
-	public static final Color GREEN_10	  = Color.valueOf("000000ff");
+	public static final int GREEN_10 = 0x000000ff;
 	
 	private byte[][] stageData;
 	private Map<Vector2, Byte> deforms; 
@@ -95,38 +94,53 @@ public abstract class PixelBasedLevel extends Level{
 		
 		for (int x = 0; x < map.getWidth(); x++){
 			for (int y = 0; y < map.getHeight(); y++){
-				Color c = new Color(map.getPixel(x, y));
+				int color = map.getPixel(x, y);
 				
-				if (c.equals(GRAY))
-					stageData[x][y] = HOLLOW;
-				else if (c.equals(DARK_GRAY))
-					stageData[x][y] = SOLID;
-				else if (c.equals(RED))
-					stageData[x][y] = GOAL;
-				else if (c.equals(YELLOW))
-					stageData[x][y] = LETHAL;
-				else if (c.equals(GREEN_1))
-					stageData[x][y] = CUSTOM_1;
-				else if (c.equals(GREEN_2))
-					stageData[x][y] = CUSTOM_2;
-				else if (c.equals(GREEN_3))
-					stageData[x][y] = CUSTOM_3;
-				else if (c.equals(GREEN_4))
-					stageData[x][y] = CUSTOM_4;
-				else if (c.equals(GREEN_5))
-					stageData[x][y] = CUSTOM_5;
-				else if (c.equals(GREEN_6))
-					stageData[x][y] = CUSTOM_6;
-				else if (c.equals(GREEN_7))
-					stageData[x][y] = CUSTOM_7;
-				else if (c.equals(GREEN_8))
-					stageData[x][y] = CUSTOM_8;
-				else if (c.equals(GREEN_9))
-					stageData[x][y] = CUSTOM_9;
-				else if (c.equals(GREEN_10))
-					stageData[x][y] = CUSTOM_10;
-				else
-					throw new RuntimeException(String.format("Unknown color %s at %d:%d", c, x, y));
+				switch(color){
+					case DARK_GRAY:
+						stageData[x][y] = SOLID;
+						break;
+					case RED:
+						stageData[x][y] = GOAL;
+						break;
+					case YELLOW:
+						stageData[x][y] = LETHAL;
+						break;
+					case GREEN_1:
+						stageData[x][y] = CUSTOM_1;
+						break;
+					case GREEN_2:
+						stageData[x][y] = CUSTOM_2;
+						break;
+					case GREEN_3:
+						stageData[x][y] = CUSTOM_3;
+						break;
+					case GREEN_4:
+						stageData[x][y] = CUSTOM_4;
+						break;
+					case GREEN_5:
+						stageData[x][y] = CUSTOM_5;
+						break;
+					case GREEN_6:
+						stageData[x][y] = CUSTOM_6;
+						break;
+					case GREEN_7:
+						stageData[x][y] = CUSTOM_7;
+						break;
+					case GREEN_8:
+						stageData[x][y] = CUSTOM_8;
+						break;
+					case GREEN_9:
+						stageData[x][y] = CUSTOM_9;
+						break;
+					case GREEN_10:
+						stageData[x][y] = CUSTOM_10;
+						break;
+					case GRAY:
+					default:
+						stageData[x][y] = HOLLOW;
+						break;
+				}
 			}
 		}
 	}

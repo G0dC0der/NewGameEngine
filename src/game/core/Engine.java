@@ -45,7 +45,10 @@ public class Engine{
 	private Replay replay;
 	private List<Replay> replayCache;
 	private OrthographicCamera gameCamera, hudCamera;
-	private Map<String, Object> vars;
+	
+	private boolean replaying, flipY, showHelpText;
+	private int screenWidth, screenHeight, deathCounter;
+	private float scale, rotation, musicVolume, prevTx, prevTy;
 	
 	public static Engine playEngine(Level level){
 		return new Engine(level,null);
@@ -63,18 +66,14 @@ public class Engine{
 		this.level = level;
 		this.level.engine = this;
 		this.replay = replay == null ? new Replay() : replay;
+		replaying = replay != null;
 		replayCache = new ArrayList<>();
 		renderText = true;
-		vars = new HashMap<>();
 		timeColor = Color.WHITE;
-		vars.put("replaying", replay != null);
-		vars.put("screenWidth", 800);
-		vars.put("screenHeight", 600);
-		vars.put("screenScale", 1.0f);
-		vars.put("helpText", false);
-		vars.put("deaths", -1);
-		vars.put("flipY", true);
-		vars.put("prevTranslate", new Vector2());
+		screenWidth = 800;
+		screenHeight  = 600;
+		scale = 1;
+		flipY = true;
 	}
 	
 	public List<Replay> getRecordedReplays(){
@@ -82,7 +81,7 @@ public class Engine{
 	}
 	
 	public boolean playingReplay(){
-		return (boolean) vars.get("replaying");
+		return replaying;
 	}
 	
 	public GameState getGameState(){
@@ -98,30 +97,24 @@ public class Engine{
 	}
 	
 	public int getDeathCounter(){
-		return (int) vars.get("deaths");
+		return deathCounter;
 	}
-	
-	public Exception getException(){
-		return (Exception) vars.get("exception");
-	}
-	
+
 	public void setScreenSize(int width, int height){
-		vars.put("screenWidth", width);
-		vars.put("screenHeight", height);
+		screenWidth = width;
+		screenHeight = height;
 		initCameras();
 	}
 	
 	public void setScreenScale(float multiplier){
-		vars.put("screenScale", multiplier);
+		scale = multiplier;
 		initCameras();
 	}
 	
 	public void setRotation(float rotation){
-		float oldrot = (float) vars.get("oldrot");
-		gameCamera.rotate(-oldrot);
-		
+		gameCamera.rotate(-this.rotation);
 		gameCamera.rotate(rotation);
-		vars.put("oldrot", rotation);
+		this.rotation = rotation;
 	}
 	
 	public void setZoom(float zoom){
@@ -137,8 +130,7 @@ public class Engine{
 	}
 	
 	public void flipY(){
-		boolean flipY = !(boolean)vars.get("flipY");
-		vars.put("flipY", flipY);
+		flipY = !flipY;
 		gameCamera.setToOrtho(flipY);
 	}
 	
@@ -148,8 +140,20 @@ public class Engine{
 		return new Vector2(gameCamera.position.x, gameCamera.position.y);
 	}
 	
-	public Vector2 getPreviousTranslation(){
-		return (Vector2) vars.get("prevTranslate");
+	public float tx(){
+		return gameCamera.position.x;
+	}
+
+	public float ty(){
+		return gameCamera.position.y;
+	}
+	
+	public float prevTx(){
+		return prevTx;
+	}
+
+	public float prevTy(){
+		return prevTy;
 	}
 	
 	public Dimension getScreenSize(){
@@ -208,13 +212,10 @@ public class Engine{
 	}
 	
 	private void restart(boolean checkpointPresent){
-		if(!clock.isSuspended())
-			clock.suspend();
+		setGameState(GameState.LOADING);
 		
 		if(getGameState() == GameState.LOST)
-			vars.put("deaths", ((int)vars.get("deaths")) + 1);
-		
-		setGameState(GameState.LOADING);
+			deathCounter++;
 		
 		if(!checkpointPresent && !playingReplay()){
 			finalizeReplay();
@@ -224,6 +225,8 @@ public class Engine{
 		
 		level.clean();
 		level.build();
+		System.out.println(clock.isStopped());
+		System.out.println(clock.isSuspended());
 		clock.resume();
 		
 		if(!checkpointPresent)
@@ -236,26 +239,30 @@ public class Engine{
 		if(getGameState() == GameState.DISPOSED)
 			throw new IllegalStateException("Can not play a disposed game.");
 		
-		if(PlayableEntity.checkButtons(level.getAliveMainCharacters()).pause && !playingReplay() && (active() || paused()))
+		boolean justResumed = false;
+		
+		if(PlayableEntity.checkButtons(level.getAliveMainCharacters()).pause && !playingReplay() && (active() || paused())){
 			setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
+			justResumed = active();
+		}
 		
 		if(paused()){
 			if(!clock.isSuspended()){
 				clock.suspend();
 				Music music = level.getStageMusic();
 				if(music != null){
-					vars.put("musicVolume", music.getVolume());
+					musicVolume = music.getVolume();
 					music.setVolume(.1f);
 				}
 			}
 			
 			renderPause();
 		} else{
-			if(clock.isSuspended()){
+			if(justResumed){
 				setGameState(GameState.ACTIVE);
 				Music music = level.getStageMusic();
 				if(music != null)
-					music.setVolume((float)vars.get("musicVolume"));
+					music.setVolume(musicVolume);
 
 				clock.resume();
 			}
@@ -274,12 +281,11 @@ public class Engine{
 	}
 	
 	private void progress(){
-		if((lost() || completed()) && !clock.isStopped()){
-			clock.stop();
-			System.out.println("suspend!");
-		}
+		if((lost() || completed()) && !clock.isSuspended())
+			clock.suspend();
 		
-		vars.put("prevTranslate", getTranslation());
+		prevTx = gameCamera.position.x;
+		prevTy = gameCamera.position.y;
 		
 		level.gameLoop();
 		statusControll();
@@ -326,19 +332,14 @@ public class Engine{
 	}
 	
 	private void initCameras(){
-		int windowWidth 	= (int) 	vars.get("screenWidth");
-		int windowHeight 	= (int) 	vars.get("screenHeight");
-		float scale 		= (float) 	vars.get("screenScale");
-		boolean flipY 		= (boolean) vars.get("flipY");
-		
 		gameCamera = new OrthographicCamera();
-		gameCamera.setToOrtho(flipY, windowWidth, windowHeight);
+		gameCamera.setToOrtho(flipY, screenWidth, screenHeight);
 		
 		hudCamera = new OrthographicCamera();
-		hudCamera.setToOrtho(true, windowWidth, windowHeight);
+		hudCamera.setToOrtho(true, screenWidth, screenHeight);
 		
-		if(Gdx.graphics.getWidth() != windowWidth * scale || Gdx.graphics.getHeight() != windowHeight * scale)
-			Gdx.graphics.setDisplayMode((int)(windowWidth * scale), (int)(windowHeight * scale), false);
+		if(Gdx.graphics.getWidth() != screenWidth * scale || Gdx.graphics.getHeight() != screenHeight * scale)
+			Gdx.graphics.setDisplayMode((int)(screenWidth * scale), (int)(screenHeight * scale), false);
 	}
 	
 	private void statusControll(){
@@ -448,11 +449,10 @@ public class Engine{
 			return;
 		
 		if(playingReplay() && PlayableEntity.checkButtons(level.getAliveMainCharacters()).pause)
-			vars.put("helpText", !((boolean)vars.get("helpText")));
+			showHelpText = !showHelpText;
 		
-		if((boolean) vars.get("helpText")){
+		if(showHelpText)
 			timeFont.draw(batch, helpText, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 2);
-		}
 
 		if(!playingReplay() && getGameState() == GameState.SUCCESS){
 			timeFont.draw(batch, String.format(winText, getTime()), Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2);
@@ -470,6 +470,7 @@ public class Engine{
 			try{
 				engine.setup();
 			}catch(IOException ioe){
+				dispose();
 				throw new RuntimeException(ioe);
 			}
 		}

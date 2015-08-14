@@ -18,7 +18,7 @@ public class Image2D extends Texture{
 	public Image2D(FileHandle file, boolean createPixelData) {
 		super(file);
 		if(createPixelData)
-			createPixelData(file);
+			createPixelData();
 	}
 	
 	public Image2D(Pixmap map){
@@ -48,11 +48,11 @@ public class Image2D extends Texture{
 	}
 	
 	public void createPixelData(){
-		createPixelData(((FileTextureData)getTextureData()).getFileHandle());
-	}
-	
-	public void createPixelData(FileHandle file){
-		createPixelData(new Pixmap(file));
+		FileTextureData td = (FileTextureData)getTextureData();
+		td.prepare();
+		
+		createPixelData(td.consumePixmap());
+		td.consumePixmap().dispose();
 	}
 	
 	public void createPixelData(Pixmap img){
@@ -68,7 +68,6 @@ public class Image2D extends Texture{
 				pixelData[x][y] = value;
 			}
 		}
-		img.dispose();
 	}
 
 	public static Image2D[] loadAnimation(FileHandle directory) throws IOException{
