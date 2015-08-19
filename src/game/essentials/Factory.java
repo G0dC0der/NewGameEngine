@@ -158,7 +158,7 @@ public class Factory {
 	}
 	
 	public static Event follow(Entity src, Entity tail, float offsetX, float offsetY){
-		return ()-> tail.move(src.bounds.x + offsetX, src.bounds.y + offsetY);
+		return ()-> tail.move(src.bounds.pos.x + offsetX, src.bounds.pos.y + offsetY);
 	}
 	
 	public static Event follow(Entity src, Entity tail){

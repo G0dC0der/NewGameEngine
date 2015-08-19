@@ -1,32 +1,45 @@
 package game.core;
 
 import game.core.Level.Tile;
+import game.essentials.Bounds;
 import game.essentials.Direction;
-import game.essentials.Hitbox;
 import game.essentials.Image2D;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 public class Collisions {
+	
+	public static final boolean rectanglesCollide(Rectangle rec1, Rectangle rec2)
+	{
+		if ((rec1.y + rec1.height < rec2.y) ||
+	        (rec1.y > rec2.y + rec2.height) ||
+	        (rec1.x + rec1.width < rec2.x)  ||
+	        (rec1.x > rec2.x + rec2.width))
+	        return false;
+		
+		return true;
+	}
 
-	public static boolean rotatedRectanglesCollide(Rectangle rec1, float rotation1, Rectangle rec2, float rotation2){
+	public static boolean rotatedRectanglesCollide(Bounds bounds1, Bounds bounds2){
 		RotRect rr1 = new RotRect();
-		rr1.C = new Vector2(rec1.x + rec1.width / 2, rec1.y + rec1.height / 2);
-		rr1.S = new Vector2(rec1.width / 2, rec1.height / 2);
-		rr1.ang = (float) Math.toRadians(rotation1);
+		rr1.C = bounds1.center();
+		rr1.S = new Vector2(bounds1.size.width / 2, bounds1.size.height / 2);
+		rr1.ang = (float) Math.toRadians(bounds1.rotation);
 		
 		RotRect rr2 = new RotRect();
-		rr2.C = new Vector2(rec2.x + rec2.width / 2, rec2.y + rec2.height / 2);
-		rr2.S = new Vector2(rec2.width / 2, rec2.height / 2);
-		rr2.ang = (float) Math.toRadians(rotation2);
+		rr2.C = bounds2.center();
+		rr2.S = new Vector2(bounds2.size.width / 2, bounds2.size.height / 2);
+		rr2.ang = (float) Math.toRadians(bounds2.rotation);
 		
 		Vector2 A,B,C,BL,TR;
 		
@@ -125,34 +138,27 @@ public class Collisions {
 		return !((ext1 < BL.y && ext2 < BL.y) || (ext1 > TR.y && ext2 > TR.y));
 	}
 	
-	public static boolean circleRectangleCollide(Circle circle, Rectangle rect){
-	    float circleDistanceX = Math.abs((circle.x) - (rect.x + rect.width  / 2));
-	    float circleDistanceY = Math.abs((circle.y) - (rect.y + rect.height / 2));
+	public static boolean circleRectangleCollide(Circle circle, Rectangle rectangle){
+	    float circleDistanceX = Math.abs((circle.x) - (rectangle.x + rectangle.width  / 2));
+	    float circleDistanceY = Math.abs((circle.y) - (rectangle.y + rectangle.height / 2));
 	    float radius = circle.radius;
 
-	    if (circleDistanceX > (rect.width / 2 + radius) || (circleDistanceY > (rect.height / 2 + radius)))
+	    if (circleDistanceX > (rectangle.width / 2 + radius) || (circleDistanceY > (rectangle.height / 2 + radius)))
 	    	return false;
 	    
-	    if ((circleDistanceX <= (rect.width / 2)) || (circleDistanceY <= (rect.height / 2)))
+	    if ((circleDistanceX <= (rectangle.width / 2)) || (circleDistanceY <= (rectangle.height / 2)))
 	    	return true;
 
-	    double cornerDistance_sq = Math.pow(circleDistanceX - rect.width  /2, 2) +
-	                               Math.pow(circleDistanceY - rect.height /2, 2);
+	    double cornerDistance_sq = Math.pow(circleDistanceX - rectangle.width  /2, 2) +
+	                               Math.pow(circleDistanceY - rectangle.height /2, 2);
 
 	    return (cornerDistance_sq <= (radius * radius));
 	}
 	
-	public static boolean circleVsCircle(Entity c1, Entity c2){ //TODO: Take two Circle objects
-		float x1 = c1.bounds.x + c1.width()  / 2,
-			  y1 = c1.bounds.y + c1.height() / 2,
-			  x2 = c2.bounds.x + c2.width()  / 2,
-			  y2 = c2.bounds.y + c2.height() / 2,
-			  r1 = c1.width() / 2,
-			  r2 = c2.height() / 2;
-
-	    float dx = x2 - x1;
-	    float dy = y2 - y1;
-	    float d = r1 + r2;
+	public static boolean circleVsCircle(Circle c1, Circle c2){
+	    float dx = c2.x - c1.x;
+	    float dy = c2.y - c1.y;
+	    float d = c1.radius + c2.radius;
 	    return (dx * dx + dy * dy) < (d * d);
 	}
 	
@@ -161,29 +167,29 @@ public class Collisions {
 	 * Precondition: offsetX and offsetY == 0, flipX and flipY == false
 	 * @return True if the two polygons are colliding.
 	 */
-	public static boolean polygonsCollide(Entity entity1, Entity entity2){
-		preparePolygon(entity1);
-		preparePolygon(entity2);
-		return Intersector.overlapConvexPolygons(entity1.poly, entity2.poly);
-	}
-	
-	private static void preparePolygon(Entity entity){
-		if(	entity.poly.getX()	 			!= entity.bounds.x 		||
-			entity.poly.getY() 				!= entity.bounds.y 		|| 
-			entity.poly.getRotation() 		!= entity.getRotation())
-		{
-			entity.poly.setRotation(entity.getRotation());
-			entity.poly.setPosition(entity.bounds.x, entity.bounds.y);
-			entity.poly.setOrigin(entity.bounds.x - entity.bounds.width / 2, entity.bounds.y - entity.bounds.height / 2);
-		}
-	}
+//	public static boolean polygonsCollide(Entity entity1, Entity entity2){
+//		preparePolygon(entity1);
+//		preparePolygon(entity2);
+//		return Intersector.overlapConvexPolygons(entity1.poly, entity2.poly);
+//	}
+//	
+//	private static void preparePolygon(Entity entity){
+//		if(	entity.poly.getX()	 			!= entity.bounds.x 		||
+//			entity.poly.getY() 				!= entity.bounds.y 		|| 
+//			entity.poly.getRotation() 		!= entity.getRotation())
+//		{
+//			entity.poly.setRotation(entity.getRotation());
+//			entity.poly.setPosition(entity.bounds.x, entity.bounds.y);
+//			entity.poly.setOrigin(entity.bounds.x - entity.bounds.width / 2, entity.bounds.y - entity.bounds.height / 2);
+//		}
+//	}
 
 	/**
 	 * Performs a pixel perfect collision check.
-	 * Precondition: Rotation == 0, scaleX and scaleY == 1, offsetX and offsetY == 0, bounds.width and height are equal to the size of the image.
+	 * Precondition: Rotation == 0, offsetX and offsetY == 0, bounds.width and height are equal to the size of the image.
 	 * @return True if the two entities are colliding.
 	 */
-	public static boolean pixelPerfect(Entity entity1, Entity entity2){	
+	public static boolean pixelPerfect(Entity entity1, Entity entity2){	//TODO: Strictify params
 		Image2D image1 = entity1.getImage().getCurrentObject();
 		Image2D image2 = entity2.getImage().getCurrentObject();
 				
@@ -191,35 +197,72 @@ public class Collisions {
 		int width2  = image2.getWidth();
 		int height1 = image1.getHeight();
 		int height2 = image2.getHeight();
-		int top    = (int) Math.max(entity1.bounds.y, entity2.bounds.y);
-		int bottom = (int) Math.min(entity1.bounds.y + height1, entity2.bounds.y + height2);
-		int left   = (int) Math.max(entity1.bounds.x, entity2.bounds.x);
-		int right  = (int) Math.min(entity1.bounds.x + width1, entity2.bounds.x + width2);
+		int top    = (int) Math.max(entity1.x(), entity2.y());
+		int bottom = (int) Math.min(entity1.y() + height1, entity2.y() + height2);
+		int left   = (int) Math.max(entity1.x(), entity2.y());
+		int right  = (int) Math.min(entity1.x() + width1, entity2.x() + width2);
 		
 		for (int y = top; y < bottom; y++){
 			for (int x = left; x < right; x++){
-				int x1 = (int) (entity1.flipX ? width1  - (x - entity1.bounds.x) - 1 : x - entity1.bounds.x); //Why are there -1 on these? 
-				int y1 = (int) (entity1.flipY ? height1 - (y - entity1.bounds.y) - 1 : y - entity1.bounds.y);
-				int x2 = (int) (entity2.flipX ? width2  - (x - entity2.bounds.x) - 1 : x - entity2.bounds.x);
-				int y2 = (int) (entity2.flipY ? height2 - (y - entity2.bounds.y) - 1 : y - entity2.bounds.y);
+				int x1 = (int) (entity1.flipX ? width1  - (x - entity1.bounds.pos.x) - 1 : x - entity1.bounds.pos.x); //Why are there -1 on these? 
+				int y1 = (int) (entity1.flipY ? height1 - (y - entity1.bounds.pos.y) - 1 : y - entity1.bounds.pos.y);
+				int x2 = (int) (entity2.flipX ? width2  - (x - entity2.bounds.pos.x) - 1 : x - entity2.bounds.pos.x);
+				int y2 = (int) (entity2.flipY ? height2 - (y - entity2.bounds.pos.y) - 1 : y - entity2.bounds.pos.y);
 				
-				//TODO: Test this! - If this works, remove polygon
-				if(entity1.getRotation() != 0){
-					Vector2 rotated = rotatePoint(x1, y1, entity1.centerX(), entity1.centerY(), entity1.getRotation());
-					x1 = (int) rotated.x;
-					y1 = (int) rotated.y;
-				}
-				if(entity2.getRotation() != 0){
-					Vector2 rotated = rotatePoint(x2, y2, entity2.centerX(), entity2.centerY(), entity2.getRotation());
-					x2 = (int) rotated.x;
-					y2 = (int) rotated.y;
-				}
+				int alpha1 = image1.getPixel(x1, y1) & 0x000000FF;
+				int alpha2 = image2.getPixel(x2, y2) & 0x000000FF;
 				
-				if (image1.getPixel(x1, y1) != 0 && image2.getPixel(x2, y2) != 0)
+				if (alpha1 != 0 && alpha2 != 0)
 					return true;
 			}
 		}
 		return false;
+	}
+	
+	public static boolean pixelPerfectRotation(Matrix4 m1, Image2D img1, Matrix4 m2, Image2D img2){
+		Matrix4 AtoB = m1.mul(m2.inv());
+		Vector3 trans = AtoB.getTranslation(new Vector3());
+		Matrix4 AtoBnorm = new Matrix4(AtoB).translate(-trans.x, -trans.y, 0);
+		
+		Vector3 stepX = Vector3.X.cpy().mul(AtoBnorm);
+		Vector3 stepY = Vector3.Y.cpy().mul(AtoBnorm);
+		Vector3 yPosInB = Vector3.Zero.cpy().mul(AtoB);
+		
+		int widthA = img1.getWidth();
+		int widthB = img2.getWidth();
+		int heightA = img1.getHeight();
+		int heightB = img2.getHeight();
+		
+		for (int yA = 0; yA < heightA; yA++){
+			Vector3 posInB = yPosInB.cpy();
+
+            for (int xA = 0; xA < widthA; xA++){
+                int xB = Math.round(posInB.x);
+                int yB = Math.round(posInB.y);
+
+                if (0 <= xB && xB < widthB && 0 <= yB && yB < heightB){
+                	int alpha1 = img1.getPixel(xA, yA) & 0x000000FF;
+    				int alpha2 = img2.getPixel(xB, yB) & 0x000000FF;
+
+    				if (alpha1 != 0 && alpha2 != 0)
+                        return true;
+                }
+                posInB.x += stepX.x;
+                posInB.y += stepX.y;
+            }
+            yPosInB.x += stepY.x;
+            yPosInB.y += stepY.y;
+        }
+        return false;
+	}
+	
+	public static Matrix4 createMatrix(Entity entity){
+		Matrix4 m = new Matrix4();
+		m.setToTranslation(-(entity.width() / 2), -(entity.height() / 2), 0);
+		m.rotate(0, 0, 1, -entity.getRotation());
+		m.translate(entity.x(), entity.y(), 0);
+		  
+		return m;
 	}
 	
 	public static double getAngle(float x1, float y1, float x2, float y2){
@@ -297,13 +340,12 @@ public class Collisions {
 	 * @param entity The {@code GameObject} to calculate the bounding box on.
 	 * @return The bounding box.
 	 */
-	public static Rectangle getBoundingBox(Rectangle rec, float rotation){
-		  float centerX = rec.x + rec.width / 2;
-		  float centerY = rec.y + rec.height / 2;
-		  Vector2 p1 = rotatePoint(rec.x, rec.y, centerX, centerY, rotation);
-		  Vector2 p2 = rotatePoint(rec.x + rec.width, rec.y, centerX, centerY, rotation);
-		  Vector2 p3 = rotatePoint(rec.x + rec.width, rec.y + rec.height, centerX, centerY, rotation);
-		  Vector2 p4 = rotatePoint(rec.x, rec.y + rec.height, centerX, centerY, rotation);
+	public static Rectangle getBoundingBox(Bounds bounds){
+		  Vector2 c = bounds.center();
+		  Vector2 p1 = rotatePoint(bounds.pos.x, bounds.pos.y, c.x, c.y, bounds.rotation);
+		  Vector2 p2 = rotatePoint(bounds.pos.x + bounds.size.width, bounds.pos.y, c.x, c.y, bounds.rotation);
+		  Vector2 p3 = rotatePoint(bounds.pos.x + bounds.size.width, bounds.pos.y + bounds.size.height, c.x, c.y, bounds.rotation);
+		  Vector2 p4 = rotatePoint(bounds.pos.x, bounds.pos.y + bounds.size.height, c.x, c.y, bounds.rotation);
 		  
 		  List<Float> xcords = Arrays.asList(p1.x, p2.x, p3.x, p4.x);
 		  List<Float> ycords = Arrays.asList(p1.y, p2.y, p3.y, p4.y);
@@ -314,7 +356,11 @@ public class Collisions {
 		  float maxY = Collections.max(ycords);
 		  
 		  return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-		}
+	}
+	
+	public static Vector2 rotatePoint(Vector2 point, Vector2 center, float rotation){
+		return rotatePoint(point.x, point.y, center.x, center.y, rotation);
+	}
 	
 	/**
 	 * Rotates the given point around the given axis and returning the new coordinate.
@@ -329,26 +375,14 @@ public class Collisions {
 		if(rotation == 0)
 			return new Vector2(x,y);
 		
-//		final float[] arr = {x, y, 0, 0, 0, 0, 0, 0};
-//		
-//		AffineTransform at = new AffineTransform();
-//		at.rotate(Math.toRadians(rotation), cx, cy);
-//		at.transform(arr, 0, arr, 0, 4);
-//		
-//		return new Vector2(arr[0], arr[1]);
-		Vector2 p = new Vector2(x,y);
-		float s = MathUtils.sin(rotation);
-		float c = MathUtils.cos(rotation);
-
-		p.x -= cx;
-		p.y -= cy;
-
-		float xnew = p.x * c - p.y * s;
-		float ynew = p.x * s + p.y * c;
-
-		p.x = xnew + cx;
-		p.y = ynew + cy;
-		return p;
+		float angleInRadians = (float)(rotation * (Math.PI / 180));
+		float cosTheta = MathUtils.cos(angleInRadians);
+		float sinTheta = MathUtils.sin(angleInRadians);
+		
+		return new Vector2(
+				(cosTheta * (x - cx) - sinTheta * (y - cy) + cx), 
+				(sinTheta * (x - cx) + cosTheta * (y - cy) + cy)
+		);
 	}
 	
 	public static Vector2 searchTile(int x0, int y0, final int x1, final int y1, Tile tile, Level level){
@@ -398,19 +432,15 @@ public class Collisions {
 		return searchTile((int)x0, (int)y0, (int)x1, (int)y1, tile, level);
 	}
 	
-	public static boolean circleVsLine(float Ax, float Ay, float Bx, float By, Entity circle){//TODO:
-		float r = circle.width() / 2;
-		float Cx = circle.x() + r;
-		float Cy = circle.y() + circle.height() / 2;
-		
+	public static boolean circleVsLine(float Ax, float Ay, float Bx, float By, Circle c){
 		double LAB = Math.sqrt((Bx-Ax)*(Bx-Ax) + (By-Ay)*(By-Ay));
 		double Dx = (Bx-Ax)/LAB;
 		double Dy = (By-Ay)/LAB;
-		double t = Dx*(Cx-Ax) + Dy*(Cy-Ay);
+		double t = Dx*(c.x-Ax) + Dy*(c.y-Ay);
 		double Ex = t*Dx+Ax;
 		double Ey = t*Dy+Ay;
-		double LEC = Math.sqrt((Ex-Cx)*(Ex-Cx) + (Ey-Cy)*(Ey-Cy));
-		if(LEC <= r)
+		double LEC = Math.sqrt((Ex-c.x)*(Ex-c.x) + (Ey-c.y)*(Ey-c.y));
+		if(LEC <= c.radius)
 			return true;
 		
 		return false;
@@ -420,18 +450,11 @@ public class Collisions {
 	 * Check if the specified GameObject appear between the two points.
 	 * @return True if the specified {@code Entity} is intersecting with the given line.
 	 */
-	public static boolean lineEntityCollide(float x1, float y1, float x2, float y2, Entity entity){//TODO:
-		if(entity.getHitbox() == Hitbox.CIRCLE)
-			return circleVsLine(x1,y1,x2,y2,entity);
-		else{
-			if(lineIntersect(x1,y1,x2,y2, entity.x(), entity.y(), entity.x() + entity.width(), entity.y())              			||
-			   lineIntersect(x1,y1,x2,y2, entity.x(), entity.y(), entity.x(), entity.y() + entity.height())             			||
-			   lineIntersect(x1,y1,x2,y2, entity.x() + entity.width(), entity.y(), entity.x() + entity.width(), entity.y() + entity.height()) ||
-			   lineIntersect(x1,y1,x2,y2, entity.x(), entity.y() + entity.height(), entity.x() + entity.width(), entity.y() + entity.height()))
-				return true;
-					
-			return false;
-		}
+	public static boolean lineRectangle(float x1, float y1, float x2, float y2, Rectangle rec){
+		return 	lineIntersect(x1,y1,x2,y2, rec.x, rec.y, rec.x + rec.width, rec.y) 							||
+				lineIntersect(x1,y1,x2,y2, rec.x, rec.y, rec.x, rec.y + rec.height) 						||
+				lineIntersect(x1,y1,x2,y2, rec.x + rec.width, rec.y, rec.x + rec.width, rec.y + rec.height) ||
+				lineIntersect(x1,y1,x2,y2, rec.x, rec.y + rec.height, rec.x + rec.width, rec.y + rec.height);
 	}
 	
 	public static Vector2 findEdgePoint(float obsX, float obsY, float tarX, float tarY, Level level){
@@ -568,6 +591,33 @@ public class Collisions {
 			default:
 				return null;
 		}
+	}
+	
+	public static Direction getDirection(float currX, float currY, float prevX, float prevY){
+		if(currX == prevX && currY == prevY)
+			return null;
+		
+		Vector2 normalized = normalize(prevX, prevY, currX, currY);
+		final double fThreshold = Math.cos(Math.PI / 8);
+		 
+		if (normalized.x > fThreshold)
+		    return Direction.W;
+		else if (normalized.x < -fThreshold)
+		    return Direction.E; 
+		else if (normalized.y > fThreshold)
+		    return Direction.N;
+		else if (normalized.y < -fThreshold)
+		    return Direction.S;
+		else if (normalized.x > 0 && normalized.y > 0)
+		    return Direction.NW;
+		else if (normalized.x > 0 && normalized.y < 0)
+		    return Direction.SW;
+		else if (normalized.x < 0 && normalized.y > 0)
+		    return Direction.NE;
+		else if (normalized.x < 0 && normalized.y < 0)
+		    return Direction.SE;
+		
+		return null;
 	}
 	
 	private static void addVectors2D(Vector2 v1, Vector2 v2){

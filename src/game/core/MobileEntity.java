@@ -15,7 +15,7 @@ public class MobileEntity extends Entity{
 	List<TileEvent> tileEvents;
 	
 	private float moveSpeed;
-	private boolean frozen;
+	private boolean frozen, tileEventPause;
 	private Set<Entity> obstacles;
 	
 	public MobileEntity(){
@@ -56,8 +56,8 @@ public class MobileEntity extends Entity{
 	    double dist = Math.sqrt( fX*fX + fY*fY );
 	    double step = steps / dist;
 
-	    bounds.x += fX * step;
-	    bounds.y += fY * step;
+	    bounds.pos.x += fX * step;
+	    bounds.pos.y += fY * step;
 	}
 
 	public void stepBack(){
@@ -65,8 +65,8 @@ public class MobileEntity extends Entity{
 	}
 	
 	public void forgetPast(){
-		prevX = bounds.x;
-		prevY = bounds.y;
+		prevX = bounds.pos.x;
+		prevY = bounds.pos.y;
 	}
 	
 	public float prevX(){
@@ -75,6 +75,10 @@ public class MobileEntity extends Entity{
 	
 	public float prevY(){
 		return prevY;
+	}
+	
+	public void pauseTileEvents(boolean pause){
+		this.tileEventPause = pause;
 	}
 	
 	public void addTileEvent(TileEvent tileEvent){
@@ -101,7 +105,7 @@ public class MobileEntity extends Entity{
 	
 	public boolean tryRight(int steps){
 		for(int i = steps; i > 0; i--){
-			if(!occupiedAt(x() + width() + i, y())){
+			if(!occupiedAt(x() + i, y())){
 				move(x() + i, y());
 				return true;
 			}
@@ -121,7 +125,7 @@ public class MobileEntity extends Entity{
 	
 	public boolean tryDown(int steps){
 		for(int i = steps; i > 0; i--){
-			if(!occupiedAt(x(), y() + height() + i)){
+			if(!occupiedAt(x(), y() + i)){
 				move(x(), y() + i);
 				return true;
 			}
@@ -129,31 +133,45 @@ public class MobileEntity extends Entity{
 		return false;
 	}
 	
-	public void face(Direction dir){ //TODO:TEST! Complete
+	public void face(Direction dir){
 		switch(dir){
-		case N:
-			setRotation(-90);
-			flipY = false;
-			break;
-		case NE:
-			setRotation(-45);
-			flipX = flipY = false;
-			break;
-		case E:
-			setRotation(0);
-			flipX = flipY = false;
-			break;
-		case SE:
-			setRotation(45);
-			flipX = flipY = false;
-			break;
-		case S:
-			setRotation(90);
-			flipY = false;
-		case SW:
-			setRotation(90 + 45);
-			flipX = true;
-			flipY = false;
+			case N:
+				setRotation(-90);
+				flipY = false;
+				flipX = false;
+				break;
+			case NE:
+				setRotation(-45);
+				flipX = flipY = false;
+				break;
+			case E:
+				setRotation(0);
+				flipX = flipY = false;
+				break;
+			case SE:
+				setRotation(45);
+				flipX = flipY = false;
+				break;
+			case S:
+				setRotation(90);
+				flipY = false;
+				flipX = false;
+				break;
+			case SW:
+				setRotation(90 + 45);
+				flipX = false;
+				flipY = true;
+				break;
+			case W:
+				setRotation(0);
+				flipX = true;
+				flipY = false;
+				break;
+			case NW:
+				setRotation(45);
+				flipX = true;
+				flipY = false;
+				break;
 		}
 	}
 	
@@ -162,7 +180,12 @@ public class MobileEntity extends Entity{
 				realY = y();
 		move(targetX, targetY);
 		
-		boolean occupied = !getOccupyingCells().contains(Tile.SOLID) && !obstacleCollision();
+		boolean occupied = getOccupyingCells().contains(Tile.SOLID);
+		if(occupied){
+			move(realX,realY);
+			return true;
+		}
+		occupied = obstacleCollision();
 		move(realX,realY);
 		return occupied;
 	}
@@ -216,14 +239,14 @@ public class MobileEntity extends Entity{
        
         if(overY > overX){
             if(target.x() > centerX)
-            	target.bounds.x += overX;
+            	target.bounds.pos.x += overX;
             else
-            	target.bounds.x -= overX;
+            	target.bounds.pos.x -= overX;
         } else{
         	if(target.y() > centerY)
-        		target.bounds.y += overY;
+        		target.bounds.pos.y += overY;
         	else
-        		target.bounds.y -= overY;
+        		target.bounds.pos.y -= overY;
         }
 	}
 	
@@ -236,7 +259,10 @@ public class MobileEntity extends Entity{
 	}
 	
 	void runTileEvents(Tile tile){
-		for(TileEvent tileEvent : tileEvents)
-			tileEvent.eventHandling(tile);
+		if(!tileEventPause){
+			for(TileEvent tileEvent : tileEvents){
+				tileEvent.eventHandling(tile);
+			}
+		}
 	}
 }

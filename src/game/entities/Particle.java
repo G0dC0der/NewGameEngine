@@ -33,6 +33,7 @@ public class Particle extends MobileEntity{
 	}
 	
 	protected void copyData(Particle src){
+		super.copyData(src);
 		introSound = src.introSound;
 	}
 }

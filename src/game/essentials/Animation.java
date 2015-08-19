@@ -281,6 +281,7 @@ public class Animation<T>
 		freq.limit = limit;
 		freq.loop = loop;
 		freq.stop = stop;
+		freq.pingpong = pingpong;
 		
 		return freq;
 	}

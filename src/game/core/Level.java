@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.Vector2;
 
 public abstract class Level {
 	
@@ -74,6 +75,10 @@ public abstract class Level {
 	public abstract void build();
 	
 	public abstract void dispose();
+	
+	public Tile tileAt(Vector2 cord){
+		return tileAt((int)cord.x, (int)cord.y);
+	}
 	
 	public void processMeta(Serializable meta) {}
 

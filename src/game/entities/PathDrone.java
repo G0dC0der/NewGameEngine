@@ -189,8 +189,8 @@ public class PathDrone extends MobileEntity {
 
 				forgetPast();
 
-				bounds.x = wp.targetX;
-				bounds.y = wp.targetY;
+				bounds.pos.x = wp.targetX;
+				bounds.pos.y = wp.targetY;
 
 				if (playEvent && wp.event != null) {
 					wp.event.eventHandling();
@@ -213,13 +213,13 @@ public class PathDrone extends MobileEntity {
 		if (isFrozen())
 			return;
 
-		float fX = targetX - bounds.x;
-		float fY = targetY - bounds.y;
+		float fX = targetX - bounds.pos.x;
+		float fY = targetY - bounds.pos.y;
 		double dist = Math.sqrt(fX * fX + fY * fY);
 		double step = steps / dist;
 
-		float tx = (float) (bounds.x + fX * step);
-		float ty = (float) (bounds.y + fY * step);
+		float tx = (float) (bounds.pos.x + fX * step);
+		float ty = (float) (bounds.pos.y + fY * step);
 
 		if (rock) {
 			boolean canNext = occupiedAt(tx, ty);

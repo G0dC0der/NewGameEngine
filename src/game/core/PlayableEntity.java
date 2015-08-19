@@ -46,8 +46,10 @@ public abstract class PlayableEntity extends MobileEntity{
 			hurtCounter = 100;	
 		}
 		
-		if(0 >= hp)
+		if(0 >= hp){
+			deathAction();
 			setState(Vitality.DEAD);
+		}
 	}
 	
 	public boolean isHurt(){
@@ -156,8 +158,7 @@ public abstract class PlayableEntity extends MobileEntity{
 		setVisible(true);
 	}
 	
-	Keystrokes nextReplayFrame()
-	{
+	Keystrokes nextReplayFrame(){
 		if(ghostData == null)
 			throw new IllegalStateException("This method can only be called if the entity is a ghost.");
 		

@@ -1,26 +1,26 @@
 package game.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-
 import game.essentials.Animation;
+import game.essentials.Bounds;
 import game.essentials.Hitbox;
 import game.essentials.Image2D;
 import game.essentials.SoundEmitter;
 import game.events.CloneEvent;
 import game.events.Event;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
+
 public class Entity{
 
-	public final Rectangle bounds;
+	public final Bounds bounds;
 	public final SoundEmitter sounds;
 	public String id;
 	public float alpha, offsetX, offsetY;
@@ -38,15 +38,15 @@ public class Entity{
 	private Entity originator;
 	private Hitbox hitbox;
 	private boolean quickCollision, visible, active;
-	private float rotation;
 	private int zIndex;
 	
 	public Entity(){
-		bounds = new Rectangle();
+		bounds = new Bounds();
 		sounds = new SoundEmitter(this);
 		alpha = offsetX = offsetY = 1;
 		active = true;
 		events = new ArrayList<>();
+		hitbox = Hitbox.RECTANGLE;
 		deleteEvents = new ArrayList<>();
 	}
 	
@@ -69,8 +69,8 @@ public class Entity{
 		this.image = image;
 		
 		visible = true;
-		bounds.width  = image.getArray()[0].getWidth();
-		bounds.height = image.getArray()[0].getHeight();
+		bounds.size.width  = image.getArray()[0].getWidth();
+		bounds.size.height = image.getArray()[0].getHeight();
 	}
 	
 	public Animation<Image2D> getImage(){
@@ -78,8 +78,8 @@ public class Entity{
 	}
 	
 	public Entity move(float x, float y){
-		bounds.x = x;
-		bounds.y = y;
+		bounds.pos.x = x;
+		bounds.pos.y = y;
 		return this;
 	}
 	
@@ -140,41 +140,42 @@ public class Entity{
 	}
 	
 	public boolean collidesWith(Entity entity){
-		boolean rotated1 = rotation != 0 && !quickCollision;
-		boolean rotated2 = entity.rotation != 0 && !entity.quickCollision;
+		boolean rotated1 = bounds.rotation != 0 && !quickCollision;
+		boolean rotated2 = entity.bounds.rotation != 0 && !entity.quickCollision;
 		
 		if(hitbox == Hitbox.NONE || entity.hitbox == Hitbox.NONE){
 			return false;
 		} else if(hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.RECTANGLE){
-			if(rotated1 || rotated2)
-				return Collisions.rotatedRectanglesCollide(bounds, getRotation(), entity.bounds, entity.getRotation());
-			else
-				return Intersector.overlaps(bounds, entity.bounds);
+			return (rotated1 || rotated2) ? Collisions.rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) : Collisions.rotatedRectanglesCollide(bounds, entity.bounds);
 		} else if((hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.CIRCLE) || (hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.RECTANGLE)){
 			Entity rectangle 	= hitbox == Hitbox.RECTANGLE 	? this : entity;
 			Entity circle 		= hitbox == Hitbox.CIRCLE 		? this : entity;
 			
-			if(rectangle.rotation != 0 && !rectangle.quickCollision)
+			if(rectangle.getRotation() != 0)
 				throw new RuntimeException("No collision method for rotated rectangle vs circle.");
-			else
-				return Collisions.circleRectangleCollide(new Circle(circle.centerX(), circle.centerY(), circle.width() / 2), rectangle.bounds);
+			
+			return Collisions.circleRectangleCollide(new Circle(circle.centerX(), circle.centerY(), circle.width() / 2), rectangle.bounds.toRectangle());
 		} else if(hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.CIRCLE){
-			return Collisions.circleVsCircle(this, entity);
+			return Collisions.circleVsCircle(new Circle(centerX(), centerY(), width() / 2), new Circle(entity.centerX(), entity.centerY(), entity.width() / 2));
 		} else if(hitbox == Hitbox.POLYGON || entity.hitbox == Hitbox.POLYGON){
-			return Collisions.polygonsCollide(this, entity);
+			//return Collisions.polygonsCollide(this, entity);
 		} else if(hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL){
-			return Intersector.overlaps(bounds, entity.bounds) && Collisions.pixelPerfect(this, entity);
+			if(bounds.rotation != 0 || entity.bounds.rotation != 0)	
+				return Collisions.pixelPerfectRotation(	Collisions.createMatrix(this), getImage().getCurrentObject(),
+														Collisions.createMatrix(entity), getImage().getCurrentObject());
+			
+			return Collisions.rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) || Collisions.pixelPerfect(this, entity);
 		}
 		
 		throw new IllegalStateException("No proper collision handling methods found.");
 	}
 	
 	public Vector2 getCenterCord(){
-		return new Vector2(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+		return bounds.center();
 	}
 	
 	public Vector2 getPos(){
-		return new Vector2(bounds.x, bounds.y);
+		return bounds.pos.cpy();
 	}
 	
 	public void setPolygon(float[] vertices){
@@ -182,47 +183,47 @@ public class Entity{
 	}
 	
 	public float getRotation(){
-		return rotation;
+		return bounds.rotation;
 	}
-	
+
 	public void setRotation(float rotation){
-		this.rotation = rotation;
+		bounds.rotation = rotation;
 	}
 	
 	public void rotate(float amount){
-		rotation += amount;
+		bounds.rotation += amount;
 	}
 	
 	public float x(){
-		return bounds.x;
+		return bounds.pos.x;
 	}
 	
 	public float y(){
-		return bounds.y;
+		return bounds.pos.y;
 	}
 	
 	public float width(){
-		return bounds.width;
+		return bounds.size.width;
 	}
 	
 	public float height(){
-		return bounds.height;
+		return bounds.size.height;
 	}
 	
 	public float halfWidth(){
-		return bounds.width / 2;
+		return bounds.size.width / 2;
 	}
 	
 	public float halfHeight(){
-		return bounds.height / 2;
+		return bounds.size.height / 2;
 	}
 	
 	public float centerX(){
-		return bounds.x + bounds.width / 2;
+		return bounds.pos.x + bounds.size.width / 2;
 	}
 	
 	public float centerY(){
-		return bounds.y + bounds.height / 2;
+		return bounds.pos.y + bounds.size.height / 2;
 	}
 	
 	public Hitbox getHitbox() {
@@ -238,17 +239,17 @@ public class Entity{
 	}
 	
 	public void expand(){
-		bounds.x--;
-		bounds.y--;
-		bounds.width += 2;
-		bounds.height += 2;
+		bounds.pos.x--;
+		bounds.pos.y--;
+		bounds.size.width += 2;
+		bounds.size.height += 2;
 	}
 	
 	public void contract(){
-		bounds.x++;
-		bounds.y++;
-		bounds.width -= 2;
-		bounds.height -= 2;
+		bounds.pos.x++;
+		bounds.pos.y++;
+		bounds.size.width -= 2;
+		bounds.size.height -= 2;
 	}
 	
 	public boolean isPresent(){
@@ -267,15 +268,20 @@ public class Entity{
 		this.cloneEvent = cloneEvent;
 	}
 	
+	public Matrix3 calcMatrix(){
+		return new Matrix3().setToTranslation(width() / 2, height() /  2).rotate(bounds.rotation).translate(x(), y());
+	}
+	
 	protected void copyData(Entity src){
 		originator = src;
-		bounds.x = src.bounds.x;
-		bounds.y = src.bounds.y;
-		bounds.width = src.bounds.width;
+		bounds.pos.x = src.bounds.pos.x;
+		bounds.pos.y = src.bounds.pos.y;
+		bounds.size.width = src.bounds.size.width;
+		bounds.size.height = src.bounds.size.height;
 		active = src.active;
 		visible = src.visible;
 		alpha = src.alpha;
-		rotation = src.rotation;
+		bounds.rotation = src.bounds.rotation;
 		zIndex = src.zIndex;
 		hitbox = src.hitbox;
 		quickCollision = src.quickCollision;
@@ -295,19 +301,19 @@ public class Entity{
 	
 	protected void basicRender(SpriteBatch batch){
 		batch.draw(	nextImage(), 
-					bounds.x + offsetX, 
-					bounds.y + offsetY, 
-					centerX(), 
-					centerY(), 
-					bounds.width, 
-					bounds.height, 
+					bounds.pos.x + offsetX, 
+					bounds.pos.y + offsetY, 
+					centerX() - (bounds.pos.x + offsetX), 
+					centerY() - (bounds.pos.y + offsetY), 
+					bounds.size.width, 
+					bounds.size.height, 
 					1, 
 					1, 
-					rotation, 
+					bounds.rotation, 
 					0, 
 					0, 
-					(int)bounds.width, 
-					(int)bounds.height,
+					(int)bounds.size.width, 
+					(int)bounds.size.height,
 					flipX, 
 					!flipY);
 	}

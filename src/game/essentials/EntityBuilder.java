@@ -123,10 +123,10 @@ public class EntityBuilder {
 	}
 	
 	private void pasteData(Entity dest){
-		dest.bounds.x = x;
-		dest.bounds.y = y;
-		dest.bounds.width = width;
-		dest.bounds.height = height;
+		dest.bounds.pos.x = x;
+		dest.bounds.pos.y = y;
+		dest.bounds.size.width = width;
+		dest.bounds.size.height = height;
 		dest.offsetX = offsetX;
 		dest.offsetY = offsetY;
 		dest.alpha = alpha;

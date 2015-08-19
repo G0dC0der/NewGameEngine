@@ -11,14 +11,13 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.time.StopWatch;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -172,13 +171,13 @@ public class Engine{
 		gameCamera.update();
 	}
 	
+	public boolean onScreen(Entity entity){
+		Rectangle bbox = Collisions.getBoundingBox(entity.bounds);
+		return gameCamera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2 , 0);
+	}
+
 	public void retry(){
 		retry(level.safeRestart());
-	}
-	
-	public boolean onScreen(Entity entity){
-		Rectangle bbox = Collisions.getBoundingBox(entity.bounds, entity.getRotation());
-		return gameCamera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2 , 0);
 	}
 	
 	public void retry(boolean fromCheckpoint){
@@ -211,7 +210,7 @@ public class Engine{
 		setGameState(GameState.ACTIVE);
 	}
 	
-	private void restart(boolean checkpointPresent){
+	private void restart(boolean checkpointPresent){	
 		setGameState(GameState.LOADING);
 		
 		if(getGameState() == GameState.LOST)
@@ -225,13 +224,10 @@ public class Engine{
 		
 		level.clean();
 		level.build();
-		System.out.println(clock.isStopped());
-		System.out.println(clock.isSuspended());
-		clock.resume();
-		
 		if(!checkpointPresent)
 			clock.reset();
-		
+
+		clock.resume();
 		setGameState(GameState.ACTIVE);
 	}
 
@@ -270,6 +266,9 @@ public class Engine{
 			progress();
 			paint();
 		}
+		
+		if(lost() && Gdx.input.isKeyJustPressed(Keys.R))
+			retry();
 	}
 
 	private void destroy() {

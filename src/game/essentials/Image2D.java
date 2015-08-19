@@ -51,8 +51,9 @@ public class Image2D extends Texture{
 		FileTextureData td = (FileTextureData)getTextureData();
 		td.prepare();
 		
-		createPixelData(td.consumePixmap());
-		td.consumePixmap().dispose();
+		Pixmap map = td.consumePixmap();
+		createPixelData(map);
+		map.dispose();
 	}
 	
 	public void createPixelData(Pixmap img){
@@ -60,12 +61,7 @@ public class Image2D extends Texture{
 		
 		for (int x = 0; x < img.getWidth(); x++){
 			for (int y = 0; y < img.getHeight(); y++){
-				int value = img.getPixel(x, y);
-				
-				if((value & 0x000000FF) != 0x00)
-					value = 0;
-				
-				pixelData[x][y] = value;
+				pixelData[x][y] = img.getPixel(x, y);
 			}
 		}
 	}
