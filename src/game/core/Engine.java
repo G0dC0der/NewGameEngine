@@ -1,17 +1,10 @@
 package game.core;
 
-import game.essentials.GameState;
-import game.essentials.Image2D;
-import game.essentials.Keystrokes;
-import game.essentials.Keystrokes.KeystrokesSession;
-import game.essentials.Replay;
-import game.essentials.Vitality;
-
 import java.awt.Dimension;
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -26,6 +19,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+
+import game.essentials.GameState;
+import game.essentials.Image2D;
+import game.essentials.Keystrokes;
+import game.essentials.Keystrokes.KeystrokesSession;
+import game.essentials.Replay;
+import game.essentials.Vitality;
 
 public class Engine{
 
@@ -66,7 +66,7 @@ public class Engine{
 		this.level.engine = this;
 		this.replay = replay == null ? new Replay() : replay;
 		replaying = replay != null;
-		replayCache = new ArrayList<>();
+		replayCache = new Vector<>();
 		renderText = true;
 		timeColor = Color.WHITE;
 		screenWidth = 800;
@@ -116,6 +116,10 @@ public class Engine{
 		this.rotation = rotation;
 	}
 	
+	public float getRotation(){
+		return rotation;
+	}
+	
 	public void setZoom(float zoom){
 		gameCamera.zoom = zoom;
 	}
@@ -123,14 +127,14 @@ public class Engine{
 	public float getZoom(){
 		return gameCamera.zoom;
 	}
-	
-	public void translate(float tx, float ty){
-		gameCamera.position.set(tx, ty, 0);
-	}
-	
+
 	public void flipY(){
 		flipY = !flipY;
 		gameCamera.setToOrtho(flipY);
+	}
+	
+	public void translate(float tx, float ty){
+		gameCamera.position.set(tx, ty, 0);
 	}
 	
 	public Vector2 getTranslation(){
@@ -192,7 +196,11 @@ public class Engine{
 	}
 	
 	public void exit(){
-		destroy(); //TODO: Test
+		GameState s = getGameState();
+		if(s == GameState.UNINITIALIZED || s == GameState.DISPOSED)
+			throw new IllegalStateException("Can not a exit a game that hasnt been started or disposed.");
+		
+		setGameState(GameState.DISPOSED); //TODO: Test
 	}
 	
 	private void setup() throws IOException{

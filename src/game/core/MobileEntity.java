@@ -265,4 +265,9 @@ public class MobileEntity extends Entity{
 			}
 		}
 	}
+	
+	void setPrevs(){
+		prevX = bounds.pos.x;
+		prevY = bounds.pos.y;
+	}
 }

@@ -1,7 +1,10 @@
 package game.essentials;
 
+import com.badlogic.gdx.audio.Music;
+
 import game.core.Collisions;
 import game.core.Entity;
+import game.events.Event;
 
 public class SoundEmitter{
 
@@ -35,5 +38,9 @@ public class SoundEmitter{
 		float candidate = (float) (power * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(maxDistance)), 0));
 		
 		return Math.min(candidate, maxVolume);
+	}
+	
+	public Event soundFalloff(Music music){ //TODO:
+		return null;
 	}
 }

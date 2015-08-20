@@ -165,11 +165,13 @@ public abstract class PixelBasedLevel extends Level{
 		return outOfBounds(x,y) ? Tile.SOLID : mapToTile(stageData[x][y]);
 	}
 	
-	public void reshape(int x, int y, Tile tile){
+	@Override
+	public void setTileOnLayer(int x, int y, Tile tile){
 		deforms.put(new Vector2(x,y), mapToByte(tile));
 	}
 	
-	public void restoreShape(){
+	@Override
+	public void clearTileLayer(){
 		deforms.clear();
 	}
 	

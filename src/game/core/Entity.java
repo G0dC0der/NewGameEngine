@@ -1,5 +1,23 @@
 package game.core;
 
+import static game.core.Collisions.circleRectangleCollide;
+import static game.core.Collisions.circleVsCircle;
+import static game.core.Collisions.createMatrix;
+import static game.core.Collisions.getBoundingBox;
+import static game.core.Collisions.pixelPerfect;
+import static game.core.Collisions.pixelPerfectRotation;
+import static game.core.Collisions.rectanglesCollide;
+import static game.core.Collisions.rotatedRectanglesCollide;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
+
 import game.essentials.Animation;
 import game.essentials.Bounds;
 import game.essentials.Hitbox;
@@ -7,16 +25,6 @@ import game.essentials.Image2D;
 import game.essentials.SoundEmitter;
 import game.events.CloneEvent;
 import game.events.Event;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Matrix3;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Vector2;
 
 public class Entity{
 
@@ -83,6 +91,12 @@ public class Entity{
 		return this;
 	}
 	
+	public Entity centerWith(Entity target){
+		bounds.pos.x = target.x() - width() / 2;
+		bounds.pos.y = target.y() - height() / 2;
+		return this;
+	}
+	
 	public void init() {}
 	
 	public void dispose() {}
@@ -146,7 +160,7 @@ public class Entity{
 		if(hitbox == Hitbox.NONE || entity.hitbox == Hitbox.NONE){
 			return false;
 		} else if(hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.RECTANGLE){
-			return (rotated1 || rotated2) ? Collisions.rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) : Collisions.rotatedRectanglesCollide(bounds, entity.bounds);
+			return (rotated1 || rotated2) ? rotatedRectanglesCollide(bounds, entity.bounds) : rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle());
 		} else if((hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.CIRCLE) || (hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.RECTANGLE)){
 			Entity rectangle 	= hitbox == Hitbox.RECTANGLE 	? this : entity;
 			Entity circle 		= hitbox == Hitbox.CIRCLE 		? this : entity;
@@ -154,17 +168,18 @@ public class Entity{
 			if(rectangle.getRotation() != 0)
 				throw new RuntimeException("No collision method for rotated rectangle vs circle.");
 			
-			return Collisions.circleRectangleCollide(new Circle(circle.centerX(), circle.centerY(), circle.width() / 2), rectangle.bounds.toRectangle());
+			return circleRectangleCollide(circle.bounds.toCircle(), rectangle.bounds.toRectangle());
 		} else if(hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.CIRCLE){
-			return Collisions.circleVsCircle(new Circle(centerX(), centerY(), width() / 2), new Circle(entity.centerX(), entity.centerY(), entity.width() / 2));
+			return circleVsCircle(bounds.toCircle(), entity.bounds.toCircle());
 		} else if(hitbox == Hitbox.POLYGON || entity.hitbox == Hitbox.POLYGON){
-			//return Collisions.polygonsCollide(this, entity);
+			//return polygonsCollide(this, entity);
 		} else if(hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL){
 			if(bounds.rotation != 0 || entity.bounds.rotation != 0)	
-				return Collisions.pixelPerfectRotation(	Collisions.createMatrix(this), getImage().getCurrentObject(),
-														Collisions.createMatrix(entity), getImage().getCurrentObject());
+				return rectanglesCollide(getBoundingBox(bounds), getBoundingBox(entity.bounds)) && pixelPerfectRotation(createMatrix(this),	getImage().getCurrentObject(),
+																														createMatrix(entity), entity.getImage().getCurrentObject());
 			
-			return Collisions.rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) || Collisions.pixelPerfect(this, entity);
+			return rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) && pixelPerfect(bounds.toRectangle(), getImage().getCurrentObject(), flipX, flipY,
+																										entity.bounds.toRectangle(), entity.getImage().getCurrentObject(), entity.flipX, entity.flipY);
 		}
 		
 		throw new IllegalStateException("No proper collision handling methods found.");
@@ -266,10 +281,6 @@ public class Entity{
 	
 	public void setCloneEvent(CloneEvent cloneEvent){
 		this.cloneEvent = cloneEvent;
-	}
-	
-	public Matrix3 calcMatrix(){
-		return new Matrix3().setToTranslation(width() / 2, height() /  2).rotate(bounds.rotation).translate(x(), y());
 	}
 	
 	protected void copyData(Entity src){

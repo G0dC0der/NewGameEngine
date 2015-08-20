@@ -1,13 +1,5 @@
 package game.core;
 
-import game.essentials.GameState;
-import game.essentials.Keystrokes;
-import game.essentials.Utils;
-import game.essentials.Vitality;
-import game.events.Event;
-import game.events.TaskEvent;
-import game.lang.Entry;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +14,14 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
+
+import game.essentials.GameState;
+import game.essentials.Keystrokes;
+import game.essentials.Utils;
+import game.essentials.Vitality;
+import game.events.Event;
+import game.events.TaskEvent;
+import game.lang.Entry;
 
 public abstract class Level {
 	
@@ -65,6 +65,10 @@ public abstract class Level {
 	public abstract int getHeight();
 	
 	public abstract Tile tileAt(int x, int y);
+	
+	public abstract void setTileOnLayer(int x, int y, Tile tile);
+	
+	public abstract void clearTileLayer();
 	
 	public abstract boolean isSolid(int x, int y);
 
@@ -239,8 +243,12 @@ public abstract class Level {
 				.collect(Collectors.toList());
 	}
 	
-	public List<? extends Entity> getSoundListeners(){ //TODO: This is incomplete
+	public List<? extends Entity> getSoundListeners(){
 		return soundListeners.isEmpty() ? getNonDeadMainCharacters() : soundListeners;
+	}
+	
+	public void addSoundListener(Entity listener){
+		soundListeners.add(listener);
 	}
 	
 	void gameLoop(){
@@ -259,6 +267,7 @@ public abstract class Level {
 		deleteObjects.clear();
 		gameObjects.forEach(e -> e.dispose());
 		gameObjects.clear();
+		clearTileLayer();
 	}
 	
 	private void updateEntities(){
@@ -293,8 +302,7 @@ public abstract class Level {
 					if(play.tileEvents.size() > 0)
 						tileIntersection(play, play.getOccupyingCells());
 					
-					play.prevX = play.x();
-					play.prevY = play.y();
+					play.setPrevs();
 				}
 				
 				if(play.getState() == Vitality.DEAD)
@@ -308,8 +316,7 @@ public abstract class Level {
 				if(mobile.tileEvents.size() > 0)
 					tileIntersection(mobile, mobile.getOccupyingCells());
 				
-				mobile.prevX = mobile.x();
-				mobile.prevY = mobile.y();
+				mobile.setPrevs();
 			} else {
 				entity.runEvents();
 			}
@@ -319,12 +326,12 @@ public abstract class Level {
 	private void tileIntersection(MobileEntity mobile, Set<Tile> tiles){
 		for(Tile tile : tiles){
 			switch(tile){
-			case HOLLOW:
-				/*/ Do nothing /*/
-				break;
-			default:
-				mobile.runTileEvents(tile);
-				break;
+				case HOLLOW:
+					/*/ Do nothing /*/
+					break;
+				default:
+					mobile.runTileEvents(tile);
+					break;
 			}
 		}
 	}

@@ -1,5 +1,10 @@
 package game.essentials;
 
+import java.awt.Dimension;
+import java.util.List;
+
+import com.badlogic.gdx.math.Vector2;
+
 import game.core.Collisions;
 import game.core.Entity;
 import game.core.Level.Tile;
@@ -8,15 +13,9 @@ import game.core.PlayableEntity;
 import game.events.Event;
 import game.events.TileEvent;
 
-import java.awt.Dimension;
-import java.util.List;
-
-import com.badlogic.gdx.math.Vector2;
-
 public class Factory {
 	
-	public static MobileEntity cameraFocus(List<Entity> entities, int padding, boolean discardDeadMains){
-		
+	public static MobileEntity cameraFocus(List<Entity> entities, int padding, boolean ignoreInvisible){
 		return new MobileEntity(){{
 				zIndex(Integer.MAX_VALUE);
 			}
@@ -50,7 +49,7 @@ public class Factory {
 					for(int i = 1; i < entities.size(); i++){
 						Entity focus = entities.get(i);
 						
-						if(discardDeadMains && focus instanceof PlayableEntity && ((PlayableEntity)focus).getState() == Vitality.DEAD)
+						if(ignoreInvisible && !focus.isActive() && !focus.isVisible())
 							continue;
 						
 						boxX = Math.min( boxX, focus.x() );
@@ -143,18 +142,6 @@ public class Factory {
 			if(diffY != 0)
 				entity.flipY = diffY > 0;
 		};
-	}
-	
-	public static void rotate360(Entity entity, float speed){
-		entity.getLevel().temp(()->{
-			entity.rotate(speed);
-		}, ()-> {
-			if(entity.getRotation() > 360){
-				entity.setRotation(0);
-				return true;
-			}
-			return false;
-		});
 	}
 	
 	public static Event follow(Entity src, Entity tail, float offsetX, float offsetY){

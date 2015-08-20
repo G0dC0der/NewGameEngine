@@ -1,21 +1,20 @@
 package game.core;
 
-import game.core.Level.Tile;
-import game.essentials.Bounds;
-import game.essentials.Direction;
-import game.essentials.Image2D;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+
+import game.core.Level.Tile;
+import game.essentials.Bounds;
+import game.essentials.Direction;
+import game.essentials.Image2D;
 
 public class Collisions {
 	
@@ -189,25 +188,23 @@ public class Collisions {
 	 * Precondition: Rotation == 0, offsetX and offsetY == 0, bounds.width and height are equal to the size of the image.
 	 * @return True if the two entities are colliding.
 	 */
-	public static boolean pixelPerfect(Entity entity1, Entity entity2){	//TODO: Strictify params
-		Image2D image1 = entity1.getImage().getCurrentObject();
-		Image2D image2 = entity2.getImage().getCurrentObject();
-				
+	public static boolean pixelPerfect(	Rectangle rec1, Image2D image1, boolean flipX1, boolean flipY1,
+										Rectangle rec2, Image2D image2, boolean flipX2, boolean flipY2){
 		int width1  = image1.getWidth();
 		int width2  = image2.getWidth();
 		int height1 = image1.getHeight();
 		int height2 = image2.getHeight();
-		int top    = (int) Math.max(entity1.x(), entity2.y());
-		int bottom = (int) Math.min(entity1.y() + height1, entity2.y() + height2);
-		int left   = (int) Math.max(entity1.x(), entity2.y());
-		int right  = (int) Math.min(entity1.x() + width1, entity2.x() + width2);
+		int top    = (int) Math.max(rec1.x, rec2.y);
+		int bottom = (int) Math.min(rec1.y + height1, rec2.y + height2);
+		int left   = (int) Math.max(rec1.x, rec2.y);
+		int right  = (int) Math.min(rec1.x + width1, rec2.x + width2);
 		
 		for (int y = top; y < bottom; y++){
 			for (int x = left; x < right; x++){
-				int x1 = (int) (entity1.flipX ? width1  - (x - entity1.bounds.pos.x) - 1 : x - entity1.bounds.pos.x); //Why are there -1 on these? 
-				int y1 = (int) (entity1.flipY ? height1 - (y - entity1.bounds.pos.y) - 1 : y - entity1.bounds.pos.y);
-				int x2 = (int) (entity2.flipX ? width2  - (x - entity2.bounds.pos.x) - 1 : x - entity2.bounds.pos.x);
-				int y2 = (int) (entity2.flipY ? height2 - (y - entity2.bounds.pos.y) - 1 : y - entity2.bounds.pos.y);
+				int x1 = (int) (flipX1 ? width1  - (x - rec1.x) - 1 : x - rec1.x); //Why are there -1 on these? 
+				int y1 = (int) (flipY1 ? height1 - (y - rec1.y) - 1 : y - rec1.y);
+				int x2 = (int) (flipX2 ? width2  - (x - rec2.x) - 1 : x - rec2.x);
+				int y2 = (int) (flipY2 ? height2 - (y - rec2.y) - 1 : y - rec2.y);
 				
 				int alpha1 = image1.getPixel(x1, y1) & 0x000000FF;
 				int alpha2 = image2.getPixel(x2, y2) & 0x000000FF;
@@ -258,7 +255,7 @@ public class Collisions {
 	
 	public static Matrix4 createMatrix(Entity entity){
 		Matrix4 m = new Matrix4();
-		m.setToTranslation(-(entity.width() / 2), -(entity.height() / 2), 0);
+		m.translate(-(entity.width() / 2), -(entity.height() / 2), 0);
 		m.rotate(0, 0, 1, -entity.getRotation());
 		m.translate(entity.x(), entity.y(), 0);
 		  

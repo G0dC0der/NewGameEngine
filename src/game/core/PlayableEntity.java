@@ -146,14 +146,14 @@ public abstract class PlayableEntity extends MobileEntity{
 		return pb;
 	}
 	
-	protected void deathAction() {
+	void deathAction() {
 		activate(false);
 		setVisible(false);
 		if(deathImage != null)
-			getLevel().add(new Particle(deathImage).move(x() - width() / 2, y() - height() / 2));
+			getLevel().add(new Particle(deathImage).centerWith(this));
 	}
 	
-	protected void revive(){
+	void revive(){
 		activate(true);
 		setVisible(true);
 	}

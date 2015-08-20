@@ -110,7 +110,7 @@ public abstract class TileBasedLevel extends Level{
 					camera.position.x = trans.x;
 					camera.position.y = trans.y;
 					camera.zoom = getEngine().getZoom();
-					//TODO: Handle the damn rotation value
+					camera.rotate(getEngine().getRotation());
 					camera.update();
 					
 					tiledMapRenderer.setView(camera);
