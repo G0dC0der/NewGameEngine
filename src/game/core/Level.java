@@ -1,6 +1,5 @@
 package game.core;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,7 +73,7 @@ public abstract class Level {
 
 	public abstract boolean isHollow(int x, int y);
 	
-	public abstract void init() throws IOException;
+	public abstract void init() throws Exception;
 	
 	public abstract void build();
 	

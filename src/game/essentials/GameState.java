@@ -8,5 +8,6 @@ public enum GameState {
 	PAUSED,
 	LOST,
 	SUCCESS,
-	DISPOSED
+	DISPOSED,
+	CRASHED
 }

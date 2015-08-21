@@ -93,12 +93,15 @@ public class ResourceAgent {
 	 * Loads all the content from the given directory. For this to work, the content must follow a set of rules:
 	 * - sound files whose name contains "music" are loaded as a Music object instead of Sound
 	 * - png files whose name contains "pix" are loaded as Pixmap instead of Image2D
+	 * - files with .fnt extension are loaded as BitmapFont.
 	 * - other files whose name contains "non-obj" are ignored. The rest will be deserialized.
 	 * - subdirectories consist of images only. These are loaded as Image2D.
 	 */
 	public void loadContentFromDirectory(FileHandle dir) throws IOException{
+		if(!dir.exists())
+			throw new NullPointerException("The given directory doesn't exist: " + dir.file().getAbsolutePath());
 		if(!dir.isDirectory())
-			throw new IllegalArgumentException("Argument must be a directory!");
+			throw new IllegalArgumentException("Argument must be a directory:" + dir.file().getAbsolutePath());
 		
 		for(FileHandle content : dir.list()){
 			String name = content.path();

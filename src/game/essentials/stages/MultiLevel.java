@@ -1,7 +1,5 @@
 package game.essentials.stages;
 
-import java.io.IOException;
-
 import game.core.Level;
 
 public abstract class MultiLevel extends Level{
@@ -13,7 +11,7 @@ public abstract class MultiLevel extends Level{
 	}
 	
 	@Override
-	public void init() throws IOException {
+	public void init() throws Exception {
 		level.init();
 	}
 	
@@ -27,7 +25,7 @@ public abstract class MultiLevel extends Level{
 		level.dispose();
 	}
 	
-	public void changeLevel(Level level) throws IOException{
+	public void changeLevel(Level level) throws Exception{
 		this.level.dispose();
 		this.level = level;
 		this.level.init();

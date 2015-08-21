@@ -1,8 +1,8 @@
 package game.core;
 
 import java.awt.Dimension;
-import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -10,7 +10,6 @@ import org.apache.commons.lang3.time.StopWatch;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,6 +25,7 @@ import game.essentials.Keystrokes;
 import game.essentials.Keystrokes.KeystrokesSession;
 import game.essentials.Replay;
 import game.essentials.Vitality;
+import game.events.Event;
 
 public class Engine{
 
@@ -43,7 +43,9 @@ public class Engine{
 	private StopWatch clock;
 	private Replay replay;
 	private List<Replay> replayCache;
+	private List<Event> systemEvents;
 	private OrthographicCamera gameCamera, hudCamera;
+	private Exception exception;
 	
 	private boolean replaying, flipY, showHelpText;
 	private int screenWidth, screenHeight, deathCounter;
@@ -67,6 +69,7 @@ public class Engine{
 		this.replay = replay == null ? new Replay() : replay;
 		replaying = replay != null;
 		replayCache = new Vector<>();
+		systemEvents = new ArrayList<>();
 		renderText = true;
 		timeColor = Color.WHITE;
 		screenWidth = 800;
@@ -81,6 +84,13 @@ public class Engine{
 	
 	public boolean playingReplay(){
 		return replaying;
+	}
+	
+	public void addSystemEvent(Event event){
+		if(getGameState() != GameState.UNINITIALIZED)
+			throw new RuntimeException("Can not add a system event to a game that has been started.");
+		
+		systemEvents.add(event);
 	}
 	
 	public GameState getGameState(){
@@ -185,6 +195,8 @@ public class Engine{
 	}
 	
 	public void retry(boolean fromCheckpoint){
+		if(getGameState() == GameState.CRASHED)
+			throw new RuntimeException("This instance have crashed an no longer usable.");
 		if(getGameState() == GameState.UNINITIALIZED)
 			throw new RuntimeException("Can not retry a game that hasn't ben initialized yet.");
 		if(fromCheckpoint && getGameState() == GameState.SUCCESS)
@@ -198,12 +210,19 @@ public class Engine{
 	public void exit(){
 		GameState s = getGameState();
 		if(s == GameState.UNINITIALIZED || s == GameState.DISPOSED)
-			throw new IllegalStateException("Can not a exit a game that hasnt been started or disposed.");
+			throw new IllegalStateException("Can not a exit a game that hasnt been started or been disposed.");
 		
 		setGameState(GameState.DISPOSED); //TODO: Test
 	}
 	
-	private void setup() throws IOException{
+	public Exception getException(){
+		if(getGameState() != GameState.CRASHED)
+			throw new RuntimeException("Can not get an Exception of a game that hasn't crashed.");
+		
+		return exception;
+	}
+	
+	private void setup() throws Exception{
 		setGameState(GameState.LOADING);
 		batch = new SpriteBatch();
 		initCameras();
@@ -243,8 +262,10 @@ public class Engine{
 		if(getGameState() == GameState.DISPOSED)
 			throw new IllegalStateException("Can not play a disposed game.");
 		
-		boolean justResumed = false;
+		for(Event event : systemEvents)
+			event.eventHandling();
 		
+		boolean justResumed = false;
 		if(PlayableEntity.checkButtons(level.getAliveMainCharacters()).pause && !playingReplay() && (active() || paused())){
 			setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
 			justResumed = active();
@@ -274,12 +295,10 @@ public class Engine{
 			progress();
 			paint();
 		}
-		
-		if(lost() && Gdx.input.isKeyJustPressed(Keys.R))
-			retry();
 	}
 
 	private void destroy() {
+		System.out.println("destroy");
 		state = GameState.DISPOSED;
 		batch.dispose();
 		level.dispose();
@@ -317,6 +336,8 @@ public class Engine{
 	}
 	
 	private void setGameState(GameState state){
+		if(this.getGameState() == GameState.CRASHED)
+			throw new IllegalStateException("This instance have crashed an no longer usable.");
 		if(state == GameState.PAUSED && playingReplay())
 			throw new IllegalArgumentException("Can not pause when playing a replay.");
 		if(this.state == GameState.SUCCESS && (state == GameState.LOST || state == GameState.PAUSED))
@@ -476,9 +497,11 @@ public class Engine{
 		public void create() {
 			try{
 				engine.setup();
-			}catch(IOException ioe){
+			}catch(Exception e){
+				engine.exception = e;
+				engine.setGameState(GameState.CRASHED);
 				dispose();
-				throw new RuntimeException(ioe);
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -491,9 +514,11 @@ public class Engine{
 		public void render() {
 			try{
 				engine.overview();
-			}catch(Exception ioe){
+			}catch(Exception e){
+				engine.exception = e;
+				engine.setGameState(GameState.CRASHED);
 				dispose();
-				throw new RuntimeException(ioe);
+				throw new RuntimeException(e);
 			}
 		}
 	}
