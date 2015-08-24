@@ -1,10 +1,5 @@
 package game.essentials;
 
-import java.awt.Dimension;
-import java.util.List;
-
-import com.badlogic.gdx.math.Vector2;
-
 import game.core.Collisions;
 import game.core.Entity;
 import game.core.Level.Tile;
@@ -13,16 +8,34 @@ import game.core.PlayableEntity;
 import game.events.Event;
 import game.events.TileEvent;
 
+import java.awt.Dimension;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+
 public class Factory {
 	
-	public static MobileEntity cameraFocus(List<Entity> entities, int padding, boolean ignoreInvisible){
+	public static MobileEntity drawText(HUDMessage message, BitmapFont font){
+		return new MobileEntity(){
+			@Override
+			public void render(SpriteBatch batch) {
+				getEngine().hudCamera();
+				message.draw(batch, font);
+				getEngine().gameCamera();
+			}
+		};
+	}
+	
+	public static MobileEntity cameraFocus(List<Entity> entities, int padding, boolean ignoreInvisible){//TODO: Do not use this as an event.
 		return new MobileEntity(){{
-				zIndex(Integer.MAX_VALUE);
+				zIndex(10_000);
 			}
 			
 			@Override
 			public void logics() {
-				Entity first = entities.get(0);
 				Dimension size = getEngine().getScreenSize();
 				float 	tx = 0,
 						ty = 0,
@@ -33,11 +46,23 @@ public class Factory {
 						windowHeight = size.height;
 				
 				if(entities.size() == 1){
+					Entity first = entities.get(0);
 					tx = Math.min(stageWidth  - windowWidth,   Math.max(0, first.centerX() - windowWidth  / 2)) + windowWidth  / 2; 
 					ty = Math.min(stageHeight - windowHeight,  Math.max(0, first.centerY() - windowHeight / 2)) + windowHeight / 2;
 					getEngine().translate(tx, ty);
 				}
 				else if(entities.size() > 1){
+					List<Entity> list;
+					if(ignoreInvisible){
+						list = entities.stream().filter(entity -> entity.isActive() && entity.isVisible()).collect(Collectors.toList());
+					}else
+						list = entities;
+					
+					if(list.isEmpty())
+						return;
+					
+					Entity first = list.get(0);
+					
 					final float marginX = windowWidth  / 2;
 					final float marginY = windowHeight / 2;
 					
@@ -46,11 +71,8 @@ public class Factory {
 					float boxWidth	= boxX + first.width();
 					float boxHeight	= boxY + first.height();
 
-					for(int i = 1; i < entities.size(); i++){
-						Entity focus = entities.get(i);
-						
-						if(ignoreInvisible && !focus.isActive() && !focus.isVisible())
-							continue;
+					for(int i = 1; i < list.size(); i++){
+						Entity focus = list.get(i);
 						
 						boxX = Math.min( boxX, focus.x() );
 						boxY = Math.min( boxY, focus.y() );

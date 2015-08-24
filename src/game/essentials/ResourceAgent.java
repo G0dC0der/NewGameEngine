@@ -131,13 +131,12 @@ public class ResourceAgent {
 	
 	public void disposeAll(){
 		stuff.forEach((key, value)->{
-			if(value instanceof Disposable)
-				((Disposable)value).dispose();
+			tryDispose(value);
 		});
 	}
 	
 	public void dispose(String key){
-		((Disposable)stuff.get(key)).dispose();
+		tryDispose(stuff.get(key));
 	}
 	
 	@Override
@@ -145,5 +144,18 @@ public class ResourceAgent {
 		StringBuilder bu = new StringBuilder();
 		stuff.forEach((key, value) -> bu.append(key).append(": ").append(value.getClass().getSimpleName()).append(System.lineSeparator()));
 		return bu.toString();
+	}
+	
+	private void tryDispose(Object obj){
+		if(obj instanceof Disposable)
+			((Disposable)obj).dispose();
+		else if(obj.getClass().isArray()){
+			Object[] arr = (Object[]) obj;
+			
+			if(arr.length > 0 && arr[0] instanceof Disposable){
+				for(Object disposable : arr)
+					((Disposable)disposable).dispose();
+			}
+		}
 	}
 }

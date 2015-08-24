@@ -7,8 +7,9 @@ import java.util.List;
 
 import game.essentials.Keystrokes.KeystrokesSession;
 
-public class Replay {
+public class Replay implements Serializable{
 
+	private static final long serialVersionUID = -1915678880790726667L;
 	public double time;
 	public String playerName, levelClass;
 	public ZonedDateTime date;
@@ -18,5 +19,12 @@ public class Replay {
 	
 	public Replay(){
 		data = new LinkedList<>();
+	}
+	
+	public boolean hasEnded(){
+		for(KeystrokesSession kss : data)
+			if(kss.hasEnded())
+				return true;
+		return false;
 	}
 }

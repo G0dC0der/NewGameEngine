@@ -1,12 +1,20 @@
 package game.core;
 
+import game.essentials.GameState;
+import game.essentials.HUDMessage;
+import game.essentials.Image2D;
+import game.essentials.Keystrokes;
+import game.essentials.Keystrokes.KeystrokesSession;
+import game.essentials.Replay;
+import game.essentials.Vitality;
+import game.events.Event;
+import game.lang.OtherMath;
+
 import java.awt.Dimension;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
-import org.apache.commons.lang3.time.StopWatch;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -17,15 +25,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-
-import game.essentials.GameState;
-import game.essentials.Image2D;
-import game.essentials.Keystrokes;
-import game.essentials.Keystrokes.KeystrokesSession;
-import game.essentials.Replay;
-import game.essentials.Vitality;
-import game.events.Event;
 
 public class Engine{
 
@@ -33,23 +32,21 @@ public class Engine{
 	public boolean renderText;
 	public BitmapFont timeFont;
 	public Color timeColor;
-	public String helpText = "You are in replay mode thus can not pause.";
-	public String failText = "You are dead.";
-	public String winText  = "Congratulations! It took you %d seconds to complete the map!";
+	public HUDMessage helpText, winText, deathText, pauseText;
 	
 	private Level level;
 	private SpriteBatch batch;
 	private GameState state;
-	private StopWatch clock;
 	private Replay replay;
 	private List<Replay> replayCache;
 	private List<Event> systemEvents;
 	private OrthographicCamera gameCamera, hudCamera;
 	private Exception exception;
 	
-	private boolean replaying, flipY, showHelpText;
+	private boolean replaying, flipY, showHelpText, shutdown, flag;
 	private int screenWidth, screenHeight, deathCounter;
-	private float scale, rotation, musicVolume, prevTx, prevTy;
+	private float rotation, musicVolume, prevTx, prevTy, time;
+	private long frameCounter;
 	
 	public static Engine playEngine(Level level){
 		return new Engine(level,null);
@@ -72,14 +69,17 @@ public class Engine{
 		systemEvents = new ArrayList<>();
 		renderText = true;
 		timeColor = Color.WHITE;
-		screenWidth = 800;
-		screenHeight  = 600;
-		scale = 1;
+		screenWidth = 900;
+		screenHeight  = 700;
 		flipY = true;
+		helpText = HUDMessage.getMessage("Can not pause in replay mode.", 50, screenHeight / 3, Color.WHITE);
+		deathText = HUDMessage.getMessage("You died, mission failed.", 270, screenHeight / 3, Color.WHITE);
+		winText = HUDMessage.getMessage("Congrats! You completed the level!", 230, screenHeight / 3, Color.WHITE);
+		pauseText = HUDMessage.getMessage("Game is paused.", screenWidth / 2 - 120, screenHeight / 2, Color.WHITE);
 	}
 	
 	public List<Replay> getRecordedReplays(){
-		return replayCache;
+		return playingReplay() ? null : replayCache;
 	}
 	
 	public boolean playingReplay(){
@@ -97,26 +97,21 @@ public class Engine{
 		return state;
 	}
 	
-	public float getTimeInSeconds(){
-		return clock.getTime() / 1000.0f;
-	}
-	
-	public long getTime(){
-		return clock.getTime();
+	public double getTimeInSeconds(){
+		return OtherMath.round(time, 1);
 	}
 	
 	public int getDeathCounter(){
 		return deathCounter;
 	}
+	
+	public long getFrameCounter(){
+		return frameCounter;
+	}
 
 	public void setScreenSize(int width, int height){
 		screenWidth = width;
 		screenHeight = height;
-		initCameras();
-	}
-	
-	public void setScreenScale(float multiplier){
-		scale = multiplier;
 		initCameras();
 	}
 	
@@ -145,12 +140,6 @@ public class Engine{
 	
 	public void translate(float tx, float ty){
 		gameCamera.position.set(tx, ty, 0);
-	}
-	
-	public Vector2 getTranslation(){
-		if(gameCamera == null)
-			return new Vector2();
-		return new Vector2(gameCamera.position.x, gameCamera.position.y);
 	}
 	
 	public float tx(){
@@ -191,16 +180,16 @@ public class Engine{
 	}
 
 	public void retry(){
-		retry(level.safeRestart());
+		retry(level.cpPresent());
 	}
 	
 	public void retry(boolean fromCheckpoint){
+		if(playingReplay())
+			throw new RuntimeException("Can not retry a replay.");
 		if(getGameState() == GameState.CRASHED)
 			throw new RuntimeException("This instance have crashed an no longer usable.");
 		if(getGameState() == GameState.UNINITIALIZED)
 			throw new RuntimeException("Can not retry a game that hasn't ben initialized yet.");
-		if(fromCheckpoint && getGameState() == GameState.SUCCESS)
-			throw new RuntimeException("Can not restart a finished game from checkpoint.");
 		if(getGameState() == GameState.DISPOSED)
 			throw new RuntimeException("Can not restart if the resources are disposed.");
 		
@@ -212,14 +201,11 @@ public class Engine{
 		if(s == GameState.UNINITIALIZED || s == GameState.DISPOSED)
 			throw new IllegalStateException("Can not a exit a game that hasnt been started or been disposed.");
 		
-		setGameState(GameState.DISPOSED); //TODO: Test
+		shutdown = true;
 	}
 	
 	public Exception getException(){
-		if(getGameState() != GameState.CRASHED)
-			throw new RuntimeException("Can not get an Exception of a game that hasn't crashed.");
-		
-		return exception;
+		return getGameState() == GameState.CRASHED ? exception : null;
 	}
 	
 	private void setup() throws Exception{
@@ -228,12 +214,10 @@ public class Engine{
 		initCameras();
 		level.init();
 		level.build();
-		clock = new StopWatch();
 		
 		if(playingReplay())
 			level.processMeta(replay.meta);
 
-		clock.start();
 		setGameState(GameState.ACTIVE);
 	}
 	
@@ -243,25 +227,26 @@ public class Engine{
 		if(getGameState() == GameState.LOST)
 			deathCounter++;
 		
-		if(!checkpointPresent && !playingReplay()){
-			finalizeReplay();
-			replayCache.add(replay);
-			replay = new Replay();
-		}
-		
 		level.clean();
 		level.build();
+		
 		if(!checkpointPresent)
-			clock.reset();
-
-		clock.resume();
+			time = 0;
+		
+		frameCounter = 0;
+		flag = false;
 		setGameState(GameState.ACTIVE);
 	}
 
 	private void overview() {
 		if(getGameState() == GameState.DISPOSED)
 			throw new IllegalStateException("Can not play a disposed game.");
+		if(shutdown)
+			throw new RuntimeException("Shutdown");
 		
+		if(playingReplay() && lost() && level.cpPresent() && !replay.hasEnded())
+			restart(true);
+			
 		for(Event event : systemEvents)
 			event.eventHandling();
 		
@@ -270,10 +255,10 @@ public class Engine{
 			setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
 			justResumed = active();
 		}
-		
+
 		if(paused()){
-			if(!clock.isSuspended()){
-				clock.suspend();
+			if(!flag){
+				flag = true;
 				Music music = level.getStageMusic();
 				if(music != null){
 					musicVolume = music.getVolume();
@@ -282,14 +267,14 @@ public class Engine{
 			}
 			
 			renderPause();
-		} else{
+		} else {
 			if(justResumed){
 				setGameState(GameState.ACTIVE);
 				Music music = level.getStageMusic();
 				if(music != null)
 					music.setVolume(musicVolume);
 
-				clock.resume();
+				flag = false;
 			}
 			
 			progress();
@@ -298,8 +283,7 @@ public class Engine{
 	}
 
 	private void destroy() {
-		System.out.println("destroy");
-		state = GameState.DISPOSED;
+		setGameState(GameState.DISPOSED);
 		batch.dispose();
 		level.dispose();
 		level = null;
@@ -307,8 +291,18 @@ public class Engine{
 	}
 	
 	private void progress(){
-		if((lost() || completed()) && !clock.isSuspended())
-			clock.suspend();
+		if((lost() || completed()) && !flag){
+			flag = true;
+			
+			if(((lost() && !level.cpPresent()) || completed()) && !playingReplay()){
+				finalizeReplay();
+				replayCache.add(replay);
+				replay = new Replay();
+			}
+		}
+		
+		if(frameCounter++ > 2 && active())
+			time += Gdx.graphics.getRawDeltaTime();
 		
 		prevTx = gameCamera.position.x;
 		prevTy = gameCamera.position.y;
@@ -347,12 +341,11 @@ public class Engine{
 	}
 	
 	private void renderPause(){
-		batch.begin();
 		Gdx.gl.glClearColor(0, 0, 0, .4f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.begin();
 		
-		timeFont.setColor(Color.WHITE);
-		timeFont.draw(batch, "Game is paused.", Gdx.graphics.getWidth() / 2 - 120, Gdx.graphics.getHeight() / 2);
+		pauseText.draw(batch, timeFont);
 
 		renderStatusBar();
 		
@@ -366,8 +359,8 @@ public class Engine{
 		hudCamera = new OrthographicCamera();
 		hudCamera.setToOrtho(true, screenWidth, screenHeight);
 		
-		if(Gdx.graphics.getWidth() != screenWidth * scale || Gdx.graphics.getHeight() != screenHeight * scale)
-			Gdx.graphics.setDisplayMode((int)(screenWidth * scale), (int)(screenHeight * scale), false);
+		if(Gdx.graphics.getWidth() != screenWidth || Gdx.graphics.getHeight() != screenHeight)
+			Gdx.graphics.setDisplayMode((int)(screenWidth), (int)(screenHeight), false);
 	}
 	
 	private void statusControll(){
@@ -445,14 +438,14 @@ public class Engine{
 	
 	private void finalizeReplay(){
 		replay.date = ZonedDateTime.now();;
-		replay.time = clock.getTime();
+		replay.time = getTimeInSeconds();
 		replay.levelClass = level.getClass().getName();
 		replay.result = getGameState();
 	}
 	
 	private void renderStatusBar(){
 		timeFont.setColor(state == GameState.PAUSED ? Color.WHITE : timeColor);
-		timeFont.draw(batch, getTime() / 1000f + "", 10, 10);
+		timeFont.draw(batch, getTimeInSeconds() + "", 10, 10);
 		
 		List<PlayableEntity> mains = level.getNonDeadMainCharacters();
 		
@@ -479,13 +472,13 @@ public class Engine{
 		if(playingReplay() && PlayableEntity.checkButtons(level.getAliveMainCharacters()).pause)
 			showHelpText = !showHelpText;
 		
-		if(showHelpText)
-			timeFont.draw(batch, helpText, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 2);
+		if(showHelpText && helpText != null)
+			helpText.draw(batch, timeFont);
 
-		if(!playingReplay() && getGameState() == GameState.SUCCESS){
-			timeFont.draw(batch, String.format(winText, getTime()), Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2);
-		} else if(!playingReplay() && getGameState() == GameState.LOST){
-			timeFont.draw(batch, failText, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 2);
+		if(getGameState() == GameState.SUCCESS && winText != null){
+			winText.draw(batch, timeFont);
+		} else if(getGameState() == GameState.LOST && deathText != null){
+			deathText.draw(batch, timeFont);
 		}
 	}
 	
@@ -498,9 +491,9 @@ public class Engine{
 			try{
 				engine.setup();
 			}catch(Exception e){
+				dispose();
 				engine.exception = e;
 				engine.setGameState(GameState.CRASHED);
-				dispose();
 				throw new RuntimeException(e);
 			}
 		}
@@ -515,9 +508,9 @@ public class Engine{
 			try{
 				engine.overview();
 			}catch(Exception e){
-				engine.exception = e;
-				engine.setGameState(GameState.CRASHED);
 				dispose();
+				engine.exception = e;
+				engine.setGameState(engine.shutdown ? GameState.DISPOSED : GameState.CRASHED);
 				throw new RuntimeException(e);
 			}
 		}

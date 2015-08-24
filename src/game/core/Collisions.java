@@ -255,7 +255,7 @@ public class Collisions {
 	
 	public static Matrix4 createMatrix(Entity entity){
 		Matrix4 m = new Matrix4();
-		m.translate(-(entity.width() / 2), -(entity.height() / 2), 0);
+		m.setToTranslation(-(entity.width() / 2), -(entity.height() / 2), 0);
 		m.rotate(0, 0, 1, -entity.getRotation());
 		m.translate(entity.x(), entity.y(), 0);
 		  

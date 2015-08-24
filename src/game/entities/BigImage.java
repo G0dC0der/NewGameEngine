@@ -16,7 +16,7 @@ import game.essentials.Image2D;
 public class BigImage extends Entity{
 
 	public enum RenderStrategy{
-		DEFAULT,
+		FULL,
 		FIXED,
 		PORTION,
 		REPEAT,
@@ -26,20 +26,21 @@ public class BigImage extends Entity{
 	
 	private RenderStrategy strategy;
 	private OrthographicCamera parallaxCamera;
-	private float ratioX, ratioY;
+	private float ratioX, ratioY, currRotation;
+	private boolean initCamera;
 
 	public BigImage(){
-		this(RenderStrategy.DEFAULT);
+		this(RenderStrategy.FULL);
 	}
 	
 	public BigImage(RenderStrategy strategy){
 		this.strategy = strategy;
-		initParallaxCamer();
+		initCamera = true;
 	}
 	
 	public void setRenderStrategy(RenderStrategy strategy){
 		this.strategy = strategy;
-		initParallaxCamer();
+		initCamera = true;
 	}
 	
 	public RenderStrategy getRenderStrategy(){
@@ -49,28 +50,32 @@ public class BigImage extends Entity{
 	@Override
 	public void setImage(Animation<Image2D> image) {
 		super.setImage(image);
-		initParallaxCamer();
+		initCamera = true;
 	}
 		
 	@Override
 	public void render(SpriteBatch batch) {
 		if(getRotation() != 0)
-			throw new RuntimeException("A big image must have rotation set to 0 and scaleX and scaleY set to 1.");
+			throw new RuntimeException("A big image can not be rotated.");
+		
+		if(initCamera){
+			initCamera = false;
+			initParallaxCamera();
+		}
 		
 		Level level = getLevel();
 		Engine e = level.getEngine();
-		Vector2 t = getEngine().getTranslation();
 		Dimension screen = e.getScreenSize();
 		Color defColor = batch.getColor();
 		Color newColor = new Color(defColor.r, defColor.g, defColor.b, alpha);
 		
 		switch(strategy){
-			case DEFAULT:
+			case FULL:
 				super.render(batch);
 				break;
 			case PORTION:
-				float startX 	= t.x - screen.width  / 2;
-				float startY 	= t.y - screen.height / 2;
+				float startX 	= e.tx() - screen.width  / 2;
+				float startY 	= e.ty() - screen.height / 2;
 				float width 	= screen.width;
 				float height 	= screen.height;
 				float u			= startX / width();
@@ -85,6 +90,7 @@ public class BigImage extends Entity{
 				e.hudCamera();
 				super.render(batch);
 				e.gameCamera();
+				break;
 			case REPEAT:
 				batch.setColor(newColor);
 				repeat(batch);
@@ -121,7 +127,11 @@ public class BigImage extends Entity{
 		this.ratioY = ratioY;
 	}
 	
-	private void initParallaxCamer(){
+	public void setRatio(float ratio){
+		ratioX = ratioY = ratio;
+	}
+	
+	private void initParallaxCamera(){
 		if(strategy == RenderStrategy.PARALLAX){
 			parallaxCamera = new OrthographicCamera(width(), height());
 			parallaxCamera.setToOrtho(true);
@@ -133,20 +143,22 @@ public class BigImage extends Entity{
 		}
 	}
 	
-	private void updateParallaxCamera()
-	{
+	private void updateParallaxCamera(){
 		Engine e = getEngine();
 		Dimension screen = e.getScreenSize();
-		Vector2 t = e.getTranslation();
+		float rotation = e.getRotation();
 		
-		parallaxCamera.zoom = getScale();
-		parallaxCamera.position.x = Math.max(screen.width  / 2, parallaxCamera.position.x + (t.x - e.prevTx()) * ratioX);
-		parallaxCamera.position.y = Math.max(screen.height / 2, parallaxCamera.position.y + (t.y - e.prevTy()) * ratioY);
+		parallaxCamera.rotate(-currRotation);
+		parallaxCamera.rotate(rotation);
+		parallaxCamera.zoom = getEngine().getZoom();
+		parallaxCamera.position.x = Math.max(screen.width  / 2, parallaxCamera.position.x + (e.tx() - e.prevTx()) * ratioX);
+		parallaxCamera.position.y = Math.max(screen.height / 2, parallaxCamera.position.y + (e.ty() - e.prevTy()) * ratioY);
 		parallaxCamera.update();
+		
+		currRotation = rotation;
 	}
 	
-	private void repeat(SpriteBatch batch)
-	{
+	private void repeat(SpriteBatch batch){
 		int stageWidth  = getLevel().getWidth();
 		int stageHeight = getLevel().getHeight();
 		int repeatX = (int) (stageWidth /  width());
@@ -160,17 +172,5 @@ public class BigImage extends Entity{
 		for(int x = 0; x < repeatX; x++)
 			for(int y = 0; y < repeatY; y++)
 				batch.draw(nextImage(), x * width(), y * height());
-	}
-	
-	private float getScale()
-	{
-		float scale = getEngine().getZoom();
-		
-		if(scale == 1f)
-			return scale;
-		else if(scale > 1f)
-			return scale - 1f;
-		else
-			return scale + 1f;
 	}
 }

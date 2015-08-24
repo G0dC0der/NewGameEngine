@@ -4,4 +4,8 @@ package game.events;
 public interface Event {
 
 	void eventHandling();
+	
+	default boolean isDone(){
+		return false;
+	}
 }

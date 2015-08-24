@@ -133,6 +133,7 @@ public class EntityBuilder {
 		dest.setRotation(rotation);
 		dest.zIndex(zIndex);
 		dest.setHitbox(hitbox);
+		dest.id = "Entity Builder";
 		if(image != null)
 			dest.setImage(image);
 		

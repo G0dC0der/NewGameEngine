@@ -1,5 +1,6 @@
 package game.essentials;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,8 +11,9 @@ import game.core.PlayableEntity;
  * @author Pojahn M
  *
  */
-public class Keystrokes {
+public class Keystrokes implements Serializable{
 	
+	private static final long serialVersionUID = -7757124776060327750L;
 	public boolean up, down, left, right, jump, pause, suicide, special1, special2, special3;
 	
 	public Keystrokes() {}
@@ -39,7 +41,9 @@ public class Keystrokes {
 	 * An instance of this class describes the buttons that a specific PlayableEntity held down during a session(from start to GameState.FINISHED).
 	 * @author Pojahn M
 	 */
-	public static class KeystrokesSession{
+	public static class KeystrokesSession implements Serializable{
+
+		private static final long serialVersionUID = -7482346021676423243L;
 		public List<Keystrokes> sessionKeys;
 		public String id;
 		private int counter;
@@ -47,6 +51,10 @@ public class Keystrokes {
 		public KeystrokesSession(String id) {
 			this.sessionKeys = new LinkedList<>();
 			this.id = id;
+		}
+		
+		public boolean hasEnded(){
+			return counter > sessionKeys.size() - 1;
 		}
 		
 		public Keystrokes next(){

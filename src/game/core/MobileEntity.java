@@ -133,6 +133,12 @@ public class MobileEntity extends Entity{
 		return false;
 	}
 	
+	public void faceDirection(){
+		Direction dir = Collisions.getDirection(x(), y(), prevX, prevY);
+		if(dir != null)
+			face(dir);
+	}
+	
 	public void face(Direction dir){
 		switch(dir){
 			case N:

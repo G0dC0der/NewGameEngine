@@ -1,5 +1,13 @@
 package game.core;
 
+import game.essentials.GameState;
+import game.essentials.Keystrokes;
+import game.essentials.Utils;
+import game.essentials.Vitality;
+import game.events.Event;
+import game.events.TaskEvent;
+import game.lang.Entry;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,18 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.mutable.MutableInt;
-
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
-
-import game.essentials.GameState;
-import game.essentials.Keystrokes;
-import game.essentials.Utils;
-import game.essentials.Vitality;
-import game.events.Event;
-import game.events.TaskEvent;
-import game.lang.Entry;
 
 public abstract class Level {
 	
@@ -89,7 +87,7 @@ public abstract class Level {
 		return null;
 	}
 	
-	public boolean safeRestart(){
+	public boolean cpPresent(){
 		return false;
 	}
 	
@@ -192,11 +190,11 @@ public abstract class Level {
 	}
 	
 	public Entity runOnceAfter(Event event, int framesDelay){
-		MutableInt counter = new MutableInt();
+		int[] counter = {0};
+		
 		Entity wrapper = new Entity();
 		wrapper.addEvent(()->{
-			counter.increment();
-			if(counter.intValue() > framesDelay){
+			if(counter[0]++ > framesDelay){
 				event.eventHandling();
 				discard(wrapper);
 			}
@@ -267,6 +265,7 @@ public abstract class Level {
 		gameObjects.forEach(e -> e.dispose());
 		gameObjects.clear();
 		clearTileLayer();
+		mainCharacters.clear();
 	}
 	
 	private void updateEntities(){
