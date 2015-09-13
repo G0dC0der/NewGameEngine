@@ -48,7 +48,7 @@ public class Collectable extends MobileEntity{
 				if(collectSound != null)
 					collectSound.play(sounds.calc());
 				if(collectImage != null)
-					getLevel().add(new Particle(collectImage).move(x(), y()));
+					getLevel().add(collectImage.getClone().center(this));
 				if(disposeCollected)
 					getLevel().discard(this);
 				

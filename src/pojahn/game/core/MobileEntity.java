@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.badlogic.gdx.math.Vector2;
+
 import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.Direction;
 import pojahn.game.events.TileEvent;
@@ -22,6 +24,16 @@ public class MobileEntity extends Entity{
 		tileEvents = new ArrayList<>();
 		obstacles = new HashSet<>();
 		moveSpeed = 3;
+	}
+	
+	@Override
+	public MobileEntity getClone(){
+		MobileEntity clone = new MobileEntity();
+		copyData(clone);
+		if(cloneEvent != null)
+			cloneEvent.handleClonded(clone);
+		
+		return clone;
 	}
 	
 	public void logics(){}
@@ -58,6 +70,15 @@ public class MobileEntity extends Entity{
 
 	    bounds.pos.x += fX * step;
 	    bounds.pos.y += fY * step;
+	}
+	
+	public Vector2 attemptTowards(float targetX, float targetY, float steps){
+	    float fX = targetX - x();
+	    float fY = targetY - y();
+	    float dist = (float)Math.sqrt( fX*fX + fY*fY );
+	    float step = steps / dist;
+
+	    return new Vector2(bounds.pos.x + fX * step, bounds.pos.y + fY * step);
 	}
 
 	public void stepBack(){
@@ -133,6 +154,22 @@ public class MobileEntity extends Entity{
 		return false;
 	}
 	
+	public boolean canDown(){
+		return !occupiedAt(x(), y()+1);
+	}
+	
+	public boolean canUp(){
+		return !occupiedAt(x(), y()-1);
+	}
+	
+	public boolean canLeft(){
+		return !occupiedAt(x() - 1, y());
+	}
+	
+	public boolean canRight(){
+		return !occupiedAt(x() + 1, y());
+	}
+	
 	public void faceDirection(){
 		Direction dir = Collisions.getDirection(x(), y(), prevX, prevY);
 		if(dir != null)
@@ -205,10 +242,10 @@ public class MobileEntity extends Entity{
 		Level l = getLevel();
 		Set<Tile> cells = new HashSet<>();
 		
-		int x = (int) x() + 1;
-		int y = (int) y() + 1;
-		int w = (int) width() - 1;
-		int h = (int) height() - 1;
+		int x = (int) x();
+		int y = (int) y();
+		int w = (int) width();
+		int h = (int) height();
 		
 		for(int xcord = x; xcord < x + w; xcord++){
 			cells.add(l.tileAt(xcord, y));
@@ -234,9 +271,6 @@ public class MobileEntity extends Entity{
 	}
 	
 	public void collisionRespone(MobileEntity target){
-//		if(collidesWithMultiple(target) == null)
-//			return;
-		
 		float centerX = x() + width() / 2;
 		float centerY = y() + height() / 2;
 		
@@ -248,7 +282,7 @@ public class MobileEntity extends Entity{
             	target.bounds.pos.x += overX;
             else
             	target.bounds.pos.x -= overX;
-        } else{
+        } else {
         	if(target.y() > centerY)
         		target.bounds.pos.y += overY;
         	else
@@ -256,12 +290,28 @@ public class MobileEntity extends Entity{
         }
 	}
 	
+	protected boolean obstacleCollision(float tempX, float tempY){		
+		float realX = x();
+		float realY = y();
+		move(tempX, tempY);
+		boolean col = obstacleCollision();
+		move(realX, realY);
+		
+		return col;
+	}
+	
 	protected boolean obstacleCollision(){		
 		for(Entity obstacle : obstacles)
-			if(obstacle.isPresent() && collidesWith(obstacle))
+			if(collidesWith(obstacle))
 				return true;
 		
 		return false;
+	}
+	
+	protected void copyData(MobileEntity clone){
+		super.copyData(clone);
+		clone.moveSpeed = moveSpeed;
+		clone.obstacles.addAll(obstacles);
 	}
 	
 	void runTileEvents(Tile tile){

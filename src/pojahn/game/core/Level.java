@@ -65,6 +65,8 @@ public abstract class Level {
 	
 	public abstract void setTileOnLayer(int x, int y, Tile tile);
 	
+	public abstract void removeTileOnLayer(int x, int y);
+	
 	public abstract void clearTileLayer();
 	
 	public abstract boolean isSolid(int x, int y);
@@ -279,12 +281,9 @@ public abstract class Level {
 				
 				if(play.isGhost())
 					buttonsDown = play.nextReplayFrame();
-				else if(engine.getGameState() == GameState.ACTIVE){
-					if(play.getState() == Vitality.ALIVE)
-						buttonsDown = engine.playingReplay() ? engine.getReplayFrame(play) : PlayableEntity.checkButtons(play.getController());
-					else
-						buttonsDown = PlayableEntity.STILL;
-				} else
+				else if(engine.getGameState() == GameState.ACTIVE && play.getState() == Vitality.ALIVE)
+					buttonsDown = engine.playingReplay() ? engine.getReplayFrame(play) : PlayableEntity.checkButtons(play.getController());
+				else
 					buttonsDown = PlayableEntity.STILL;
 
 				if(play.getState() == Vitality.ALIVE && engine.getGameState() == GameState.ACTIVE && !engine.playingReplay())
@@ -302,9 +301,6 @@ public abstract class Level {
 					
 					play.setPrevs();
 				}
-				
-				if(play.getState() == Vitality.DEAD)
-					play.deathAction();
 			} else if(entity instanceof MobileEntity){
 				MobileEntity mobile = (MobileEntity) entity;
 				

@@ -12,18 +12,29 @@ import pojahn.game.essentials.Image2D;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class Collisions {
 	
-	public static final boolean rectanglesCollide(Rectangle rec1, Rectangle rec2)
-	{
+	public static final boolean rectanglesCollide(Rectangle rec1, Rectangle rec2){
 		if ((rec1.y + rec1.height < rec2.y) ||
 	        (rec1.y > rec2.y + rec2.height) ||
 	        (rec1.x + rec1.width < rec2.x)  ||
 	        (rec1.x > rec2.x + rec2.width))
+	        return false;
+		
+		return true;
+	}
+	
+	public static final boolean rectanglesCollide(	float x1, float y1, float width1, float height1,
+													float x2, float y2, float width2, float height2){
+		if ((y1 + height1 < y2) ||
+	        (y1 > y2 + height2) ||
+	        (x1 + width1 < x2)  ||
+	        (x1 > x2 + width2))
 	        return false;
 		
 		return true;
@@ -218,9 +229,10 @@ public class Collisions {
 	
 	public static boolean pixelPerfectRotation(Matrix4 m1, Image2D img1, Matrix4 m2, Image2D img2){
 		Matrix4 AtoB = m1.mul(m2.inv());
+		Matrix4 norM = AtoB.cpy().toNormalMatrix();
 		
-		Vector3 stepX = Vector3.X.cpy().mul(AtoB).nor();
-		Vector3 stepY = Vector3.Y.cpy().mul(AtoB).nor();
+		Vector3 stepX = Vector3.X.cpy().mul(norM);
+		Vector3 stepY = Vector3.Y.cpy().mul(norM);
 		Vector3 yPosInB = Vector3.Zero.cpy().mul(AtoB);
 		
 		int widthA = img1.getWidth();
@@ -251,13 +263,17 @@ public class Collisions {
         return false;
 	}
 	
-	public static Matrix4 createMatrix(Entity entity){
-		Matrix4 m = new Matrix4();
-		m.setToTranslation(-(entity.width() / 2), -(entity.height() / 2), 0);
-		m.rotate(0, 0, 1, -entity.getRotation());
-		m.translate(entity.x(), entity.y(), 0);
-		  
-		return m;
+	public static Matrix4 buildMatrix(Entity entity){
+		return new Matrix4(	new Vector3(entity.x(), entity.y(), 0), 
+							new Quaternion(new Vector3(0,0,1), -entity.getRotation()), 
+							new Vector3(1,1,1));
+		
+//		return new Matrix4()
+//				.idt()
+//				.setToTranslation(-entity.halfWidth(), -entity.halfHeight(), 0)
+//				.rotate(0, 0, 1, -entity.getRotation())
+//				.scl(1, 1, 1)
+//				.trn(entity.x(), entity.y(), 0);
 	}
 	
 	public static double getAngle(float x1, float y1, float x2, float y2){

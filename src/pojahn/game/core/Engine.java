@@ -69,8 +69,7 @@ public class Engine{
 		systemEvents = new ArrayList<>();
 		renderText = true;
 		timeColor = Color.WHITE;
-		screenWidth = 900;
-		screenHeight  = 700;
+		screenWidth = screenHeight = -1;
 		flipY = true;
 	}
 	
@@ -358,6 +357,9 @@ public class Engine{
 	}
 	
 	private void initCameras(){
+		screenWidth = screenWidth == -1 ? Gdx.graphics.getWidth() : -1;
+		screenHeight = screenHeight == -1 ? Gdx.graphics.getHeight() : -1;
+		
 		gameCamera = new OrthographicCamera();
 		gameCamera.setToOrtho(flipY, screenWidth, screenHeight);
 		
@@ -365,7 +367,7 @@ public class Engine{
 		hudCamera.setToOrtho(true, screenWidth, screenHeight);
 		
 		if(Gdx.graphics.getWidth() != screenWidth || Gdx.graphics.getHeight() != screenHeight)
-			Gdx.graphics.setDisplayMode((int)(screenWidth), (int)(screenHeight), false);
+			Gdx.graphics.setDisplayMode(screenWidth, screenHeight, false);
 	}
 	
 	private void statusControll(){

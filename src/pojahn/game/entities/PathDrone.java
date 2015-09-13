@@ -1,7 +1,9 @@
 package pojahn.game.entities;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.List;
 
 import pojahn.game.core.Collisions;
 import pojahn.game.core.MobileEntity;
@@ -59,7 +61,7 @@ public class PathDrone extends MobileEntity {
 		}
 	}
 
-	private LinkedList<Waypoint> waypoints;
+	private List<Waypoint> waypoints;
 	private boolean rock, skip;
 	private int dataCounter, stillCounter;
 	private boolean playEvent;
@@ -72,22 +74,24 @@ public class PathDrone extends MobileEntity {
 	 */
 	public PathDrone(float x, float y) {
 		move(x, y);
-		waypoints = new LinkedList<>();
+		waypoints = new ArrayList<>();
 		dataCounter = stillCounter = 0;
 	}
 
-	public PathDrone(PathDrone src) {
-		this(src.x(), src.y());
-		copyData(src);
-		if(src.cloneEvent != null)
-			src.cloneEvent.handleClonded(this);
+	public PathDrone getClone() {
+		PathDrone clone = new PathDrone(x(), y());
+		copyData(clone);
+		if(cloneEvent != null)
+			cloneEvent.handleClonded(clone);
+		
+		return clone;
 	}
 
-	protected void copyData(PathDrone src) {
-		super.copyData(src);
-		waypoints.addAll(src.waypoints);
-		skip = src.skip;
-		rock = src.rock;
+	protected void copyData(PathDrone clone) {
+		super.copyData(clone);
+		clone.waypoints.addAll(waypoints);
+		clone.skip = skip;
+		clone.rock = rock;
 	}
 
 	/**
@@ -152,12 +156,11 @@ public class PathDrone extends MobileEntity {
 	 * Creates a clone of the current waypoint list, reverses the order and appends it to the list.
 	 */
 	public void appendReversed() {
-		int size = waypoints.size();
-		Waypoint[] reversed = new Waypoint[size];
-		for (int i = 1; i < size; i++)
-			reversed[i] = waypoints.get(size - i - 1);
+		List<Waypoint> reversed = new ArrayList<>(waypoints);
+		reversed.remove(reversed.size() - 1);
+		Collections.reverse(reversed);
 
-		appendPath(reversed);
+		waypoints.addAll(reversed);
 	}
 
 	/**
@@ -222,7 +225,7 @@ public class PathDrone extends MobileEntity {
 		float ty = (float) (bounds.pos.y + fY * step);
 
 		if (rock) {
-			boolean canNext = occupiedAt(tx, ty);
+			boolean canNext = !occupiedAt(tx, ty);
 			if (canNext)
 				move(tx, ty);
 			else if (!canNext && skip)
@@ -235,9 +238,8 @@ public class PathDrone extends MobileEntity {
 
 	/**
 	 * A PathDrone that is rocky will respect walls and solid objects.
-	 * @param rock True if this PathDrone should be "rocky".
-	 * @param skip This flag determine how a rocky drone should behave when blocked(by a wall or solid object). 
-	 * Setting it to true will cause the drone to try the next waypoint and false halts it until the path is clear.
+	 * @param rock True if this PathDrone respect walls.
+	 * @param skip Whether or not to skip the current waypoint and go for the next one when blocked.
 	 */
 	public void setRock(boolean rock, boolean skip) {
 		this.rock = rock;

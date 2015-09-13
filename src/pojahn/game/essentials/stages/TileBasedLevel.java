@@ -2,13 +2,16 @@ package pojahn.game.essentials.stages;
 
 
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import pojahn.game.core.Entity;
-import pojahn.game.core.Level;
-
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,21 +22,28 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import pojahn.game.core.Entity;
+import pojahn.game.core.Level;
+
 public abstract class TileBasedLevel extends Level{
 	
 	private int width, height, tilesX, tilesY, tileWidth, tileHeight;
+	private float rotation;
 	private Entity image;
 	private TiledMap map;
 	private TiledMapRenderer tiledMapRenderer;
 	private TiledMapTileLayer layer;
 	private OrthographicCamera camera;
 	private MapProperties props;
-	private byte[][] tiledata;
+	private Map<Integer, Byte> tileLayer;
+	private HashMap<Integer, RegionData> tiledata;
 	
 	protected TileBasedLevel(){
+		tileLayer = new HashMap<>();
+		tiledata = new HashMap<>();
 	}
 	
-	public void createMap(TiledMap map){
+	public void parse(TiledMap map){
 		this.map = map;
 		props = map.getProperties();
 		layer =  (TiledMapTileLayer)map.getLayers().get(0);
@@ -61,18 +71,22 @@ public abstract class TileBasedLevel extends Level{
 	
 	@Override
 	public Tile tileAt(int x, int y) {
-		int tileX = x % tileWidth;
-		int tileY = layer.getHeight() - (y % tileHeight);
-		int relativeX = x - tileX;
-		int relativeY = y - tileY;
+		if(outOfBounds(x, y))
+			return Tile.HOLLOW;
+		
+		int tileX = x / tileWidth;
+		int tileY = y / tileHeight;
 		
 		Cell cell = layer.getCell(tileX, tileY);
 		if(cell != null){
 			TextureRegion region = cell.getTile().getTextureRegion();
-			int offX = region.getRegionX();
-			int offY = region.getRegionY();
+			int key = region.getRegionX() * 31 + region.getRegionY();
+			int relativeX = x - (tileX * tileWidth);
+			int relativeY = y - (tileY * tileHeight);
 			
-			return PixelBasedLevel.mapToTile(tiledata[offY + relativeX][offX + relativeY]);
+			boolean[][] alpha = tiledata.get(key).alpha;
+			
+			return alpha[relativeX][relativeY] ? Tile.SOLID : Tile.HOLLOW;
 		}
 		else
 			return Tile.HOLLOW;
@@ -88,20 +102,66 @@ public abstract class TileBasedLevel extends Level{
 		return tileAt(x,y) == Tile.SOLID;
 	}
 	
-//	public void setTileAt(...){ TODO: Do it!
-//		//Allow it to expand!
-//	}
+	@Override
+	public void setTileOnLayer(int x, int y, Tile tile) {
+		int key = x * 31 + y;
+		
+		if(tile == null)
+			tileLayer.remove(key);
+		else
+			tileLayer.put(key, PixelBasedLevel.mapToByte(tile));		
+	}
 	
-	public Entity getImage(){
+	@Override
+	public void removeTileOnLayer(int x, int y) {
+		tileLayer.remove(x * 31 + y);		
+	}
+	
+	@Override
+	public void clearTileLayer() {
+		tileLayer.clear();
+	}
+	
+	public void setTile(int x, int y, Cell cell){
+//		y = tilesY - y;
+		
+		if(x < 0 || x > tilesX || y < 0 || y > tilesY)
+			return;
+		
+		
+		layer.setCell(x, y, cell);
+		//TODO:Allow it to expand
+	}
+	
+	public void transformTiles(int cx, int cy, int radius, Cell cell) {
+	    int rr = radius*radius;
+
+	    for(int x = cx - radius; x <= cx + radius; ++x){
+	        for(int y = cy - radius; y <= cy + radius; ++y){
+	            int dx = cx - x;
+	            int dy = cy - y;
+	            if((dx*dx + dy*dy) < rr)
+	                setTile(x, y, cell);
+	         }
+	    }
+	}
+	
+	public void restoreTiles(){
+		
+	}
+	
+	public Entity getWorldImage(){
 		if(image == null){
-			image = new Entity(){
+			image = new Entity(){{
+//				zIndex(100);
+			}
 				@Override
 				public void render(SpriteBatch batch) {
 					if(tiledMapRenderer == null)
 						tiledMapRenderer = new OrthogonalTiledMapRenderer(map, batch);
-					
+
 					if(getRotation() != 0 || flipX || flipY)
-						throw new RuntimeException("Rotation, scale and flip are not supported for TileBased image.");
+						throw new RuntimeException("Rotation and flip are not supported for tile based image.");
 
 					Color color = batch.getColor();
 					Color newColor = new Color(color);
@@ -112,13 +172,15 @@ public abstract class TileBasedLevel extends Level{
 					camera.position.x = getEngine().tx();
 					camera.position.y = getEngine().ty();
 					camera.zoom = getEngine().getZoom();
-					camera.rotate(getEngine().getRotation()); //TODO: We have to rotate this back first.
+					camera.rotate(-rotation);
+					camera.rotate((rotation = getEngine().getRotation()));
 					camera.update();
 					
 					tiledMapRenderer.setView(camera);
-					tiledMapRenderer.render();
-					
+					tiledMapRenderer.renderTileLayer(layer);
+
 					batch.setColor(color);
+					getEngine().gameCamera();
 				}
 			};
 		}
@@ -127,22 +189,85 @@ public abstract class TileBasedLevel extends Level{
 	}
 	
 	private void encode(){
+		List<TextureRegion> regions = new ArrayList<>();
+		
 		for(int x = 0; x < tilesX; x++){
 			for(int y = 0; y < tilesY; y++){
 				Cell cell = layer.getCell(x, y);
 				if(cell != null){
-					TextureData tdata = cell.getTile().getTextureRegion().getTexture().getTextureData();
-					tdata.prepare();
-					Pixmap pix = tdata.consumePixmap();
-					
-					tiledata = new byte[pix.getHeight()][pix.getWidth()];
-					for(int y2 = 0; y2 < tiledata.length; y2++){
-						for(int x2 = 0; x2 < tiledata[y2].length; x2++)
-							tiledata[y2][x2] = (byte) (new Color(pix.getPixel(x2, y2)).a == 0 ? 0 : 1);
+					TextureRegion region = cell.getTile().getTextureRegion();
+					if(!regions.contains(region)){
+						regions.add(region);
 					}
-					return;
 				}
 			}
+		}
+		
+		Pixmap pix = null;
+		TextureData tdata = regions.get(0).getTexture().getTextureData();
+		tdata.prepare();
+		pix = tdata.consumePixmap();
+		
+		PixmapIO.writePNG(Gdx.files.absolute("C:/test.png"), pix);
+		
+		for(TextureRegion region : regions){
+			int startX = region.getRegionX();
+			int startY = region.getRegionY();
+			int w = region.getRegionWidth();
+			int h = region.getRegionHeight();
+			int key = startX * 31 + startY;
+			boolean[][] alpha = new boolean[w][h];
+			
+			for(int x2 = 0; x2 < w; x2++){
+				for(int y2 = 0; y2 < h; y2++){
+					alpha[x2][y2] = new Color(pix.getPixel(x2 + startX, y2 + startY)).a > 0.0f;
+				}
+			}
+			
+			tiledata.put(key, new RegionData(region, alpha));
+		}
+		
+		pix.dispose();
+	}
+	
+	private static class RegionData{
+		TextureRegion region;
+		boolean[][] alpha;
+		
+		RegionData(TextureRegion region, boolean[][] alpha){
+			this.region = region;
+			this.alpha = alpha;
+		}
+		
+		@Override
+		public int hashCode() {
+			return region.getRegionX() * 31 + region.getRegionY();
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if(obj instanceof RegionData){
+				RegionData rg = (RegionData) obj;
+				return rg.region == region;
+			}else
+				return false;
+		}
+	}
+	
+	private static class Holder{
+		Cell cell;
+		int x,y;
+		
+		Holder(Cell cell, int x, int y) {
+			this.cell = cell;
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			Holder holder = (Holder)obj;
+			return (x * 31 + y) == (holder.x * 31 + holder.y);
 		}
 	}
 }

@@ -7,15 +7,30 @@ import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.events.Event;
 import pojahn.game.events.TileEvent;
+import pojahn.lang.Int32;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Factory {
 	
+	public static Event spazz(Entity entity, float strength, int freq){
+		Int32 counter = new Int32();
+		return ()->{
+			if(++counter.value % freq == 0){
+				entity.offsetX = MathUtils.random(-strength, strength);
+				entity.offsetY = MathUtils.random(-strength, strength);
+			}
+		};
+	}
+	
 	public static MobileEntity drawText(HUDMessage message, BitmapFont font){
-		return new MobileEntity(){
+		return new MobileEntity(){{
+				zIndex(9000);
+			}
+			
 			@Override
 			public void render(SpriteBatch batch) {
 				getEngine().hudCamera();

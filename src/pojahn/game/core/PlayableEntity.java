@@ -2,16 +2,15 @@ package pojahn.game.core;
 
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import pojahn.game.entities.Particle;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Controller;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.Keystrokes;
 import pojahn.game.essentials.Vitality;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 
 public abstract class PlayableEntity extends MobileEntity{
 	
@@ -28,7 +27,6 @@ public abstract class PlayableEntity extends MobileEntity{
 	
 	public PlayableEntity(){
 		hp = 1;
-		id = MathUtils.random() + "";
 		state = Vitality.ALIVE;
 	}
 	
@@ -46,10 +44,8 @@ public abstract class PlayableEntity extends MobileEntity{
 			hurtCounter = 100;	
 		}
 		
-		if(0 >= hp){
-			deathAction();
+		if(0 >= hp)
 			setState(Vitality.DEAD);
-		}
 	}
 	
 	public boolean isHurt(){
@@ -77,8 +73,13 @@ public abstract class PlayableEntity extends MobileEntity{
 			revive();
 		if(state == Vitality.ALIVE && this.state == Vitality.COMPLETED)
 			throw new IllegalArgumentException("Can not set to state to " + Vitality.ALIVE + " when the current state is " + Vitality.COMPLETED);
+		if(state == Vitality.DEAD && this.state == Vitality.DEAD)
+			throw new IllegalArgumentException("Can not kill an alrady dead character");
 			
 		this.state = state;
+		
+		if(this.state == Vitality.DEAD)
+			deathAction();
 	}
 	
 	public Vitality getState(){
@@ -107,7 +108,7 @@ public abstract class PlayableEntity extends MobileEntity{
 		pb.left 	  = Gdx.input.isKeyPressed(con.left);
 		pb.right 	  = Gdx.input.isKeyPressed(con.right);
 		pb.up 		  = Gdx.input.isKeyPressed(con.up);
-		pb.jump		  = Gdx.input.isKeyPressed(con.jump);
+		pb.jump		  = Gdx.input.isKeyJustPressed(con.jump);
 		pb.pause	  = Gdx.input.isKeyJustPressed(con.pause);
 		pb.special1   = Gdx.input.isKeyJustPressed(con.special1);
 		pb.special2   = Gdx.input.isKeyJustPressed(con.special2);
@@ -146,14 +147,14 @@ public abstract class PlayableEntity extends MobileEntity{
 		return pb;
 	}
 	
-	void deathAction() {
+	private void deathAction() {
 		activate(false);
 		setVisible(false);
 		if(deathImage != null)
-			getLevel().add(new Particle(deathImage).centerWith(this));
+			getLevel().add(deathImage.getClone().center(this));
 	}
 	
-	void revive(){
+	private void revive(){
 		activate(true);
 		setVisible(true);
 	}

@@ -26,4 +26,15 @@ public class Development {
 			System.out.println(entity.x() + " " + entity.y());
 		};
 	}
+	
+	public static void print2DArray(Object[][] arr){
+		StringBuilder builder = new StringBuilder(arr.length * arr[0].length);
+		for(int i = 0; i < arr.length; i++){
+			for(int j = 0; j < arr[i].length; j++){
+				builder.append(arr[i][j].toString());
+			}
+			builder.append("\n");
+		}
+		System.out.println(builder.toString());
+	}
 }

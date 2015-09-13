@@ -8,6 +8,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class FlyMan extends PlayableEntity{
 
 	boolean moving, alwaysMove;
+
+	@Override
+	public FlyMan getClone(){
+		FlyMan clone = new FlyMan();
+		copyData(clone);
+		if(cloneEvent != null)
+			cloneEvent.handleClonded(clone);
+		
+		return clone;
+	}
 	
 	@Override
 	public void logics() {
@@ -35,5 +45,10 @@ public class FlyMan extends PlayableEntity{
 	public void render(SpriteBatch batch) {
 		getImage().stop(!moving);
 		super.render(batch);
+	}
+	
+	protected void copyData(FlyMan clone){
+		super.copyData(clone);
+		clone.alwaysMove = alwaysMove;
 	}
 }

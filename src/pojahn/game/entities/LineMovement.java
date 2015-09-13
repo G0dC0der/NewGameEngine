@@ -3,7 +3,7 @@ package pojahn.game.entities;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 
-public class CrossMovement extends MobileEntity{//TODO: Currently, this one ignores collisions with obstacles.
+public class LineMovement extends MobileEntity{
 	
 	public enum Movement{
 		VERTICAL,
@@ -13,7 +13,7 @@ public class CrossMovement extends MobileEntity{//TODO: Currently, this one igno
 	private Movement movment;
 	private boolean leftOrUp;
 	
-	public CrossMovement(Movement movement){
+	public LineMovement(Movement movement){
 		if(movement == null)
 			throw new IllegalArgumentException("Must set a movement.");
 		
@@ -24,11 +24,14 @@ public class CrossMovement extends MobileEntity{//TODO: Currently, this one igno
 		});
 	}
 	
-	public CrossMovement(CrossMovement src){
-		this(src.movment);
-		copyData(src);
-		if(src.cloneEvent != null)
-			src.cloneEvent.handleClonded(this);
+	@Override
+	public LineMovement getClone(){
+		LineMovement clone = new LineMovement(movment);
+		copyData(clone);
+		if(cloneEvent != null)
+			cloneEvent.handleClonded(clone);
+		
+		return clone;
 	}
 	
 	public void setMovement(Movement movement){
@@ -37,6 +40,9 @@ public class CrossMovement extends MobileEntity{//TODO: Currently, this one igno
 	
 	@Override
 	public void logics() {
+		if(obstacleCollision())
+			leftOrUp = !leftOrUp;
+		
 		if(movment == Movement.HORIZONTAL)
 			moveToward(leftOrUp ? 0 : getLevel().getWidth(), y());
 		else

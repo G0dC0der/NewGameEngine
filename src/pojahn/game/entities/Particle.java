@@ -11,10 +11,13 @@ public class Particle extends MobileEntity{
 	
 	public Particle(){}
 	
-	public Particle(Particle src){
-		copyData(src);
-		if(src.cloneEvent != null)
-			src.cloneEvent.handleClonded(this);
+	public Particle getClone(){
+		Particle clone = new Particle();
+		copyData(clone);
+		if(cloneEvent != null)
+			cloneEvent.handleClonded(clone);
+		
+		return clone;
 	}
 	
 	public void setIntroSound(Sound introSound){
@@ -32,8 +35,8 @@ public class Particle extends MobileEntity{
 			getLevel().discard(this);
 	}
 	
-	protected void copyData(Particle src){
-		super.copyData(src);
-		introSound = src.introSound;
+	protected void copyData(Particle clone){
+		super.copyData(clone);
+		clone.introSound = introSound;
 	}
 }

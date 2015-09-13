@@ -49,11 +49,13 @@ public class Entity{
 		deleteEvents = new ArrayList<>();
 	}
 	
-	public Entity(Entity src){
-		this();
-		copyData(src);
-		if(src.cloneEvent != null)
-			src.cloneEvent.handleClonded(this);
+	public Entity getClone(){
+		Entity clone = new Entity();
+		copyData(clone);
+		if(cloneEvent != null)
+			cloneEvent.handleClonded(clone);
+		
+		return clone;
 	}
 	
 	public void setImage(Image2D... images){
@@ -81,11 +83,16 @@ public class Entity{
 		bounds.pos.y = y;
 		return this;
 	}
-	
-	public Entity centerWith(Entity target){
-		bounds.pos.x = target.x() - width() / 2;
-		bounds.pos.y = target.y() - height() / 2;
+
+	public Entity center(Entity target){
+		bounds.pos.x = target.centerX() - (width() / 2);
+		bounds.pos.y = target.centerY() - (height() / 2);
 		return this;
+	}
+	
+	public void nudge(float relX, float relY){
+		bounds.pos.x += relX;
+		bounds.pos.y += relY;
 	}
 	
 	public void init() {}
@@ -166,8 +173,8 @@ public class Entity{
 			//return polygonsCollide(this, entity);
 		} else if(hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL){
 			if(bounds.rotation != 0 || entity.bounds.rotation != 0)	
-				return rectanglesCollide(getBoundingBox(bounds), getBoundingBox(entity.bounds)) && pixelPerfectRotation(createMatrix(this),	getImage().getCurrentObject(),
-																														createMatrix(entity), entity.getImage().getCurrentObject());
+				return rectanglesCollide(getBoundingBox(bounds), getBoundingBox(entity.bounds)) && pixelPerfectRotation(buildMatrix(this),	getImage().getCurrentObject(),
+																														buildMatrix(entity), entity.getImage().getCurrentObject());
 			
 			return rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) && pixelPerfect(bounds.toRectangle(), getImage().getCurrentObject(), flipX, flipY,
 																										entity.bounds.toRectangle(), entity.getImage().getCurrentObject(), entity.flipX, entity.flipY);
@@ -300,31 +307,31 @@ public class Entity{
 		return new Vector2(locX,locY);
 	}
 	
-	protected void copyData(Entity src){
-		originator = src;
-		bounds.pos.x = src.bounds.pos.x;
-		bounds.pos.y = src.bounds.pos.y;
-		bounds.size.width = src.bounds.size.width;
-		bounds.size.height = src.bounds.size.height;
-		active = src.active;
-		visible = src.visible;
-		alpha = src.alpha;
-		bounds.rotation = src.bounds.rotation;
-		zIndex = src.zIndex;
-		hitbox = src.hitbox;
-		quickCollision = src.quickCollision;
-		offsetX = src.offsetX;
-		offsetY = src.offsetY;
-		flipX = src.flipX;
-		flipY = src.flipY;
-		sounds.maxDistance = src.sounds.maxDistance;
-		sounds.maxVolume = src.sounds.maxVolume;
-		sounds.power = src.sounds.power;
-		sounds.useFalloff = src.sounds.useFalloff;
-		if(src.image != null)
-			image = src.image.getClone();
-		if(src.poly != null)
-			poly = new Polygon(src.poly.getTransformedVertices());
+	protected void copyData(Entity clone){
+		clone.originator = this;
+		clone.bounds.pos.x = bounds.pos.x;
+		clone.bounds.pos.y = bounds.pos.y;
+		clone.bounds.size.width = bounds.size.width;
+		clone.bounds.size.height = bounds.size.height;
+		clone.active = active;
+		clone.visible = visible;
+		clone.alpha = alpha;
+		clone.bounds.rotation = bounds.rotation;
+		clone.zIndex = zIndex;
+		clone.hitbox = hitbox;
+		clone.quickCollision = quickCollision;
+		clone.offsetX = offsetX;
+		clone.offsetY = offsetY;
+		clone.flipX = flipX;
+		clone.flipY = flipY;
+		clone.sounds.maxDistance = sounds.maxDistance;
+		clone.sounds.maxVolume = sounds.maxVolume;
+		clone.sounds.power = sounds.power;
+		clone.sounds.useFalloff = sounds.useFalloff;
+		if(image != null)
+			clone.image = image.getClone();
+		if(poly != null)
+			clone.poly = new Polygon(poly.getTransformedVertices());
 	}
 	
 	protected void basicRender(SpriteBatch batch){

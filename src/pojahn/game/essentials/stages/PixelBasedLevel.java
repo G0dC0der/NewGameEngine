@@ -3,10 +3,9 @@ package pojahn.game.essentials.stages;
 import java.util.HashMap;
 import java.util.Map;
 
-import pojahn.game.core.Level;
-
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.math.Vector2;
+
+import pojahn.game.core.Level;
 
 public abstract class PixelBasedLevel extends Level{
 	
@@ -83,10 +82,10 @@ public abstract class PixelBasedLevel extends Level{
 	public static final int GREEN_10 = 0x000000ff;
 	
 	private byte[][] stageData;
-	private Map<Vector2, Byte> deforms; 
+	private Map<Integer, Byte> tileLayer; 
 	
 	protected PixelBasedLevel() {
-		deforms = new HashMap<>();
+		tileLayer = new HashMap<>();
 	}
 	
 	public void createMap(Pixmap map){
@@ -158,7 +157,7 @@ public abstract class PixelBasedLevel extends Level{
 	
 	@Override
 	public Tile tileAt(int x, int y) {
-		Byte tile = deforms.get(new Vector2(x,y));
+		Byte tile = tileLayer.get(x * 31 + y);
 		if(tile != null)
 			return mapToTile(tile);
 		
@@ -167,12 +166,21 @@ public abstract class PixelBasedLevel extends Level{
 	
 	@Override
 	public void setTileOnLayer(int x, int y, Tile tile){
-		deforms.put(new Vector2(x,y), mapToByte(tile));
+		int key = x * 31 + y;
+		if(tile == null)
+			tileLayer.remove(key);
+		else
+			tileLayer.put(key, mapToByte(tile));
+	}
+	
+	@Override
+	public void removeTileOnLayer(int x, int y) {
+		tileLayer.remove(x * 31 + y);
 	}
 	
 	@Override
 	public void clearTileLayer(){
-		deforms.clear();
+		tileLayer.clear();
 	}
 	
 	@Override

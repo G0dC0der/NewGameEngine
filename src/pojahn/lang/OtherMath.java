@@ -1,6 +1,11 @@
 package pojahn.lang;
 
 public class OtherMath {	
+	
+	public static boolean between(int value, int min, int max) {
+		return (value >= min) && (value <= max);
+	}
+	
 	/**
 	 * Reduces the amount of decimals for the given values-
 	 * @param value The value to round-
