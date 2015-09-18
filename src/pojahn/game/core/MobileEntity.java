@@ -16,6 +16,7 @@ public class MobileEntity extends Entity{
 	float prevX, prevY;
 	List<TileEvent> tileEvents;
 	
+	private boolean smart;
 	private float moveSpeed;
 	private boolean frozen, tileEventPause;
 	private Set<Entity> obstacles;
@@ -58,21 +59,38 @@ public class MobileEntity extends Entity{
 		return frozen;
 	}
 
-	public void moveToward(float targetX, float targetY){
-		moveToward(targetX, targetY, moveSpeed);
+	public void moveTowards(float targetX, float targetY){
+		if(smart)
+			smartMoveTowards(targetX, targetY, moveSpeed);
+		else
+			dumbMoveTowards(targetX, targetY, moveSpeed);
 	}
 	
-	public void moveToward(float targetX, float targetY, float steps){
-	    float fX = targetX - x();
-	    float fY = targetY - y();
-	    double dist = Math.sqrt( fX*fX + fY*fY );
-	    double step = steps / dist;
-
-	    bounds.pos.x += fX * step;
-	    bounds.pos.y += fY * step;
+	protected void dumbMoveTowards(float targetX, float targetY, float steps){
+		Vector2 next = attemptTowards(targetX, targetY, steps);
+	    bounds.pos.set(next);
 	}
 	
-	public Vector2 attemptTowards(float targetX, float targetY, float steps){
+	protected void smartMoveTowards(float targetX, float targetY, float steps){
+		Vector2 next = attemptTowards(targetX, targetY, steps);
+		smartMove(next.x, next.y);
+	}
+	
+	protected boolean smartMove(float targetX, float targetY){
+		boolean moved = false;
+		
+		if(!occupiedAt(targetX, y())){
+			bounds.pos.x = targetX;
+			moved = true;
+		}
+		if(!occupiedAt(x(), targetY)){
+			bounds.pos.y = targetY;
+			moved = true;
+		}
+		return moved;
+	}
+	
+	protected Vector2 attemptTowards(float targetX, float targetY, float steps){
 	    float fX = targetX - x();
 	    float fY = targetY - y();
 	    float dist = (float)Math.sqrt( fX*fX + fY*fY );
@@ -112,6 +130,14 @@ public class MobileEntity extends Entity{
 	
 	public void removeObstacle(Entity obstacle){
 		obstacles.remove(obstacle);
+	}
+	
+	public void setSmart(boolean smart){
+		this.smart = smart;
+	}
+	
+	public boolean isSmart(){
+		return smart;
 	}
 	
 	public boolean tryLeft(int steps){
@@ -312,6 +338,7 @@ public class MobileEntity extends Entity{
 		super.copyData(clone);
 		clone.moveSpeed = moveSpeed;
 		clone.obstacles.addAll(obstacles);
+		clone.smart = smart;
 	}
 	
 	void runTileEvents(Tile tile){

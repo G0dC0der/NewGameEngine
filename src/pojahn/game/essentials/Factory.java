@@ -9,6 +9,9 @@ import pojahn.game.events.Event;
 import pojahn.game.events.TileEvent;
 import pojahn.lang.Int32;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -118,6 +121,104 @@ public class Factory {
 		return ()->{
 			if(enemy.collidesWith(play))
 				play.touch(hp);
+		};
+	}
+	
+	public static LaserBeam dottedLaser(Animation<Image2D> dotImage, float size){
+		return new LaserBeam() {
+			
+			List<Task> tasks = new ArrayList<>();
+			
+			@Override
+			public void fireAt(float srcX, float srcY, float destX, float destY, int active) {
+				tasks.add(new Task(srcX,srcY,destX,destY,active));
+			}
+			
+			@Override
+			public void drawLasers(SpriteBatch batch) {
+				if(dotImage.hasEnded() && !dotImage.isLooping())
+					dotImage.reset();
+				
+				int size = tasks.size();
+				for (int i = 0; i < size; i++) {
+					final Task t = tasks.get(i);
+
+					if (0 >= t.active--) {
+						tasks.remove(t);
+						size--;
+					}
+					
+					Image2D img = dotImage.getObject();
+					Vector2 start = new Vector2(t.srcX, t.srcY);
+					Vector2 end = new Vector2(t.destX, t.destY);
+					float dist = (float) Collisions.distance(t.srcX, t.srcY, t.destX, t.destY);
+					float links = dist / size;
+					
+					for(int j = 0; j < links; j++){
+						Vector2 pos = start.cpy().lerp(end, i / links);
+						batch.draw(img, pos.x, pos.y);
+					}
+				}
+			}
+		};
+	}
+	
+	public static LaserBeam threeStageLaser(Animation<Image2D> laserBegin, Animation<Image2D> laserBeam, Animation<Image2D> laserImpact) {
+		return new LaserBeam() {
+			List<Task> tasks = new ArrayList<>();
+
+			@Override
+			public void fireAt(float srcX, float srcY, float destX, float destY, int active) {
+				tasks.add(new Task(srcX, srcY, destX, destY, active));
+			}
+
+			@Override
+			public void drawLasers(SpriteBatch b) {
+				if(laserBeam.hasEnded() && !laserBeam.isLooping())
+					laserBeam.reset();
+				if(laserBegin.hasEnded() && !laserBegin.isLooping())
+					laserBegin.reset();
+				if(laserImpact.hasEnded() && !laserImpact.isLooping())
+					laserImpact.reset();
+				
+				int size = tasks.size();
+				for (int i = 0; i < size; i++) {
+					final Task t = tasks.get(i);
+
+					if (0 >= t.active--) {
+						tasks.remove(t);
+						size--;
+					}
+
+					final float angle = (float) Collisions.getAngle(t.srcX, t.srcY, t.destX, t.destY);
+
+					if (laserBeam != null) {
+						Image2D beam = laserBeam.getObject();
+						float dx = (float) (beam.getHeight() / 2 * Math.cos(Math.toRadians(angle - 90)));
+						float dy = (float) (beam.getHeight() / 2 * Math.sin(Math.toRadians(angle - 90)));
+						float width = (float) Collisions.distance(t.srcX + dx, t.srcY + dy, t.destX, t.destY);
+
+						b.draw(beam, t.srcX + dx, t.srcY + dy, 0, 0, width, beam.getHeight(), 1, 1, angle, 0, 0,
+								(int) width, (int) beam.getHeight(), false, true);
+					}
+
+					if (laserImpact != null) {
+						Image2D exp = laserImpact.getObject();
+						float halfWidth = exp.getWidth() / 2;
+						float halfHeight = exp.getHeight() / 2;
+						b.draw(exp, t.destX - halfWidth, t.destY - halfHeight, halfWidth, halfHeight, exp.getWidth(),
+								exp.getHeight(), 1, 1, angle, 0, 0, (int) exp.getWidth(), (int) exp.getHeight(), false, true);
+					}
+
+					if (laserBegin != null) {
+						Image2D begin = laserBegin.getObject();
+						float halfWidth = begin.getWidth() / 2;
+						float halfHeight = begin.getHeight() / 2;
+						b.draw(begin, t.srcX - halfWidth, t.srcY - halfHeight, halfHeight, halfHeight, begin.getWidth(),
+								begin.getHeight(), 1, 1, angle, 0, 0, (int) begin.getWidth(), (int) begin.getHeight(), false, true);
+					}
+				}
+			}
 		};
 	}
 }

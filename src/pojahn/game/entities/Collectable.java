@@ -1,16 +1,22 @@
 package pojahn.game.entities;
 
+import com.badlogic.gdx.audio.Sound;
+
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.events.Event;
 
-import com.badlogic.gdx.audio.Sound;
-
 public class Collectable extends MobileEntity{
+	
+	@FunctionalInterface
+	public interface CollectEvent{
+		void eventHandling(Entity collector);
+	}
 
 	private Entity[] collectors;
+	private Entity subject;
 	private Particle collectImage;
-	private Event collectEvent;
+	private CollectEvent collectEvent;
 	private Sound collectSound;
 	private boolean collected, disposeCollected;
 	
@@ -23,16 +29,17 @@ public class Collectable extends MobileEntity{
 	public void setCollectSound(Sound collectSound){
 		this.collectSound = collectSound;
 	}
-	
-	/**
-	 * The {@code Event} to execute upon collection.
-	 */
-	public void setCollectEvent(Event collectEvent){
+
+	public void setCollectEvent(CollectEvent collectEvent){
 		this.collectEvent = collectEvent;
 	}
 	
 	public void disposeCollected(boolean disposeCollected){
 		this.disposeCollected = disposeCollected;
+	}
+	
+	public Entity getSubject(){
+		return subject;
 	}
 	
 	@Override
@@ -43,8 +50,9 @@ public class Collectable extends MobileEntity{
 		for(Entity collector : collectors){
 			if(collidesWith(collector)){
 				collected = true;
+				subject = collector;
 				if(collectEvent != null)
-					collectEvent.eventHandling();
+					collectEvent.eventHandling(collector);
 				if(collectSound != null)
 					collectSound.play(sounds.calc());
 				if(collectImage != null)
@@ -54,6 +62,29 @@ public class Collectable extends MobileEntity{
 				
 				break;
 			}
+		}
+	}
+	
+	public static class CollectEvents{
+		public static CollectEvent wrap(Event event){
+			return collector -> event.eventHandling() ;
+		}
+		
+		public static CollectEvent freeze(int frames){
+			return collector->{
+				MobileEntity mobile = (MobileEntity) collector;
+				mobile.freeze();
+				mobile.getLevel().runOnceAfter(()->mobile.unfreeze(), frames);
+			};
+		}
+		
+		public static CollectEvent speed(int frames, float multipler){
+			return collector->{
+				MobileEntity mobile = (MobileEntity) collector;
+				float orgSpeed = mobile.getMoveSpeed();
+				mobile.setMoveSpeed(orgSpeed * multipler);
+				mobile.getLevel().runOnceAfter(()-> mobile.setMoveSpeed(orgSpeed), frames);
+			};
 		}
 	}
 }

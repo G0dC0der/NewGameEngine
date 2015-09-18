@@ -44,8 +44,8 @@ public class LineMovement extends MobileEntity{
 			leftOrUp = !leftOrUp;
 		
 		if(movment == Movement.HORIZONTAL)
-			moveToward(leftOrUp ? 0 : getLevel().getWidth(), y());
+			moveTowards(leftOrUp ? 0 : getLevel().getWidth(), y());
 		else
-			moveToward(x(), leftOrUp ? 0 : getLevel().getHeight());
+			moveTowards(x(), leftOrUp ? 0 : getLevel().getHeight());
 	}
 }

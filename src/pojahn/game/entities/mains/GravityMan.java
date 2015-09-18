@@ -11,8 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 
 public class GravityMan extends PlayableEntity implements EarthBound{
 
-	private Vector2 vel, tVel, slidingTVel;
-	private float accX, mass, gravity, damping, wallGravity, wallDamping, jumpStrength, wallJumpHorizontalStrength;
+	public Vector2 vel, tVel, slidingTVel;
+	public float accX, mass, gravity, damping, wallGravity, wallDamping, jumpStrength, wallJumpHorizontalStrength;
 	private int jumpButtonPressedCounter;
 	private boolean isWallSliding, allowWallSlide, allowWallJump;
 	private Sound jumpSound;

@@ -24,8 +24,12 @@ public class SolidPlatform extends PathDrone{
 	public SolidPlatform(float x, float y, MobileEntity... subjects) {
 		super(x, y);
 		interactingSujects = new ArrayList<>(subjects.length);
-		setSubjects(subjects);
 		setFollowMode(FollowMode.NORMAL);
+	}
+	
+	@Override
+	public void init() {
+		setSubjects((MobileEntity[])interactingSujects.toArray());
 	}
 	
 	public SolidPlatform getClone() {

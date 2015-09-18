@@ -250,6 +250,15 @@ public abstract class Level {
 		soundListeners.add(listener);
 	}
 	
+	protected void clean(){
+		awatingObjects.clear();
+		deleteObjects.clear();
+		gameObjects.forEach(e -> e.dispose());
+		gameObjects.clear();
+		clearTileLayer();
+		mainCharacters.clear();
+	}
+
 	void gameLoop(){
 		insertDelete();
 		
@@ -259,15 +268,6 @@ public abstract class Level {
 		}
 		
 		updateEntities();
-	}
-	
-	void clean(){
-		awatingObjects.clear();
-		deleteObjects.clear();
-		gameObjects.forEach(e -> e.dispose());
-		gameObjects.clear();
-		clearTileLayer();
-		mainCharacters.clear();
 	}
 	
 	private void updateEntities(){

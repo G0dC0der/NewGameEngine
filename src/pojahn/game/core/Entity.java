@@ -9,6 +9,7 @@ import pojahn.game.essentials.Bounds;
 import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.SoundEmitter;
+import pojahn.game.events.ActionEvent;
 import pojahn.game.events.CloneEvent;
 import pojahn.game.events.Event;
 
@@ -36,6 +37,7 @@ public class Entity{
 	private Animation<Image2D> image;
 	private Entity originator;
 	private Hitbox hitbox;
+	private ActionEvent actionEvent;
 	private boolean quickCollision, visible, active;
 	private int zIndex;
 	
@@ -105,7 +107,7 @@ public class Entity{
 		
 		Color defColor = batch.getColor();
 		batch.setColor(new Color(defColor.r, defColor.g, defColor.b, alpha));
-		basicRender(batch);
+		basicRender(batch, nextImage());
 		batch.setColor(defColor);
 	}
 	
@@ -307,6 +309,18 @@ public class Entity{
 		return new Vector2(locX,locY);
 	}
 	
+	public void setActionEvent(ActionEvent actionEvent){
+		this.actionEvent = actionEvent;
+	}
+	
+	public boolean hasActionEvent(){
+		return actionEvent != null;
+	}
+	
+	public void runActionEvent(Entity caller){
+		actionEvent.eventHandling(caller);
+	}
+	
 	protected void copyData(Entity clone){
 		clone.originator = this;
 		clone.bounds.pos.x = bounds.pos.x;
@@ -334,8 +348,8 @@ public class Entity{
 			clone.poly = new Polygon(poly.getTransformedVertices());
 	}
 	
-	protected void basicRender(SpriteBatch batch){
-		batch.draw(	nextImage(), 
+	protected void basicRender(SpriteBatch batch, Image2D image){
+		batch.draw(	image, 
 					bounds.pos.x + offsetX, 
 					bounds.pos.y + offsetY, 
 					centerX() - (bounds.pos.x + offsetX), 

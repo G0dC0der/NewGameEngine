@@ -1,13 +1,9 @@
 package pojahn.game.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import pojahn.game.core.Level.Tile;
-import pojahn.game.essentials.Bounds;
-import pojahn.game.essentials.Direction;
-import pojahn.game.essentials.Image2D;
 
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
@@ -16,6 +12,11 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+
+import pojahn.game.core.Level.Tile;
+import pojahn.game.essentials.Bounds;
+import pojahn.game.essentials.Direction;
+import pojahn.game.essentials.Image2D;
 
 public class Collisions {
 	
@@ -318,6 +319,18 @@ public class Collisions {
 			}
 		}
 		return targets.get(closestIndex);
+	}
+	
+	public static Entity findClosestSeeable(Entity watcher, Entity... targets){
+		List<Entity> seeable = new ArrayList<>();
+		for(Entity target : targets)
+			if(watcher.canSee(target))
+				seeable.add(target);
+		
+		if(seeable.isEmpty())
+			return null;
+		else
+			return findClosest(watcher, seeable);
 	}
 	
 	public static boolean lineItersects(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4){
