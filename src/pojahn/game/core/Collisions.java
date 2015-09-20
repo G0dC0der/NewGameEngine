@@ -361,8 +361,6 @@ public class Collisions {
 	
 	/**
 	 * Returns the bounding box of the (rotated) rectangle.
-	 * @param entity The {@code GameObject} to calculate the bounding box on.
-	 * @return The bounding box.
 	 */
 	public static Rectangle getBoundingBox(Bounds bounds){
 		  Vector2 c = bounds.center();
@@ -407,6 +405,14 @@ public class Collisions {
 				(cosTheta * (x - cx) - sinTheta * (y - cy) + cx), 
 				(sinTheta * (x - cx) + cosTheta * (y - cy) + cy)
 		);
+	}
+	
+	public static Entity mostLeft(Entity e1, Entity e2){
+		return e2.x() > e1.x() ? e1 : e2;
+	}
+	
+	public static Entity mostRight(Entity e1, Entity e2){
+		return e2.x() + e2.width() > e1.x() + e1.width() ? e2 : e1;
 	}
 	
 	public static Vector2 searchTile(int x0, int y0, final int x1, final int y1, Tile tile, Level level){

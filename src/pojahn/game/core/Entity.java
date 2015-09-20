@@ -253,18 +253,18 @@ public class Entity{
 		return (float) Collisions.distance(x(), y(), entity.x(), entity.y());
 	}
 	
-	public void expand(){
-		bounds.pos.x--;
-		bounds.pos.y--;
-		bounds.size.width += 2;
-		bounds.size.height += 2;
+	public void expand(float amount){
+		bounds.pos.x -= amount;
+		bounds.pos.y -= amount;
+		bounds.size.width += amount * 2;
+		bounds.size.height += amount * 2;
 	}
 	
-	public void contract(){
-		bounds.pos.x++;
-		bounds.pos.y++;
-		bounds.size.width -= 2;
-		bounds.size.height -= 2;
+	public void contract(float amount){
+		bounds.pos.x += amount;
+		bounds.pos.y += amount;
+		bounds.size.width -= amount * 2;
+		bounds.size.height -= amount * 2;
 	}
 	
 	public boolean isPresent(){
