@@ -332,8 +332,8 @@ public class Collisions {
 		else
 			return findClosest(watcher, seeable);
 	}
-	
-	public static boolean lineItersects(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4){
+
+	public static boolean lineIntersects(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4){
 		return lineIntersect(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y);
 	}
 	

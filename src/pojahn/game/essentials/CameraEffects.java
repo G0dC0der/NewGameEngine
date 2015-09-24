@@ -106,7 +106,6 @@ public class CameraEffects {
 	 * The function {@code isDone()} returns true either when the duration have elapsed or the event is manually stopped with the {@code stop()} function.
 	 * @param length The length of the vertical movement.
 	 * @param speed The speed of the vertical movement.
-	 * @param duration The amount of frames the event is active. Negative values for infinite.
 	 * @return The event.
 	 */
 	public static MobileEntity verticalMovement(float length, float speed){
@@ -119,7 +118,6 @@ public class CameraEffects {
 	 * The function {@code isDone()} returns true either when the duration have elapsed or the event is manually stopped with the {@code stop()} function.
 	 * @param length The length of the horizontal movement.
 	 * @param speed The speed of the horizontal movement.
-	 * @param duration The amount of frames the event is active. Negative values for infinite.
 	 * @return The event.
 	 */
 	public static MobileEntity horizontalMovement(float length, float speed){
@@ -133,7 +131,6 @@ public class CameraEffects {
 	 * @param min The minimum zoom. 
 	 * @param max The maximum zoom.
 	 * @param speed The speed of the pingpong motion.
-	 * @param duration The amount of frames the event is active. Negative values for infinite.
 	 * @return The event.
 	 */
 	public static MobileEntity zoomEffect(float min, float max, float speed){
@@ -172,7 +169,6 @@ public class CameraEffects {
 	 * Vibrates the screen for the specified amount of frames.<br>
 	 * The function {@code isDone()} returns true either when the duration have elapsed or the event is manually stopped with the {@code stop()} function.
 	 * @param strength The strength of the vibration.
-	 * @param duration The duration of the vibration. Negative values for infinite.
 	 * @return The event.
 	 */
 	public static MobileEntity vibration(float strength){

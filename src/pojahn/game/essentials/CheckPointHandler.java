@@ -10,6 +10,7 @@ import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
 
 public class CheckPointHandler {
+
 	private static class Checkpoint {
 		float startX, startY, x, y, width, height;
 		boolean taken;

@@ -42,8 +42,10 @@ public class SoundEmitter{
 		return Math.min(candidate, maxVolume);
 	}
 	
-	public Event dynamicVolume(Entity listener, Music music){ //TODO: Test
+	public Event dynamicVolume(Music music){ //TODO: Test
 		return ()->{
+			Entity listener = Collisions.findClosest(emitter, emitter.getLevel().getSoundListeners());
+
 			double distance = emitter.dist(listener);
 			float candidate = (float) (power * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(maxDistance)), 0));
 			

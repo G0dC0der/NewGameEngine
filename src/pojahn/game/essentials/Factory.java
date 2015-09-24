@@ -19,12 +19,12 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Factory {
 	
-	public static Event spazz(Entity entity, float strength, int freq){
+	public static Event spazz(Entity entity, float tolerance, int freq){
 		Int32 counter = new Int32();
 		return ()->{
 			if(++counter.value % freq == 0){
-				entity.offsetX = MathUtils.random(-strength, strength);
-				entity.offsetY = MathUtils.random(-strength, strength);
+				entity.offsetX = MathUtils.random(-tolerance, tolerance);
+				entity.offsetY = MathUtils.random(-tolerance, tolerance);
 			}
 		};
 	}

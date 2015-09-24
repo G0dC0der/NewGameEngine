@@ -214,13 +214,13 @@ public class Engine{
 			level.processMeta(replay.meta);
 		
 		if(helpText == null)
-			helpText = HUDMessage.getCenterizedMessage("Can not pause in replay mode.", getScreenSize(), Color.WHITE);
+			helpText = HUDMessage.getCenteredMessage("Can not pause in replay mode.", getScreenSize(), Color.WHITE);
 		if(deathText == null)
-			deathText = HUDMessage.getCenterizedMessage("You died, mission failed.", getScreenSize(), Color.WHITE);
+			deathText = HUDMessage.getCenteredMessage("You died, mission failed.", getScreenSize(), Color.WHITE);
 		if(winText == null)
-			winText = HUDMessage.getCenterizedMessage("Congrats! You completed the level!", getScreenSize(), Color.WHITE);
+			winText = HUDMessage.getCenteredMessage("Congrats! You completed the level!", getScreenSize(), Color.WHITE);
 		if(pauseText == null)
-			pauseText = HUDMessage.getCenterizedMessage("Game is paused.", getScreenSize(), Color.WHITE);
+			pauseText = HUDMessage.getCenteredMessage("Game is paused.", getScreenSize(), Color.WHITE);
 
 		setGameState(GameState.ACTIVE);
 	}

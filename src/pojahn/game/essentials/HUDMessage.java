@@ -50,7 +50,7 @@ public interface HUDMessage {
 		};
 	}
 	
-	public static HUDMessage getCenterizedMessage(String text, Dimension screenSize, Color color){
+	public static HUDMessage getCenteredMessage(String text, Dimension screenSize, Color color){
 		return new HUDMessage() {
 			
 			float x = -1, y = -1;

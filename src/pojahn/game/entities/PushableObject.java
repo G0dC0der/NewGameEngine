@@ -135,7 +135,7 @@ public class PushableObject extends MobileEntity implements EarthBound {
 	}
 
 	@Override
-	public Vector2 getTermalVelocity() {
+	public Vector2 getThermalVelocity() {
 		return tVel;
 	}
 

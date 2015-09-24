@@ -6,7 +6,7 @@ public interface EarthBound {
 
 	Vector2 getVelocity();
 	
-	Vector2 getTermalVelocity();
+	Vector2 getThermalVelocity();
 	
 	Vector2 getPosition();
 	
@@ -22,7 +22,7 @@ public interface EarthBound {
 	
 	public default void moveLeft(){
 		Vector2 vel = getVelocity();
-		if(vel.x < getTermalVelocity().x)
+		if(vel.x < getThermalVelocity().x)
 			vel.x += getAccelerationX() * getDelta();
 //		else
 //			vel.x -= getAccelerationX() * getDelta();
@@ -30,7 +30,7 @@ public interface EarthBound {
 	
 	public default void moveRight(){
 		Vector2 vel = getVelocity();
-		if(-vel.x < getTermalVelocity().x)
+		if(-vel.x < getThermalVelocity().x)
 			vel.x -= getAccelerationX() * getDelta();
 //		else
 //			vel.x += getAccelerationX() * getDelta();
@@ -38,7 +38,7 @@ public interface EarthBound {
 	
 	public default void drag(){
 		Vector2 vel = getVelocity();
-		Vector2 tVel = getTermalVelocity();
+		Vector2 tVel = getThermalVelocity();
 		
 		float force = getMass() * getGravity();
 		vel.y *= 1.0 - (getDamping() * getDelta());
@@ -85,9 +85,5 @@ public interface EarthBound {
 	
 	public default void stop(){
 		getVelocity().x = 0;
-	}
-	
-	public default void dragTowards(float targetX, float targetY){
-		
 	}
 }

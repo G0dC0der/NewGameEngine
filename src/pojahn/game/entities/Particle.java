@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 
 public class Particle extends MobileEntity{
 
-	private Sound introSound;
+	protected Sound introSound;
 	private boolean soundPlayed;
 	
 	public Particle(){}

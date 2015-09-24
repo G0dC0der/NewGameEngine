@@ -65,13 +65,17 @@ public abstract class Projectile extends MobileEntity{
 	public void rotate(boolean rotate){
 		this.rotate = rotate;
 	}
+
+	public void setManualTarget(float targetX, float targetY){
+		this.manualTarget = new Vector2(targetX, targetY);
+	}
 	
 	public void setManualTarget(Vector2 manualTarget){
 		this.manualTarget = manualTarget;
 	}
 
 	@Override
-	public void logics() {
+	public final void logics() {
 		if(manualTarget != null){
 			fire();
 		}
@@ -142,7 +146,7 @@ public abstract class Projectile extends MobileEntity{
 		l.discard(this);
 	}
 	
-	protected void coypData(Projectile clone){
+	protected void copyData(Projectile clone){
 		super.copyData(clone);
 		clone.impact = impact;
 		clone.gunfire = gunfire;

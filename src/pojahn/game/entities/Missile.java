@@ -105,7 +105,7 @@ public class Missile extends Projectile implements EarthBound{
 	}
 
 	@Override
-	public Vector2 getTermalVelocity() {
+	public Vector2 getThermalVelocity() {
 		return Vector2.Zero;
 	}
 

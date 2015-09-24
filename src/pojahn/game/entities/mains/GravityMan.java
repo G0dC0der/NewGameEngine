@@ -254,7 +254,7 @@ public class GravityMan extends PlayableEntity implements EarthBound{
 	}
 
 	@Override
-	public Vector2 getTermalVelocity() {
+	public Vector2 getThermalVelocity() {
 		return isWallSliding && allowWallSlide ? slidingTVel :tVel;
 	}
 
