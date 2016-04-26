@@ -1,16 +1,14 @@
 package pojahn.game.entities;
 
-import java.awt.Dimension;
-
-import pojahn.game.core.Engine;
-import pojahn.game.core.Entity;
-import pojahn.game.core.Level;
-import pojahn.game.essentials.Animation;
-import pojahn.game.essentials.Image2D;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import pojahn.game.core.Engine;
+import pojahn.game.core.Entity;
+import pojahn.game.essentials.Animation;
+import pojahn.game.essentials.Image2D;
+
+import java.awt.*;
 
 public class BigImage extends Entity{
 
@@ -62,8 +60,7 @@ public class BigImage extends Entity{
 			initParallaxCamera();
 		}
 		
-		Level level = getLevel();
-		Engine e = level.getEngine();
+		Engine e = getLevel().getEngine();
 		Dimension screen = e.getScreenSize();
 		Color defColor = batch.getColor();
 		Color newColor = new Color(defColor.r, defColor.g, defColor.b, alpha);

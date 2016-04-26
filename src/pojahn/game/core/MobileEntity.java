@@ -37,8 +37,6 @@ public class MobileEntity extends Entity{
 		return clone;
 	}
 	
-	public void logics(){}
-	
 	public float getMoveSpeed() {
 		return moveSpeed;
 	}

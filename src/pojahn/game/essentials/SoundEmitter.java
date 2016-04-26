@@ -42,7 +42,7 @@ public class SoundEmitter{
 		return Math.min(candidate, maxVolume);
 	}
 	
-	public Event dynamicVolume(Music music){ //TODO: Test
+	public Event dynamicVolume(Music music){ //TODO: Test.... Don't know wtf this does.
 		return ()->{
 			Entity listener = Collisions.findClosest(emitter, emitter.getLevel().getSoundListeners());
 

@@ -9,6 +9,7 @@ import pojahn.game.essentials.Bounds;
 import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.SoundEmitter;
+import pojahn.game.essentials.geom.Unit;
 import pojahn.game.events.ActionEvent;
 import pojahn.game.events.CloneEvent;
 import pojahn.game.events.Event;
@@ -18,11 +19,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 
-public class Entity{
+public class Entity implements Unit {
 
 	public final Bounds bounds;
 	public SoundEmitter sounds;
-	public String id;
+	public String identifier;
 	public float alpha, offsetX, offsetY;
 	public boolean flipX, flipY;
 	
@@ -50,6 +51,8 @@ public class Entity{
 		hitbox = Hitbox.RECTANGLE;
 		deleteEvents = new ArrayList<>();
 	}
+
+	public void logics(){}
 	
 	public Entity getClone(){
 		Entity clone = new Entity();
@@ -162,8 +165,8 @@ public class Entity{
 		} else if(hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.RECTANGLE){
 			return (rotated1 || rotated2) ? rotatedRectanglesCollide(bounds, entity.bounds) : rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle());
 		} else if((hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.CIRCLE) || (hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.RECTANGLE)){
-			Entity rectangle 	= hitbox == Hitbox.RECTANGLE 	? this : entity;
-			Entity circle 		= hitbox == Hitbox.CIRCLE 		? this : entity;
+			Entity rectangle = hitbox == Hitbox.RECTANGLE ? this : entity;
+			Entity circle 	 = hitbox == Hitbox.CIRCLE    ? this : entity;
 			
 			if(rectangle.getRotation() != 0)
 				throw new RuntimeException("No collision method for rotated rectangle vs circle.");
@@ -208,13 +211,25 @@ public class Entity{
 	public void rotate(float amount){
 		bounds.rotation += amount;
 	}
-	
+
+	@Override
 	public float x(){
 		return bounds.pos.x;
 	}
-	
+
+	@Override
 	public float y(){
 		return bounds.pos.y;
+	}
+
+	@Override
+	public void setX(float x) {
+		bounds.pos.x = x;
+	}
+
+	@Override
+	public void setY(float y) {
+		bounds.pos.y = y;
 	}
 	
 	public float width(){
@@ -267,7 +282,7 @@ public class Entity{
 		bounds.size.height -= amount * 2;
 	}
 	
-	public boolean isPresent(){
+	public boolean available(){
 		return present;
 	}
 	

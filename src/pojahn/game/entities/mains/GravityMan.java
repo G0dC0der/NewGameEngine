@@ -2,7 +2,7 @@ package pojahn.game.entities.mains;
 
 import pojahn.game.core.Level;
 import pojahn.game.core.PlayableEntity;
-import pojahn.game.essentials.EarthBound;
+import pojahn.game.essentials.geom.EarthBound;
 import pojahn.game.essentials.Keystrokes;
 
 import com.badlogic.gdx.Gdx;
@@ -48,7 +48,7 @@ public class GravityMan extends PlayableEntity implements EarthBound{
 	@Override
 	public void logics() {
 		run();
-		wallslide();
+		wallSlide();
 		jump();
 	}
 	
@@ -56,7 +56,7 @@ public class GravityMan extends PlayableEntity implements EarthBound{
 		this.jumpSound = sound;
 	}
 	
-	protected void wallslide(){
+	protected void wallSlide(){
 		Keystrokes strokes = getKeysDown();
 		isWallSliding = isWallSliding() && canDown();
 		
@@ -210,9 +210,9 @@ public class GravityMan extends PlayableEntity implements EarthBound{
 
 		if(!allowWallSlide || strokes.down)
 			return false;
-		
-		return  
-			 ((strokes.left  || isWallSliding) && !canLeft()) || 
+
+		return
+			 ((strokes.left  || isWallSliding) && !canLeft()) ||
 			 ((strokes.right || isWallSliding) && !canRight());
 	}
 	
@@ -249,18 +249,43 @@ public class GravityMan extends PlayableEntity implements EarthBound{
 	}
 
 	@Override
-	public Vector2 getVelocity() {
-		return vel;
+	public float vx() {
+		return vel.x;
 	}
 
 	@Override
-	public Vector2 getThermalVelocity() {
-		return isWallSliding && allowWallSlide ? slidingTVel :tVel;
+	public float vy() {
+		return vel.y;
 	}
 
 	@Override
-	public Vector2 getPosition() {
-		return bounds.pos;
+	public void setVx(float vx) {
+		vel.x = vx;
+	}
+
+	@Override
+	public void setVy(float vy) {
+		vel.y = vy;
+	}
+
+	@Override
+	public float thermVx() {
+		return isWallSliding && allowWallSlide ? slidingTVel.x :tVel.x;
+	}
+
+	@Override
+	public float thermVy() {
+		return isWallSliding && allowWallSlide ? slidingTVel.y :tVel.y;
+	}
+
+	@Override
+	public void setThermVx(float thermVx) {
+		tVel.x = thermVx;
+	}
+
+	@Override
+	public void setThermVy(float thermVy) {
+		tVel.y = thermVy;
 	}
 
 	@Override

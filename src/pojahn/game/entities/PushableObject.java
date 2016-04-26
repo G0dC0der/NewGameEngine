@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
-import pojahn.game.essentials.EarthBound;
+import pojahn.game.essentials.geom.EarthBound;
 
 public class PushableObject extends MobileEntity implements EarthBound {
 
@@ -64,7 +64,7 @@ public class PushableObject extends MobileEntity implements EarthBound {
 					continue;
 				
 				if(Collisions.rectanglesCollide(mobile.bounds.toRectangle(), dummy.bounds.toRectangle())){
-					if(Collisions.mostLeft(mobile, this) == mobile){
+					if(Collisions.leftMost(mobile, this) == mobile){
 						moveRight();
 						moved = true;
 						float nextX = getFutureX();
@@ -72,7 +72,7 @@ public class PushableObject extends MobileEntity implements EarthBound {
 							move(nextX, y());
 						else
 							tryRight(10);
-					} else if (Collisions.mostRight(mobile, this) == mobile){
+					} else if (Collisions.rightMost(mobile, this) == mobile){
 						moveLeft();
 						moved = true;
 						float nextX = getFutureX();

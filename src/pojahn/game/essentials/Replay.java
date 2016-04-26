@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-import pojahn.game.essentials.Keystrokes.KeystrokesSession;
+import pojahn.game.essentials.Keystrokes.KeystrokeSession;
 
 public class Replay implements Serializable{
 
@@ -14,7 +14,7 @@ public class Replay implements Serializable{
 	public String playerName, levelClass;
 	public ZonedDateTime date;
 	public Serializable meta;
-	public List<KeystrokesSession> data;
+	public List<KeystrokeSession> data;
 	public GameState result;
 	
 	public Replay(){
@@ -22,7 +22,7 @@ public class Replay implements Serializable{
 	}
 	
 	public boolean hasEnded(){
-		for(KeystrokesSession kss : data)
+		for(KeystrokeSession kss : data)
 			if(kss.hasEnded())
 				return true;
 		return false;

@@ -19,6 +19,7 @@ import pojahn.lang.Entry;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
+import pojahn.lang.Int32;
 
 public abstract class Level {
 	
@@ -96,7 +97,11 @@ public abstract class Level {
 	public Music getStageMusic(){
 		return null;
 	}
-	
+
+	public String getLevelName() {
+		return "Level " + super.toString();
+	}
+
 	public Engine getEngine(){
 		return engine;
 	}
@@ -112,11 +117,11 @@ public abstract class Level {
 	}
 	
 	public void add(Entity entity){
-		awatingObjects.add(new Entry<Integer, Entity>(0, entity));
+		awatingObjects.add(new Entry<>(0, entity));
 	}
 	
 	public void addAfter(Entity entity, int framesDelay){
-		awatingObjects.add(new Entry<Integer, Entity>(framesDelay, entity));
+		awatingObjects.add(new Entry<>(framesDelay, entity));
 	}
 	
 	public void addWhen(Entity entity, TaskEvent addEvent){
@@ -205,6 +210,19 @@ public abstract class Level {
 		
 		return wrapper;
 	}
+
+    public Entity runInterval(Event event, int freq) {
+        Entity wrapped = new Entity();
+        Int32 counter = new Int32();
+        wrapped.addEvent(()->{
+            if(++counter.value % freq == 0) {
+                event.eventHandling();
+            }
+        });
+
+        add(wrapped);
+        return wrapped;
+    }
 	
 	public void discard(Entity entity){
 		discardAfter(entity, 0);
@@ -253,7 +271,7 @@ public abstract class Level {
 	protected void clean(){
 		awatingObjects.clear();
 		deleteObjects.clear();
-		gameObjects.forEach(e -> e.dispose());
+		gameObjects.forEach(Entity::dispose);
 		gameObjects.clear();
 		clearTileLayer();
 		mainCharacters.clear();
@@ -272,48 +290,48 @@ public abstract class Level {
 	
 	private void updateEntities(){
 		for(Entity entity : gameObjects){
-			if(!entity.isActive())
-				continue;
-			
-			if(entity instanceof PlayableEntity){
-				PlayableEntity play = (PlayableEntity) entity;
-				Keystrokes buttonsDown;
-				
-				if(play.isGhost())
-					buttonsDown = play.nextReplayFrame();
-				else if(engine.getGameState() == GameState.ACTIVE && play.getState() == Vitality.ALIVE)
-					buttonsDown = engine.playingReplay() ? engine.getReplayFrame(play) : PlayableEntity.checkButtons(play.getController());
-				else
-					buttonsDown = PlayableEntity.STILL;
+			if(!entity.isActive()) {
+                if(entity instanceof PlayableEntity){
+                    PlayableEntity play = (PlayableEntity) entity;
+                    Keystrokes buttonsDown;
 
-				if(play.getState() == Vitality.ALIVE && engine.getGameState() == GameState.ACTIVE && !engine.playingReplay())
-					engine.registerReplayFrame(play, buttonsDown);
-				
-				if(buttonsDown.suicide){
-					play.setState(Vitality.DEAD);
-				} else{
-					play.setKeysDown(buttonsDown);
-					play.logics();
-					play.runEvents();
-					
-					if(play.tileEvents.size() > 0)
-						tileIntersection(play, play.getOccupyingCells());
-					
-					play.setPrevs();
-				}
-			} else if(entity instanceof MobileEntity){
-				MobileEntity mobile = (MobileEntity) entity;
-				
-				mobile.logics();
-				mobile.runEvents();
+                    if(play.isGhost())
+                        buttonsDown = play.nextGhostInput();
+                    else if(engine.getGameState() == GameState.ACTIVE && play.getState() == Vitality.ALIVE)
+                        buttonsDown = engine.isReplaying() ? engine.getReplayFrame(play) : Keystrokes.from(play.getController());
+                    else
+                        buttonsDown = PlayableEntity.STILL;
 
-				if(mobile.tileEvents.size() > 0)
-					tileIntersection(mobile, mobile.getOccupyingCells());
-				
-				mobile.setPrevs();
-			} else {
-				entity.runEvents();
-			}
+                    if(play.getState() == Vitality.ALIVE && engine.active() && !engine.isReplaying())
+                        engine.registerReplayFrame(play, buttonsDown);
+
+                    if(buttonsDown.suicide){
+                        play.setState(Vitality.DEAD);
+                    } else{
+                        play.setKeysDown(buttonsDown);
+                        play.logics();
+                        play.runEvents();
+
+                        if(play.tileEvents.size() > 0)
+                            tileIntersection(play, play.getOccupyingCells());
+
+                        play.setPrevs();
+                    }
+                } else if(entity instanceof MobileEntity){
+                    MobileEntity mobile = (MobileEntity) entity;
+
+                    mobile.logics();
+                    mobile.runEvents();
+
+                    if(mobile.tileEvents.size() > 0)
+                        tileIntersection(mobile, mobile.getOccupyingCells());
+
+                    mobile.setPrevs();
+                } else {
+                    entity.logics();
+                    entity.runEvents();
+                }
+            }
 		}
 	}
 	
@@ -331,40 +349,32 @@ public abstract class Level {
 	}
 	
 	private void insertDelete(){
-		for(int i = 0; i < awatingObjects.size(); i++){
-			Entry<Integer, Entity> entry = awatingObjects.get(i);
-			
+		for(Entry<Integer, Entity> entry : awatingObjects){
 			if(entry.key-- <= 0){
-				if(entry.value instanceof PlayableEntity && ((PlayableEntity)entry.value).isGhost() && (entry.value.id == null || entry.value.id.isEmpty()))
-					throw new RuntimeException("Non ghost PlayableEntity must have an id set.");
-				
-				gameObjects.add(entry.value);
-				awatingObjects.remove(i);
-				sort = true;
-				i--;
-				entry.value.level = this;
-				entry.value.engine = engine;
-				entry.value.present = true;
-				entry.value.init();
-				
 				if(entry.value instanceof PlayableEntity){
 					PlayableEntity play = (PlayableEntity) entry.value;
 					if(!play.isGhost())
 						mainCharacters.add(play);
+                    else if(entry.value.identifier == null || entry.value.identifier.isEmpty()) //TODO: Why must ghosts have an id?
+					    throw new RuntimeException("Non ghost PlayableEntity must have an id set.");
 				}
+
+				gameObjects.add(entry.value);
+				sort = true;
+				entry.value.level = this;
+				entry.value.engine = engine;
+				entry.value.present = true;
+				entry.value.init();
+
 			}
 		}
-		
-		for(int i = 0; i < deleteObjects.size(); i++){
-			Entry<Integer, Entity> entry = deleteObjects.get(i);
-			
+
+		for(Entry<Integer, Entity> entry : deleteObjects){
 			if(entry.key-- <= 0){
 				gameObjects.remove(entry.value);
-				deleteObjects.remove(i);
-				i--;
 				entry.value.present = false;
 				entry.value.dispose();
-				
+
 				if(entry.value instanceof PlayableEntity){
 					PlayableEntity play = (PlayableEntity) entry.value;
 					if(!play.isGhost())
@@ -372,5 +382,7 @@ public abstract class Level {
 				}
 			}
 		}
+        awatingObjects.clear();
+        deleteObjects.clear();
 	}
 }

@@ -3,7 +3,7 @@ package pojahn.game.entities;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Level;
-import pojahn.game.essentials.EarthBound;
+import pojahn.game.essentials.geom.EarthBound;
 
 public class Debris extends Particle implements EarthBound{
 

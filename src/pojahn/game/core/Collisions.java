@@ -213,7 +213,7 @@ public class Collisions {
 		
 		for (int y = top; y < bottom; y++){
 			for (int x = left; x < right; x++){
-				int x1 = (int) (flipX1 ? width1  - (x - rec1.x) - 1 : x - rec1.x); //Why are there -1 on these? 
+				int x1 = (int) (flipX1 ? width1  - (x - rec1.x) - 1 : x - rec1.x); //TODO: Why are there -1 on these?
 				int y1 = (int) (flipY1 ? height1 - (y - rec1.y) - 1 : y - rec1.y);
 				int x2 = (int) (flipX2 ? width2  - (x - rec2.x) - 1 : x - rec2.x);
 				int y2 = (int) (flipY2 ? height2 - (y - rec2.y) - 1 : y - rec2.y);
@@ -228,7 +228,7 @@ public class Collisions {
 		return false;
 	}
 	
-	public static boolean pixelPerfectRotation(Matrix4 m1, Image2D img1, Matrix4 m2, Image2D img2){
+	public static boolean pixelPerfectRotation(Matrix4 m1, Image2D img1, Matrix4 m2, Image2D img2){ //TODO: Not even working...
 		Matrix4 AtoB = m1.mul(m2.inv());
 		Matrix4 norM = AtoB.cpy().toNormalMatrix();
 		
@@ -407,11 +407,11 @@ public class Collisions {
 		);
 	}
 	
-	public static Entity mostLeft(Entity e1, Entity e2){
+	public static Entity leftMost(Entity e1, Entity e2){
 		return e2.x() > e1.x() ? e1 : e2;
 	}
 	
-	public static Entity mostRight(Entity e1, Entity e2){
+	public static Entity rightMost(Entity e1, Entity e2){
 		return e2.x() + e2.width() > e1.x() + e1.width() ? e2 : e1;
 	}
 	

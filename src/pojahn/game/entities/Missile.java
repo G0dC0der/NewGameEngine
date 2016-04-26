@@ -3,7 +3,7 @@ package pojahn.game.entities;
 import com.badlogic.gdx.math.Vector2;
 
 import pojahn.game.core.Entity;
-import pojahn.game.essentials.EarthBound;
+import pojahn.game.essentials.geom.EarthBound;
 
 public class Missile extends Projectile implements EarthBound{
 	
