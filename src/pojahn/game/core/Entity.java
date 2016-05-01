@@ -34,6 +34,7 @@ public class Entity implements Unit {
 	List<Event> events, deleteEvents;
 	Polygon poly;
 	boolean present;
+    long badge = -1;
 	
 	private Animation<Image2D> image;
 	private Entity originator;
@@ -82,6 +83,13 @@ public class Entity implements Unit {
 	public Animation<Image2D> getImage(){
 		return image;
 	}
+
+    public long getBadge() {
+        if(badge == -1) {
+            throw new RuntimeException("Can not get badge on an entity not added yet.");
+        }
+        return badge;
+    }
 	
 	public Entity move(float x, float y){
 		bounds.pos.x = x;
@@ -335,8 +343,8 @@ public class Entity implements Unit {
 	public void runActionEvent(Entity caller){
 		actionEvent.eventHandling(caller);
 	}
-	
-	protected void copyData(Entity clone){
+
+    protected void copyData(Entity clone){
 		clone.originator = this;
 		clone.bounds.pos.x = bounds.pos.x;
 		clone.bounds.pos.y = bounds.pos.y;

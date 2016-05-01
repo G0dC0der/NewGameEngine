@@ -1,11 +1,9 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-
 import pojahn.game.core.Entity;
-import pojahn.game.essentials.geom.EarthBound;
 
-public class Missile extends Projectile implements EarthBound{
+public class Missile extends Projectile {
 	
 	public float thrust, drag, delta;
 	private Entity target;
@@ -20,7 +18,7 @@ public class Missile extends Projectile implements EarthBound{
 	
 	@Override
 	public Missile getClone() {
-		Missile clone = new Missile(x(),y(),scanTargets);
+		Missile clone = new Missile(x(), y(), (Entity[]) scanTargets.toArray());
 		copyData(clone);
 		if(cloneEvent != null)
 			cloneEvent.handleClonded(clone);
@@ -98,34 +96,4 @@ public class Missile extends Projectile implements EarthBound{
 		clone.drag = drag;
 		clone.delta = delta;
 	}
-
-	@Override
-	public Vector2 getVelocity() {
-		return velocity;
-	}
-
-	@Override
-	public Vector2 getThermalVelocity() {
-		return Vector2.Zero;
-	}
-
-	@Override
-	public Vector2 getPosition() {
-		return bounds.pos;
-	}
-
-	@Override
-	public float getAccelerationX() { return 0; }
-
-	@Override
-	public float getGravity() { return 0; }
-
-	@Override
-	public float getMass() { return 0; }
-
-	@Override
-	public float getDamping() { return 0; }
-
-	@Override
-	public float getDelta() { return delta; }
 }

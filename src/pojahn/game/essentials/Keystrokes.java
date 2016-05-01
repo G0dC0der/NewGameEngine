@@ -1,17 +1,14 @@
 package pojahn.game.essentials;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import pojahn.game.core.PlayableEntity;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * An instance of this class describes the buttons that was down during a frame.
  * @author Pojahn M
- *
  */
 public class Keystrokes implements Serializable{
 	
@@ -41,34 +38,33 @@ public class Keystrokes implements Serializable{
 
 		return pb;
 	}
-	
-	/**
-	 * An instance of this class describes the buttons that a specific PlayableEntity held down during a session(from start to GameState.FINISHED).
-	 * @author Pojahn M
-	 */
-	public static class KeystrokeSession implements Serializable{
 
-		private static final long serialVersionUID = -7482346021676423243L;
+	public static class KeystrokeSession {
+		private List<Keystrokes> keystrokes;
+        private long badge;
+        private int counter;
 
-		public final List<Keystrokes> sessionKeys;
-		public final String identifier;
-		private transient int counter;
-
-        public KeystrokeSession(PlayableEntity owner) {
-            identifier = owner.identifier;
-            sessionKeys = new ArrayList<>();
+        public long getBadge() {
+            return badge;
         }
 
-        public boolean hasEnded(){
-			return counter > sessionKeys.size() - 1;
+        public void setBadge(long badge) {
+            this.badge = badge;
+        }
+
+        public Keystrokes next() {
+			return !hasEnded() ? keystrokes.get(counter++) : PlayableEntity.STILL;
 		}
-		
-		public Keystrokes next(){
-			return counter > sessionKeys.size() - 1 ? PlayableEntity.STILL : sessionKeys.get(counter++);
+
+		public boolean hasEnded() {
+			return counter < keystrokes.size() - 1;
 		}
-		
-		public void reset(){
-			counter = 0;
+
+		public static KeystrokeSession from(List<Keystrokes> keystrokes) {
+			KeystrokeSession kSession = new KeystrokeSession();
+			kSession.keystrokes = keystrokes;
+
+			return kSession;
 		}
 	}
 }

@@ -16,9 +16,9 @@ public class Utils {
 	public static Entity wrap(RenderEvent renderEvent, int zIndex){
 		return new Entity(){{
 				this.zIndex(zIndex);
-				this.id = "WRAPPER";
+				this.identifier = "WRAPPER";
 			}
-			
+
 			@Override
 			public void render(SpriteBatch batch) {
 				super.render(batch);
@@ -37,28 +37,5 @@ public class Utils {
 			return null;
 		
 		return array[MathUtils.random(array.length)];
-	}
-	
-	public static Direction invert(Direction dir){
-		switch(dir){
-			case N:
-				return Direction.S;
-			case NE:
-				return Direction.SW;
-			case E:
-				return Direction.W;
-			case SE:
-				return Direction.NW;
-			case S:
-				return Direction.N;
-			case SW:
-				return Direction.NE;
-			case W:
-				return Direction.E;
-			case NW:
-				return Direction.SE;
-			default:
-				throw new RuntimeException();
-		}
 	}
 }

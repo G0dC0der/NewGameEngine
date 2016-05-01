@@ -59,7 +59,7 @@ public class CheckPointHandler {
 			cp.taken = false;
 	}
 
-	public Vector2 getLastestCheckpoint() {
+	public Vector2 getLatestCheckpoint() {
 		for (int i = checkpoints.size() - 1; i >= 0; i--) {
 			Checkpoint cp = checkpoints.get(i);
 
@@ -79,7 +79,8 @@ public class CheckPointHandler {
 	}
 
 	public void update() {
-		Outer: for (Checkpoint cp : checkpoints) {
+		Outer:
+		for (Checkpoint cp : checkpoints) {
 			if (!cp.taken) {
 				for (Entity user : users) {
 					if (Collisions.rectanglesCollide(user.x(), user.y(), user.width(), user.height(), cp.x, cp.y, cp.width, cp.height)) {

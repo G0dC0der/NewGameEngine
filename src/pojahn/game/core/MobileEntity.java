@@ -114,7 +114,7 @@ public class MobileEntity extends Entity{
 		return prevY;
 	}
 	
-	public void pauseTileEvents(boolean pause){
+	public void pauseTileEvents(boolean pause){ //TODO: Use case?
 		this.tileEventPause = pause;
 	}
 	
@@ -137,7 +137,11 @@ public class MobileEntity extends Entity{
 	public boolean isSmart(){
 		return smart;
 	}
-	
+
+	/*
+	 * TODO: Optimize!
+     */
+
 	public boolean tryLeft(int steps){
 		for(int i = steps; i > 0; i--){
 			if(!occupiedAt(x() - i, y())){
@@ -259,7 +263,10 @@ public class MobileEntity extends Entity{
 	
 	public boolean outOfBounds(){
 		Level l = getLevel();
-		return l.outOfBounds(x(), y()) || l.outOfBounds(x() + width(), y()) || l.outOfBounds(x() + width(), y() + height()) || l.outOfBounds(x(), y() + height());
+		return  l.outOfBounds(x(), y()) ||
+                l.outOfBounds(x() + width(), y()) ||
+                l.outOfBounds(x() + width(), y() + height()) ||
+                l.outOfBounds(x(), y() + height());
 	}
 	
 	public Set<Tile> getOccupyingCells(){
@@ -291,10 +298,10 @@ public class MobileEntity extends Entity{
 			target.move(nextX, nextY);
 		
 		if(harsh)
-			collisionRespone(target);
+			collisionResponse(target);
 	}
 	
-	public void collisionRespone(MobileEntity target){
+	public void collisionResponse(MobileEntity target){
 		float centerX = x() + width() / 2;
 		float centerY = y() + height() / 2;
 		

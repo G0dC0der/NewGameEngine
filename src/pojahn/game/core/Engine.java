@@ -8,18 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import com.badlogic.gdx.ApplicationListener;
 import pojahn.game.essentials.ControlledException;
 import pojahn.game.essentials.GameState;
 import pojahn.game.essentials.HUDMessage;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.Keystrokes;
-import pojahn.game.essentials.Keystrokes.KeystrokeSession;
+import pojahn.game.essentials.PlaybackRecord;
 import pojahn.game.essentials.Replay;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.events.Event;
 import pojahn.lang.OtherMath;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -33,12 +33,7 @@ import com.badlogic.gdx.math.Rectangle;
  * An instance of Engine is used to play one course.
  * To play a new course, dispose this one and create a new instance.
  */
-public class Engine{
-
-    /*
-     * TODO: Check how dispose is called. When? How many times during crash and controlled exit?
-     * TODO: Check of often setGameChange is executed when a state is changed. It should be once.
-     */
+public final class Engine {
 
 	public float delta = 1.0f / 60.0f;
 	public boolean renderText;
@@ -49,7 +44,7 @@ public class Engine{
 	private final Level level;
 	private SpriteBatch batch;
 	private GameState state;
-	private Replay replay;
+    private PlaybackRecord playback;
 	private List<Replay> recordings;
 	private OrthographicCamera gameCamera, hudCamera;
     private Map<GameState, Event> stateEvents;
@@ -58,18 +53,18 @@ public class Engine{
 	private boolean replaying, flipY, showHelpText, saveReplayAllowed, shutdown;
 	private int screenWidth, screenHeight, deathCounter;
 	private float rotation, musicVolume, prevTx, prevTy, time;
-	private long frameCounter;
-	
-	public Engine(Level level, Replay replay){
+	private long frameCounter, uniqueCounter;
+
+	public Engine(Level level, PlaybackRecord replayData) {
 		if(level == null)
 			throw new NullPointerException("The level can not be null.");
 		
 		state = GameState.UNINITIALIZED;
 		this.level = level;
 		this.level.engine = this;
-		this.replay = replay == null ? new Replay() : replay;
-        this.saveReplayAllowed = replay == null;
-		replaying = replay != null;
+        this.playback = replayData;
+        this.saveReplayAllowed = replayData == null;
+		replaying = replayData != null;
 		recordings = new Vector<>();
         stateEvents = new HashMap<>();
 		renderText = true;
@@ -188,14 +183,19 @@ public class Engine{
 		restart(fromCheckpoint);
 	}
 	
-	public void exitGame(){
+	public void exit(){
 		shutdown = true;
 	}
 	
 	public Exception getException(){
-		return getGameState() == GameState.CRASHED ? exception : null;
+		return exception;
 	}
 
+	/**
+	 * Events to execute at a given state. The event will be executed outside the OpenGL thread.
+	 * @param gameState The state to listen to.
+	 * @param event The event to execute.
+     */
     public void setGameStateEvent(GameState gameState, Event event) {
         stateEvents.put(gameState, event);
     }
@@ -208,13 +208,17 @@ public class Engine{
 		level.build();
 		
 		if(isReplaying())
-			level.processMeta(replay.meta);
+			level.processMeta(playback.meta);
 
         Dimension screenSize = getScreenSize();
-		helpText = HUDMessage.getCenteredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
-		deathText = HUDMessage.getCenteredMessage("You died, mission failed.", screenSize, Color.WHITE);
-		winText = HUDMessage.getCenteredMessage("Congrats! You completed the level!", screenSize, Color.WHITE);
-		pauseText = HUDMessage.getCenteredMessage("Game is paused.", screenSize, Color.WHITE);
+        if(helpText == null)
+    		helpText = HUDMessage.getCenteredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
+		if(deathText == null)
+            deathText = HUDMessage.getCenteredMessage("You died, mission failed.", screenSize, Color.WHITE);
+        if(winText == null)
+            winText = HUDMessage.getCenteredMessage("Congrats! You completed the level!", screenSize, Color.WHITE);
+		if(pauseText == null)
+            pauseText = HUDMessage.getCenteredMessage("Game is paused.", screenSize, Color.WHITE);
 
 		setGameState(GameState.ACTIVE);
 	}
@@ -238,7 +242,7 @@ public class Engine{
 
 	private void overview() {
         if(shutdown)
-            throw new ControlledException("The game was terminated in a controlled way.");
+            throw new ControlledException("Controlled termination.");
 
         if(!isReplaying()) {
             if(PlayableEntity.mergeButtons(level.getAliveMainCharacters()).pause && (active() || paused())){
@@ -260,10 +264,10 @@ public class Engine{
 
             if(saveReplayAllowed && (lost() || completed())){
                 saveReplayAllowed = false;
-                finalizeReplay();
+                finalizeRecording();
             }
         } else {
-            if(lost() && level.cpPresent() && !replay.hasEnded()) {
+            if(lost() && level.cpPresent() && !playback.hasEnded()) {
                 restart(true);
             }
         }
@@ -320,14 +324,13 @@ public class Engine{
 		if(this.state == GameState.SUCCESS && (state == GameState.LOST || state == GameState.PAUSED))
 			throw new IllegalArgumentException("Can not kill or pause a completed game.");
 
-        if(state == this.getGameState())
-            return;
-		
-		this.state = state;
+        if(state != this.getGameState()) {
+            this.state = state;
 
-        Event event = stateEvents.get(this.state);
-        if(event != null) {
-            new Thread(event::eventHandling).start();
+            Event event = stateEvents.get(this.state);
+            if(event != null) {
+                new Thread(event::eventHandling).start();
+            }
         }
 	}
 	
@@ -362,7 +365,7 @@ public class Engine{
 		int total = mains.size();
 		long alive = mains.stream().filter(PlayableEntity::isAlive).count();
 		long dead = mains.stream().filter(PlayableEntity::isDead).count();
-		long finished = mains.stream().filter(PlayableEntity::isDone).count();;
+		long finished = mains.stream().filter(PlayableEntity::isDone).count();
 
 		if(dead == total || (alive == 0 && finished == 0))
 			setGameState(GameState.LOST);
@@ -373,32 +376,10 @@ public class Engine{
 		else
 			throw new IllegalStateException("Game is in a unknown state.");
 	}
-	
-	void registerReplayFrame(PlayableEntity play, Keystrokes keystrokes){
-		KeystrokeSession currButtonSession = null;
-		
-		for(KeystrokeSession buttonSession : replay.data){
-			if(buttonSession.identifier.equals(play.identifier)){
-				currButtonSession = buttonSession;
-				break;
-			}
-		}
-		
-		if(currButtonSession == null){
-			currButtonSession = new KeystrokeSession(play);
-			replay.data.add(currButtonSession);
-		}
-		
-		currButtonSession.sessionKeys.add(keystrokes);
-	}
-	
-	Keystrokes getReplayFrame(PlayableEntity play){
-		for(KeystrokeSession buttonSession : replay.data)
-			if(buttonSession.identifier.equals(play.identifier))
-				return buttonSession.next();
-		
-		throw new RuntimeException("No replay found for the character.");
-	}
+
+    long provideBadge() {
+        return ++uniqueCounter;
+    }
 	
 	boolean lost(){
 		return getGameState() == GameState.LOST;
@@ -415,14 +396,24 @@ public class Engine{
 	boolean active(){
 		return getGameState() == GameState.ACTIVE;
 	}
+
+    PlaybackRecord getPlayback() {
+        return playback;
+    }
 	
-	private void finalizeReplay(){
-		replay.date = ZonedDateTime.now();
-		replay.time = getTimeInSeconds();
-		replay.levelClass = level.getLevelName();
-		replay.result = getGameState();
-        recordings.add(replay);
-        replay = new Replay();
+	private void finalizeRecording(){
+        Replay recording = new Replay();
+        recording.date = ZonedDateTime.now();
+        recording.time = getTimeInSeconds();
+        recording.levelClass = level.getLevelName();
+        recording.result = getGameState();
+        recording.keystrokes = new ArrayList<>();
+        for(PlayableEntity play : level.getMainCharacters()) {
+            Keystrokes.KeystrokeSession data = Keystrokes.KeystrokeSession.from(play.getReplayData());
+            data.setBadge(play.badge);
+            recording.keystrokes.add(data);
+        }
+        recordings.add(recording);
 	}
 	
 	private void renderStatusBar(){
@@ -464,8 +455,8 @@ public class Engine{
 		}
 	}
 
-    static ApplicationAdapter wrap(Engine engine) {
-        return new ApplicationAdapter() {
+    static ApplicationListener wrap(Engine engine) {
+        return new ApplicationListener() {
             @Override
             public void dispose() {
                 engine.destroy();
@@ -495,6 +486,10 @@ public class Engine{
                     throw new RuntimeException(e);
                 }
             }
+
+            @Override public void resize(int i, int i1) {}
+            @Override public void pause() {}
+            @Override public void resume() {}
         };
     }
 }

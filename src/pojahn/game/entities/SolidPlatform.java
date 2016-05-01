@@ -62,7 +62,7 @@ public class SolidPlatform extends PathDrone{
 					sub.move(nextX, nextY);
 				
 				if(Collisions.rectanglesCollide(bounds.toRectangle(), sub.bounds.toRectangle()))
-					collisionRespone(sub);
+					collisionResponse(sub);
 			}
 		}
 	}

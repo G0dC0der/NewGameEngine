@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import pojahn.game.essentials.CheckPointHandler;
 import pojahn.game.essentials.GameState;
 import pojahn.game.essentials.Keystrokes;
+import pojahn.game.essentials.PlaybackRecord;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.events.Event;
@@ -46,6 +48,7 @@ public abstract class Level {
 
 	private List<Entry<Integer, Entity>> awatingObjects, deleteObjects;
 	private List<PlayableEntity> mainCharacters;
+    private CheckPointHandler cph;
 	
 	List<Entity> gameObjects, soundListeners;
 	boolean sort;
@@ -56,6 +59,7 @@ public abstract class Level {
 		soundListeners = new ArrayList<>();
 		gameObjects = new LinkedList<>();
 		mainCharacters = new ArrayList<>();
+        cph = new CheckPointHandler();
 	}
 	
 	public abstract int getWidth();
@@ -84,14 +88,16 @@ public abstract class Level {
 		return tileAt((int)cord.x, (int)cord.y);
 	}
 	
-	public void processMeta(Serializable meta) {}
+	public void processMeta(Serializable meta) {
+
+	}
 
 	public Serializable getMeta(){
 		return null;
 	}
 	
 	public boolean cpPresent(){
-		return false;
+		return getCheckpointHandler().getLatestCheckpoint() != null;
 	}
 	
 	public Music getStageMusic(){
@@ -99,22 +105,24 @@ public abstract class Level {
 	}
 
 	public String getLevelName() {
-		return "Level " + super.toString();
+		return "Level " + toString();
 	}
 
 	public Engine getEngine(){
 		return engine;
 	}
+
+    public CheckPointHandler getCheckpointHandler() {
+        return cph;
+    }
 	
 	public boolean outOfBounds(float targetX, float targetY){
-		if(targetX >= getWidth() ||
-		   targetY >= getHeight() || 
-		   targetX < 0 ||
-		   targetY < 0)
-			return true;
-		
-		return false;
-	}
+        return  targetX >= getWidth() ||
+                targetY >= getHeight() ||
+                targetX < 0 ||
+                targetY < 0;
+
+    }
 	
 	public void add(Entity entity){
 		awatingObjects.add(new Entry<>(0, entity));
@@ -229,7 +237,7 @@ public abstract class Level {
 	}
 	
 	public void discardAfter(Entity entity, int framesDelay){
-		deleteObjects.add(new Entry<Integer, Entity>(framesDelay, entity));
+		deleteObjects.add(new Entry<>(framesDelay, entity));
 	}
 	
 	public void discardWhen(Entity entity, TaskEvent discardEvent){
@@ -275,17 +283,20 @@ public abstract class Level {
 		gameObjects.clear();
 		clearTileLayer();
 		mainCharacters.clear();
+        cph.reset();
 	}
 
 	void gameLoop(){
 		insertDelete();
 		
-		if(sort){
+		if(sort) {
 			Collections.sort(gameObjects, Z_INDEX_SORT);
 			sort = false;
 		}
 		
 		updateEntities();
+
+        cph.update();
 	}
 	
 	private void updateEntities(){
@@ -296,14 +307,14 @@ public abstract class Level {
                     Keystrokes buttonsDown;
 
                     if(play.isGhost())
-                        buttonsDown = play.nextGhostInput();
+                        buttonsDown = play.nextInput();
                     else if(engine.getGameState() == GameState.ACTIVE && play.getState() == Vitality.ALIVE)
-                        buttonsDown = engine.isReplaying() ? engine.getReplayFrame(play) : Keystrokes.from(play.getController());
+                        buttonsDown = engine.isReplaying() ? play.nextInput() : Keystrokes.from(play.getController());
                     else
                         buttonsDown = PlayableEntity.STILL;
 
                     if(play.getState() == Vitality.ALIVE && engine.active() && !engine.isReplaying())
-                        engine.registerReplayFrame(play, buttonsDown);
+                        play.addReplayFrame(buttonsDown);
 
                     if(buttonsDown.suicide){
                         play.setState(Vitality.DEAD);
@@ -350,13 +361,19 @@ public abstract class Level {
 	
 	private void insertDelete(){
 		for(Entry<Integer, Entity> entry : awatingObjects){
-			if(entry.key-- <= 0){
+			if(entry.key-- <= 0) {
 				if(entry.value instanceof PlayableEntity){
 					PlayableEntity play = (PlayableEntity) entry.value;
-					if(!play.isGhost())
+					if(!play.isGhost()) {
 						mainCharacters.add(play);
-                    else if(entry.value.identifier == null || entry.value.identifier.isEmpty()) //TODO: Why must ghosts have an id?
-					    throw new RuntimeException("Non ghost PlayableEntity must have an id set.");
+                        if(engine.isReplaying()) {
+                            PlaybackRecord pbr = engine.getPlayback();
+                            List<Keystrokes> keystrokes = pbr.replayData.get(0);
+                            pbr.replayData.remove(0);
+
+                            engine.getPlayback().replayData.add(keystrokes);
+                        }
+                    }
 				}
 
 				gameObjects.add(entry.value);
@@ -364,8 +381,8 @@ public abstract class Level {
 				entry.value.level = this;
 				entry.value.engine = engine;
 				entry.value.present = true;
+				entry.value.badge = engine.provideBadge();
 				entry.value.init();
-
 			}
 		}
 
@@ -377,8 +394,9 @@ public abstract class Level {
 
 				if(entry.value instanceof PlayableEntity){
 					PlayableEntity play = (PlayableEntity) entry.value;
-					if(!play.isGhost())
+					if(!play.isGhost()) {
 						mainCharacters.remove(play);
+                    }
 				}
 			}
 		}

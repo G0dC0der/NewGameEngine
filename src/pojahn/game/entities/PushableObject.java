@@ -130,18 +130,43 @@ public class PushableObject extends MobileEntity implements EarthBound {
 	}
 
 	@Override
-	public Vector2 getVelocity() {
-		return vel;
+	public float vx() {
+		return vel.x;
 	}
 
 	@Override
-	public Vector2 getThermalVelocity() {
-		return tVel;
+	public float vy() {
+		return vel.y;
 	}
 
 	@Override
-	public Vector2 getPosition() {
-		return bounds.pos;
+	public void setVx(float vx) {
+		vel.x = vx;
+	}
+
+	@Override
+	public void setVy(float vy) {
+		vel.y = vy;
+	}
+
+	@Override
+	public float thermVx() {
+		return tVel.x;
+	}
+
+	@Override
+	public float thermVy() {
+		return tVel.y;
+	}
+
+	@Override
+	public void setThermVx(float thermVx) {
+		tVel.x = thermVx;
+	}
+
+	@Override
+	public void setThermVy(float thermVy) {
+		tVel.y = thermVy;
 	}
 
 	@Override

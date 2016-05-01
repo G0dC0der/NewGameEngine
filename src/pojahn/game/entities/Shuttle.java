@@ -6,7 +6,6 @@ import pojahn.game.core.MobileEntity;
 import pojahn.game.events.Event;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Shuttle extends MobileEntity {

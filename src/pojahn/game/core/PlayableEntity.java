@@ -8,6 +8,7 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.Keystrokes;
 import pojahn.game.essentials.Vitality;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class PlayableEntity extends MobileEntity{
@@ -20,12 +21,14 @@ public abstract class PlayableEntity extends MobileEntity{
 	private Keystrokes keysDown;
 	private Vitality state;
 	private Controller controller;
-	private List<Keystrokes> ghostData;
-	private int ghostDataCounter, hp, hurtCounter, counter;
-	
+	private List<Keystrokes> replayData;
+	private int replayDataCounter, hp, hurtCounter, counter;
+    private boolean isGhost;
+
 	public PlayableEntity(){
 		hp = 1;
 		state = Vitality.ALIVE;
+        replayData = new LinkedList<>();
 	}
 	
 	public int getHP(){
@@ -59,12 +62,21 @@ public abstract class PlayableEntity extends MobileEntity{
 	}
 	
 	public boolean isGhost(){
-		return ghostData != null;
+		return isGhost;
 	}
-	
-	public void ghostify(List<Keystrokes> ghostData){
-		this.ghostData = ghostData;
-	}
+
+    public void setGhostData(List<Keystrokes> replayData) {
+        this.replayData = replayData;
+        isGhost = true;
+    }
+
+    void addReplayFrame(Keystrokes keystrokes) {
+        replayData.add(keystrokes);
+    }
+
+    List<Keystrokes> getReplayData() {
+        return replayData;
+    }
 	
 	public void setState(Vitality state){
 		if(state == Vitality.ALIVE && this.state == Vitality.COMPLETED)
@@ -145,11 +157,16 @@ public abstract class PlayableEntity extends MobileEntity{
 		activate(true);
 		setVisible(true);
 	}
+
+	boolean hasEnded() {
+		return replayDataCounter < replayData.size() - 1;
+	}
 	
-	Keystrokes nextGhostInput(){
-		if(ghostData == null)
-			throw new IllegalStateException("This method can only be called if the entity is a ghost.");
-		
-		return ghostDataCounter > ghostData.size() - 1 ? STILL : ghostData.get(ghostDataCounter++);
+	Keystrokes nextInput(){
+		if(isGhost || engine.isReplaying()) {
+		    return hasEnded() ? STILL : replayData.get(replayDataCounter++);
+        } else {
+			throw new IllegalStateException("This method can only be called if the entity is a ghost or replaying.");
+        }
 	}
 }

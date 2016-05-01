@@ -4,11 +4,11 @@ import com.badlogic.gdx.math.Vector2;
 
 import pojahn.game.core.Entity;
 
-public class Bullet extends Projectile{
+public class Bullet extends Projectile{ //TODO: This API is weird.
 	
 	Vector2 target;
 
-	public Bullet(float x, float y, Entity[] scanTargets) {
+	public Bullet(float x, float y, Entity... scanTargets) {
 		super(x, y, scanTargets);
 	}
 	

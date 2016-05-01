@@ -21,7 +21,7 @@ public class Button extends SolidPlatform {
     }
 
     public void setPushingDirection(Direction pushingDirection){
-        if(pushingDirection == Direction.NE || pushingDirection == Direction.SE || pushingDirection == Direction.SW || pushingDirection == Direction.NW)
+        if(Direction.isDiagonal(pushingDirection))
             throw new IllegalArgumentException("The pushing direction must be non diagonal: " + pushingDirection);
 
         this.pushingDirection = pushingDirection;

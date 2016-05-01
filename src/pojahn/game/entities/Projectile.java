@@ -1,27 +1,25 @@
 package pojahn.game.entities;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.badlogic.gdx.math.Vector2;
-
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
-import pojahn.lang.ArrayUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class Projectile extends MobileEntity{
 
 	protected Particle impact, gunfire, trailer;
-	protected Entity scanTargets[], targets[];
+	protected List<Entity> scanTargets, targets;
 	protected Vector2 manualTarget;
 	protected boolean rotate;
 	protected int trailerDelay;
 
-	private List<Entity> allTargets;
 	private int trailerCounter;
 	private boolean fired;
 	
@@ -37,13 +35,11 @@ public abstract class Projectile extends MobileEntity{
 	}
 	
 	public void setTargets(Entity... targets){
-		this.targets = targets;
-		createCachedList();
+		this.targets = Arrays.asList(targets);
 	}
 	
 	public void setScanTargets(Entity... scanTargets){
-		this.scanTargets = scanTargets;
-		createCachedList();
+		this.scanTargets = Arrays.asList(scanTargets);
 	}
 	
 	public void setImpact(Particle impact) {
@@ -81,7 +77,7 @@ public abstract class Projectile extends MobileEntity{
 		}
 		
 		if(!fired){
-			Entity target = Collisions.findClosestSeeable(this, scanTargets);
+			Entity target = Collisions.findClosestSeeable(this, (Entity[]) scanTargets.toArray());
 			
 			if(target != null){
 				fire();
@@ -102,9 +98,9 @@ public abstract class Projectile extends MobileEntity{
 	
 	protected abstract void move(Vector2 target);
 	
-	protected abstract void targetDetected(Entity target);
+	protected abstract void targetDetected(Entity target); //TODO: Why is this abstract?
 	
-	protected abstract Vector2 getTarget();
+	protected abstract Vector2 getTarget(); //TODO: Why is this abstract? Can we remove it?
 	
 	protected void rotate(){
 		if(rotate){
@@ -125,12 +121,10 @@ public abstract class Projectile extends MobileEntity{
 		if (l.tileAt( getFrontPosition()) == Tile.SOLID || l.tileAt(getRarePosition()) == Tile.SOLID)
 			impact(null);
 
-		for(Entity target : allTargets){
-			if(collidesWith(target)){
-				impact(target);
-				break;
-			}
-		}
+		Stream.concat(targets.stream(), scanTargets.stream())
+			  .filter(this::collidesWith)
+			  .findFirst()
+			  .ifPresent(this::impact);
 	}
 	
 	protected void impact(Entity victim){
@@ -153,14 +147,7 @@ public abstract class Projectile extends MobileEntity{
 		clone.trailer = trailer;
 		clone.trailerDelay = trailerDelay;
 		clone.rotate = rotate;
-		clone.scanTargets = ArrayUtils.refCopy(scanTargets, Entity.class);
-		clone.targets = ArrayUtils.refCopy(targets, Entity.class);
-		clone.allTargets = new ArrayList<>(allTargets);
-	}
-	
-	private void createCachedList(){
-		allTargets = new ArrayList<>();
-		allTargets.addAll(Arrays.asList(scanTargets));
-		allTargets.addAll(Arrays.asList(targets));
+		clone.scanTargets = new ArrayList<>(scanTargets);
+		clone.targets = new ArrayList<>(targets);
 	}
 }

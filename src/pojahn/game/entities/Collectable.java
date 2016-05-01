@@ -44,23 +44,22 @@ public class Collectable extends MobileEntity{
 	
 	@Override
 	public void logics() {
-		if(collected)
-			return;
-			
-		for(Entity collector : collectors){
-			if(collidesWith(collector)){
-				collected = true;
-				subject = collector;
-				if(collectEvent != null)
-					collectEvent.eventHandling(collector);
-				if(collectSound != null)
-					collectSound.play(sounds.calc());
-				if(collectImage != null)
-					getLevel().add(collectImage.getClone().center(this));
-				if(disposeCollected)
-					getLevel().discard(this);
-				
-				break;
+		if(collected) {
+			for(Entity collector : collectors){
+				if(collidesWith(collector)){
+					collected = true;
+					subject = collector;
+					if(collectEvent != null)
+						collectEvent.eventHandling(collector);
+					if(collectSound != null)
+						collectSound.play(sounds.calc());
+					if(collectImage != null)
+						getLevel().add(collectImage.getClone().center(this));
+					if(disposeCollected)
+						getLevel().discard(this);
+
+					break;
+				}
 			}
 		}
 	}
@@ -78,11 +77,11 @@ public class Collectable extends MobileEntity{
 			};
 		}
 		
-		public static CollectEvent speed(int frames, float multipler){
+		public static CollectEvent speed(int frames, float multiplier){
 			return collector->{
 				MobileEntity mobile = (MobileEntity) collector;
 				float orgSpeed = mobile.getMoveSpeed();
-				mobile.setMoveSpeed(orgSpeed * multipler);
+				mobile.setMoveSpeed(orgSpeed * multiplier);
 				mobile.getLevel().runOnceAfter(()-> mobile.setMoveSpeed(orgSpeed), frames);
 			};
 		}
