@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class Projectile extends MobileEntity{
+public abstract class Projectile extends MobileEntity{ //TODO: Projectiles should never be reusable. Delete at impact!
 
 	protected Particle impact, gunfire, trailer;
 	protected List<Entity> scanTargets, targets;

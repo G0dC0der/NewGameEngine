@@ -74,6 +74,10 @@ public abstract class PlayableEntity extends MobileEntity{
         replayData.add(keystrokes);
     }
 
+    void setReplayData(List<Keystrokes> replayData) {
+        this.replayData = replayData;
+    }
+
     List<Keystrokes> getReplayData() {
         return replayData;
     }

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import pojahn.game.essentials.CheckPointHandler;
 import pojahn.game.essentials.GameState;
 import pojahn.game.essentials.Keystrokes;
-import pojahn.game.essentials.PlaybackRecord;
+import pojahn.game.essentials.recording.PlaybackRecord;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.events.Event;
@@ -42,7 +42,7 @@ public abstract class Level {
 		CUSTOM_10
 	}
 	
-	static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) ->  obj1.getZIndex() - obj2.getZIndex();
+	private static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) ->  obj1.getZIndex() - obj2.getZIndex();
 
 	Engine engine;
 
@@ -258,7 +258,7 @@ public abstract class Level {
 	
 	public List<PlayableEntity> getNonDeadMainCharacters(){
 		return mainCharacters.stream()
-				.filter(el -> el.getState() == Vitality.ALIVE || el.getState() == Vitality.COMPLETED)
+				.filter(el -> el.isAlive() || el.isDone())
 				.collect(Collectors.toList());
 	}
 	
@@ -283,7 +283,7 @@ public abstract class Level {
 		gameObjects.clear();
 		clearTileLayer();
 		mainCharacters.clear();
-        cph.reset();
+        getCheckpointHandler().reset();
 	}
 
 	void gameLoop(){
@@ -296,7 +296,7 @@ public abstract class Level {
 		
 		updateEntities();
 
-        cph.update();
+        getCheckpointHandler().update();
 	}
 	
 	private void updateEntities(){
@@ -360,46 +360,39 @@ public abstract class Level {
 	}
 	
 	private void insertDelete(){
-		for(Entry<Integer, Entity> entry : awatingObjects){
-			if(entry.key-- <= 0) {
-				if(entry.value instanceof PlayableEntity){
-					PlayableEntity play = (PlayableEntity) entry.value;
-					if(!play.isGhost()) {
-						mainCharacters.add(play);
-                        if(engine.isReplaying()) {
-                            PlaybackRecord pbr = engine.getPlayback();
-                            List<Keystrokes> keystrokes = pbr.replayData.get(0);
-                            pbr.replayData.remove(0);
+        awatingObjects.stream().filter(entry -> entry.key-- <= 0).forEach(entry -> {
+            gameObjects.add(entry.value);
+            sort = true;
+            entry.value.level = this;
+            entry.value.engine = engine;
+            entry.value.present = true;
+            entry.value.badge = engine.provideBadge();
+            entry.value.init();
 
-                            engine.getPlayback().replayData.add(keystrokes);
-                        }
+            if (entry.value instanceof PlayableEntity) {
+                PlayableEntity play = (PlayableEntity) entry.value;
+                if (!play.isGhost()) {
+                    mainCharacters.add(play);
+                    if (engine.isReplaying()) {
+                        PlaybackRecord pbr = engine.getPlayback();
+                        play.setReplayData(pbr.getByBadge(play.badge));
                     }
-				}
+                }
+            }
+        });
 
-				gameObjects.add(entry.value);
-				sort = true;
-				entry.value.level = this;
-				entry.value.engine = engine;
-				entry.value.present = true;
-				entry.value.badge = engine.provideBadge();
-				entry.value.init();
-			}
-		}
+        deleteObjects.stream().filter(entry -> entry.key-- <= 0).forEach(entry -> {
+            gameObjects.remove(entry.value);
+            entry.value.present = false;
+            entry.value.dispose();
 
-		for(Entry<Integer, Entity> entry : deleteObjects){
-			if(entry.key-- <= 0){
-				gameObjects.remove(entry.value);
-				entry.value.present = false;
-				entry.value.dispose();
-
-				if(entry.value instanceof PlayableEntity){
-					PlayableEntity play = (PlayableEntity) entry.value;
-					if(!play.isGhost()) {
-						mainCharacters.remove(play);
-                    }
-				}
-			}
-		}
+            if (entry.value instanceof PlayableEntity) {
+                PlayableEntity play = (PlayableEntity) entry.value;
+                if (!play.isGhost()) {
+                    mainCharacters.remove(play);
+                }
+            }
+        });
         awatingObjects.clear();
         deleteObjects.clear();
 	}

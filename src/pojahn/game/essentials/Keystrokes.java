@@ -38,33 +38,4 @@ public class Keystrokes implements Serializable{
 
 		return pb;
 	}
-
-	public static class KeystrokeSession {
-		private List<Keystrokes> keystrokes;
-        private long badge;
-        private int counter;
-
-        public long getBadge() {
-            return badge;
-        }
-
-        public void setBadge(long badge) {
-            this.badge = badge;
-        }
-
-        public Keystrokes next() {
-			return !hasEnded() ? keystrokes.get(counter++) : PlayableEntity.STILL;
-		}
-
-		public boolean hasEnded() {
-			return counter < keystrokes.size() - 1;
-		}
-
-		public static KeystrokeSession from(List<Keystrokes> keystrokes) {
-			KeystrokeSession kSession = new KeystrokeSession();
-			kSession.keystrokes = keystrokes;
-
-			return kSession;
-		}
-	}
 }

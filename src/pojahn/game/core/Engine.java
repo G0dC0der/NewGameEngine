@@ -13,9 +13,9 @@ import pojahn.game.essentials.ControlledException;
 import pojahn.game.essentials.GameState;
 import pojahn.game.essentials.HUDMessage;
 import pojahn.game.essentials.Image2D;
-import pojahn.game.essentials.Keystrokes;
-import pojahn.game.essentials.PlaybackRecord;
-import pojahn.game.essentials.Replay;
+import pojahn.game.essentials.recording.KeySession;
+import pojahn.game.essentials.recording.PlaybackRecord;
+import pojahn.game.essentials.recording.Replay;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.events.Event;
 import pojahn.lang.OtherMath;
@@ -73,7 +73,12 @@ public final class Engine {
 	}
 	
 	public List<Replay> getRecordings(){
-		return isReplaying() ? null : new ArrayList<>(recordings);
+        if(!isReplaying()) {
+            List<Replay> recordings = new ArrayList<>(this.recordings);
+            this.recordings.clear();
+            return recordings;
+        }
+		return null;
 	}
 	
 	public boolean isReplaying(){
@@ -240,7 +245,7 @@ public final class Engine {
 		setGameState(GameState.ACTIVE);
 	}
 
-	private void overview() {
+	private void overview() { //TODO: Implement support for restart with R at death
         if(shutdown)
             throw new ControlledException("Controlled termination.");
 
@@ -267,7 +272,7 @@ public final class Engine {
                 finalizeRecording();
             }
         } else {
-            if(lost() && level.cpPresent() && !playback.hasEnded()) {
+            if(lost() && level.cpPresent() && !replayEnded()) {
                 restart(true);
             }
         }
@@ -400,18 +405,22 @@ public final class Engine {
     PlaybackRecord getPlayback() {
         return playback;
     }
+
+    private boolean replayEnded() {
+        List<PlayableEntity> mains = level.getMainCharacters();
+        return mains.size() == mains.stream().filter(PlayableEntity::hasEnded).count();
+    }
 	
 	private void finalizeRecording(){
         Replay recording = new Replay();
         recording.date = ZonedDateTime.now();
         recording.time = getTimeInSeconds();
-        recording.levelClass = level.getLevelName();
+        recording.levelName = level.getLevelName();
+        recording.meta = level.getMeta();
         recording.result = getGameState();
         recording.keystrokes = new ArrayList<>();
         for(PlayableEntity play : level.getMainCharacters()) {
-            Keystrokes.KeystrokeSession data = Keystrokes.KeystrokeSession.from(play.getReplayData());
-            data.setBadge(play.badge);
-            recording.keystrokes.add(data);
+            recording.keystrokes.add(new KeySession(play.getReplayData(), play.badge));
         }
         recordings.add(recording);
 	}
