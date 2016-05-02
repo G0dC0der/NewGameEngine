@@ -14,7 +14,7 @@ public class Circle extends MobileEntity {
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		counter += getMoveSpeed();
 
 		bounds.pos.x = (float) (radius * Math.cos(counter) + centerX);

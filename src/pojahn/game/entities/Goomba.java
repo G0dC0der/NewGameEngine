@@ -17,11 +17,10 @@ public class Goomba extends PathDrone {
 	public Goomba(float x, float y, Direction hitbox, MobileEntity... enemies) {
 		super(x, y);
 
-		if (isValidDirection(hitbox))
-			this.hitbox = hitbox;
-		else
+		if (Direction.isDiagonal(hitbox))
 			throw new IllegalArgumentException("Illegal direction: " + hitbox);
 
+		this.hitbox = hitbox;
 		this.enemies = enemies;
 		hitSubjects = new int[enemies.length];
 		hitFrames = 100;
@@ -37,8 +36,8 @@ public class Goomba extends PathDrone {
 	}
 
 	@Override
-	public void logics() {
-		super.logics();
+	public void logistics() {
+		super.logistics();
 
 		playWalkingSound();
 
@@ -71,10 +70,6 @@ public class Goomba extends PathDrone {
 
 	public void subjectHitFrames(int frames) {
 		hitFrames = frames;
-	}
-
-	private boolean isValidDirection(Direction dir) {
-		return dir == Direction.N || dir == Direction.E || dir == Direction.S || dir == Direction.W;
 	}
 
 	private boolean isAttacking(MobileEntity mobile) {

@@ -7,15 +7,17 @@ import pojahn.game.core.MobileEntity;
 public class TransformablePlatform extends SolidPlatform{
 
 	private Tile tile;
+	private MobileEntity[] subjects;
 	
 	public TransformablePlatform(float x, float y, MobileEntity... subjects) {
 		super(x, y, subjects);
 		tile = Tile.SOLID;
+		this.subjects = subjects;
 	}
 	
 	@Override
 	public TransformablePlatform getClone() {
-		TransformablePlatform clone = new TransformablePlatform(x(),y(),subjects.toArray(new MobileEntity[subjects.size()]));
+		TransformablePlatform clone = new TransformablePlatform(x(),y(),subjects);
 		copyData(clone);
 		if(cloneEvent != null)
 			cloneEvent.handleClonded(clone);
@@ -24,8 +26,8 @@ public class TransformablePlatform extends SolidPlatform{
 	}
 
 	@Override
-	public void logics() {
-		super.logics();
+	public void logistics() {
+		super.logistics();
 		deform(prevX(), prevY(), null);
 		
 		if(x() != prevX() || y() != prevY()){

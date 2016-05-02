@@ -11,7 +11,8 @@ import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.LaserBeam;
 
 public class LaserDrone extends PathDrone {
-	protected float targetX, targetY;
+
+	private float targetX, targetY;
 	private int laserStartup, laserDuration, reload, sucounter, ducounter, reloadCounter;
 	private Tile stopTile;
 	private boolean scan, firing, allowFiringSound;
@@ -79,10 +80,10 @@ public class LaserDrone extends PathDrone {
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		if (--reloadCounter > 0) {
 			if (!scan)
-				super.logics();
+				super.logistics();
 			return;
 		}
 
@@ -108,11 +109,11 @@ public class LaserDrone extends PathDrone {
 				if (startupSound != null)
 					startupSound.play(sounds.calc());
 			} else
-				super.logics();
+				super.logistics();
 		}
 		if (haveTarget()) {
 			if (!scan)
-				super.logics();
+				super.logistics();
 
 			if (!firing && ++sucounter % laserStartup == 0) {
 				firing = true;
@@ -131,10 +132,10 @@ public class LaserDrone extends PathDrone {
 					allowFiringSound = false;
 				}
 
-				for (Entity go : targets)
+				for (Entity entity : targets)
 					if (Collisions.lineRectangle((int) x(), (int) y(), (int) targetX, (int) targetY,
-							go.bounds.toRectangle()))
-						go.runActionEvent(this);
+							entity.bounds.toRectangle()))
+						entity.runActionEvent(this);
 
 				if (++ducounter % laserDuration == 0) {
 					targetX = targetY = -1;

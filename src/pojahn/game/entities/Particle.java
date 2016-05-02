@@ -1,16 +1,15 @@
 package pojahn.game.entities;
 
+import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.MobileEntity;
 
-import com.badlogic.gdx.audio.Sound;
-
-public class Particle extends MobileEntity{
+public class Particle extends MobileEntity {
 
 	protected Sound introSound;
 	private boolean soundPlayed;
 	
 	public Particle(){}
-	
+
 	public Particle getClone(){
 		Particle clone = new Particle();
 		copyData(clone);
@@ -25,7 +24,7 @@ public class Particle extends MobileEntity{
 	}
 	
 	@Override
-	public void logics() {
+	public void logistics() {
 		if(!soundPlayed && introSound != null){
 			soundPlayed = true;
 			introSound.play(sounds.calc());

@@ -76,14 +76,14 @@ public class Factory {
 		};
 	}
 	
-	public static Event simpleFaceTarget(MobileEntity entity){
+	public static Event simpleFaceTarget(MobileEntity entity, boolean flipX, boolean flipY){
 		return ()-> {
 			float diffX = entity.x() - entity.prevX();
 			float diffY = entity.y() - entity.prevY();
 			
-			if(diffX != 0)
+			if(diffX != 0 && flipX)
 				entity.flipX = diffX < 0;
-			if(diffY != 0)
+			if(diffY != 0 && flipY)
 				entity.flipY = diffY > 0;
 		};
 	}

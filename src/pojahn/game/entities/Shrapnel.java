@@ -23,23 +23,23 @@ public class Shrapnel extends Particle {
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		if (!once) {
 			once = true;
 
 			Vector2[] edgePoints = getEightDirection();
 			Level l = getLevel();
 
-			for (int i = 0; i < edgePoints.length; i++) {
+			for (Vector2 edgePoint : edgePoints) {
 				Projectile proj = split.getClone();
 				proj.center(this);
-				proj.setManualTarget(edgePoints[i]);
+				proj.setManualTarget(edgePoint);
 				l.add(proj);
 			}
 
 		}
 
-		super.logics();
+		super.logistics();
 	}
 
 	Vector2[] getEightDirection(){

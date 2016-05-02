@@ -7,26 +7,24 @@ import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class Projectile extends MobileEntity{ //TODO: Projectiles should never be reusable. Delete at impact!
 
-	protected Particle impact, gunfire, trailer;
-	protected List<Entity> scanTargets, targets;
-	protected Vector2 manualTarget;
-	protected boolean rotate;
-	protected int trailerDelay;
+	private Particle impact, gunfire, trailer;
+	private Entity[] scanTargets, targets;
+	private Vector2 manualTarget;
+	private boolean rotate;
+	private int trailerDelay;
 
 	private int trailerCounter;
 	private boolean fired;
 	
-	public Projectile(float x, float y, Entity[] scanTargets){
+	public Projectile(float x, float y, Entity... scanTargets){
 		move(x,y);
 		rotate = true;
-		setScanTargets(scanTargets);
+		this.scanTargets = scanTargets;
 	}
 	
 	@Override
@@ -35,11 +33,7 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 	}
 	
 	public void setTargets(Entity... targets){
-		this.targets = Arrays.asList(targets);
-	}
-	
-	public void setScanTargets(Entity... scanTargets){
-		this.scanTargets = Arrays.asList(scanTargets);
+		this.targets = targets;
 	}
 	
 	public void setImpact(Particle impact) {
@@ -62,6 +56,10 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 		this.rotate = rotate;
 	}
 
+	public boolean rotates() {
+		return rotate;
+	}
+
 	public void setManualTarget(float targetX, float targetY){
 		this.manualTarget = new Vector2(targetX, targetY);
 	}
@@ -71,13 +69,13 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 	}
 
 	@Override
-	public final void logics() {
+	public final void logistics() {
 		if(manualTarget != null){
 			fire();
 		}
 		
 		if(!fired){
-			Entity target = Collisions.findClosestSeeable(this, (Entity[]) scanTargets.toArray());
+			Entity target = Collisions.findClosestSeeable(this, scanTargets);
 			
 			if(target != null){
 				fire();
@@ -96,7 +94,7 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 		}
 	}
 	
-	protected abstract void move(Vector2 target);
+	protected abstract void moveProjectile(Vector2 target);
 	
 	protected abstract void targetDetected(Entity target); //TODO: Why is this abstract?
 	
@@ -121,7 +119,7 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 		if (l.tileAt( getFrontPosition()) == Tile.SOLID || l.tileAt(getRarePosition()) == Tile.SOLID)
 			impact(null);
 
-		Stream.concat(targets.stream(), scanTargets.stream())
+		Stream.concat(Arrays.asList(targets).stream(), Arrays.asList(scanTargets).stream())
 			  .filter(this::collidesWith)
 			  .findFirst()
 			  .ifPresent(this::impact);
@@ -147,7 +145,7 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 		clone.trailer = trailer;
 		clone.trailerDelay = trailerDelay;
 		clone.rotate = rotate;
-		clone.scanTargets = new ArrayList<>(scanTargets);
-		clone.targets = new ArrayList<>(targets);
+		clone.scanTargets =  scanTargets;
+		clone.targets =  targets;
 	}
 }

@@ -1,5 +1,6 @@
 package pojahn.game.core;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import pojahn.game.entities.Particle;
 import pojahn.game.essentials.Animation;
@@ -17,7 +18,8 @@ public abstract class PlayableEntity extends MobileEntity{
 
 	public Animation<Image2D> healthHud;
 	public Particle deathImage;
-	
+
+	private Sound hurtSound;
 	private Keystrokes keysDown;
 	private Vitality state;
 	private Controller controller;
@@ -42,7 +44,9 @@ public abstract class PlayableEntity extends MobileEntity{
 		}
 		else if(hurtCounter > 0){
 			hp += strength;
-			hurtCounter = 100;	
+			hurtCounter = 100;
+            if(hurtSound != null)
+                hurtSound.play(sounds.calc());
 		}
 		
 		if(0 >= hp)
@@ -60,8 +64,16 @@ public abstract class PlayableEntity extends MobileEntity{
 	public void setController(Controller controller){
 		this.controller = controller;
 	}
-	
-	public boolean isGhost(){
+
+    public Sound getHurtSound() {
+        return hurtSound;
+    }
+
+    public void setHurtSound(Sound hurtSound) {
+        this.hurtSound = hurtSound;
+    }
+
+    public boolean isGhost(){
 		return isGhost;
 	}
 
@@ -119,7 +131,7 @@ public abstract class PlayableEntity extends MobileEntity{
 	
 	@Override
 	public void render(SpriteBatch batch) {
-		if(--hurtCounter > 0 && ++counter % 0 == 5)
+		if(--hurtCounter > 0 && ++counter % 5 == 0)
 			return;
 		
 		super.render(batch);

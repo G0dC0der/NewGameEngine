@@ -41,16 +41,16 @@ public class TargetLaser extends PathDrone {
     }
 
     @Override
-    public void logics() {
-        super.logics();
+    public void logistics() {
+        super.logistics();
 
         if (stop)
             return;
 
         float cx = centerX();
         float cy = centerY();
-        float tcx = laserTarget.centerX(); // Target Center X
-        float tcy = laserTarget.centerY(); // Target Center Y
+        float tcx = laserTarget.centerX();
+        float tcy = laserTarget.centerY();
         Level l = getLevel();
         Vector2 finalTarget;
 
@@ -127,11 +127,20 @@ public class TargetLaser extends PathDrone {
     public void render(SpriteBatch b) {
         Color defaultColor = b.getColor();
 
-        if (laserTint != null)
-            b.setColor(laserTint);
+        if(highLaserPrio) {
+            super.render(b);
 
-        beam.drawLasers(b);
+            if (laserTint != null)
+                b.setColor(laserTint);
+            beam.drawLasers(b);
+            b.setColor(defaultColor);
+        } else {
+            if (laserTint != null)
+                b.setColor(laserTint);
+            beam.drawLasers(b);
+            b.setColor(defaultColor);
 
-        b.setColor(defaultColor);
+            super.render(b);
+        }
     }
 }

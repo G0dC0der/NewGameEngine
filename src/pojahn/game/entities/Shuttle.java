@@ -81,7 +81,7 @@ public class Shuttle extends MobileEntity {
     }
 
     @Override
-    public void logics() {
+    public void logistics() {
         if (!isFrozen() && !waypoints.isEmpty()) {
             Waypoint wp = waypoints.get(counter);
 

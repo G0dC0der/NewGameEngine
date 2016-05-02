@@ -13,8 +13,7 @@ public class Debris extends Particle implements EarthBound{ //TODO: This one nee
     private int spawns, trailerDelay, counter;
     private boolean first;
 
-    public Debris(float x, float y, float vx, float toleranceX, float vy, float toleranceY) {
-        move(x,y);
+    public Debris(float vx, float toleranceX, float vy, float toleranceY) {
         this.vx = vx;
         this.vy = vy;
         this.toleranceY = toleranceY;
@@ -34,7 +33,7 @@ public class Debris extends Particle implements EarthBound{ //TODO: This one nee
 
     @Override
     public Debris getClone(){
-        Debris clone = new Debris(x(), y(), vx, toleranceX, vy, toleranceY);
+        Debris clone = new Debris(vx, toleranceX, vy, toleranceY);
         copyData(clone);
 
         if (cloneEvent != null)
@@ -44,7 +43,7 @@ public class Debris extends Particle implements EarthBound{ //TODO: This one nee
     }
 
     @Override
-    public void logics() {
+    public void logistics() {
         Level l = getLevel();
 
         if(!first){

@@ -10,6 +10,7 @@ import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
 
 public class EvilDog extends MobileEntity {
+
 	public float thrust, drag, delta, vx, vy;
 	private float maxDistance;
 	private boolean hunting;
@@ -55,7 +56,7 @@ public class EvilDog extends MobileEntity {
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		++soundCounter;
 		
 		if (isFrozen())

@@ -184,6 +184,11 @@ public abstract class TileBasedLevel extends Level{
 					camera.rotate(-rotation);
 					camera.rotate((rotation = getEngine().getRotation()));
 					camera.update();
+
+					Dimension viewport = getEngine().getScreenSize();
+					boolean flippedY = getEngine().flippedY();
+					if(viewport.width != (int)camera.viewportWidth || viewport.height != camera.viewportHeight || (flippedY && camera.up.y == -1) || (!flippedY && camera.up.y == 1))
+						camera.setToOrtho(!flippedY, viewport.width, viewport.height);
 					
 					tiledMapRenderer.setView(camera);
 					tiledMapRenderer.renderTileLayer(layer);

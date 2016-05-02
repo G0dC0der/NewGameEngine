@@ -12,12 +12,15 @@ public class Button extends SolidPlatform {
     private Direction pushingDirection;
     private Event pushEvent;
     private Rectangle reuse;
+    private MobileEntity[] subjects;
     private Sound pushSound;
     private boolean pushed;
 
     public Button(float x, float y, MobileEntity... subjects) {
         super(x, y, subjects);
         pushingDirection = Direction.S;
+        reuse = new Rectangle();
+        this.subjects = subjects;
     }
 
     public void setPushingDirection(Direction pushingDirection){
@@ -36,8 +39,8 @@ public class Button extends SolidPlatform {
     }
 
     @Override
-    public void logics() {
-        super.logics();
+    public void logistics() {
+        super.logistics();
 
         if(!pushed){
             for(MobileEntity subject : subjects){

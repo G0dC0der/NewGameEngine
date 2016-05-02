@@ -112,7 +112,7 @@ public class PathDrone extends MobileEntity {
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		if (!waypoints.isEmpty() && getMoveSpeed() > 0 && !isFrozen()) {
 			if (dataCounter >= waypoints.size())
 				dataCounter = 0;

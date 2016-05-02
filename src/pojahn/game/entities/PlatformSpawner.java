@@ -1,13 +1,13 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
-
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
 
-public class PlatformSpawner extends MobileEntity {
+public class PlatformSpawner extends Entity {
+
 	private boolean solid, permanent, resetBlockImage, trigger;
 	private int spawnDelay, removeDelay;
 	private MobileEntity[] users;
@@ -78,7 +78,7 @@ public class PlatformSpawner extends MobileEntity {
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		if (0 > index)
 			index = 0;
 

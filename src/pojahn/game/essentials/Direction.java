@@ -1,5 +1,8 @@
 package pojahn.game.essentials;
 
+import pojahn.game.core.Collisions;
+import pojahn.game.core.MobileEntity;
+
 public enum Direction {
 	N,
 	NE,

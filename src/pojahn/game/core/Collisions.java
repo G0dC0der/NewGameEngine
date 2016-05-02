@@ -653,6 +653,10 @@ public class Collisions {
 		
 		return null;
 	}
+
+	public static Direction getDirection(MobileEntity mobile){
+		return Collisions.getDirection(mobile.x(), mobile.y(), mobile.prevX(), mobile.prevY());
+	}
 	
 	private static void addVectors2D(Vector2 v1, Vector2 v2){
 		v1.x += v2.x;

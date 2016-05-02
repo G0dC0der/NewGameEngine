@@ -31,7 +31,7 @@ public class Boo extends MobileEntity {
 	//TODO: Get clone
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		float dir = victim.x() - victim.prevX();
 		if (dir > 0)
 			victimFacing = Direction.W;

@@ -6,7 +6,7 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.events.Event;
 
-public class Collectable extends MobileEntity{
+public class Collectable extends Entity{
 	
 	@FunctionalInterface
 	public interface CollectEvent{
@@ -43,7 +43,7 @@ public class Collectable extends MobileEntity{
 	}
 	
 	@Override
-	public void logics() {
+	public void logistics() {
 		if(collected) {
 			for(Entity collector : collectors){
 				if(collidesWith(collector)){
@@ -73,7 +73,7 @@ public class Collectable extends MobileEntity{
 			return collector->{
 				MobileEntity mobile = (MobileEntity) collector;
 				mobile.freeze();
-				mobile.getLevel().runOnceAfter(()->mobile.unfreeze(), frames);
+				mobile.getLevel().runOnceAfter(mobile::unfreeze, frames);
 			};
 		}
 		

@@ -22,11 +22,11 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader.Parameters;
 import com.badlogic.gdx.utils.Disposable;
 
-public class ResourceAgent {
+public class ResourceManager {
 
 	private HashMap<String, Object> stuff;
 	
-	public ResourceAgent(){
+	public ResourceManager(){
 		stuff = new HashMap<>();
 	}
 	

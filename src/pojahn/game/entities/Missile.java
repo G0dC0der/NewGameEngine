@@ -8,17 +8,19 @@ public class Missile extends Projectile {
 	public float thrust, drag, delta;
 	private Entity target;
 	private Vector2 reuseVector, velocity;
+	private Entity[] scanTargets;
 
 	public Missile(float x, float y, Entity... scanTargets) {
 		super(x, y, scanTargets);
 		reuseVector = new Vector2();
 		velocity = new Vector2();
+		this.scanTargets = scanTargets;
 		mediumFloaty();
 	}
 	
 	@Override
 	public Missile getClone() {
-		Missile clone = new Missile(x(), y(), (Entity[]) scanTargets.toArray());
+		Missile clone = new Missile(x(), y(), scanTargets);
 		copyData(clone);
 		if(cloneEvent != null)
 			cloneEvent.handleClonded(clone);
@@ -58,12 +60,12 @@ public class Missile extends Projectile {
 
 	@Override
 	protected void rotate() {
-		if(rotate)
+		if(rotates())
 			bounds.rotation = (float) Math.toDegrees(Math.atan2(velocity.y, velocity.x));
 	}
 
 	@Override
-	protected void move(Vector2 target) {
+	protected void moveProjectile(Vector2 target) {
 		float dx = target.x - x();
 		float dy = target.y - y();
 		double length = Math.sqrt( dx*dx + dy*dy );

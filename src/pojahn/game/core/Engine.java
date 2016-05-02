@@ -129,6 +129,10 @@ public final class Engine {
 		flipY = !flipY;
 		gameCamera.setToOrtho(flipY);
 	}
+
+	public boolean flippedY() {
+		return !flipY;
+	}
 	
 	public void translate(float tx, float ty){
 		gameCamera.position.set(tx, ty, 0);

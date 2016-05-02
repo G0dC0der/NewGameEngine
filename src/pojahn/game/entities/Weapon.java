@@ -8,6 +8,7 @@ import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
 
 public class Weapon extends PathDrone {
+
     private float targetX, targetY, firingOffsetX, firingOffsetY, rotationSpeed;
     private int burst, burstDelay, reload, burstCounter, delayCounter, reloadCounter;
     private boolean rotationAllowed, alwaysRotate, frontFire, firing, rotateWhileRecover;
@@ -31,7 +32,7 @@ public class Weapon extends PathDrone {
     }
 
     @Override
-    public void logics() {
+    public void logistics() {
         if (proj == null)
             throw new IllegalStateException("The projectile must be set before usage.");
 
@@ -42,7 +43,7 @@ public class Weapon extends PathDrone {
             setImage(orgImage);
         }
 
-        super.logics();
+        super.logistics();
 
         findTarget();
 

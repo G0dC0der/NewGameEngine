@@ -37,7 +37,7 @@ public class PushableObject extends MobileEntity implements EarthBound {
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		if (useGravity) {
 			if (!canDown()) {
 				if (vel.y < -100 && landingSound != null)

@@ -20,7 +20,7 @@ public class FlyMan extends PlayableEntity{
 	}
 	
 	@Override
-	public void logics() {
+	public void logistics() {
 		Keystrokes strokes = getKeysDown();
 		int speed = (int) getMoveSpeed();
 		

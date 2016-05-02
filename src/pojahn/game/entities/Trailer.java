@@ -22,7 +22,7 @@ public class Trailer extends PathDrone {
     }
 
     @Override
-    public void logics() {
+    public void logistics() {
         if (canSpit() && trailers.length > 0) {
             if (counter2 >= trailers.length)
                 counter2 = 0;
@@ -32,7 +32,7 @@ public class Trailer extends PathDrone {
                 getLevel().add(trailers[counter2++].getClone().move(x(), y()));
             }
         }
-        super.logics();
+        super.logistics();
     }
 
     public void setSpawners(Entity... trailers) {

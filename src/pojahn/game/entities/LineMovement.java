@@ -1,5 +1,6 @@
 package pojahn.game.entities;
 
+import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 
@@ -18,10 +19,6 @@ public class LineMovement extends MobileEntity{
 			throw new IllegalArgumentException("Must set a movement.");
 		
 		this.movment = movement;
-		addTileEvent(tile ->{
-			if(tile == Tile.SOLID)
-				leftOrUp = !leftOrUp;
-		});
 	}
 	
 	@Override
@@ -39,13 +36,17 @@ public class LineMovement extends MobileEntity{
 	}
 	
 	@Override
-	public void logics() {
-		if(obstacleCollision())
-			leftOrUp = !leftOrUp;
-		
+	public void logistics() {
+		Vector2 next;
+
 		if(movment == Movement.HORIZONTAL)
-			moveTowards(leftOrUp ? 0 : getLevel().getWidth(), y());
+			next = attemptTowards(leftOrUp ? 0 : getLevel().getWidth(), y(), getMoveSpeed());
 		else
-			moveTowards(x(), leftOrUp ? 0 : getLevel().getHeight());
+			next = attemptTowards(x(), leftOrUp ? 0 : getLevel().getHeight(), getMoveSpeed());
+
+		if(!occupiedAt(next.x, next.y))
+			move(next);
+		else
+			leftOrUp = !leftOrUp;
 	}
 }

@@ -26,7 +26,7 @@ public class Bouncer extends MobileEntity { //TODO: Change targets to EarthBound
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		for (GravityMan man : targets) {
 			if (collidesWith(man)) {
 				Direction dir = this.dir == null ? Collisions.getDirection(x(), y(), man.x(), man.y()) : this.dir;

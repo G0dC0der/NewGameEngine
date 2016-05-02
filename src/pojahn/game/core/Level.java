@@ -9,12 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import pojahn.game.essentials.CheckPointHandler;
-import pojahn.game.essentials.GameState;
-import pojahn.game.essentials.Keystrokes;
+import pojahn.game.essentials.*;
 import pojahn.game.essentials.recording.PlaybackRecord;
-import pojahn.game.essentials.Utils;
-import pojahn.game.essentials.Vitality;
 import pojahn.game.events.Event;
 import pojahn.game.events.TaskEvent;
 import pojahn.lang.Entry;
@@ -320,26 +316,28 @@ public abstract class Level {
                         play.setState(Vitality.DEAD);
                     } else{
                         play.setKeysDown(buttonsDown);
-                        play.logics();
+                        play.logistics();
                         play.runEvents();
 
                         if(play.tileEvents.size() > 0)
                             tileIntersection(play, play.getOccupyingCells());
 
+						play.updateFacing();
                         play.setPrevs();
                     }
                 } else if(entity instanceof MobileEntity){
                     MobileEntity mobile = (MobileEntity) entity;
 
-                    mobile.logics();
+                    mobile.logistics();
                     mobile.runEvents();
 
                     if(mobile.tileEvents.size() > 0)
                         tileIntersection(mobile, mobile.getOccupyingCells());
 
+					mobile.updateFacing();
                     mobile.setPrevs();
                 } else {
-                    entity.logics();
+                    entity.logistics();
                     entity.runEvents();
                 }
             }

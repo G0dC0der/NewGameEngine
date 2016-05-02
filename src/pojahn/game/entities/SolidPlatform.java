@@ -1,7 +1,6 @@
 package pojahn.game.entities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import pojahn.game.core.Collisions;
@@ -16,24 +15,21 @@ public class SolidPlatform extends PathDrone{
 		STRICT
 	}
 
-	protected List<MobileEntity> subjects;
-	private List<MobileEntity> interactingSujects;
+	private MobileEntity[] subjects;
+	private List<MobileEntity> intersectors;
 	private FollowMode followMode;
 	private float scanSize;
 	
 	public SolidPlatform(float x, float y, MobileEntity... subjects) {
 		super(x, y);
-		interactingSujects = new ArrayList<>(subjects.length);
+		intersectors = new ArrayList<>(subjects.length);
+		this.subjects = subjects;
 		setFollowMode(FollowMode.NORMAL);
 	}
-	
-	@Override
-	public void init() {
-		setSubjects((MobileEntity[])interactingSujects.toArray());
-	}
-	
+
+    @Override
 	public SolidPlatform getClone() {
-		SolidPlatform clone = new SolidPlatform(x(), y(), subjects.toArray(new MobileEntity[subjects.size()]));
+		SolidPlatform clone = new SolidPlatform(x(), y(), subjects);
 		copyData(clone);
 		if(cloneEvent != null)
 			cloneEvent.handleClonded(clone);
@@ -42,9 +38,9 @@ public class SolidPlatform extends PathDrone{
 	}
 	
 	@Override
-	public void logics() {
-		super.logics();
-		interactingSujects.clear();
+	public void logistics() {
+		super.logistics();
+		intersectors.clear();
 
 		float x = x() - scanSize;
 		float y = y() - scanSize;
@@ -53,7 +49,7 @@ public class SolidPlatform extends PathDrone{
 		
 		for(MobileEntity sub : subjects){
 			if(Collisions.rectanglesCollide(x, y, w, h, sub.x(), sub.y(), sub.width(), sub.height())){
-				interactingSujects.add(sub);
+				intersectors.add(sub);
 				
 				float nextX = sub.x() + (x() - prevX());
 				float nextY = sub.y() + (y() - prevY());
@@ -82,8 +78,8 @@ public class SolidPlatform extends PathDrone{
 		}
 	}
 	
-	public List<MobileEntity> getInteractingSubjects(){
-		return new ArrayList<>(interactingSujects);
+	public List<MobileEntity> getActiveSubjects(){
+		return new ArrayList<>(intersectors);
 	}
 	
 	@Override
@@ -91,13 +87,7 @@ public class SolidPlatform extends PathDrone{
 		super.setMoveSpeed(moveSpeed);
 		setFollowMode(this.followMode);
 	}
-	
-	public void setSubjects(MobileEntity... subjects){
-		dispose();
-		this.subjects = Arrays.asList(subjects);
-		this.subjects.forEach(sub-> sub.addObstacle(this));
-	}
-	
+
 	@Override
 	@Deprecated
 	public void setHitbox(Hitbox hitbox) {
@@ -106,14 +96,17 @@ public class SolidPlatform extends PathDrone{
 	
 	@Override
 	public void dispose() {
-		if(subjects != null)
-			subjects.forEach(sub-> sub.removeObstacle(this));
+		if(subjects != null) {
+			for(MobileEntity sub : subjects) {
+				sub.removeObstacle(this);
+			}
+		}
 	}
-	
+
 	protected void copyData(SolidPlatform clone){
 		super.copyData(clone);
-		
-		clone.subjects.addAll(subjects);
+
+		clone.subjects = subjects;
 		clone.followMode = followMode;
 		clone.scanSize = scanSize;
 	}

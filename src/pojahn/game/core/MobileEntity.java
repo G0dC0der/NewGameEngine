@@ -15,6 +15,7 @@ public class MobileEntity extends Entity{
 	
 	float prevX, prevY;
 	List<TileEvent> tileEvents;
+	Direction facing;
 	
 	private boolean smart;
 	private float moveSpeed;
@@ -22,6 +23,7 @@ public class MobileEntity extends Entity{
 	private Set<Entity> obstacles;
 	
 	public MobileEntity(){
+		facing = Direction.E;
 		tileEvents = new ArrayList<>();
 		obstacles = new HashSet<>();
 		moveSpeed = 3;
@@ -62,6 +64,16 @@ public class MobileEntity extends Entity{
 			smartMoveTowards(targetX, targetY, moveSpeed);
 		else
 			dumbMoveTowards(targetX, targetY, moveSpeed);
+	}
+
+	public Direction getFacing() {
+		return facing;
+	}
+
+	void updateFacing(){
+		Direction facing = Collisions.getDirection(this);
+		if(facing != null)
+			this.facing = facing;
 	}
 	
 	protected void dumbMoveTowards(float targetX, float targetY, float steps){

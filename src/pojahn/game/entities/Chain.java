@@ -2,13 +2,11 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
-import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Image2D;
 
-public class Chain extends MobileEntity {
+public class Chain extends Entity {
 	
 	private Vector2 pt1, pt2;
 	private Entity src1, src2;

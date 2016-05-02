@@ -15,7 +15,7 @@ public class CameraEffects {
 			}
 			
 			@Override
-			public void logics() {
+			public void logistics() {
 				Dimension size = getEngine().getScreenSize();
 				float 	tx = 0,
 						ty = 0,
@@ -149,7 +149,7 @@ public class CameraEffects {
 			}
 			
 			@Override
-			public void logics() {
+			public void logistics() {
 				if(increasingScale) {
 					scaleValue += speed;
 					if(scaleValue > max)
@@ -180,7 +180,7 @@ public class CameraEffects {
 			}
 			
 			@Override
-			public void logics() {
+			public void logistics() {
 				int value = counter++ % 4;
 				float tx = getEngine().tx();
 				float ty = getEngine().ty();
@@ -226,7 +226,7 @@ public class CameraEffects {
 			}
 			
 			@Override
-			public void logics() {
+			public void logistics() {
 				if(vertSpeed > 0) {
 					if(increasingVert) {
 						vertValue += vertSpeed;

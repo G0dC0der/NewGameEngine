@@ -3,11 +3,11 @@ package pojahn.game.entities;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
+import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
-import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Direction;
 
-public class RotatingCannon extends MobileEntity {
+public class RotatingCannon extends Entity {
     
     private float rotationSpeed, targetRotation;
     private int reload, reloadCounter;
@@ -48,12 +48,11 @@ public class RotatingCannon extends MobileEntity {
     }
 
     @Override
-    public void logics() {
-        super.logics();
+    public void logistics() {
+        super.logistics();
 
         if (!disabled && --reloadCounter < 0) {
             if (!rotating) {
-                float targetX, targetY;
                 Level l = getLevel();
 
                 if (diagonalFire || fireAll) {

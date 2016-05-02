@@ -11,15 +11,17 @@ public class DestroyablePlatform extends SolidPlatform {
 	private Animation<Image2D> destroyImage;
 	private int destroyFrames, aliveCounter;
 	private Sound breakSound, destroySound;
+	private MobileEntity[] subjects;
 
 	public DestroyablePlatform(float x, float y, MobileEntity... subjects) {
 		super(x, y, subjects);
 		destroyFrames = 100;
 		aliveCounter = -1;
+		this.subjects = subjects;
 	}
 	
 	public DestroyablePlatform getClone() {
-		DestroyablePlatform clone = new DestroyablePlatform(x(), y(), subjects.toArray(new MobileEntity[subjects.size()]));
+		DestroyablePlatform clone = new DestroyablePlatform(x(), y(), subjects);
 		copyData(clone);
 		if(cloneEvent != null)
 			cloneEvent.handleClonded(clone);
@@ -28,15 +30,15 @@ public class DestroyablePlatform extends SolidPlatform {
 	}
 	
 	@Override
-	public void logics() {
-		super.logics();
+	public void logistics() {
+		super.logistics();
 		
 		if(aliveCounter-- == 0){
 			if(destroySound != null)
 				destroySound.play(sounds.calc());
 			getLevel().discard(this);
 		} else if(aliveCounter < 0){ //Not collapsing
-			if(!getInteractingSubjects().isEmpty())
+			if(!getActiveSubjects().isEmpty())
 				collapse();
 		}
 	}

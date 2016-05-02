@@ -26,7 +26,7 @@ public class Guard extends PathDrone{
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		Entity target = Collisions.findClosestSeeable(this, targets);
 		
 		if(target != null){
@@ -35,7 +35,7 @@ public class Guard extends PathDrone{
 				detectSound.play(sounds.calc());
 			allowSound = false;
 		} else {
-			super.logics();
+			super.logistics();
 			allowSound = true;
 		}
 	}

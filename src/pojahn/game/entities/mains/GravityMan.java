@@ -46,7 +46,7 @@ public class GravityMan extends PlayableEntity implements EarthBound{
 	}
 	
 	@Override
-	public void logics() {
+	public void logistics() {
 		run();
 		wallSlide();
 		jump();
@@ -193,9 +193,8 @@ public class GravityMan extends PlayableEntity implements EarthBound{
 		return !obstacleCollision(targetX, bounds.pos.y);
 	}
 	
-	protected boolean canSlopeRight(float targetX)
-	{
-		int y = (int)y() - 1, tar = (int) (targetX + width());
+	protected boolean canSlopeRight(float targetX) {
+		int y = (int) y() - 1, tar = (int) (targetX + width());
 		Level l = getLevel();
 		
 		for (int i = 0; i < height(); i++)

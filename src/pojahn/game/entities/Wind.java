@@ -29,7 +29,7 @@ public class Wind extends MobileEntity { //TODO: Use Earthbound?
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		for (GravityMan man : targets) {
 			if (collidesWith(man)) {
 				switch (direction) {

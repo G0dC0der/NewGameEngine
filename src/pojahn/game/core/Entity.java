@@ -2,6 +2,7 @@ package pojahn.game.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import static pojahn.game.core.Collisions.*;
 import pojahn.game.essentials.Animation;
@@ -53,7 +54,7 @@ public class Entity implements Unit {
 		deleteEvents = new ArrayList<>();
 	}
 
-	public void logics(){}
+	public void logistics(){}
 	
 	public Entity getClone(){
 		Entity clone = new Entity();
@@ -94,6 +95,12 @@ public class Entity implements Unit {
 	public Entity move(float x, float y){
 		bounds.pos.x = x;
 		bounds.pos.y = y;
+		return this;
+	}
+
+	public Entity move(Vector2 loc) {
+		bounds.pos.x = loc.x;
+		bounds.pos.y = loc.y;
 		return this;
 	}
 
@@ -185,12 +192,13 @@ public class Entity implements Unit {
 		} else if(hitbox == Hitbox.POLYGON || entity.hitbox == Hitbox.POLYGON){
 			//return polygonsCollide(this, entity);
 		} else if(hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL){
-			if(bounds.rotation != 0 || entity.bounds.rotation != 0)	
-				return rectanglesCollide(getBoundingBox(bounds), getBoundingBox(entity.bounds)) && pixelPerfectRotation(buildMatrix(this),	getImage().getCurrentObject(),
-																														buildMatrix(entity), entity.getImage().getCurrentObject());
+			if(rotated1 || rotated2)
+				return rectanglesCollide(getBoundingBox(bounds), getBoundingBox(entity.bounds)) &&
+                        pixelPerfectRotation(buildMatrix(this),	getImage().getCurrentObject(), buildMatrix(entity), entity.getImage().getCurrentObject());
 			
-			return rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) && pixelPerfect(bounds.toRectangle(), getImage().getCurrentObject(), flipX, flipY,
-																										entity.bounds.toRectangle(), entity.getImage().getCurrentObject(), entity.flipX, entity.flipY);
+			return rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) &&
+                    pixelPerfect(bounds.toRectangle(), getImage().getCurrentObject(), flipX, flipY,
+                                 entity.bounds.toRectangle(), entity.getImage().getCurrentObject(), entity.flipX, entity.flipY);
 		}
 		
 		throw new IllegalStateException("No proper collision handling methods found.");

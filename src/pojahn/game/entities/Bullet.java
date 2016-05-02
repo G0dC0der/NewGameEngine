@@ -6,10 +6,12 @@ import pojahn.game.core.Entity;
 
 public class Bullet extends Projectile{ //TODO: This API is weird.
 	
-	Vector2 target;
+	private Vector2 target;
+	private Entity[] scanTargets;
 
 	public Bullet(float x, float y, Entity... scanTargets) {
 		super(x, y, scanTargets);
+        this.scanTargets = scanTargets;
 	}
 	
 	@Override
@@ -23,7 +25,7 @@ public class Bullet extends Projectile{ //TODO: This API is weird.
 	}
 
 	@Override
-	protected void move(Vector2 target) {
+	protected void moveProjectile(Vector2 target) {
 		moveTowards(target.x, target.y);
 	}
 

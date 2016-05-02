@@ -1,9 +1,10 @@
 package pojahn.game.entities;
 
+import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Direction;
 
-public class OneWay extends MobileEntity {
+public class OneWay extends Entity {
 	
 	private MobileEntity targets[];
 	private boolean[] block;
@@ -20,7 +21,7 @@ public class OneWay extends MobileEntity {
 	}
 
 	@Override
-	public void logics() {
+	public void logistics() {
 		for (int i = 0; i < targets.length; i++) {
 			MobileEntity mobile = targets[i];
 			boolean bool;
