@@ -10,10 +10,10 @@ import pojahn.game.core.MobileEntity;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-public abstract class Projectile extends MobileEntity{ //TODO: Projectiles should never be reusable. Delete at impact!
+public abstract class Projectile extends MobileEntity {
 
 	private Particle impact, gunfire, trailer;
-	private Entity[] scanTargets, targets;
+	private Entity scanTargets[], otherTargets[], target;
 	private Vector2 manualTarget;
 	private boolean rotate;
 	private int trailerDelay;
@@ -26,14 +26,14 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 		rotate = true;
 		this.scanTargets = scanTargets;
 	}
-	
+
 	@Override
 	public Projectile getClone() {
-		throw new UnsupportedOperationException("Can not get a clone of an abstract class.");
+		throw new NullPointerException("Can not get a clone of an abstract class.");
 	}
-	
-	public void setTargets(Entity... targets){
-		this.targets = targets;
+
+	public void setOtherTargets(Entity... targets){
+		this.otherTargets = targets;
 	}
 	
 	public void setImpact(Particle impact) {
@@ -68,38 +68,41 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 		this.manualTarget = manualTarget;
 	}
 
+	public Vector2 getTarget() {
+		if(manualTarget != null)
+			return manualTarget;
+		else {
+			return target == null ? null : new Vector2(target.x(), target.y());
+		}
+	}
+
 	@Override
 	public final void logistics() {
-		if(manualTarget != null){
-			fire();
-		}
-		
-		if(!fired){
-			Entity target = Collisions.findClosestSeeable(this, scanTargets);
-			
-			if(target != null){
+		if(!fired) {
+			if(manualTarget != null) {
 				fire();
-				targetDetected(target);
+			} else {
+				target = Collisions.findClosestSeeable(this, scanTargets);
+				if(target != null){
+					fire();
+				}
 			}
 		}
-		
-		if(fired){
-			move(manualTarget == null ? getTarget() : manualTarget);
+
+		if(fired) {
+			moveProjectile(getTarget());
 			collisionCheck();
-			
+			rotate();
+
 			if(trailer != null && ++trailerCounter % trailerDelay == 0){
 				Vector2 rare = getRarePosition();
 				getLevel().add(trailer.getClone().move(rare.x - trailer.halfWidth(), rare.y - trailer.halfHeight()));
 			}
 		}
 	}
-	
+
 	protected abstract void moveProjectile(Vector2 target);
-	
-	protected abstract void targetDetected(Entity target); //TODO: Why is this abstract?
-	
-	protected abstract Vector2 getTarget(); //TODO: Why is this abstract? Can we remove it?
-	
+
 	protected void rotate(){
 		if(rotate){
 			Vector2 target = getTarget();
@@ -116,13 +119,14 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 	protected void collisionCheck(){
 		Level l = getLevel();
 		
-		if (l.tileAt( getFrontPosition()) == Tile.SOLID || l.tileAt(getRarePosition()) == Tile.SOLID)
+		if (l.tileAt( getFrontPosition()) == Tile.SOLID || l.tileAt(getRarePosition()) == Tile.SOLID) {
 			impact(null);
-
-		Stream.concat(Arrays.asList(targets).stream(), Arrays.asList(scanTargets).stream())
-			  .filter(this::collidesWith)
-			  .findFirst()
-			  .ifPresent(this::impact);
+		} else {
+			Stream.concat(Arrays.asList(otherTargets).stream(), Arrays.asList(scanTargets).stream())
+				  .filter(this::collidesWith)
+				  .findFirst()
+				  .ifPresent(this::impact);
+		}
 	}
 	
 	protected void impact(Entity victim){
@@ -146,6 +150,6 @@ public abstract class Projectile extends MobileEntity{ //TODO: Projectiles shoul
 		clone.trailerDelay = trailerDelay;
 		clone.rotate = rotate;
 		clone.scanTargets =  scanTargets;
-		clone.targets =  targets;
+		clone.otherTargets = otherTargets;
 	}
 }

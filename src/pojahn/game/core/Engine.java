@@ -9,14 +9,10 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.badlogic.gdx.ApplicationListener;
-import pojahn.game.essentials.ControlledException;
-import pojahn.game.essentials.GameState;
-import pojahn.game.essentials.HUDMessage;
-import pojahn.game.essentials.Image2D;
+import pojahn.game.essentials.*;
 import pojahn.game.essentials.recording.KeySession;
 import pojahn.game.essentials.recording.PlaybackRecord;
 import pojahn.game.essentials.recording.Replay;
-import pojahn.game.essentials.Vitality;
 import pojahn.game.events.Event;
 import pojahn.lang.OtherMath;
 
@@ -50,7 +46,7 @@ public final class Engine {
     private Map<GameState, Event> stateEvents;
 	private Exception exception;
 	
-	private boolean replaying, flipY, showHelpText, saveReplayAllowed, shutdown;
+	private boolean replaying, flipY, showHelpText, shutdown;
 	private int screenWidth, screenHeight, deathCounter;
 	private float rotation, musicVolume, prevTx, prevTy, time;
 	private long frameCounter, uniqueCounter;
@@ -63,7 +59,6 @@ public final class Engine {
 		this.level = level;
 		this.level.engine = this;
         this.playback = replayData;
-        this.saveReplayAllowed = replayData == null;
 		replaying = replayData != null;
 		recordings = new Vector<>();
         stateEvents = new HashMap<>();
@@ -223,7 +218,7 @@ public final class Engine {
         if(helpText == null)
     		helpText = HUDMessage.getCenteredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
 		if(deathText == null)
-            deathText = HUDMessage.getCenteredMessage("You died, mission failed.", screenSize, Color.WHITE);
+            deathText = HUDMessage.getCenteredMessage("You died. Press the restart or quit button to continue.", screenSize, Color.WHITE);
         if(winText == null)
             winText = HUDMessage.getCenteredMessage("Congrats! You completed the level!", screenSize, Color.WHITE);
 		if(pauseText == null)
@@ -245,16 +240,17 @@ public final class Engine {
 			time = 0;
 		
 		frameCounter = 0;
-        saveReplayAllowed = !isReplaying();
 		setGameState(GameState.ACTIVE);
 	}
 
-	private void overview() { //TODO: Implement support for restart with R at death
+	private void overview() {
         if(shutdown)
             throw new ControlledException("Controlled termination.");
 
         if(!isReplaying()) {
-            if(PlayableEntity.mergeButtons(level.getAliveMainCharacters()).pause && (active() || paused())){
+			Keystrokes keys = PlayableEntity.mergeButtons(level.getAliveMainCharacters());
+
+            if(keys.pause && (active() || paused())){
                 setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
 
                 if(active()) {
@@ -269,12 +265,13 @@ public final class Engine {
                         music.setVolume(.1f);
                     }
                 }
-            }
-
-            if(saveReplayAllowed && (lost() || completed())){
-                saveReplayAllowed = false;
-                finalizeRecording();
-            }
+            } else if (lost()) {
+				if(keys.restart) {
+					restart(false);
+				} else if(keys.quit) {
+					exit();
+				}
+			}
         } else {
             if(lost() && level.cpPresent() && !replayEnded()) {
                 restart(true);
@@ -334,6 +331,9 @@ public final class Engine {
 			throw new IllegalArgumentException("Can not kill or pause a completed game.");
 
         if(state != this.getGameState()) {
+			if(lost() || completed())
+				finalizeRecording();
+
             this.state = state;
 
             Event event = stateEvents.get(this.state);
@@ -468,7 +468,7 @@ public final class Engine {
 		}
 	}
 
-    static ApplicationListener wrap(Engine engine) {
+    public static ApplicationListener wrap(Engine engine) {
         return new ApplicationListener() {
             @Override
             public void dispose() {

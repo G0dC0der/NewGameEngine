@@ -67,7 +67,7 @@ public class Weapon extends PathDrone {
                 firing = true;
                 burstCounter++;
 
-                Projectile projClone = null;
+                Projectile projClone;
                 Particle partClone = null;
                 if (frontFire) {
                     Vector2 front = getFrontPosition();

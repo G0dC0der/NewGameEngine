@@ -5,7 +5,8 @@ var Game = {
     extend: Java.extend,
     type: Java.type
 };
-var impl = function(type, implementation) {
+
+var ext = function(type, implementation) {
     var Instance = Game.extend(type, implementation);
     return new Instance();
 };
@@ -38,7 +39,6 @@ var RenderEvent = Game.type('pojahn.game.events.RenderEvent');
 var TaskEvent = Game.type('pojahn.game.events.TaskEvent');
 var TileEvent = Game.type('pojahn.game.events.TileEvent');
 
-
  /*
   * Types
   */
@@ -64,27 +64,11 @@ var LaserBeam = Game.type('pojahn.game.essentials.LaserBeam');
 var Vitality = Game.type('pojahn.game.essentials.Vitality');
 
 /*
- * Level testing
+ * Wrappers
  */
+var Resources = Game.type('pojahn.game.essentials.stages.script.Resource');
 
- function provide() {
-    var CustomLevel = Game.extend(TileBasedLevel, {
-        init: function() {
-            java.lang.System.out.println(CustomLevel.getTileWidth());
-//            CustomLevel.addz(impl(Event, {
-//                eventHandling: function() {
-//                    java.lang.System.out.println("I am run!");
-//                }
-//            }));
-
-        },
-        build: function() {
-
-        },
-        dispose: function() {
-
-        }
-    });
-
-    return new CustomLevel();
- }
+function provide() {
+    _REPLACE_
+    return map;
+}

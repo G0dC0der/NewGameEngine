@@ -7,12 +7,11 @@ public class Missile extends Projectile {
 	
 	public float thrust, drag, delta;
 	private Entity target;
-	private Vector2 reuseVector, velocity;
+	private Vector2 velocity;
 	private Entity[] scanTargets;
 
 	public Missile(float x, float y, Entity... scanTargets) {
 		super(x, y, scanTargets);
-		reuseVector = new Vector2();
 		velocity = new Vector2();
 		this.scanTargets = scanTargets;
 		mediumFloaty();
@@ -80,16 +79,6 @@ public class Missile extends Projectile {
 		
 		bounds.pos.x += delta * velocity.x;
 		bounds.pos.y += delta * velocity.y;
-	}
-
-	@Override
-	protected void targetDetected(Entity target) {
-		this.target = target;
-	}
-
-	@Override
-	protected Vector2 getTarget() {
-		return reuseVector.set(target.centerX(), target.centerY());
 	}
 
 	protected void copyData(Missile clone){

@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import pojahn.game.core.Entity;
 
-public class Bullet extends Projectile{ //TODO: This API is weird.
+public class Bullet extends Projectile {
 	
 	private Vector2 target;
 	private Entity[] scanTargets;
@@ -27,15 +27,5 @@ public class Bullet extends Projectile{ //TODO: This API is weird.
 	@Override
 	protected void moveProjectile(Vector2 target) {
 		moveTowards(target.x, target.y);
-	}
-
-	@Override
-	protected void targetDetected(Entity target) {
-		this.target = new Vector2(target.centerX(),target.centerY());
-	}
-
-	@Override
-	protected Vector2 getTarget() {
-		return target;
 	}
 }

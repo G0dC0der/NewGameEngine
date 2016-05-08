@@ -1,17 +1,16 @@
 package pojahn.game.core;
 
+import com.badlogic.gdx.math.Vector2;
+import pojahn.game.core.Level.Tile;
+import pojahn.game.essentials.Direction;
+import pojahn.game.events.TileEvent;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.badlogic.gdx.math.Vector2;
-
-import pojahn.game.core.Level.Tile;
-import pojahn.game.essentials.Direction;
-import pojahn.game.events.TileEvent;
-
-public class MobileEntity extends Entity{
+public class MobileEntity extends Entity {
 	
 	float prevX, prevY;
 	List<TileEvent> tileEvents;
@@ -125,11 +124,7 @@ public class MobileEntity extends Entity{
 	public float prevY(){
 		return prevY;
 	}
-	
-	public void pauseTileEvents(boolean pause){ //TODO: Use case?
-		this.tileEventPause = pause;
-	}
-	
+
 	public void addTileEvent(TileEvent tileEvent){
 		tileEvents.add(tileEvent);
 	}
@@ -149,10 +144,6 @@ public class MobileEntity extends Entity{
 	public boolean isSmart(){
 		return smart;
 	}
-
-	/*
-	 * TODO: Optimize!
-     */
 
 	public boolean tryLeft(int steps){
 		for(int i = steps; i > 0; i--){
@@ -313,7 +304,7 @@ public class MobileEntity extends Entity{
 			collisionResponse(target);
 	}
 	
-	public void collisionResponse(MobileEntity target){
+	public void collisionResponse(MobileEntity target) {
 		float centerX = x() + width() / 2;
 		float centerY = y() + height() / 2;
 		

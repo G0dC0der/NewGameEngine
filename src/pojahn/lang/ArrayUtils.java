@@ -1,6 +1,9 @@
 package pojahn.lang;
 
+import pojahn.game.events.Function;
+
 import java.lang.reflect.Array;
+import java.util.function.Consumer;
 
 public class ArrayUtils {
 

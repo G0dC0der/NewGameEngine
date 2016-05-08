@@ -21,24 +21,18 @@ import pojahn.game.essentials.Image2D;
 public class Collisions {
 	
 	public static final boolean rectanglesCollide(Rectangle rec1, Rectangle rec2){
-		if ((rec1.y + rec1.height < rec2.y) ||
-	        (rec1.y > rec2.y + rec2.height) ||
-	        (rec1.x + rec1.width < rec2.x)  ||
-	        (rec1.x > rec2.x + rec2.width))
-	        return false;
-		
-		return true;
+		return !((rec1.y + rec1.height < rec2.y) ||
+				(rec1.y > rec2.y + rec2.height) ||
+				(rec1.x + rec1.width < rec2.x) ||
+				(rec1.x > rec2.x + rec2.width));
 	}
 	
-	public static final boolean rectanglesCollide(	float x1, float y1, float width1, float height1,
-													float x2, float y2, float width2, float height2){
-		if ((y1 + height1 < y2) ||
-	        (y1 > y2 + height2) ||
-	        (x1 + width1 < x2)  ||
-	        (x1 > x2 + width2))
-	        return false;
-		
-		return true;
+	public static boolean rectanglesCollide(float x1, float y1, float width1, float height1,
+											float x2, float y2, float width2, float height2){
+		return !((y1 + height1 < y2) ||
+				(y1 > y2 + height2) ||
+				(x1 + width1 < x2) ||
+				(x1 > x2 + width2));
 	}
 
 	public static boolean rotatedRectanglesCollide(Bounds bounds1, Bounds bounds2){
@@ -353,10 +347,7 @@ public class Collisions {
 			return false;
 		  
 		float u = (cx * by - cy * bx) / b_dot_d_perp;
-		if(u < 0 || u > 1)
-			return false;
-		  
-		return true;
+		return !(u < 0 || u > 1);
 	}
 	
 	/**
@@ -474,10 +465,8 @@ public class Collisions {
 		double Ex = t*Dx+Ax;
 		double Ey = t*Dy+Ay;
 		double LEC = Math.sqrt((Ex-c.x)*(Ex-c.x) + (Ey-c.y)*(Ey-c.y));
-		if(LEC <= c.radius)
-			return true;
-		
-		return false;
+
+		return LEC <= c.radius;
 	}
 	
 	/**

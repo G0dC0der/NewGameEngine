@@ -1,10 +1,8 @@
 package pojahn.game.essentials;
 
 import com.badlogic.gdx.Gdx;
-import pojahn.game.core.PlayableEntity;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * An instance of this class describes the buttons that was down during a frame.
@@ -13,7 +11,7 @@ import java.util.List;
 public class Keystrokes implements Serializable{
 	
 	private static final long serialVersionUID = -7757124776060327750L;
-	public boolean up, down, left, right, jump, pause, suicide, special1, special2, special3;
+	public boolean up, down, left, right, jump, pause, suicide, special1, special2, special3, restart, quit;
 
 	@Override
 	public String toString() {
@@ -35,6 +33,8 @@ public class Keystrokes implements Serializable{
 		pb.special2   = Gdx.input.isKeyJustPressed(con.special2);
 		pb.special3   = Gdx.input.isKeyJustPressed(con.special3);
 		pb.suicide    = Gdx.input.isKeyJustPressed(con.suicide);
+		pb.restart	  = Gdx.input.isKeyJustPressed(con.restart);
+		pb.quit    	  = Gdx.input.isKeyJustPressed(con.quit);
 
 		return pb;
 	}
