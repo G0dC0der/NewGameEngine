@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import pojahn.game.core.Entity;
-import pojahn.game.core.MobileEntity;
+import pojahn.game.core.PlayableEntity;
 
 public class CameraEffects {
 
-	public static MobileEntity cameraFocus(List<Entity> entities, int padding, boolean ignoreInvisible){
-		return new MobileEntity(){{
-				zIndex(10_000);
+	public static Entity cameraFocus(List<Entity> entities, int padding, boolean ignoreInvisible){
+		return new Entity(){{
+				zIndex(Integer.MAX_VALUE - 1);
 			}
 			
 			@Override
@@ -30,12 +30,18 @@ public class CameraEffects {
 					tx = Math.min(stageWidth  - windowWidth,   Math.max(0, first.centerX() - windowWidth  / 2)) + windowWidth  / 2; 
 					ty = Math.min(stageHeight - windowHeight,  Math.max(0, first.centerY() - windowHeight / 2)) + windowHeight / 2;
 					getEngine().translate(tx, ty);
-				}
-				else if(entities.size() > 1){
+				} else if(entities.size() > 1) {
 					List<Entity> list;
-					if(ignoreInvisible){
-						list = entities.stream().filter(entity -> entity.isActive() && entity.isVisible()).collect(Collectors.toList());
-					}else
+					if (ignoreInvisible) {
+						list = entities.stream().filter(entity -> {
+							if(entity instanceof PlayableEntity) {
+								PlayableEntity play = (PlayableEntity) entity;
+								if(!play.isAlive())
+									return false;
+							}
+							return entity.isActive() && entity.isVisible();
+						}).collect(Collectors.toList());
+					} else
 						list = entities;
 					
 					if(list.isEmpty())
@@ -108,7 +114,7 @@ public class CameraEffects {
 	 * @param speed The speed of the vertical movement.
 	 * @return The event.
 	 */
-	public static MobileEntity verticalMovement(float length, float speed){
+	public static Entity verticalMovement(float length, float speed){
 		return pingPongMovement(length, speed, 0);
 	}
 	
@@ -120,7 +126,7 @@ public class CameraEffects {
 	 * @param speed The speed of the horizontal movement.
 	 * @return The event.
 	 */
-	public static MobileEntity horizontalMovement(float length, float speed){
+	public static Entity horizontalMovement(float length, float speed){
 		return pingPongMovement(length, speed, 1);
 	}
 	
@@ -133,11 +139,11 @@ public class CameraEffects {
 	 * @param speed The speed of the pingpong motion.
 	 * @return The event.
 	 */
-	public static MobileEntity zoomEffect(float min, float max, float speed){
+	public static Entity zoomEffect(float min, float max, float speed){
 		if(0 > min || 0 > max || 0 > speed)
 			throw new IllegalArgumentException("All values must be positive.");
 		
-		return new MobileEntity(){
+		return new Entity(){
 			
 			float scaleValue;
 			boolean increasingScale;
@@ -145,7 +151,7 @@ public class CameraEffects {
 			@Override
 			public void init() {
 				scaleValue = getEngine().getZoom();
-				zIndex(10_001);
+				zIndex(Integer.MAX_VALUE);
 			}
 			
 			@Override
@@ -171,12 +177,12 @@ public class CameraEffects {
 	 * @param strength The strength of the vibration.
 	 * @return The event.
 	 */
-	public static MobileEntity vibration(float strength){
-		return new MobileEntity(){
+	public static Entity vibration(float strength){
+		return new Entity(){
 			int counter;
 			
 			{
-				zIndex(10_003);
+				zIndex(Integer.MAX_VALUE);
 			}
 			
 			@Override
@@ -208,12 +214,12 @@ public class CameraEffects {
 		};
 	}
 	
-	static MobileEntity pingPongMovement(float length, float speed, int axis)
+	static Entity pingPongMovement(float length, float speed, int axis)
 	{
 		if(0 > length || 0 > speed)
 			throw new IllegalArgumentException("Both values must be positive.");
 		
-		return new MobileEntity(){
+		return new Entity(){
 			boolean increasingVert;
 			float vertValue, vertLength, vertSpeed;
 			
@@ -223,6 +229,7 @@ public class CameraEffects {
 				
 				vertLength = length;
 				vertSpeed = speed;
+				zIndex(Integer.MAX_VALUE);
 			}
 			
 			@Override

@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import pojahn.game.core.Level.Tile;
-import pojahn.game.essentials.Bounds;
+import pojahn.game.essentials.geom.Bounds;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.Image2D;
 

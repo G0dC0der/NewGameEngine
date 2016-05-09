@@ -2,15 +2,13 @@ package pojahn.game.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import static pojahn.game.core.Collisions.*;
 import pojahn.game.essentials.Animation;
-import pojahn.game.essentials.Bounds;
+import pojahn.game.essentials.geom.Bounds;
 import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.SoundEmitter;
-import pojahn.game.essentials.geom.Unit;
 import pojahn.game.events.ActionEvent;
 import pojahn.game.events.CloneEvent;
 import pojahn.game.events.Event;
@@ -20,7 +18,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 
-public class Entity implements Unit {
+public class Entity {
 
 	public final Bounds bounds;
 	public SoundEmitter sounds;
@@ -228,30 +226,18 @@ public class Entity implements Unit {
 		bounds.rotation += amount;
 	}
 
-	@Override
 	public float x(){
 		return bounds.pos.x;
 	}
 
-	@Override
 	public float y(){
 		return bounds.pos.y;
 	}
 
-	@Override
-	public void setX(float x) {
-		bounds.pos.x = x;
-	}
-
-	@Override
-	public void setY(float y) {
-		bounds.pos.y = y;
-	}
-	
 	public float width(){
 		return bounds.size.width;
 	}
-	
+
 	public float height(){
 		return bounds.size.height;
 	}

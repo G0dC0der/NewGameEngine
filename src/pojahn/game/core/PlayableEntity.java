@@ -41,8 +41,7 @@ public abstract class PlayableEntity extends MobileEntity{
 		if(strength >= 0){
 			hp += strength;
 			hurtCounter = 0;
-		}
-		else if(hurtCounter > 0){
+		} else if(hurtCounter > 0) {
 			hp += strength;
 			hurtCounter = 100;
             if(hurtSound != null)
@@ -98,15 +97,16 @@ public abstract class PlayableEntity extends MobileEntity{
 		if(state == Vitality.ALIVE && this.state == Vitality.COMPLETED)
 			throw new IllegalArgumentException("Can not set to state to " + Vitality.ALIVE + " when the current state is " + Vitality.COMPLETED);
 		if(state == Vitality.DEAD && this.state == Vitality.DEAD)
-			throw new IllegalArgumentException("Can not kill an alrady dead character");
+			throw new IllegalArgumentException("Can not kill an already dead character.");
 
-		if(state == Vitality.ALIVE && this.state == Vitality.DEAD)
-			revive();
+		if(this.state != state) {
+			if(state == Vitality.ALIVE && this.state == Vitality.DEAD)
+				revive();
+			else if(state == Vitality.DEAD)
+				deathAction();
 
-		this.state = state;
-		
-		if(this.state == Vitality.DEAD)
-			deathAction();
+			this.state = state;
+		}
 	}
 	
 	public Vitality getState(){

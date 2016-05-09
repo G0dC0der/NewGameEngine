@@ -7,7 +7,7 @@ import pojahn.game.core.MobileEntity;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Direction;
 
-public class Bouncer extends MobileEntity { //TODO: Change targets to EarthBound?
+public class Bouncer extends MobileEntity {
 
 	private GravityMan[] targets;
 	private Sound bounceSound;

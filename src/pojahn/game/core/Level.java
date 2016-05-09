@@ -260,7 +260,7 @@ public abstract class Level {
 	
 	public List<PlayableEntity> getAliveMainCharacters(){
 		return mainCharacters.stream()
-				.filter(el -> el.getState() == Vitality.ALIVE)
+				.filter(PlayableEntity::isAlive)
 				.collect(Collectors.toList());
 	}
 	
@@ -271,7 +271,11 @@ public abstract class Level {
 	public void addSoundListener(Entity listener){
 		soundListeners.add(listener);
 	}
-	
+
+	public void removeSoundListener(Entity listener) {
+		soundListeners.remove(listener);
+	}
+
 	protected void clean(){
 		awatingObjects.clear();
 		deleteObjects.clear();
@@ -358,40 +362,48 @@ public abstract class Level {
 	}
 	
 	private void insertDelete(){
-        awatingObjects.stream().filter(entry -> entry.key-- <= 0).forEach(entry -> {
-            gameObjects.add(entry.value);
-            sort = true;
-            entry.value.level = this;
-            entry.value.engine = engine;
-            entry.value.present = true;
-            entry.value.badge = engine.provideBadge();
-            entry.value.init();
+		for(int i = 0; i < awatingObjects.size(); i++){
+			Entry<Integer, Entity> entry = awatingObjects.get(i);
+			if(entry.key-- <= 0){
+				awatingObjects.remove(i);
+				i--;
+				gameObjects.add(entry.value);
+				sort = true;
+				entry.value.level = this;
+				entry.value.engine = engine;
+				entry.value.present = true;
+				entry.value.badge = engine.provideBadge();
+				entry.value.init();
 
-            if (entry.value instanceof PlayableEntity) {
-                PlayableEntity play = (PlayableEntity) entry.value;
-                if (!play.isGhost()) {
-                    mainCharacters.add(play);
-                    if (engine.isReplaying()) {
-                        PlaybackRecord pbr = engine.getPlayback();
-                        play.setReplayData(pbr.getByBadge(play.badge));
-                    }
-                }
-            }
-        });
+				if (entry.value instanceof PlayableEntity) {
+					PlayableEntity play = (PlayableEntity) entry.value;
+					if (!play.isGhost()) {
+						mainCharacters.add(play);
+						if (engine.isReplaying()) {
+							PlaybackRecord pbr = engine.getPlayback();
+							play.setReplayData(pbr.getByBadge(play.getBadge()));
+						}
+					}
+				}
+			}
+		}
 
-        deleteObjects.stream().filter(entry -> entry.key-- <= 0).forEach(entry -> {
-            gameObjects.remove(entry.value);
-            entry.value.present = false;
-            entry.value.dispose();
+		for(int i = 0; i < deleteObjects.size(); i++) {
+			Entry<Integer, Entity> entry = deleteObjects.get(i);
+			if(entry.key-- <= 0) {
+				deleteObjects.remove(i);
+				i--;
+				gameObjects.remove(entry.value);
+				entry.value.present = false;
+				entry.value.dispose();
 
-            if (entry.value instanceof PlayableEntity) {
-                PlayableEntity play = (PlayableEntity) entry.value;
-                if (!play.isGhost()) {
-                    mainCharacters.remove(play);
-                }
-            }
-        });
-        awatingObjects.clear();
-        deleteObjects.clear();
+				if (entry.value instanceof PlayableEntity) {
+					PlayableEntity play = (PlayableEntity) entry.value;
+					if (!play.isGhost()) {
+						mainCharacters.remove(play);
+					}
+				}
+			}
+		}
 	}
 }

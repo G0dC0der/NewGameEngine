@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import com.badlogic.gdx.ApplicationListener;
 import pojahn.game.essentials.*;
@@ -220,7 +221,7 @@ public final class Engine {
 		if(deathText == null)
             deathText = HUDMessage.getCenteredMessage("You died. Press the restart or quit button to continue.", screenSize, Color.WHITE);
         if(winText == null)
-            winText = HUDMessage.getCenteredMessage("Congrats! You completed the level!", screenSize, Color.WHITE);
+            winText = HUDMessage.getCenteredMessage("Congrats! You completed the level!\nPress the restart or quit button to continue.", screenSize, Color.WHITE);
 		if(pauseText == null)
             pauseText = HUDMessage.getCenteredMessage("Game is paused.", screenSize, Color.WHITE);
 
@@ -248,9 +249,8 @@ public final class Engine {
             throw new ControlledException("Controlled termination.");
 
         if(!isReplaying()) {
-			Keystrokes keys = PlayableEntity.mergeButtons(level.getAliveMainCharacters());
 
-            if(keys.pause && (active() || paused())){
+            if((active() || paused()) && PlayableEntity.mergeButtons(level.getAliveMainCharacters()).pause){
                 setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
 
                 if(active()) {
@@ -265,7 +265,9 @@ public final class Engine {
                         music.setVolume(.1f);
                     }
                 }
-            } else if (lost()) {
+            } else if (lost() || completed()) {
+				Keystrokes keys = PlayableEntity.mergeButtons(level.getMainCharacters());
+
 				if(keys.restart) {
 					restart(false);
 				} else if(keys.quit) {
@@ -293,7 +295,7 @@ public final class Engine {
 	}
 	
 	private void progress(){
-		if(frameCounter++ > 2 && active()) //TODO: Why the fuck must frameCounter exceed 2? o_0
+		if(frameCounter++ > 2 && active()) //TODO: Why must frameCounter exceed 2?
 			time += Gdx.graphics.getRawDeltaTime();
 		
 		prevTx = gameCamera.position.x;
@@ -423,9 +425,7 @@ public final class Engine {
         recording.meta = level.getMeta();
         recording.result = getGameState();
         recording.keystrokes = new ArrayList<>();
-        for(PlayableEntity play : level.getMainCharacters()) {
-            recording.keystrokes.add(new KeySession(play.getReplayData(), play.badge));
-        }
+		recording.keystrokes.addAll(level.getMainCharacters().stream().map(play -> new KeySession(play.getReplayData(), play.getBadge())).collect(Collectors.toList()));
         recordings.add(recording);
 	}
 	
@@ -461,9 +461,9 @@ public final class Engine {
 		if(showHelpText && helpText != null)
 			helpText.draw(batch, timeFont);
 
-		if(getGameState() == GameState.SUCCESS && winText != null){
+		if(completed() && winText != null){
 			winText.draw(batch, timeFont);
-		} else if(getGameState() == GameState.LOST && deathText != null){
+		} else if(lost() && deathText != null){
 			deathText.draw(batch, timeFont);
 		}
 	}

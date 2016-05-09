@@ -1,6 +1,6 @@
 package pojahn.game.essentials.geom;
 
-public interface EarthBound extends Unit{
+public interface EarthBound {
 
 	float vx();
 
@@ -27,6 +27,14 @@ public interface EarthBound extends Unit{
 	float getDamping();
 	
 	float getDelta();
+
+	void setX(float x);
+
+	void setY(float y);
+
+	float x();
+
+	float y();
 	
 	default void moveLeft(){
 		if(vx() < thermVx())

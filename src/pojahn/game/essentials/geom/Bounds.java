@@ -1,4 +1,4 @@
-package pojahn.game.essentials;
+package pojahn.game.essentials.geom;
 
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;

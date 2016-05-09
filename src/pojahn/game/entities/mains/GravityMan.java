@@ -2,14 +2,13 @@ package pojahn.game.entities.mains;
 
 import pojahn.game.core.Level;
 import pojahn.game.core.PlayableEntity;
-import pojahn.game.essentials.geom.EarthBound;
 import pojahn.game.essentials.Keystrokes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 
-public class GravityMan extends PlayableEntity implements EarthBound{
+public class GravityMan extends PlayableEntity {
 
 	public Vector2 vel, tVel, slidingTVel;
 	public float accX, mass, gravity, damping, wallGravity, wallDamping, jumpStrength, wallJumpHorizontalStrength;
@@ -247,68 +246,72 @@ public class GravityMan extends PlayableEntity implements EarthBound{
 		return !obstacleCollision(x() - 1, y());
 	}
 
-	@Override
-	public float vx() {
-		return vel.x;
+	protected void moveLeft(){
+		if(vel.x < thermVx())
+			vel.x += accX * getDelta();
+//		else
+//			vel.x -= getAccelerationX() * getDelta();
 	}
 
-	@Override
-	public float vy() {
-		return vel.y;
+	protected void moveRight(){
+		if(-vel.x < thermVx())
+			vel.x -= accX * getDelta();
+//		else
+//			vel.x += getAccelerationX() * getDelta();
 	}
 
-	@Override
-	public void setVx(float vx) {
-		vel.x = vx;
+	protected void drag(){
+
+		float force = mass * getGravity();
+		vel.y *= 1.0 - (getDamping() * getDelta());
+
+		if(tVel.y < vel.y){
+			vel.y += (force / mass) * getDelta();
+		}else
+			vel.y -= (force / mass) * getDelta(); //Apply air resistance
 	}
 
-	@Override
-	public void setVy(float vy) {
-		vel.y = vy;
+	protected void applyXForces(){
+		bounds.pos.x -= vel.x * getDelta();
 	}
 
-	@Override
-	public float thermVx() {
+	protected void applyYForces(){
+		bounds.pos.y -= vel.y * getDelta();
+	}
+
+	protected float getFutureX(){
+		return bounds.pos.x - vel.x * getDelta();
+	}
+
+	protected float getFutureY(){
+		return bounds.pos.y - vel.y * getDelta();
+	}
+
+	protected boolean runningLeft(){
+		return vel.x > 0;
+	}
+
+	protected boolean runningRight(){
+		return vel.x < 0;
+	}
+
+	protected float thermVx() {
 		return isWallSliding && allowWallSlide ? slidingTVel.x :tVel.x;
 	}
 
-	@Override
-	public float thermVy() {
+	protected float thermVy() {
 		return isWallSliding && allowWallSlide ? slidingTVel.y :tVel.y;
 	}
 
-	@Override
-	public void setThermVx(float thermVx) {
-		tVel.x = thermVx;
-	}
-
-	@Override
-	public void setThermVy(float thermVy) {
-		tVel.y = thermVy;
-	}
-
-	@Override
-	public float getAccelerationX() {
-		return accX;
-	}
-
-	@Override
-	public float getGravity() {
+	protected float getGravity() {
 		return isWallSliding && allowWallSlide ? wallGravity : gravity;
 	}
 
-	@Override
-	public float getMass() {
-		return mass;
-	}
-
-	@Override
-	public float getDamping() {
+	protected float getDamping() {
 		return isWallSliding && allowWallSlide ? wallDamping : damping;
 	}
 
-	@Override
-	public float getDelta() {
+	protected float getDelta() {
 		return getEngine().delta;
 	}
 	

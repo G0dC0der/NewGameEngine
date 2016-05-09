@@ -1,4 +1,4 @@
-package pojahn.game.essentials;
+package pojahn.game.essentials.geom;
 
 public class Size {
 

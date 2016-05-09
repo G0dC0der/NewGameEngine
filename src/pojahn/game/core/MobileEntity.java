@@ -18,7 +18,7 @@ public class MobileEntity extends Entity {
 	
 	private boolean smart;
 	private float moveSpeed;
-	private boolean frozen, tileEventPause;
+	private boolean frozen;
 	private Set<Entity> obstacles;
 	
 	public MobileEntity(){
@@ -140,10 +140,6 @@ public class MobileEntity extends Entity {
 	public void setSmart(boolean smart){
 		this.smart = smart;
 	}
-	
-	public boolean isSmart(){
-		return smart;
-	}
 
 	public boolean tryLeft(int steps){
 		for(int i = steps; i > 0; i--){
@@ -200,13 +196,7 @@ public class MobileEntity extends Entity {
 	public boolean canRight(){
 		return !occupiedAt(x() + 1, y());
 	}
-	
-	public void faceDirection(){
-		Direction dir = Collisions.getDirection(x(), y(), prevX, prevY);
-		if(dir != null)
-			face(dir);
-	}
-	
+
 	public void face(Direction dir){
 		switch(dir){
 			case N:
@@ -350,10 +340,8 @@ public class MobileEntity extends Entity {
 	}
 	
 	void runTileEvents(Tile tile){
-		if(!tileEventPause){
-			for(TileEvent tileEvent : tileEvents){
-				tileEvent.eventHandling(tile);
-			}
+		for(TileEvent tileEvent : tileEvents){
+			tileEvent.eventHandling(tile);
 		}
 	}
 	
