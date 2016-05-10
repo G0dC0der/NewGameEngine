@@ -6,25 +6,27 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
+import pojahn.game.essentials.EntityBuilder;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
+
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.of;
 
 public abstract class Projectile extends MobileEntity {
 
 	private Particle impact, gunfire, trailer;
-	private Entity scanTargets[], otherTargets[], target;
-	private Vector2 manualTarget;
+	private Entity targets[], target;
 	private boolean rotate;
 	private int trailerDelay;
 
 	private int trailerCounter;
 	private boolean fired;
 	
-	public Projectile(float x, float y, Entity... scanTargets){
+	public Projectile(float x, float y, Entity... targets){
 		move(x,y);
 		rotate = true;
-		this.scanTargets = scanTargets;
+		this.targets = targets;
 	}
 
 	@Override
@@ -32,10 +34,6 @@ public abstract class Projectile extends MobileEntity {
 		throw new NullPointerException("Can not get a clone of an abstract class.");
 	}
 
-	public void setOtherTargets(Entity... targets){
-		this.otherTargets = targets;
-	}
-	
 	public void setImpact(Particle impact) {
 		this.impact = impact;
 	}
@@ -60,37 +58,33 @@ public abstract class Projectile extends MobileEntity {
 		return rotate;
 	}
 
-	public void setManualTarget(float targetX, float targetY){
-		this.manualTarget = new Vector2(targetX, targetY);
-	}
-	
-	public void setManualTarget(Vector2 manualTarget){
-		this.manualTarget = manualTarget;
-	}
+    public void setTarget(Vector2 target) {
+        this.target = new EntityBuilder().move(target).build();
+    }
 
-	public Vector2 getTarget() {
-		if(manualTarget != null)
-			return manualTarget;
-		else {
-			return target == null ? null : new Vector2(target.x(), target.y());
-		}
-	}
+    public void setTarget(float x, float y) {
+        this.target = new EntityBuilder().move(x, y).build();
+    }
+
+    public void setTarget(Entity target) {
+        this.target = target;
+    }
 
 	@Override
 	public final void logistics() {
 		if(!fired) {
-			if(manualTarget != null) {
+			if(target != null) {
 				fire();
 			} else {
-				target = Collisions.findClosestSeeable(this, scanTargets);
+				target = Collisions.findClosestSeeable(this, targets);
 				if(target != null){
 					fire();
 				}
 			}
 		}
 
-		if(fired) {
-			moveProjectile(getTarget());
+		if(fired && target != null) {
+			moveProjectile(target.getPos());
 			collisionCheck();
 			rotate();
 
@@ -105,7 +99,7 @@ public abstract class Projectile extends MobileEntity {
 
 	protected void rotate(){
 		if(rotate){
-			Vector2 target = getTarget();
+			Vector2 target = this.target.getPos();
 			bounds.rotation = (float) Collisions.getAngle(centerX(), centerY(), target.x, target.y);
 		}
 	}
@@ -122,7 +116,7 @@ public abstract class Projectile extends MobileEntity {
 		if (l.tileAt( getFrontPosition()) == Tile.SOLID || l.tileAt(getRarePosition()) == Tile.SOLID) {
 			impact(null);
 		} else {
-			Stream.concat(Arrays.asList(otherTargets).stream(), Arrays.asList(scanTargets).stream())
+			concat(of(targets), of(target))
 				  .filter(this::collidesWith)
 				  .findFirst()
 				  .ifPresent(this::impact);
@@ -149,7 +143,6 @@ public abstract class Projectile extends MobileEntity {
 		clone.trailer = trailer;
 		clone.trailerDelay = trailerDelay;
 		clone.rotate = rotate;
-		clone.scanTargets =  scanTargets;
-		clone.otherTargets = otherTargets;
+		clone.targets = targets;
 	}
 }

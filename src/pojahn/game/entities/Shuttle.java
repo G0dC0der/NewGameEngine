@@ -100,11 +100,11 @@ public class Shuttle extends MobileEntity {
                 if (wp.event != null)
                     wp.event.eventHandling();
             } else {
-                float accelx = thrust * -currentDirection.x - drag * vx;
-                float accely = thrust * -currentDirection.y - drag * vy;
+                float accX = thrust * -currentDirection.x - drag * vx;
+                float accY = thrust * -currentDirection.y - drag * vy;
 
-                vx += delta * accelx;
-                vy += delta * accely;
+                vx += delta * accX;
+                vy += delta * accY;
 
                 bounds.pos.x += delta * vx;
                 bounds.pos.y += delta * vy;
