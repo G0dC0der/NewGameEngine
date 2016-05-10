@@ -229,8 +229,10 @@ public final class Engine {
 	}
 	
 	private void restart(boolean checkpointPresent){
-		if(getGameState() == GameState.LOST)
+		if(lost())
 			deathCounter++;
+		else if(completed())
+			deathCounter = 0;
 
 		setGameState(GameState.LOADING);
 

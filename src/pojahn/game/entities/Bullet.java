@@ -6,7 +6,6 @@ import pojahn.game.core.Entity;
 
 public class Bullet extends Projectile {
 	
-	private Vector2 target;
 	private Entity[] scanTargets;
 
 	public Bullet(float x, float y, Entity... scanTargets) {

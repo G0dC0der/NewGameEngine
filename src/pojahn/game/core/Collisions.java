@@ -20,7 +20,7 @@ import pojahn.game.essentials.Image2D;
 
 public class Collisions {
 	
-	public static final boolean rectanglesCollide(Rectangle rec1, Rectangle rec2){
+	public static boolean rectanglesCollide(Rectangle rec1, Rectangle rec2){
 		return !((rec1.y + rec1.height < rec2.y) ||
 				(rec1.y > rec2.y + rec2.height) ||
 				(rec1.x + rec1.width < rec2.x) ||

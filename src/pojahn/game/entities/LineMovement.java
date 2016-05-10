@@ -1,7 +1,6 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 
 public class LineMovement extends MobileEntity{

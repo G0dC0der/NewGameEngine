@@ -9,6 +9,8 @@ import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
 
+import static pojahn.game.core.Collisions.normalize;
+
 public class EvilDog extends MobileEntity {
 
 	public float thrust, drag, delta, vx, vy;
@@ -16,7 +18,6 @@ public class EvilDog extends MobileEntity {
 	private boolean hunting;
 	private int soundDelay, soundCounter;
 	private Entity[] targets;
-	private Particle impact;
 	private Animation<Image2D> idleImg, huntImg;
 	private Sound hitSound;
 
@@ -27,10 +28,7 @@ public class EvilDog extends MobileEntity {
 		thrust = 500f;
 		drag = .5f;
 		delta = 1f / 60f;
-	}
-
-	public void collisionAnim(Particle impact) {
-		this.impact = impact;
+		soundDelay = 20;
 	}
 
 	public void setCollisionSound(Sound sound) {
@@ -41,8 +39,12 @@ public class EvilDog extends MobileEntity {
 		soundDelay = delay;
 	}
 
-	public boolean hunting() {
+	public boolean isHunting() {
 		return hunting;
+	}
+
+	public void setMaxDistance(float maxDistance) {
+		this.maxDistance = maxDistance;
 	}
 
 	public void idleImage(Animation<Image2D> idleImg) {
@@ -59,39 +61,42 @@ public class EvilDog extends MobileEntity {
 	public void logistics() {
 		++soundCounter;
 		
-		if (isFrozen())
-			return;
+		if (!isFrozen()) {
+			Entity closest = Collisions.findClosest(this, targets);
 
-		Entity closest = Collisions.findClosest(this, targets);
-		if (closest != null && (maxDistance < 0 || maxDistance > Collisions.distance(this, closest))) {
-			setImage(huntImg);
-			hunting = true;
+			if (maxDistance < 0 || maxDistance > Collisions.distance(this, closest)) {
 
-			Vector2 norP = Collisions.normalize(closest, this);
+				Vector2 norP = normalize(closest, this);
 
-			float accelx = thrust * norP.x - drag * vx;
-			float accely = thrust * norP.y - drag * vy;
+				float accX = thrust * norP.x - drag * vx;
+				float accY = thrust * norP.y - drag * vy;
 
-			vx += delta * accelx;
-			vy += delta * accely;
+				vx += delta * accX;
+				vy += delta * accY;
 
-			bounds.pos.x += delta * vx;
-			bounds.pos.y += delta * vy;
+				bounds.pos.x += delta * vx;
+				bounds.pos.y += delta * vy;
 
-			if (collidesWith(closest)) {
-				if (impact != null)
-					getLevel().add(impact.getClone().move(x(), y()));
+				if(!hunting) {
+					setImage(huntImg);
+				}
 
-				closest.runActionEvent(this);
-				
-				if(hitSound != null && soundCounter > soundDelay){
-					hitSound.play(sounds.calc());
-					soundCounter = 0;
+				hunting = true;
+			} else {
+				if(hunting) {
+					if(idleImg != null)
+						super.setImage(idleImg);
+				}
+				hunting = false;
+			}
+
+			for(Entity entity : targets) {
+				if(collidesWith(entity)) {
+					entity.runActionEvent(this);
+					if(hitSound != null && soundCounter % soundDelay == 0)
+						hitSound.play(sounds.calc());
 				}
 			}
-		} else if (idleImg != null) {
-			hunting = false;
-			setImage(idleImg);
 		}
 	}
 }

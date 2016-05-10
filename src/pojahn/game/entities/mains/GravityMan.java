@@ -223,10 +223,6 @@ public class GravityMan extends PlayableEntity {
 			if(l.isSolid(x, y))
 				return false;
 		
-//		for(int y = (int)(y() + height()) - partialHeight; y < y() + height(); y++)
-//			if(l.isSolid(x, y))
-//				return false;
-		
 		return !obstacleCollision(x() - 1, y());
 	}
 	
@@ -239,25 +235,17 @@ public class GravityMan extends PlayableEntity {
 			if(l.isSolid(x, y))
 				return false;
 		
-//		for(int y = (int)(y() + height()) - partialHeight; y < y() + height(); y++)
-//			if(l.isSolid(x, y))
-//				return false;
-		
 		return !obstacleCollision(x() - 1, y());
 	}
 
 	protected void moveLeft(){
 		if(vel.x < thermVx())
 			vel.x += accX * getDelta();
-//		else
-//			vel.x -= getAccelerationX() * getDelta();
 	}
 
 	protected void moveRight(){
 		if(-vel.x < thermVx())
 			vel.x -= accX * getDelta();
-//		else
-//			vel.x += getAccelerationX() * getDelta();
 	}
 
 	protected void drag(){
@@ -265,10 +253,10 @@ public class GravityMan extends PlayableEntity {
 		float force = mass * getGravity();
 		vel.y *= 1.0 - (getDamping() * getDelta());
 
-		if(tVel.y < vel.y){
+		if(thermVy() < vel.y){
 			vel.y += (force / mass) * getDelta();
 		}else
-			vel.y -= (force / mass) * getDelta(); //Apply air resistance
+			vel.y -= (force / mass) * getDelta();
 	}
 
 	protected void applyXForces(){
@@ -285,14 +273,6 @@ public class GravityMan extends PlayableEntity {
 
 	protected float getFutureY(){
 		return bounds.pos.y - vel.y * getDelta();
-	}
-
-	protected boolean runningLeft(){
-		return vel.x > 0;
-	}
-
-	protected boolean runningRight(){
-		return vel.x < 0;
 	}
 
 	protected float thermVx() {

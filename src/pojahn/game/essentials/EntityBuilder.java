@@ -111,7 +111,7 @@ public class EntityBuilder {
 				entity = clazz.newInstance();
 			else{
 				@SuppressWarnings("rawtypes")
-				Class[] clazzez = (Class[]) Arrays.stream(args).map(obj -> obj.getClass()).collect(Collectors.toList()).toArray();
+				Class[] clazzez = (Class[]) Arrays.stream(args).map(Object::getClass).collect(Collectors.toList()).toArray();
 				entity = clazz.getDeclaredConstructor(clazzez).newInstance(args);
 			}
 		}catch(Exception e){

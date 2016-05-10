@@ -15,7 +15,7 @@ public class LaserDrone extends PathDrone {
 	private float targetX, targetY;
 	private int laserStartup, laserDuration, reload, sucounter, ducounter, reloadCounter;
 	private Tile stopTile;
-	private boolean scan, firing, allowFiringSound;
+	private boolean fireAtVisible, firing, allowFiringSound;
 	private Particle exp;
 	private Color laserTint;
 	private final Entity[] targets;
@@ -28,7 +28,7 @@ public class LaserDrone extends PathDrone {
 		this.laserDuration = laserDuration;
 		this.targets = targets;
 		this.reload = reload;
-		this.scan = true;
+		this.fireAtVisible = true;
 		targetX = targetY = -1;
 		sucounter = ducounter = reloadCounter = 0;
 		stopTile = Tile.SOLID;
@@ -56,7 +56,7 @@ public class LaserDrone extends PathDrone {
 	}
 
 	public void fireAtVisible(boolean fireAtVisible) {
-		scan = fireAtVisible;
+		this.fireAtVisible = fireAtVisible;
 	}
 
 	public void setLaserTint(Color tint) {
@@ -82,7 +82,7 @@ public class LaserDrone extends PathDrone {
 	@Override
 	public void logistics() {
 		if (--reloadCounter > 0) {
-			if (!scan)
+			if (!fireAtVisible)
 				super.logistics();
 			return;
 		}
@@ -90,21 +90,21 @@ public class LaserDrone extends PathDrone {
 		if (!haveTarget()) {
 			allowFiringSound = true;
 			Entity target = null;
-			if (scan)
+			if (fireAtVisible)
 				target = Collisions.findClosestSeeable(this, targets);
 			else
 				target = Collisions.findClosest(this, targets);
 
 			if (target != null) {
-				int x1 = (int) (x() + width() / 2), y1 = (int) (y() + height() / 2),
-						x2 = (int) (target.x() + target.width() / 2), y2 = (int) (target.y() + target.height() / 2);
+				int x1 = (int) (x() + width() / 2), y1 = (int) (y() + height() / 2);
+				int x2 = (int) (target.x() + target.width() / 2), y2 = (int) (target.y() + target.height() / 2);
 
-				Vector2 wallp = Collisions.searchTile(x1, y1, x2, y2, stopTile, getLevel());
-				if (wallp == null)
-					wallp = Collisions.findEdgePoint(x1, y1, x2, y2, getLevel());
+				Vector2 wallPoint = Collisions.searchTile(x1, y1, x2, y2, stopTile, getLevel());
+				if (wallPoint == null)
+					wallPoint = Collisions.findEdgePoint(x1, y1, x2, y2, getLevel());
 
-				targetX = wallp.x;
-				targetY = wallp.y;
+				targetX = wallPoint.x;
+				targetY = wallPoint.y;
 
 				if (startupSound != null)
 					startupSound.play(sounds.calc());
@@ -112,7 +112,7 @@ public class LaserDrone extends PathDrone {
 				super.logistics();
 		}
 		if (haveTarget()) {
-			if (!scan)
+			if (!fireAtVisible)
 				super.logistics();
 
 			if (!firing && ++sucounter % laserStartup == 0) {

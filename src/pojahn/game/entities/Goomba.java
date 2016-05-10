@@ -17,7 +17,7 @@ public class Goomba extends PathDrone {
 	public Goomba(float x, float y, Direction hitbox, MobileEntity... enemies) {
 		super(x, y);
 
-		if (Direction.isDiagonal(hitbox))
+		if (hitbox.isDiagonal())
 			throw new IllegalArgumentException("Illegal direction: " + hitbox);
 
 		this.hitbox = hitbox;
@@ -76,16 +76,16 @@ public class Goomba extends PathDrone {
 		Direction f = Collisions.getDirection(mobile.x(), mobile.y(), mobile.prevX(), mobile.prevY());
 
 		switch (hitbox) {
-		case N:
-			return f == Direction.S || f == Direction.SW || f == Direction.SE;
-		case E:
-			return f == Direction.W || f == Direction.SW || f == Direction.NW;
-		case S:
-			return f == Direction.N || f == Direction.NW || f == Direction.NE;
-		case W:
-			return f == Direction.E || f == Direction.SE || f == Direction.NE;
-		default:
-			throw new RuntimeException();
+			case N:
+				return f == Direction.S || f == Direction.SW || f == Direction.SE;
+			case E:
+				return f == Direction.W || f == Direction.SW || f == Direction.NW;
+			case S:
+				return f == Direction.N || f == Direction.NW || f == Direction.NE;
+			case W:
+				return f == Direction.E || f == Direction.SE || f == Direction.NE;
+			default:
+				throw new RuntimeException();
 		}
 	}
 

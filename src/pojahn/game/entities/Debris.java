@@ -3,9 +3,8 @@ package pojahn.game.entities;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Level;
-import pojahn.game.essentials.geom.EarthBound;
 
-public class Debris extends Particle implements EarthBound{ //TODO: This one needs to be tested!
+public class Debris extends Particle {
 
     private Particle impact, trailer;
     private Vector2 vel, tVel;
@@ -97,69 +96,36 @@ public class Debris extends Particle implements EarthBound{ //TODO: This one nee
         this.impact = impact;
     }
 
-    @Override
-    public float vx() {
-        return vel.x;
+    protected void applyXForces(){
+        bounds.pos.x -= vel.x * getEngine().delta;
     }
 
-    @Override
-    public float vy() {
-        return vel.y;
+    protected void moveLeft(){
+        if(vel.x < tVel.x)
+            vel.x += accX * getEngine().delta;
     }
 
-    @Override
-    public void setVx(float vx) {
-        vel.x = vx;
+    protected void moveRight(){
+        if(-vel.x < tVel.x)
+            vel.x -= accX * getEngine().delta;
     }
 
-    @Override
-    public void setVy(float vy) {
-        vel.y = vy;
+    protected void drag(){
+        float force = mass * gravity;
+        vel.y *= 1.0 - (damping * getEngine().delta);
+
+        if(tVel.y < vel.y){
+            vel.y += (force / mass) * getEngine().delta;
+        }else
+            vel.y -= (force / mass) * getEngine().delta;
     }
 
-    @Override
-    public float thermVx() {
-        return tVel.x;
+    protected boolean runningLeft(){
+        return vel.x > 0;
     }
 
-    @Override
-    public float thermVy() {
-        return tVel.y;
-    }
-
-    @Override
-    public void setThermVx(float thermVx) {
-        tVel.x = thermVx;
-    }
-
-    @Override
-    public void setThermVy(float thermVy) {
-        tVel.y = thermVy;
-    }
-
-    @Override
-    public float getAccelerationX() {
-        return accX;
-    }
-
-    @Override
-    public float getGravity() {
-        return gravity;
-    }
-
-    @Override
-    public float getMass() {
-        return mass;
-    }
-
-    @Override
-    public float getDamping() {
-        return damping;
-    }
-
-    @Override
-    public float getDelta() {
-        return delta;
+    protected boolean runningRight(){
+        return vel.x < 0;
     }
 
     protected void copyData(Debris clone){

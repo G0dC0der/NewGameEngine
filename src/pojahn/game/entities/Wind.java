@@ -4,7 +4,7 @@ import pojahn.game.core.MobileEntity;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Direction;
 
-public class Wind extends MobileEntity { //TODO: Use Earthbound?
+public class Wind extends MobileEntity {
 
 	private float power, maxPower;
 	private Direction direction;

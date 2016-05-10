@@ -25,6 +25,10 @@ public class Bouncer extends MobileEntity {
 		this.power = power;
 	}
 
+	public void setBounceSound(Sound bounceSound) {
+		this.bounceSound = bounceSound;
+	}
+
 	@Override
 	public void logistics() {
 		for (GravityMan man : targets) {

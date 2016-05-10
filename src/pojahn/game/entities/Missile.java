@@ -6,7 +6,6 @@ import pojahn.game.core.Entity;
 public class Missile extends Projectile {
 	
 	public float thrust, drag, delta;
-	private Entity target;
 	private Vector2 velocity;
 	private Entity[] scanTargets;
 

@@ -16,9 +16,9 @@ public class MobileEntity extends Entity {
 	List<TileEvent> tileEvents;
 	Direction facing;
 	
-	private boolean smart;
 	private float moveSpeed;
-	private boolean frozen;
+	private int facings;
+	private boolean smart, frozen;
 	private Set<Entity> obstacles;
 	
 	public MobileEntity(){
@@ -26,6 +26,7 @@ public class MobileEntity extends Entity {
 		tileEvents = new ArrayList<>();
 		obstacles = new HashSet<>();
 		moveSpeed = 3;
+		facings = 8;
 	}
 	
 	@Override
@@ -69,10 +70,31 @@ public class MobileEntity extends Entity {
 		return facing;
 	}
 
+	public void setFacings(int facings) {
+		if(facings == 8 || facings == 6 || facings == 4 || facings == 2)
+			throw new IllegalArgumentException("The number of facings must be eiter 8, 6, 4 or 2.");
+
+		this.facings = facings;
+	}
+
 	void updateFacing(){
 		Direction facing = Collisions.getDirection(this);
-		if(facing != null)
-			this.facing = facing;
+		if(facing != null) {
+			if(facings == 8) {
+				this.facing = facing;
+			} else if (facings == 6) {
+				if(!facing.isNorth() && !facing.isSouth())
+					this.facing = facing;
+			} else if (facings == 4) {
+				if(!facing.isDiagonal())
+					this.facing = facing;
+			} else if (facings == 2) {
+				if(facing.isWestSide())
+					this.facing = Direction.W;
+				else if(facing.isEastSide())
+					this.facing = Direction.E;
+			}
+		}
 	}
 	
 	protected void dumbMoveTowards(float targetX, float targetY, float steps){
@@ -340,9 +362,7 @@ public class MobileEntity extends Entity {
 	}
 	
 	void runTileEvents(Tile tile){
-		for(TileEvent tileEvent : tileEvents){
-			tileEvent.eventHandling(tile);
-		}
+		tileEvents.forEach(event -> event.eventHandling(tile));
 	}
 	
 	void setPrevs(){

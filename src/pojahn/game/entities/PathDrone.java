@@ -34,7 +34,7 @@ public class PathDrone extends MobileEntity {
 
 		@Override
 		public String toString() {
-			return new StringBuilder(15).append(targetX).append(" ").append(targetY).append(" ").append(frames).append(" ").append(jump).toString();
+			return targetX + ":" + targetY + " " + frames + " - " + jump;
 		}
 	}
 
@@ -155,9 +155,9 @@ public class PathDrone extends MobileEntity {
 			boolean canNext = !occupiedAt(next.x, next.y);
 			if (canNext)
 				move(next.x, next.y);
-			else if (!canNext && skip)
+			else if (skip)
 				dataCounter++;
-			else if (!canNext && !skip)
+			else
 				forgetPast();
 		} else
 			move(next.x, next.y);

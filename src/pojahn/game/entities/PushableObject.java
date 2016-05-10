@@ -2,15 +2,15 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
-import pojahn.game.essentials.geom.EarthBound;
 
-public class PushableObject extends MobileEntity implements EarthBound {
+import static pojahn.game.core.Collisions.rectanglesCollide;
 
-	public float mass, gravity, damping, pushStrength;
+public class PushableObject extends MobileEntity { //TODO: This class is oddly written. Test it roughly.
+
+	public float mass, gravity, damping, pushStrength, accX;
 	public Vector2 vel, tVel;
 	private boolean useGravity, mustStand;
 	private MobileEntity[] pushers;
@@ -28,6 +28,7 @@ public class PushableObject extends MobileEntity implements EarthBound {
 		gravity = -500;
 		damping = 0.0001f;
 		pushStrength = 500;
+		accX = 500;
 		dummy = new Entity();
 
 		for (MobileEntity mobile : pushers){
@@ -40,7 +41,7 @@ public class PushableObject extends MobileEntity implements EarthBound {
 	public void logistics() {
 		if (useGravity) {
 			if (!canDown()) {
-				if (vel.y < -100 && landingSound != null)
+				if (vel.y < 0 && landingSound != null)
 					landingSound.play(sounds.calc());
 				vel.y = 0;
 			} else {
@@ -63,7 +64,7 @@ public class PushableObject extends MobileEntity implements EarthBound {
 				if(mustStand && mobile.canDown())
 					continue;
 				
-				if(Collisions.rectanglesCollide(mobile.bounds.toRectangle(), dummy.bounds.toRectangle())){
+				if(rectanglesCollide(mobile.bounds.toRectangle(), dummy.bounds.toRectangle())){
 					if(Collisions.leftMost(mobile, this) == mobile){
 						moveRight();
 						moved = true;
@@ -114,7 +115,7 @@ public class PushableObject extends MobileEntity implements EarthBound {
 		this.mustStand = mustStand;
 	}
 
-	public void setSlamingSound(Sound sound) {
+	public void setSlammingSound(Sound sound) {
 		landingSound = sound;
 	}
 
@@ -129,68 +130,39 @@ public class PushableObject extends MobileEntity implements EarthBound {
 			mobile.removeObstacle(this);
 	}
 
-	@Override
-	public float vx() {
-		return vel.x;
+	protected void moveLeft(){
+		if(vel.x < tVel.x)
+			vel.x += accX * getEngine().delta;
 	}
 
-	@Override
-	public float vy() {
-		return vel.y;
+	protected void moveRight(){
+		if(-vel.x < tVel.x)
+			vel.x -= accX * getEngine().delta;
 	}
 
-	@Override
-	public void setVx(float vx) {
-		vel.x = vx;
+	protected void drag(){
+		float force = mass * gravity;
+		vel.y *= 1.0 - (damping * getEngine().delta);
+
+		if(tVel.y < vel.y){
+			vel.y += (force / mass) * getEngine().delta;
+		}else
+			vel.y -= (force / mass) * getEngine().delta;
 	}
 
-	@Override
-	public void setVy(float vy) {
-		vel.y = vy;
+	protected float getFutureX(){
+		return bounds.pos.x - vel.x * getEngine().delta;
 	}
 
-	@Override
-	public float thermVx() {
-		return tVel.x;
+	protected float getFutureY(){
+		return bounds.pos.y - vel.y * getEngine().delta;
 	}
 
-	@Override
-	public float thermVy() {
-		return tVel.y;
+	protected boolean runningLeft(){
+		return vel.x > 0;
 	}
 
-	@Override
-	public void setThermVx(float thermVx) {
-		tVel.x = thermVx;
-	}
-
-	@Override
-	public void setThermVy(float thermVy) {
-		tVel.y = thermVy;
-	}
-
-	@Override
-	public float getAccelerationX() {
-		return pushStrength;
-	}
-
-	@Override
-	public float getGravity() {
-		return gravity;
-	}
-
-	@Override
-	public float getMass() {
-		return mass;
-	}
-
-	@Override
-	public float getDamping() {
-		return damping;
-	}
-
-	@Override
-	public float getDelta() {
-		return getEngine().delta;
+	protected boolean runningRight(){
+		return vel.x < 0;
 	}
 }

@@ -11,7 +11,7 @@ public class OneWay extends Entity {
 	private Direction direction;
 
 	public OneWay(float x, float y, Direction direction, MobileEntity... targets) {
-		if (Direction.isDiagonal(direction))
+		if (direction.isDiagonal())
 			throw new IllegalArgumentException("The direction must be either N, S, W or E.");
 
 		move(x, y);

@@ -29,8 +29,8 @@ public class Factory {
 		};
 	}
 	
-	public static MobileEntity drawText(HUDMessage message, BitmapFont font){
-		return new MobileEntity(){{
+	public static Entity drawText(HUDMessage message, BitmapFont font){
+		return new Entity(){{
 				zIndex(9000);
 			}
 			
@@ -46,48 +46,13 @@ public class Factory {
 	/**
 	 * Rotate the given unit towards its given direction.
 	 */
-	public static Event faceTarget(MobileEntity walker){
+	public static Event stareAt(MobileEntity walker){
 		return ()->{
 			Vector2 center = walker.getCenterCord();
 			walker.setRotation((float)Collisions.getAngle(walker.prevX(), walker.prevY(), center.x, center.y));
 		};
 	}
 
-	/**
-	 * Rotate the given unit towards its given direction, flipping it horizontally when necessary.
-	 */
-	public static Event smartFaceTarget(MobileEntity walker){	//TODO: Test it
-		return ()->{
-			
-			Vector2 center = walker.getCenterCord();
-			float orgRotation = walker.getRotation();
-			float rotation = (float)Collisions.getAngle(walker.prevX(), walker.prevY(), center.x, center.y);
-			
-			if(orgRotation == rotation)
-				return;
-			
-			if(rotation > 180.0f){
-				walker.flipX = true;
-				walker.setRotation(360 - rotation);
-			} else{
-				walker.flipX = false;
-				walker.setRotation(rotation);
-			}
-		};
-	}
-	
-	public static Event simpleFaceTarget(MobileEntity entity, boolean flipX, boolean flipY){
-		return ()-> {
-			float diffX = entity.x() - entity.prevX();
-			float diffY = entity.y() - entity.prevY();
-			
-			if(diffX != 0 && flipX)
-				entity.flipX = diffX < 0;
-			if(diffY != 0 && flipY)
-				entity.flipY = diffY > 0;
-		};
-	}
-	
 	public static Event follow(Entity src, Entity tail, float offsetX, float offsetY){
 		return ()-> tail.move(src.bounds.pos.x + offsetX, src.bounds.pos.y + offsetY);
 	}
