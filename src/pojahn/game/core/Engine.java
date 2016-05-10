@@ -252,7 +252,7 @@ public final class Engine {
 
         if(!isReplaying()) {
 
-            if((active() || paused()) && PlayableEntity.mergeButtons(level.getAliveMainCharacters()).pause){
+            if((active() || paused()) && keys(level.getAliveMainCharacters()).pause){
                 setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
 
                 if(active()) {
@@ -268,7 +268,7 @@ public final class Engine {
                     }
                 }
             } else if (lost() || completed()) {
-				Keystrokes keys = PlayableEntity.mergeButtons(level.getMainCharacters());
+				Keystrokes keys = keys(level.getMainCharacters());
 
 				if(keys.restart) {
 					restart(false);
@@ -457,7 +457,7 @@ public final class Engine {
 		if(!renderText || timeFont == null)
 			return;
 		
-		if(isReplaying() && PlayableEntity.mergeButtons(level.getAliveMainCharacters()).pause)
+		if(isReplaying() && keys(level.getAliveMainCharacters()).pause)
 			showHelpText = !showHelpText;
 		
 		if(showHelpText && helpText != null)
@@ -468,6 +468,14 @@ public final class Engine {
 		} else if(lost() && deathText != null){
 			deathText.draw(batch, timeFont);
 		}
+	}
+
+	private Keystrokes keys(List<PlayableEntity> plays) {
+		return plays
+				.stream()
+				.map(play -> Keystrokes.from(play.getController()))
+				.reduce(Keystrokes::merge)
+				.get();
 	}
 
     public static ApplicationListener wrap(Engine engine) {

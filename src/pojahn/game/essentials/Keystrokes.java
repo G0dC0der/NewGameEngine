@@ -22,19 +22,37 @@ public class Keystrokes implements Serializable{
 	 * Creates a new Keystrokes based on what buttons are currently down.
      */
 	public static Keystrokes from(Controller con){
+		Keystrokes ks = new Keystrokes();
+		ks.down 	  = Gdx.input.isKeyPressed(con.down);
+		ks.left 	  = Gdx.input.isKeyPressed(con.left);
+		ks.right 	  = Gdx.input.isKeyPressed(con.right);
+		ks.up 		  = Gdx.input.isKeyPressed(con.up);
+		ks.jump		  = Gdx.input.isKeyJustPressed(con.jump);
+		ks.pause	  = Gdx.input.isKeyJustPressed(con.pause);
+		ks.special1   = Gdx.input.isKeyJustPressed(con.special1);
+		ks.special2   = Gdx.input.isKeyJustPressed(con.special2);
+		ks.special3   = Gdx.input.isKeyJustPressed(con.special3);
+		ks.suicide    = Gdx.input.isKeyJustPressed(con.suicide);
+		ks.restart	  = Gdx.input.isKeyJustPressed(con.restart);
+		ks.quit    	  = Gdx.input.isKeyJustPressed(con.quit);
+
+		return ks;
+	}
+
+	public static Keystrokes merge(Keystrokes ks1, Keystrokes ks2) {
 		Keystrokes pb = new Keystrokes();
-		pb.down 	  = Gdx.input.isKeyPressed(con.down);
-		pb.left 	  = Gdx.input.isKeyPressed(con.left);
-		pb.right 	  = Gdx.input.isKeyPressed(con.right);
-		pb.up 		  = Gdx.input.isKeyPressed(con.up);
-		pb.jump		  = Gdx.input.isKeyJustPressed(con.jump);
-		pb.pause	  = Gdx.input.isKeyJustPressed(con.pause);
-		pb.special1   = Gdx.input.isKeyJustPressed(con.special1);
-		pb.special2   = Gdx.input.isKeyJustPressed(con.special2);
-		pb.special3   = Gdx.input.isKeyJustPressed(con.special3);
-		pb.suicide    = Gdx.input.isKeyJustPressed(con.suicide);
-		pb.restart	  = Gdx.input.isKeyJustPressed(con.restart);
-		pb.quit    	  = Gdx.input.isKeyJustPressed(con.quit);
+
+		pb.down = ks1.down || ks2.down;
+		pb.left = ks1.left || ks2.left;
+		pb.right = ks1.right || ks2.right;
+		pb.up = ks1.up || ks2.up;
+		pb.jump = ks1.jump || ks2.jump;
+		pb.pause = ks1.pause || ks2.pause;
+		pb.quit = ks1.quit || ks2.quit;
+		pb.special1 = ks1.special1 || ks2.special1;
+		pb.special2 = ks1.special2 || ks2.special2;
+		pb.special3 = ks1.special3 || ks2.special3;
+		pb.suicide = ks1.suicide || ks2.suicide;
 
 		return pb;
 	}

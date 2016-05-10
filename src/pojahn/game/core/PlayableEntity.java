@@ -19,7 +19,7 @@ public abstract class PlayableEntity extends MobileEntity{
 	public Animation<Image2D> healthHud;
 	public Particle deathImage;
 
-	private Sound hurtSound;
+	private Sound hurtSound, dieSound;
 	private Keystrokes keysDown;
 	private Vitality state;
 	private Controller controller;
@@ -64,15 +64,15 @@ public abstract class PlayableEntity extends MobileEntity{
 		this.controller = controller;
 	}
 
-    public Sound getHurtSound() {
-        return hurtSound;
-    }
-
     public void setHurtSound(Sound hurtSound) {
         this.hurtSound = hurtSound;
     }
 
-    public boolean isGhost(){
+	public void setDieSound(Sound dieSound) {
+		this.dieSound = dieSound;
+	}
+
+	public boolean isGhost(){
 		return isGhost;
 	}
 
@@ -141,32 +141,13 @@ public abstract class PlayableEntity extends MobileEntity{
 		this.keysDown = keysDown;
 	}
 	
-	public static Keystrokes mergeButtons(List<PlayableEntity> entities){
-		Keystrokes pb = new Keystrokes();
-
-		for(PlayableEntity play : entities){
-			Keystrokes playerStrokes = Keystrokes.from(play.controller);
-
-			pb.down = playerStrokes.down || pb.down;
-			pb.left = playerStrokes.left || pb.left;
-			pb.right = playerStrokes.right || pb.right;
-			pb.up = playerStrokes.up || pb.up;
-			pb.jump = playerStrokes.jump || pb.jump;
-			pb.pause = playerStrokes.pause || pb.pause;
-			pb.special1 = playerStrokes.special1 || pb.special1;
-			pb.special2 = playerStrokes.special2 || pb.special2;
-			pb.special3 = playerStrokes.special3 || pb.special3;
-			pb.suicide = playerStrokes.suicide || pb.suicide;
-		}
-		
-		return pb;
-	}
-	
 	private void deathAction() {
 		activate(false);
 		setVisible(false);
 		if(deathImage != null)
 			getLevel().add(deathImage.getClone().center(this));
+		if(dieSound != null)
+			dieSound.play(sounds.calc());
 	}
 	
 	private void revive(){

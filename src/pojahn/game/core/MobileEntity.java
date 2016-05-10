@@ -71,7 +71,7 @@ public class MobileEntity extends Entity {
 	}
 
 	public void setFacings(int facings) {
-		if(facings == 8 || facings == 6 || facings == 4 || facings == 2)
+		if(facings != 8 && facings != 6 && facings != 4 && facings != 2)
 			throw new IllegalArgumentException("The number of facings must be eiter 8, 6, 4 or 2.");
 
 		this.facings = facings;
@@ -359,6 +359,7 @@ public class MobileEntity extends Entity {
 		clone.moveSpeed = moveSpeed;
 		clone.obstacles.addAll(obstacles);
 		clone.smart = smart;
+		clone.facings = facings;
 	}
 	
 	void runTileEvents(Tile tile){

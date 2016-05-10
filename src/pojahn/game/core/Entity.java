@@ -83,7 +83,7 @@ public class Entity {
 		return image;
 	}
 
-    public long getBadge() {
+    public final long getBadge() {
         if(badge == -1) {
             throw new RuntimeException("Can not get badge on an entity not added yet.");
         }
@@ -388,7 +388,6 @@ public class Entity {
 		events.removeAll(deleteEvents);
 		deleteEvents.clear();
 
-		for(Event event : events)
-			event.eventHandling();
+		events.forEach(Event::eventHandling);
 	}
 }
