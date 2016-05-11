@@ -8,8 +8,6 @@ import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.EntityBuilder;
 
-import java.util.stream.Stream;
-
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
 

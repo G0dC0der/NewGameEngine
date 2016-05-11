@@ -32,383 +32,391 @@ import com.badlogic.gdx.math.Rectangle;
  */
 public final class Engine {
 
-	public float delta = 1.0f / 60.0f;
-	public boolean renderText;
-	public BitmapFont timeFont;
-	public Color timeColor;
-	public HUDMessage helpText, winText, deathText, pauseText;
-	
-	private final Level level;
-	private SpriteBatch batch;
-	private GameState state;
-    private PlaybackRecord playback;
-	private List<Replay> recordings;
-	private OrthographicCamera gameCamera, hudCamera;
-    private Map<GameState, Event> stateEvents;
-	private Exception exception;
-	
-	private boolean replaying, flipY, showHelpText, shutdown;
-	private int screenWidth, screenHeight, deathCounter;
-	private float rotation, musicVolume, prevTx, prevTy, time;
-	private long frameCounter, uniqueCounter;
+    public float delta = 1.0f / 60.0f;
+    public boolean renderText;
+    public BitmapFont timeFont;
+    public Color timeColor;
+    public HUDMessage helpText, winText, deathText, pauseText;
 
-	public Engine(Level level, PlaybackRecord replayData) {
-		if(level == null)
-			throw new NullPointerException("The level can not be null.");
-		
-		state = GameState.UNINITIALIZED;
-		this.level = level;
-		this.level.engine = this;
+    private final Level level;
+    private SpriteBatch batch;
+    private GameState state;
+    private PlaybackRecord playback;
+    private List<Replay> recordings;
+    private OrthographicCamera gameCamera, hudCamera;
+    private Map<GameState, Event> stateEvents;
+    private Exception exception;
+
+    private boolean replaying, flipY, showHelpText, shutdown;
+    private int screenWidth, screenHeight, deathCounter;
+    private float rotation, musicVolume, prevTx, prevTy, time;
+    private long frameCounter, uniqueCounter;
+
+    public Engine(Level level, PlaybackRecord replayData) {
+        if (level == null)
+            throw new NullPointerException("The level can not be null.");
+
+        state = GameState.UNINITIALIZED;
+        this.level = level;
+        this.level.engine = this;
         this.playback = replayData;
-		replaying = replayData != null;
-		recordings = new Vector<>();
+        replaying = replayData != null;
+        recordings = new Vector<>();
         stateEvents = new HashMap<>();
-		renderText = true;
-		timeColor = Color.WHITE;
-		flipY = true;
-	}
-	
-	public List<Replay> getRecordings(){
-        if(!isReplaying()) {
+        renderText = true;
+        timeColor = Color.WHITE;
+        flipY = true;
+    }
+
+    public List<Replay> getRecordings() {
+        if (!isReplaying()) {
             List<Replay> recordings = new ArrayList<>(this.recordings);
             this.recordings.clear();
             return recordings;
         }
-		return null;
-	}
-	
-	public boolean isReplaying(){
-		return replaying;
-	}
-	
-	public GameState getGameState(){
-		return state;
-	}
-	
-	public double getTimeInSeconds(){
-		return OtherMath.round(time, 1);
-	}
-	
-	public int getDeathCounter(){
-		return deathCounter;
-	}
-	
-	public long getFrameCounter(){
-		return frameCounter;
-	}
+        return null;
+    }
 
-	public void setScreenSize(int width, int height){
-		screenWidth = width;
-		screenHeight = height;
-		initCameras();
-	}
-	
-	public void setRotation(float rotation){
-		gameCamera.rotate(-this.rotation);
-		gameCamera.rotate(rotation);
-		this.rotation = rotation;
-	}
-	
-	public float getRotation(){
-		return rotation;
-	}
-	
-	public void setZoom(float zoom){
-		gameCamera.zoom = zoom;
-	}
-	
-	public float getZoom(){
-		return gameCamera.zoom;
-	}
+    public boolean isReplaying() {
+        return replaying;
+    }
 
-	public void flipY(){
-		flipY = !flipY;
-		gameCamera.setToOrtho(flipY);
-	}
+    public GameState getGameState() {
+        return state;
+    }
 
-	public boolean flippedY() {
-		return !flipY;
-	}
-	
-	public void translate(float tx, float ty){
-		gameCamera.position.set(tx, ty, 0);
-	}
-	
-	public float tx(){
-		return gameCamera.position.x;
-	}
+    public double getTimeInSeconds() {
+        return OtherMath.round(time, 1);
+    }
 
-	public float ty(){
-		return gameCamera.position.y;
-	}
-	
-	public float prevTx(){
-		return prevTx;
-	}
+    public int getDeathCounter() {
+        return deathCounter;
+    }
 
-	public float prevTy(){
-		return prevTy;
-	}
-	
-	public Dimension getScreenSize(){
-		return new Dimension(screenWidth, screenHeight);
-	}
-	
-	public void gameCamera(){
-		batch.setProjectionMatrix(gameCamera.combined);
-	}
-	
-	public void hudCamera(){
-		batch.setProjectionMatrix(hudCamera.combined);
-	}
-	
-	public void updateGameCamera(){
-		gameCamera.update();
-	}
-	
-	public boolean onScreen(Entity entity){
-		Rectangle bbox = Collisions.getBoundingBox(entity.bounds);
-		return gameCamera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2 , 0);
-	}
+    public long getFrameCounter() {
+        return frameCounter;
+    }
 
-	public void retry(){
-		retry(level.cpPresent());
-	}
-	
-	public void retry(boolean fromCheckpoint){
-		if(isReplaying())
-			throw new RuntimeException("Can not retry a replay.");
-		if(getGameState() == GameState.CRASHED)
-			throw new RuntimeException("This instance have crashed an no longer usable.");
-		if(getGameState() == GameState.UNINITIALIZED)
-			throw new RuntimeException("Can not retry a game that hasn't ben initialized yet.");
-		if(getGameState() == GameState.DISPOSED)
-			throw new RuntimeException("Can not restart if the resources are disposed.");
-		
-		restart(fromCheckpoint);
-	}
-	
-	public void exit(){
-		shutdown = true;
-	}
-	
-	public Exception getException(){
-		return exception;
-	}
+    public void setScreenSize(int width, int height) {
+        screenWidth = width;
+        screenHeight = height;
+        initCameras();
+    }
 
-	/**
-	 * Events to execute at a given state. The event will be executed outside the OpenGL thread.
-	 * @param gameState The state to listen to.
-	 * @param event The event to execute.
+    public void setRotation(float rotation) {
+        gameCamera.rotate(-this.rotation);
+        gameCamera.rotate(rotation);
+        this.rotation = rotation;
+    }
+
+    public OrthographicCamera getGameCamera() {
+        return gameCamera;
+    }
+
+    public float getRotation() {
+        return rotation;
+    }
+
+    public void setZoom(float zoom) {
+        gameCamera.zoom = zoom;
+    }
+
+    public float getZoom() {
+        return gameCamera.zoom;
+    }
+
+    public void flipY() {
+        flipY = !flipY;
+        gameCamera.setToOrtho(flipY);
+    }
+
+    public boolean flippedY() {
+        return !flipY;
+    }
+
+    public void translate(float tx, float ty) {
+        gameCamera.position.set(tx, ty, 0);
+    }
+
+    public float tx() {
+        return gameCamera.position.x;
+    }
+
+    public float ty() {
+        return gameCamera.position.y;
+    }
+
+    public float prevTx() {
+        return prevTx;
+    }
+
+    public float prevTy() {
+        return prevTy;
+    }
+
+    public Dimension getScreenSize() {
+        return new Dimension(screenWidth, screenHeight);
+    }
+
+    public void gameCamera() {
+        batch.setProjectionMatrix(gameCamera.combined);
+    }
+
+    public void hudCamera() {
+        batch.setProjectionMatrix(hudCamera.combined);
+    }
+
+    public void updateGameCamera() {
+        gameCamera.update();
+    }
+
+    public boolean onScreen(Entity entity) {
+        Rectangle bbox = Collisions.getBoundingBox(entity.bounds);
+        return gameCamera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2, 0);
+    }
+
+    public void retry() {
+        retry(level.cpPresent());
+    }
+
+    public void retry(boolean fromCheckpoint) {
+        if (isReplaying())
+            throw new RuntimeException("Can not retry a replay.");
+        if (getGameState() == GameState.CRASHED)
+            throw new RuntimeException("This instance have crashed an no longer usable.");
+        if (getGameState() == GameState.UNINITIALIZED)
+            throw new RuntimeException("Can not retry a game that hasn't ben initialized yet.");
+        if (getGameState() == GameState.DISPOSED)
+            throw new RuntimeException("Can not restart if the resources are disposed.");
+
+        restart(fromCheckpoint);
+    }
+
+    public void exit() {
+        shutdown = true;
+    }
+
+    public Exception getException() {
+        return exception;
+    }
+
+    /**
+     * Events to execute at a given state. The event will be executed outside the OpenGL thread.
+     *
+     * @param gameState The state to listen to.
+     * @param event     The event to execute.
      */
     public void setGameStateEvent(GameState gameState, Event event) {
         stateEvents.put(gameState, event);
     }
-	
-	private void setup() throws Exception{
-		setGameState(GameState.LOADING);
-		batch = new SpriteBatch();
-		initCameras();
-		level.init();
-		level.build();
-		
-		if(isReplaying())
-			level.processMeta(playback.meta);
+
+    private void setup() throws Exception {
+        setGameState(GameState.LOADING);
+        batch = new SpriteBatch();
+        initCameras();
+        level.init();
+        level.build();
+
+        if (isReplaying())
+            level.processMeta(playback.meta);
 
         Dimension screenSize = getScreenSize();
-        if(helpText == null)
-    		helpText = HUDMessage.getCenteredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
-		if(deathText == null)
+        if (helpText == null)
+            helpText = HUDMessage.getCenteredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
+        if (deathText == null)
             deathText = HUDMessage.getCenteredMessage("You died. Press the restart or quit button to continue.", screenSize, Color.WHITE);
-        if(winText == null)
+        if (winText == null)
             winText = HUDMessage.getCenteredMessage("Congrats! You completed the level!\nPress the restart or quit button to continue.", screenSize, Color.WHITE);
-		if(pauseText == null)
+        if (pauseText == null)
             pauseText = HUDMessage.getCenteredMessage("Game is paused.", screenSize, Color.WHITE);
 
-		setGameState(GameState.ACTIVE);
-	}
-	
-	private void restart(boolean checkpointPresent){
-		if(lost())
-			deathCounter++;
-		else if(completed())
-			deathCounter = 0;
+        setGameState(GameState.ACTIVE);
+    }
 
-		setGameState(GameState.LOADING);
+    private void restart(boolean checkpointPresent) {
+        if (lost())
+            deathCounter++;
+        else if (completed())
+            deathCounter = 0;
 
-		level.clean();
-		level.build();
-		
-		if(!checkpointPresent)
-			time = 0;
-		
-		frameCounter = 0;
-		setGameState(GameState.ACTIVE);
-	}
+        setGameState(GameState.LOADING);
 
-	private void overview() {
-        if(shutdown)
+        level.clean();
+        level.build();
+
+        setZoom(1);
+        setRotation(0);
+
+        if (!checkpointPresent)
+            time = 0;
+
+        frameCounter = 0;
+        setGameState(GameState.ACTIVE);
+    }
+
+    private void overview() {
+        if (shutdown)
             throw new ControlledException("Controlled termination.");
 
-        if(!isReplaying()) {
+        if (!isReplaying()) {
 
-            if((active() || paused()) && keys(level.getAliveMainCharacters()).pause){
+            if ((active() || paused()) && keys(level.getAliveMainCharacters()).pause) {
                 setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
 
-                if(active()) {
+                if (active()) {
                     Music music = level.getStageMusic();
-                    if(music != null)
+                    if (music != null)
                         music.setVolume(musicVolume);
 
-                } else if(paused()) {
+                } else if (paused()) {
                     Music music = level.getStageMusic();
-                    if(music != null){
+                    if (music != null) {
                         musicVolume = music.getVolume();
                         music.setVolume(.1f);
                     }
                 }
             } else if (lost() || completed()) {
-				Keystrokes keys = keys(level.getMainCharacters());
+                Keystrokes keys = keys(level.getMainCharacters());
 
-				if(keys.restart) {
-					restart(false);
-				} else if(keys.quit) {
-					exit();
-				}
-			}
+                if (keys.restart) {
+                    restart(false);
+                } else if (keys.quit) {
+                    exit();
+                }
+            }
         } else {
-            if(lost() && level.cpPresent() && !replayEnded()) {
+            if (lost() && level.cpPresent() && !replayEnded()) {
                 restart(true);
             }
         }
 
-		if(paused()){
-			renderPause();
-		} else {
-			progress();
-			paint();
-		}
-	}
+        if (paused()) {
+            renderPause();
+        } else {
+            progress();
+            paint();
+        }
+    }
 
-	private void destroy() {
-		batch.dispose();
-		level.dispose();
-		batch = null;
-	}
-	
-	private void progress(){
-		if(frameCounter++ > 2 && active()) //TODO: Why must frameCounter exceed 2?
-			time += Gdx.graphics.getRawDeltaTime();
-		
-		prevTx = gameCamera.position.x;
-		prevTy = gameCamera.position.y;
-		
-		level.gameLoop();
-		statusControl();
-	}
-	
-	private void paint(){
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		updateGameCamera();
-		gameCamera();
+    private void destroy() {
+        batch.dispose();
+        level.dispose();
+        batch = null;
+    }
+
+    private void progress() {
+        if (frameCounter++ > 2 && active()) //TODO: Why must frameCounter exceed 2?
+            time += Gdx.graphics.getRawDeltaTime();
+
+        prevTx = gameCamera.position.x;
+        prevTy = gameCamera.position.y;
+
+        level.gameLoop();
+        statusControl();
+    }
+
+    private void paint() {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        updateGameCamera();
+        gameCamera();
 
         batch.begin();
 
-		for(Entity entity : level.gameObjects)
-			entity.render(batch);
-		
-		hudCamera();
-		renderStatusBar();
-		renderStatusText();
-		
-		batch.end();
-	}
-	
-	private void setGameState(GameState state){
-		if(this.getGameState() == GameState.CRASHED)
-			throw new IllegalStateException("This instance have crashed an no longer usable.");
-		if(state == GameState.PAUSED && isReplaying())
-			throw new IllegalArgumentException("Can not pause when playing a replay.");
-		if(this.state == GameState.SUCCESS && (state == GameState.LOST || state == GameState.PAUSED))
-			throw new IllegalArgumentException("Can not kill or pause a completed game.");
+        for (Entity entity : level.gameObjects)
+            entity.render(batch);
 
-        if(state != this.getGameState()) {
-			if(lost() || completed())
-				finalizeRecording();
+        hudCamera();
+        renderStatusBar();
+        renderStatusText();
 
+        batch.end();
+    }
+
+    private void setGameState(GameState state) {
+        if (this.getGameState() == GameState.CRASHED)
+            throw new IllegalStateException("This instance have crashed an no longer usable.");
+        if (state == GameState.PAUSED && isReplaying())
+            throw new IllegalArgumentException("Can not pause when playing a replay.");
+        if (this.state == GameState.SUCCESS && (state == GameState.LOST || state == GameState.PAUSED))
+            throw new IllegalArgumentException("Can not kill or pause a completed game.");
+
+        if (state != this.getGameState()) {
             this.state = state;
 
+            if (lost() || completed())
+                finalizeRecording();
+
             Event event = stateEvents.get(this.state);
-            if(event != null) {
+            if (event != null) {
                 new Thread(event::eventHandling).start();
             }
         }
-	}
-	
-	private void renderPause(){
-		Gdx.gl.glClearColor(0, 0, 0, .4f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		
-		pauseText.draw(batch, timeFont);
+    }
 
-		renderStatusBar();
-		
-		batch.end();
-	}
-	
-	private void initCameras(){
-		screenWidth = screenWidth == 0 ? Gdx.graphics.getWidth() : screenWidth;
-		screenHeight = screenHeight == 0 ? Gdx.graphics.getHeight() : screenHeight;
-		
-		gameCamera = new OrthographicCamera();
-		gameCamera.setToOrtho(flipY, screenWidth, screenHeight);
-		
-		hudCamera = new OrthographicCamera();
-		hudCamera.setToOrtho(true, screenWidth, screenHeight);
+    private void renderPause() {
+        Gdx.gl.glClearColor(0, 0, 0, .4f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.begin();
 
-		if(Gdx.graphics.getWidth() != screenWidth || Gdx.graphics.getHeight() != screenHeight)
-			Gdx.graphics.setWindowedMode(screenWidth, screenHeight);
-	}
-	
-	private void statusControl(){
-		List<PlayableEntity> mains = level.getMainCharacters();
-		int total = mains.size();
-		long alive = mains.stream().filter(PlayableEntity::isAlive).count();
-		long dead = mains.stream().filter(PlayableEntity::isDead).count();
-		long finished = mains.stream().filter(PlayableEntity::isDone).count();
+        pauseText.draw(batch, timeFont);
 
-		if(dead == total || (alive == 0 && finished == 0))
-			setGameState(GameState.LOST);
-		else if(finished > 0)
-			setGameState(GameState.SUCCESS);
-		else if(alive > 0)
-			setGameState(GameState.ACTIVE);
-		else
-			throw new IllegalStateException("Game is in a unknown state.");
-	}
+        renderStatusBar();
+
+        batch.end();
+    }
+
+    private void initCameras() {
+        screenWidth = screenWidth == 0 ? Gdx.graphics.getWidth() : screenWidth;
+        screenHeight = screenHeight == 0 ? Gdx.graphics.getHeight() : screenHeight;
+
+        gameCamera = new OrthographicCamera();
+        gameCamera.setToOrtho(flipY, screenWidth, screenHeight);
+
+        hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(true, screenWidth, screenHeight);
+
+        if (Gdx.graphics.getWidth() != screenWidth || Gdx.graphics.getHeight() != screenHeight)
+            Gdx.graphics.setWindowedMode(screenWidth, screenHeight);
+    }
+
+    private void statusControl() {
+        List<PlayableEntity> mains = level.getMainCharacters();
+        int total = mains.size();
+        long alive = mains.stream().filter(PlayableEntity::isAlive).count();
+        long dead = mains.stream().filter(PlayableEntity::isDead).count();
+        long finished = mains.stream().filter(PlayableEntity::isDone).count();
+
+        if (dead == total || (alive == 0 && finished == 0))
+            setGameState(GameState.LOST);
+        else if (finished > 0)
+            setGameState(GameState.SUCCESS);
+        else if (alive > 0)
+            setGameState(GameState.ACTIVE);
+        else
+            throw new IllegalStateException("Game is in a unknown state.");
+    }
 
     long provideBadge() {
         return ++uniqueCounter;
     }
-	
-	boolean lost(){
-		return getGameState() == GameState.LOST;
-	}
-	
-	boolean completed(){
-		return getGameState() == GameState.SUCCESS;
-	}
-	
-	boolean paused(){
-		return getGameState() == GameState.PAUSED;
-	}
-	
-	boolean active(){
-		return getGameState() == GameState.ACTIVE;
-	}
+
+    boolean lost() {
+        return getGameState() == GameState.LOST;
+    }
+
+    boolean completed() {
+        return getGameState() == GameState.SUCCESS;
+    }
+
+    boolean paused() {
+        return getGameState() == GameState.PAUSED;
+    }
+
+    boolean active() {
+        return getGameState() == GameState.ACTIVE;
+    }
 
     PlaybackRecord getPlayback() {
         return playback;
@@ -418,8 +426,8 @@ public final class Engine {
         List<PlayableEntity> mains = level.getMainCharacters();
         return mains.size() == mains.stream().filter(PlayableEntity::hasEnded).count();
     }
-	
-	private void finalizeRecording(){
+
+    private void finalizeRecording() {
         Replay recording = new Replay();
         recording.date = ZonedDateTime.now();
         recording.time = getTimeInSeconds();
@@ -427,58 +435,58 @@ public final class Engine {
         recording.meta = level.getMeta();
         recording.result = getGameState();
         recording.keystrokes = new ArrayList<>();
-		recording.keystrokes.addAll(level.getMainCharacters().stream().map(play -> new KeySession(play.getReplayData(), play.getBadge())).collect(Collectors.toList()));
+        recording.keystrokes.addAll(level.getMainCharacters().stream().map(play -> new KeySession(play.getReplayData(), play.getBadge())).collect(Collectors.toList()));
         recordings.add(recording);
-	}
-	
-	private void renderStatusBar(){
-		timeFont.setColor(state == GameState.PAUSED ? Color.WHITE : timeColor);
-		timeFont.draw(batch, getTimeInSeconds() + "", 10, 10);
-		
-		List<PlayableEntity> mains = level.getNonDeadMainCharacters();
-		
-		for(int index = 0, y = 40; index < mains.size(); index++){
-			PlayableEntity main = mains.get(index);
-			int hp = main.getHP();
-			
-			if(main.healthHud != null && main.getState() != Vitality.DEAD && hp > 0){
-				Image2D healthHud = main.healthHud.getObject();
-				final float width = healthHud.getWidth() + 3;
-				
-				for(int i = 0, posX = 10; i < hp; i++, posX += width)
-					batch.draw(healthHud, posX, y, healthHud.getWidth(), healthHud.getHeight(), 0, 0, healthHud.getWidth(), healthHud.getHeight(), false, true);
-				
-				y += healthHud.getHeight() + 3;
-			}
-		}
-	}
-	
-	private void renderStatusText(){
-		if(!renderText || timeFont == null)
-			return;
-		
-		if(isReplaying() && keys(level.getAliveMainCharacters()).pause)
-			showHelpText = !showHelpText;
-		
-		if(showHelpText && helpText != null)
-			helpText.draw(batch, timeFont);
+    }
 
-		if(completed() && winText != null){
-			winText.draw(batch, timeFont);
-		} else if(lost() && deathText != null){
-			deathText.draw(batch, timeFont);
-		}
-	}
+    private void renderStatusBar() {
+        timeFont.setColor(state == GameState.PAUSED ? Color.WHITE : timeColor);
+        timeFont.draw(batch, getTimeInSeconds() + "", 10, 10);
 
-	private Keystrokes keys(List<PlayableEntity> plays) {
-		return plays
-				.stream()
-				.map(play -> Keystrokes.from(play.getController()))
-				.reduce(Keystrokes::merge)
-				.get();
-	}
+        List<PlayableEntity> mains = level.getNonDeadMainCharacters();
 
-    public static ApplicationListener wrap(Engine engine) {
+        for (int index = 0, y = 40; index < mains.size(); index++) {
+            PlayableEntity main = mains.get(index);
+            int hp = main.getHP();
+
+            if (main.healthHud != null && main.getState() != Vitality.DEAD && hp > 0) {
+                Image2D healthHud = main.healthHud.getObject();
+                final float width = healthHud.getWidth() + 3;
+
+                for (int i = 0, posX = 10; i < hp; i++, posX += width)
+                    batch.draw(healthHud, posX, y, healthHud.getWidth(), healthHud.getHeight(), 0, 0, healthHud.getWidth(), healthHud.getHeight(), false, true);
+
+                y += healthHud.getHeight() + 3;
+            }
+        }
+    }
+
+    private void renderStatusText() {
+        if (!renderText || timeFont == null)
+            return;
+
+        if (isReplaying() && keys(level.getAliveMainCharacters()).pause)
+            showHelpText = !showHelpText;
+
+        if (showHelpText && helpText != null)
+            helpText.draw(batch, timeFont);
+
+        if (completed() && winText != null) {
+            winText.draw(batch, timeFont);
+        } else if (lost() && deathText != null) {
+            deathText.draw(batch, timeFont);
+        }
+    }
+
+    private Keystrokes keys(List<PlayableEntity> plays) {
+        return plays
+                .stream()
+                .map(play -> Keystrokes.from(play.getController()))
+                .reduce(Keystrokes::merge)
+                .orElse(Keystrokes.AFK);
+    }
+
+    static ApplicationListener wrap(Engine engine) {
         return new ApplicationListener() {
             @Override
             public void dispose() {
@@ -487,12 +495,12 @@ public final class Engine {
 
             @Override
             public void render() {
-                try{
+                try {
                     engine.overview();
                 } catch (ControlledException e) {
                     engine.setGameState(GameState.DISPOSED);
                     throw e;
-                } catch (Exception e){
+                } catch (Exception e) {
                     engine.exception = e;
                     engine.setGameState(GameState.CRASHED);
                     throw new RuntimeException(e);
@@ -510,9 +518,17 @@ public final class Engine {
                 }
             }
 
-            @Override public void resize(int i, int i1) {}
-            @Override public void pause() {}
-            @Override public void resume() {}
+            @Override
+            public void resize(int i, int i1) {
+            }
+
+            @Override
+            public void pause() {
+            }
+
+            @Override
+            public void resume() {
+            }
         };
     }
 }

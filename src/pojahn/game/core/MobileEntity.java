@@ -18,7 +18,7 @@ public class MobileEntity extends Entity {
 	
 	private float moveSpeed;
 	private int facings;
-	private boolean smart, frozen;
+	private boolean smart, frozen, moving;
 	private Set<Entity> obstacles;
 	
 	public MobileEntity(){
@@ -163,6 +163,10 @@ public class MobileEntity extends Entity {
 		this.smart = smart;
 	}
 
+    public boolean isMoving() {
+        return moving;
+    }
+
 	public boolean tryLeft(int steps){
 		for(int i = steps; i > 0; i--){
 			if(!occupiedAt(x() - i, y())){
@@ -218,6 +222,10 @@ public class MobileEntity extends Entity {
 	public boolean canRight(){
 		return !occupiedAt(x() + 1, y());
 	}
+
+    public void face() {
+        face(getFacing());
+    }
 
 	public void face(Direction dir){
 		switch(dir){
@@ -367,6 +375,9 @@ public class MobileEntity extends Entity {
 	}
 	
 	void setPrevs(){
+		if(prevX != bounds.pos.x || prevY != bounds.pos.y)
+			moving = true;
+
 		prevX = bounds.pos.x;
 		prevY = bounds.pos.y;
 	}

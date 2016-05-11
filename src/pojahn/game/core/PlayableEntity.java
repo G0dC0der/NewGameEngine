@@ -133,7 +133,7 @@ public abstract class PlayableEntity extends MobileEntity{
 	public void render(SpriteBatch batch) {
 		if(--hurtCounter > 0 && ++counter % 5 == 0)
 			return;
-		
+
 		super.render(batch);
 	}
 	
@@ -156,7 +156,7 @@ public abstract class PlayableEntity extends MobileEntity{
 	}
 
 	boolean hasEnded() {
-		return replayDataCounter < replayData.size() - 1;
+		return replayDataCounter > replayData.size() - 1;
 	}
 	
 	Keystrokes nextInput(){

@@ -301,24 +301,24 @@ public abstract class Level {
 	
 	private void updateEntities(){
 		for(Entity entity : gameObjects){
-			if(!entity.isActive()) {
+			if(entity.isActive()) {
                 if(entity instanceof PlayableEntity){
                     PlayableEntity play = (PlayableEntity) entity;
                     Keystrokes buttonsDown;
 
                     if(play.isGhost())
                         buttonsDown = play.nextInput();
-                    else if(engine.getGameState() == GameState.ACTIVE && play.getState() == Vitality.ALIVE)
+                    else if(engine.active() && play.isAlive())
                         buttonsDown = engine.isReplaying() ? play.nextInput() : Keystrokes.from(play.getController());
                     else
                         buttonsDown = PlayableEntity.STILL;
 
-                    if(play.getState() == Vitality.ALIVE && engine.active() && !engine.isReplaying())
+                    if(play.isAlive() && engine.active() && !engine.isReplaying())
                         play.addReplayFrame(buttonsDown);
 
                     if(buttonsDown.suicide){
                         play.setState(Vitality.DEAD);
-                    } else{
+                    } else {
                         play.setKeysDown(buttonsDown);
                         play.logistics();
                         play.runEvents();
