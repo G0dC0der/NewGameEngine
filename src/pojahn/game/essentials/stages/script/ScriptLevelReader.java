@@ -1,6 +1,7 @@
 package pojahn.game.essentials.stages.script;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.StreamUtils;
 import pojahn.game.core.Level;
 import pojahn.lang.IO;
 
@@ -28,7 +29,7 @@ public class ScriptLevelReader {
         } catch (FileNotFoundException e) {
             throw new UncheckedIOException(e);
         } finally {
-            IO.close(in);
+            StreamUtils.closeQuietly(in);
         }
 
         try {

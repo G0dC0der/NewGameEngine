@@ -54,7 +54,7 @@ public class SimpleWeapon extends MobileEntity {
             Projectile projClone = proj.getClone();
             projClone.move(startX, startY);
             Vector2 target = Collisions.getEdgePoint((int) startX, (int) startY, projDir, l);
-            projClone.setManualTarget(target.x, target.y);
+            projClone.setTarget(target.x, target.y);
 
             if (fireAnim != null)
                 l.add(fireAnim.getClone().move(startX, startY));

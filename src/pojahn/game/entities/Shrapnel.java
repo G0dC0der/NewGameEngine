@@ -33,7 +33,7 @@ public class Shrapnel extends Particle {
 			for (Vector2 edgePoint : edgePoints) {
 				Projectile proj = split.getClone();
 				proj.center(this);
-				proj.setManualTarget(edgePoint);
+				proj.setTarget(edgePoint);
 				l.add(proj);
 			}
 

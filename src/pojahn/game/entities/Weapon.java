@@ -86,7 +86,7 @@ public class Weapon extends PathDrone {
 
                     }
                 }
-                projClone.setManualTarget(targetX, targetY);
+                projClone.setTarget(targetX, targetY);
                 getLevel().add(projClone);
                 if (partClone != null)
                     getLevel().add(partClone);

@@ -61,7 +61,7 @@ public class RotatingCannon extends Entity {
                     spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 45);
                     Projectile proj1 = proj.getClone();
                     proj1.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
-                    proj1.setManualTarget(getTarget(Direction.SE));
+                    proj1.setTarget(getTarget(Direction.SE));
                     proj1.setRotation(45);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
@@ -69,7 +69,7 @@ public class RotatingCannon extends Entity {
                     spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 135);
                     Projectile proj2 = proj.getClone();
                     proj2.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
-                    proj2.setManualTarget(getTarget(Direction.SW));
+                    proj2.setTarget(getTarget(Direction.SW));
                     proj2.setRotation(135);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
@@ -77,7 +77,7 @@ public class RotatingCannon extends Entity {
                     spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 225);
                     Projectile proj3 = proj.getClone();
                     proj3.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
-                    proj3.setManualTarget(getTarget(Direction.NW));
+                    proj3.setTarget(getTarget(Direction.NW));
                     proj3.setRotation(225);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
@@ -85,7 +85,7 @@ public class RotatingCannon extends Entity {
                     spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 315);
                     Projectile proj4 = proj.getClone();
                     proj4.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
-                    proj4.setManualTarget(getTarget(Direction.NE));
+                    proj4.setTarget(getTarget(Direction.NE));
                     proj4.setRotation(315);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
@@ -99,28 +99,28 @@ public class RotatingCannon extends Entity {
                 if (!diagonalFire || fireAll) {
                     Projectile proj1 = proj.getClone();
                     proj1.move(centerX() - (proj.width() / 2), y() - (proj.height() / 2));
-                    proj1.setManualTarget(centerX() - (proj.width() / 2), 0);
+                    proj1.setTarget(centerX() - (proj.width() / 2), 0);
                     proj1.setRotation(270);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(centerX() - firingAnim.width() / 2, y() - firingAnim.height() / 2));
 
                     Projectile proj2 = proj.getClone();
                     proj2.move(x() + width() - (proj.width() / 2), centerY() - (proj.height() / 2));
-                    proj2.setManualTarget(l.getWidth(), centerY() - (proj.height() / 2));
+                    proj2.setTarget(l.getWidth(), centerY() - (proj.height() / 2));
                     proj2.setRotation(0);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(x() + width() - (firingAnim.width() / 2), centerY() - firingAnim.height() / 2));
 
                     Projectile proj3 = proj.getClone();
                     proj3.move(centerX() - (proj.width() / 2), y() + height() - (proj.height() / 2));
-                    proj3.setManualTarget(centerX() - (proj.width() / 2), l.getWidth());
+                    proj3.setTarget(centerX() - (proj.width() / 2), l.getWidth());
                     proj3.setRotation(90);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(centerX() - firingAnim.width() / 2, y() + height() - firingAnim.height() / 2));
 
                     Projectile proj4 = proj.getClone();
                     proj4.move(x() - (proj.width() / 2), centerY() - (proj.height() / 2));
-                    proj4.setManualTarget(0, centerY() - (proj.height() / 2));
+                    proj4.setTarget(0, centerY() - (proj.height() / 2));
                     proj4.setRotation(180);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(x() - (firingAnim.width() / 2), centerY() - firingAnim.height() / 2));
