@@ -20,206 +20,206 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.lang.Int32;
 
 public abstract class Level {
-	
-	public enum Tile{
-		SOLID,
-		HOLLOW,
-		GOAL,
-		LETHAL,
-		CUSTOM_1,
-		CUSTOM_2,
-		CUSTOM_3,
-		CUSTOM_4,
-		CUSTOM_5,
-		CUSTOM_6,
-		CUSTOM_7,
-		CUSTOM_8,
-		CUSTOM_9,
-		CUSTOM_10
-	}
-	
-	private static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) ->  obj1.getZIndex() - obj2.getZIndex();
 
-	Engine engine;
+    public enum Tile {
+        SOLID,
+        HOLLOW,
+        GOAL,
+        LETHAL,
+        CUSTOM_1,
+        CUSTOM_2,
+        CUSTOM_3,
+        CUSTOM_4,
+        CUSTOM_5,
+        CUSTOM_6,
+        CUSTOM_7,
+        CUSTOM_8,
+        CUSTOM_9,
+        CUSTOM_10
+    }
 
-	private List<Entry<Integer, Entity>> awatingObjects, deleteObjects;
-	private List<PlayableEntity> mainCharacters;
+    private static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) -> obj1.getZIndex() - obj2.getZIndex();
+
+    Engine engine;
+
+    private List<Entry<Integer, Entity>> awatingObjects, deleteObjects;
+    private List<PlayableEntity> mainCharacters;
     private CheckPointHandler cph;
-	
-	List<Entity> gameObjects, soundListeners;
-	boolean sort;
-	
-	protected Level(){
-		awatingObjects = new LinkedList<>();
-		deleteObjects = new LinkedList<>();
-		soundListeners = new ArrayList<>();
-		gameObjects = new LinkedList<>();
-		mainCharacters = new ArrayList<>();
+
+    List<Entity> gameObjects, soundListeners;
+    boolean sort;
+
+    protected Level() {
+        awatingObjects = new LinkedList<>();
+        deleteObjects = new LinkedList<>();
+        soundListeners = new ArrayList<>();
+        gameObjects = new LinkedList<>();
+        mainCharacters = new ArrayList<>();
         cph = new CheckPointHandler();
-	}
-	
-	public abstract int getWidth();
+    }
 
-	public abstract int getHeight();
-	
-	public abstract Tile tileAt(int x, int y);
-	
-	public abstract void setTileOnLayer(int x, int y, Tile tile);
-	
-	public abstract void removeTileOnLayer(int x, int y);
-	
-	public abstract void clearTileLayer();
-	
-	public abstract boolean isSolid(int x, int y);
+    public abstract int getWidth();
 
-	public abstract boolean isHollow(int x, int y);
-	
-	public abstract void init() throws Exception;
-	
-	public abstract void build();
-	
-	public abstract void dispose();
-	
-	public Tile tileAt(Vector2 cord){
-		return tileAt((int)cord.x, (int)cord.y);
-	}
-	
-	public void processMeta(Serializable meta) {
+    public abstract int getHeight();
 
-	}
+    public abstract Tile tileAt(int x, int y);
 
-	public Serializable getMeta(){
-		return null;
-	}
-	
-	public boolean cpPresent(){
-		return getCheckpointHandler().getLatestCheckpoint() != null;
-	}
-	
-	public Music getStageMusic(){
-		return null;
-	}
+    public abstract void setTileOnLayer(int x, int y, Tile tile);
 
-	public String getLevelName() {
-		return "Level " + toString();
-	}
+    public abstract void removeTileOnLayer(int x, int y);
 
-	public Engine getEngine(){
-		return engine;
-	}
+    public abstract void clearTileLayer();
+
+    public abstract boolean isSolid(int x, int y);
+
+    public abstract boolean isHollow(int x, int y);
+
+    public abstract void init() throws Exception;
+
+    public abstract void build();
+
+    public abstract void dispose();
+
+    public Tile tileAt(Vector2 cord) {
+        return tileAt((int) cord.x, (int) cord.y);
+    }
+
+    public void processMeta(Serializable meta) {
+
+    }
+
+    public Serializable getMeta() {
+        return null;
+    }
+
+    public boolean cpPresent() {
+        return getCheckpointHandler().getLatestCheckpoint() != null;
+    }
+
+    public Music getStageMusic() {
+        return null;
+    }
+
+    public String getLevelName() {
+        return "Level " + toString();
+    }
+
+    public Engine getEngine() {
+        return engine;
+    }
 
     public CheckPointHandler getCheckpointHandler() {
         return cph;
     }
-	
-	public boolean outOfBounds(float targetX, float targetY){
-        return  targetX >= getWidth() ||
+
+    public boolean outOfBounds(float targetX, float targetY) {
+        return targetX >= getWidth() ||
                 targetY >= getHeight() ||
                 targetX < 0 ||
                 targetY < 0;
 
     }
-	
-	public void add(Entity entity){
-		awatingObjects.add(new Entry<>(0, entity));
-	}
-	
-	public void addAfter(Entity entity, int framesDelay){
-		awatingObjects.add(new Entry<>(framesDelay, entity));
-	}
-	
-	public void addWhen(Entity entity, TaskEvent addEvent){
-		Entity wrapper = new Entity();
-		wrapper.addEvent(()->{
-			if(addEvent.eventHandling()){
-				wrapper.getLevel().add(entity);
-				wrapper.getLevel().discard(wrapper);
-			}
-		});
-		
-		add(wrapper);
-	}
-	
-	public void temp(Entity entity, int lifeFrames){
-		add(entity);
-		discardAfter(entity, lifeFrames);
-	}
-	
-	public void temp(Entity entity, TaskEvent discardEvent){
-		add(entity);
-		discardWhen(entity, discardEvent);
-	}
-	
-	public Entity add(Event event){
-		Entity wrapper = Utils.wrap(event);
-		addAfter(wrapper, 0);		
-		
-		return wrapper;
-	}
-	
-	public Entity addAfter(Event event, int framesDelay){
-		Entity wrapper = Utils.wrap(event);
-		addAfter(wrapper, framesDelay);
-		
-		return wrapper;
-	}
-	
-	public Entity addWhen(Event event, TaskEvent addEvent){
-		Entity wrapper = Utils.wrap(event);
-		addWhen(wrapper, addEvent);
-		
-		return wrapper;
-	}
-	
-	public Entity temp(Event event, int lifeFrames){
-		Entity wrapper = Utils.wrap(event);
-		add(wrapper);
-		discardAfter(wrapper, lifeFrames);
-		
-		return wrapper;
-	}
-	
-	public Entity temp(Event event, TaskEvent discardEvent){
-		Entity wrapper = Utils.wrap(event);
-		add(wrapper);
-		discardWhen(wrapper, discardEvent);
-		
-		return wrapper;
-	}
-	
-	public Entity runOnceWhen(Event event, TaskEvent whenToRun){
-		Entity wrapper = new Entity();
-		wrapper.addEvent(()->{
-			if(whenToRun.eventHandling()){
-				event.eventHandling();
-				wrapper.getLevel().discard(wrapper);
-			}
-		});
-		add(wrapper);
-		
-		return wrapper;
-	}
-	
-	public Entity runOnceAfter(Event event, int framesDelay){
-		int[] counter = {0};
-		
-		Entity wrapper = new Entity();
-		wrapper.addEvent(()->{
-			if(counter[0]++ > framesDelay){
-				event.eventHandling();
-				discard(wrapper);
-			}
-		});
-		add(wrapper);
-		
-		return wrapper;
-	}
+
+    public void add(Entity entity) {
+        awatingObjects.add(new Entry<>(0, entity));
+    }
+
+    public void addAfter(Entity entity, int framesDelay) {
+        awatingObjects.add(new Entry<>(framesDelay, entity));
+    }
+
+    public void addWhen(Entity entity, TaskEvent addEvent) {
+        Entity wrapper = new Entity();
+        wrapper.addEvent(() -> {
+            if (addEvent.eventHandling()) {
+                wrapper.getLevel().add(entity);
+                wrapper.getLevel().discard(wrapper);
+            }
+        });
+
+        add(wrapper);
+    }
+
+    public void temp(Entity entity, int lifeFrames) {
+        add(entity);
+        discardAfter(entity, lifeFrames);
+    }
+
+    public void temp(Entity entity, TaskEvent discardEvent) {
+        add(entity);
+        discardWhen(entity, discardEvent);
+    }
+
+    public Entity add(Event event) {
+        Entity wrapper = Utils.wrap(event);
+        addAfter(wrapper, 0);
+
+        return wrapper;
+    }
+
+    public Entity addAfter(Event event, int framesDelay) {
+        Entity wrapper = Utils.wrap(event);
+        addAfter(wrapper, framesDelay);
+
+        return wrapper;
+    }
+
+    public Entity addWhen(Event event, TaskEvent addEvent) {
+        Entity wrapper = Utils.wrap(event);
+        addWhen(wrapper, addEvent);
+
+        return wrapper;
+    }
+
+    public Entity temp(Event event, int lifeFrames) {
+        Entity wrapper = Utils.wrap(event);
+        add(wrapper);
+        discardAfter(wrapper, lifeFrames);
+
+        return wrapper;
+    }
+
+    public Entity temp(Event event, TaskEvent discardEvent) {
+        Entity wrapper = Utils.wrap(event);
+        add(wrapper);
+        discardWhen(wrapper, discardEvent);
+
+        return wrapper;
+    }
+
+    public Entity runOnceWhen(Event event, TaskEvent whenToRun) {
+        Entity wrapper = new Entity();
+        wrapper.addEvent(() -> {
+            if (whenToRun.eventHandling()) {
+                event.eventHandling();
+                wrapper.getLevel().discard(wrapper);
+            }
+        });
+        add(wrapper);
+
+        return wrapper;
+    }
+
+    public Entity runOnceAfter(Event event, int framesDelay) {
+        int[] counter = {0};
+
+        Entity wrapper = new Entity();
+        wrapper.addEvent(() -> {
+            if (counter[0]++ > framesDelay) {
+                event.eventHandling();
+                discard(wrapper);
+            }
+        });
+        add(wrapper);
+
+        return wrapper;
+    }
 
     public Entity runInterval(Event event, int freq) {
         Entity wrapped = new Entity();
         Int32 counter = new Int32();
-        wrapped.addEvent(()->{
-            if(++counter.value % freq == 0) {
+        wrapped.addEvent(() -> {
+            if (++counter.value % freq == 0) {
                 event.eventHandling();
             }
         });
@@ -227,183 +227,183 @@ public abstract class Level {
         add(wrapped);
         return wrapped;
     }
-	
-	public void discard(Entity entity){
-		discardAfter(entity, 0);
-	}
-	
-	public void discardAfter(Entity entity, int framesDelay){
-		deleteObjects.add(new Entry<>(framesDelay, entity));
-	}
-	
-	public void discardWhen(Entity entity, TaskEvent discardEvent){
-		Entity wrapper = new Entity();
-		wrapper.addEvent(()->{
-			if(discardEvent.eventHandling()){
-				discard(entity);
-				discard(wrapper);
-			}
-		});
-		
-		add(wrapper);
-	}
-	
-	public List<PlayableEntity> getMainCharacters(){
-		return mainCharacters;
-	}
-	
-	public List<PlayableEntity> getNonDeadMainCharacters(){
-		return mainCharacters.stream()
-				.filter(el -> el.isAlive() || el.isDone())
-				.collect(Collectors.toList());
-	}
-	
-	public List<PlayableEntity> getAliveMainCharacters(){
-		return mainCharacters.stream()
-				.filter(PlayableEntity::isAlive)
-				.collect(Collectors.toList());
-	}
-	
-	public List<? extends Entity> getSoundListeners(){
-		return soundListeners.isEmpty() ? getNonDeadMainCharacters() : soundListeners;
-	}
-	
-	public void addSoundListener(Entity listener){
-		soundListeners.add(listener);
-	}
 
-	public void removeSoundListener(Entity listener) {
-		soundListeners.remove(listener);
-	}
+    public void discard(Entity entity) {
+        discardAfter(entity, 0);
+    }
 
-	protected void clean(){
-		awatingObjects.clear();
-		deleteObjects.clear();
-		gameObjects.forEach(Entity::dispose);
-		gameObjects.clear();
-		clearTileLayer();
-		mainCharacters.clear();
+    public void discardAfter(Entity entity, int framesDelay) {
+        deleteObjects.add(new Entry<>(framesDelay, entity));
+    }
+
+    public void discardWhen(Entity entity, TaskEvent discardEvent) {
+        Entity wrapper = new Entity();
+        wrapper.addEvent(() -> {
+            if (discardEvent.eventHandling()) {
+                discard(entity);
+                discard(wrapper);
+            }
+        });
+
+        add(wrapper);
+    }
+
+    public List<PlayableEntity> getMainCharacters() {
+        return mainCharacters;
+    }
+
+    public List<PlayableEntity> getNonDeadMainCharacters() {
+        return mainCharacters.stream()
+                .filter(el -> el.isAlive() || el.isDone())
+                .collect(Collectors.toList());
+    }
+
+    public List<PlayableEntity> getAliveMainCharacters() {
+        return mainCharacters.stream()
+                .filter(PlayableEntity::isAlive)
+                .collect(Collectors.toList());
+    }
+
+    public List<? extends Entity> getSoundListeners() {
+        return soundListeners.isEmpty() ? getNonDeadMainCharacters() : soundListeners;
+    }
+
+    public void addSoundListener(Entity listener) {
+        soundListeners.add(listener);
+    }
+
+    public void removeSoundListener(Entity listener) {
+        soundListeners.remove(listener);
+    }
+
+    protected void clean() {
+        awatingObjects.clear();
+        deleteObjects.clear();
+        gameObjects.forEach(Entity::dispose);
+        gameObjects.clear();
+        clearTileLayer();
+        mainCharacters.clear();
         getCheckpointHandler().reset();
-	}
+    }
 
-	void gameLoop(){
-		insertDelete();
-		
-		if(sort) {
-			Collections.sort(gameObjects, Z_INDEX_SORT);
-			sort = false;
-		}
-		
-		updateEntities();
+    void gameLoop() {
+        insertDelete();
+
+        if (sort) {
+            Collections.sort(gameObjects, Z_INDEX_SORT);
+            sort = false;
+        }
+
+        updateEntities();
 
         getCheckpointHandler().update();
-	}
-	
-	private void updateEntities(){
-		for(Entity entity : gameObjects){
-			if(entity.isActive()) {
-                if(entity instanceof PlayableEntity){
+    }
+
+    private void updateEntities() {
+        for (Entity entity : gameObjects) {
+            if (entity.isActive()) {
+                if (entity instanceof PlayableEntity) {
                     PlayableEntity play = (PlayableEntity) entity;
                     Keystrokes buttonsDown;
 
-                    if(play.isGhost())
+                    if (play.isGhost())
                         buttonsDown = play.nextInput();
-                    else if(engine.active() && play.isAlive())
+                    else if (engine.active() && play.isAlive())
                         buttonsDown = engine.isReplaying() ? play.nextInput() : Keystrokes.from(play.getController());
                     else
                         buttonsDown = PlayableEntity.STILL;
 
-                    if(play.isAlive() && engine.active() && !engine.isReplaying())
+                    if (play.isAlive() && !play.isGhost() && engine.active() && !engine.isReplaying())
                         play.addReplayFrame(buttonsDown);
 
-                    if(buttonsDown.suicide){
+                    if (buttonsDown.suicide) {
                         play.setState(Vitality.DEAD);
                     } else {
                         play.setKeysDown(buttonsDown);
                         play.logistics();
                         play.runEvents();
 
-                        if(play.tileEvents.size() > 0)
+                        if (play.tileEvents.size() > 0)
                             tileIntersection(play, play.getOccupyingCells());
 
-						play.updateFacing();
+                        play.updateFacing();
                         play.setPrevs();
                     }
-                } else if(entity instanceof MobileEntity){
+                } else if (entity instanceof MobileEntity) {
                     MobileEntity mobile = (MobileEntity) entity;
 
                     mobile.logistics();
                     mobile.runEvents();
 
-                    if(mobile.tileEvents.size() > 0)
+                    if (mobile.tileEvents.size() > 0)
                         tileIntersection(mobile, mobile.getOccupyingCells());
 
-					mobile.updateFacing();
+                    mobile.updateFacing();
                     mobile.setPrevs();
                 } else {
                     entity.logistics();
                     entity.runEvents();
                 }
             }
-		}
-	}
-	
-	private void tileIntersection(MobileEntity mobile, Set<Tile> tiles){
-		for(Tile tile : tiles){
-			switch(tile){
-				case HOLLOW:
-					/*/ Do nothing /*/
-					break;
-				default:
-					mobile.runTileEvents(tile);
-					break;
-			}
-		}
-	}
-	
-	private void insertDelete(){
-		for(int i = 0; i < awatingObjects.size(); i++){
-			Entry<Integer, Entity> entry = awatingObjects.get(i);
-			if(entry.key-- <= 0){
-				awatingObjects.remove(i);
-				i--;
-				gameObjects.add(entry.value);
-				sort = true;
-				entry.value.level = this;
-				entry.value.engine = engine;
-				entry.value.present = true;
-				entry.value.badge = engine.provideBadge();
-				entry.value.init();
+        }
+    }
 
-				if (entry.value instanceof PlayableEntity) {
-					PlayableEntity play = (PlayableEntity) entry.value;
-					if (!play.isGhost()) {
-						mainCharacters.add(play);
-						if (engine.isReplaying()) {
-							PlaybackRecord pbr = engine.getPlayback();
-							play.setReplayData(pbr.getByBadge(play.getBadge()));
-						}
-					}
-				}
-			}
-		}
+    private void tileIntersection(MobileEntity mobile, Set<Tile> tiles) {
+        for (Tile tile : tiles) {
+            switch (tile) {
+                case HOLLOW:
+                    /*/ Do nothing /*/
+                    break;
+                default:
+                    mobile.runTileEvents(tile);
+                    break;
+            }
+        }
+    }
 
-		for(int i = 0; i < deleteObjects.size(); i++) {
-			Entry<Integer, Entity> entry = deleteObjects.get(i);
-			if(entry.key-- <= 0) {
-				deleteObjects.remove(i);
-				i--;
-				gameObjects.remove(entry.value);
-				entry.value.present = false;
-				entry.value.dispose();
+    void insertDelete() {
+        for (int i = 0; i < awatingObjects.size(); i++) {
+            Entry<Integer, Entity> entry = awatingObjects.get(i);
+            if (entry.key-- <= 0) {
+                awatingObjects.remove(i);
+                i--;
+                gameObjects.add(entry.value);
+                sort = true;
+                entry.value.level = this;
+                entry.value.engine = engine;
+                entry.value.present = true;
+                entry.value.badge = engine.provideBadge();
+                entry.value.init();
 
-				if (entry.value instanceof PlayableEntity) {
-					PlayableEntity play = (PlayableEntity) entry.value;
-					if (!play.isGhost()) {
-						mainCharacters.remove(play);
-					}
-				}
-			}
-		}
-	}
+                if (entry.value instanceof PlayableEntity) {
+                    PlayableEntity play = (PlayableEntity) entry.value;
+                    if (!play.isGhost()) {
+                        mainCharacters.add(play);
+                        if (engine.isReplaying()) {
+                            PlaybackRecord pbr = engine.getPlayback();
+                            play.setReplayData(pbr.getByBadge(play.getBadge()));
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < deleteObjects.size(); i++) {
+            Entry<Integer, Entity> entry = deleteObjects.get(i);
+            if (entry.key-- <= 0) {
+                deleteObjects.remove(i);
+                i--;
+                gameObjects.remove(entry.value);
+                entry.value.present = false;
+                entry.value.dispose();
+
+                if (entry.value instanceof PlayableEntity) {
+                    PlayableEntity play = (PlayableEntity) entry.value;
+                    if (!play.isGhost()) {
+                        mainCharacters.remove(play);
+                    }
+                }
+            }
+        }
+    }
 }

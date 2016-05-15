@@ -58,8 +58,7 @@ public class Missile extends Projectile {
 
 	@Override
 	protected void rotate() {
-		if(rotates())
-			bounds.rotation = (float) Math.toDegrees(Math.atan2(velocity.y, velocity.x));
+		bounds.rotation = (float) Math.toDegrees(Math.atan2(velocity.y, velocity.x));
 	}
 
 	@Override

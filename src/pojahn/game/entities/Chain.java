@@ -49,7 +49,7 @@ public class Chain extends Entity {
 	@Override
 	public final void render(SpriteBatch batch) {
 		Vector2 endPoint1 = src1 == null ? pt1 : new Vector2(src1.centerX() - halfWidth(), src1.centerY() - halfHeight());
-		Vector2 endPoint2 = src1 == null ? pt2 : new Vector2(src2.centerX() - halfWidth(), src2.centerY() - halfHeight());
+		Vector2 endPoint2 = src2 == null ? pt2 : new Vector2(src2.centerX() - halfWidth(), src2.centerY() - halfHeight());
 		int start = (linkOnEndpoint) ? 0 : 1;
 		int end = (linkOnEndpoint) ? links : links + 2;
 		int cond = (linkOnEndpoint) ? links : end - 1;

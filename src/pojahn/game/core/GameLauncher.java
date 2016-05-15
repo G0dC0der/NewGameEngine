@@ -7,10 +7,12 @@ import pojahn.game.essentials.ControlledException;
 public class GameLauncher {
 
     public static void launch(Engine engine, Lwjgl3ApplicationConfiguration cfg) {
-        try {
-            new Lwjgl3Application(Engine.wrap(engine), cfg);
-        } catch (ControlledException e) {
-            System.out.println("Exiting game.");
-        }
+        new Thread(()->{
+            try {
+                new Lwjgl3Application(Engine.wrap(engine), cfg);
+            } catch (ControlledException e) {
+                System.out.println("Exiting game.");
+            }
+        }).start();
     }
 }

@@ -9,94 +9,96 @@ import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
 
+import java.util.stream.Stream;
+
 import static pojahn.game.core.Collisions.normalize;
 
 public class EvilDog extends MobileEntity {
 
-	public float thrust, drag, delta, vx, vy;
-	private float maxDistance;
-	private boolean hunting;
-	private int soundDelay, soundCounter;
-	private Entity[] targets;
-	private Animation<Image2D> idleImg, huntImg;
-	private Sound hitSound;
+    public float thrust, drag, delta, vx, vy;
+    private float maxDistance;
+    private boolean hunting;
+    private int soundDelay, soundCounter;
+    private Entity[] targets;
+    private Animation<Image2D> idleImg, huntImg;
+    private Sound hitSound;
 
-	public EvilDog(float x, float y, float maxDistance, Entity... targets) {
-		move(x, y);
-		this.maxDistance = maxDistance;
-		this.targets = targets;
-		thrust = 500f;
-		drag = .5f;
-		delta = 1f / 60f;
-		soundDelay = 20;
-	}
+    public EvilDog(float x, float y, float maxDistance, Entity... targets) {
+        move(x, y);
+        this.maxDistance = maxDistance;
+        this.targets = targets;
+        thrust = 500f;
+        drag = .5f;
+        delta = 1f / 60f;
+        soundDelay = 20;
+    }
 
-	public void setCollisionSound(Sound sound) {
-		hitSound = sound;
-	}
-	
-	public void setCollisionSoundDelay(int delay){
-		soundDelay = delay;
-	}
+    public void setCollisionSound(Sound sound) {
+        hitSound = sound;
+    }
 
-	public boolean isHunting() {
-		return hunting;
-	}
+    public void setCollisionSoundDelay(int delay) {
+        soundDelay = delay;
+    }
 
-	public void setMaxDistance(float maxDistance) {
-		this.maxDistance = maxDistance;
-	}
+    public boolean isHunting() {
+        return hunting;
+    }
 
-	public void idleImage(Animation<Image2D> idleImg) {
-		this.idleImg = idleImg;
-	}
+    public void setMaxDistance(float maxDistance) {
+        this.maxDistance = maxDistance;
+    }
 
-	@Override
-	public void setImage(Animation<Image2D> obj) {
-		huntImg = obj;
-		super.setImage(obj);
-	}
+    public void idleImage(Animation<Image2D> idleImg) {
+        this.idleImg = idleImg;
+    }
 
-	@Override
-	public void logistics() {
-		++soundCounter;
-		
-		if (!isFrozen()) {
-			Entity closest = Collisions.findClosest(this, targets);
+    @Override
+    public void setImage(Animation<Image2D> obj) {
+        huntImg = obj;
+        super.setImage(obj);
+    }
 
-			if (maxDistance < 0 || maxDistance > Collisions.distance(this, closest)) {
+    @Override
+    public void logistics() {
+        ++soundCounter;
 
-				Vector2 norP = normalize(closest, this);
+        if (!isFrozen()) {
+            Entity closest = Collisions.findClosest(this, targets);
 
-				float accX = thrust * norP.x - drag * vx;
-				float accY = thrust * norP.y - drag * vy;
+            if (maxDistance < 0 || maxDistance > Collisions.distance(this, closest)) {
 
-				vx += delta * accX;
-				vy += delta * accY;
+                Vector2 norP = normalize(closest, this);
 
-				bounds.pos.x += delta * vx;
-				bounds.pos.y += delta * vy;
+                float accX = thrust * norP.x - drag * vx;
+                float accY = thrust * norP.y - drag * vy;
 
-				if(!hunting) {
-					setImage(huntImg);
-				}
+                vx += delta * accX;
+                vy += delta * accY;
 
-				hunting = true;
-			} else {
-				if(hunting) {
-					if(idleImg != null)
-						super.setImage(idleImg);
-				}
-				hunting = false;
-			}
+                bounds.pos.x += delta * vx;
+                bounds.pos.y += delta * vy;
 
-			for(Entity entity : targets) {
-				if(collidesWith(entity)) {
-					entity.runActionEvent(this);
-					if(hitSound != null && soundCounter % soundDelay == 0)
-						hitSound.play(sounds.calc());
-				}
-			}
-		}
-	}
+                if (!hunting) {
+                    setImage(huntImg);
+                }
+
+                hunting = true;
+            } else {
+                vx = vy = 0;
+                if (hunting) {
+                    if (idleImg != null)
+                        super.setImage(idleImg);
+                }
+                hunting = false;
+            }
+
+            Stream.of(targets).filter(this::collidesWith).forEach(entity -> {
+                if(entity.hasActionEvent())
+                    entity.runActionEvent(this);
+                if (hitSound != null && soundCounter % soundDelay == 0)
+                    hitSound.play(sounds.calc());
+            });
+        }
+    }
 }

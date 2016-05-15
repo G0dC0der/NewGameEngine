@@ -18,7 +18,20 @@ public class Keystrokes implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Up: %b, Down: %b, Left: %b, Right: %b, Jump: %b, Pause: %b, Suicide: %b, Special1: %b, Special2: %b, Special3: %b", up, down, left, right, jump, pause, suicide, special1, special2, special3);
+        return "Keystrokes{" +
+                "up=" + up +
+                ", down=" + down +
+                ", left=" + left +
+                ", right=" + right +
+                ", jump=" + jump +
+                ", pause=" + pause +
+                ", suicide=" + suicide +
+                ", special1=" + special1 +
+                ", special2=" + special2 +
+                ", special3=" + special3 +
+                ", restart=" + restart +
+                ", quit=" + quit +
+                '}';
     }
 
     /**

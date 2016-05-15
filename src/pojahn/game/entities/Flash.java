@@ -8,15 +8,13 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import pojahn.game.core.Engine;
-
 public class Flash extends Particle {
 
 	private float duration, framesAlive;
 	private Texture flashImage;
 
 	{
-		zIndex(10_000);
+		zIndex(Integer.MAX_VALUE);
 	}
 
 	public Flash(Color color, float duration) {
@@ -28,28 +26,28 @@ public class Flash extends Particle {
 
 		this.flashImage = new Texture(px);
 		px.dispose();
-	}
+    }
 
 	public Flash(Texture flashImage, float duration) {
 		this.duration = duration;
 		this.flashImage = flashImage;
 	}
 
-	@Override
-	public void render(SpriteBatch batch) {
-		if (framesAlive < duration) {
-			framesAlive++;
+    @Override
+    public void logistics() {}
 
-			Engine eng = getEngine();
-			Dimension viewport = eng.getScreenSize();
+    @Override
+	public void render(SpriteBatch batch) {
+		if (framesAlive++ < duration) {
+			Dimension viewport = getEngine().getScreenSize();
 			Color orgColor = batch.getColor();
 			Color newColor = new Color(orgColor);
 			newColor.a = (duration - framesAlive) * (1.0f / duration);
 
 			batch.setColor(newColor);
-			eng.hudCamera();
+			getEngine().hudCamera();
 			batch.draw(flashImage, 0, 0, viewport.width, viewport.height);
-			eng.gameCamera();
+			getEngine().gameCamera();
 			batch.setColor(orgColor);
 		} else
 			getLevel().discard(this);

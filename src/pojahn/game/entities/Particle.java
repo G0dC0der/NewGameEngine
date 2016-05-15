@@ -2,6 +2,7 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.MobileEntity;
+import pojahn.game.essentials.Image2D;
 
 public class Particle extends MobileEntity {
 
@@ -33,6 +34,12 @@ public class Particle extends MobileEntity {
 		if(!isVisible() || getImage().hasEnded())
 			getLevel().discard(this);
 	}
+
+	public static Particle from(int animationSpeed, Image2D[] image) {
+        Particle particle = new Particle();
+        particle.setImage(animationSpeed, image);
+        return particle;
+    }
 	
 	protected void copyData(Particle clone){
 		super.copyData(clone);

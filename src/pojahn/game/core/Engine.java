@@ -216,39 +216,44 @@ public final class Engine {
         initCameras();
         level.init();
         level.build();
+        level.insertDelete();
 
         if (isReplaying())
             level.processMeta(playback.meta);
 
         Dimension screenSize = getScreenSize();
         if (helpText == null)
-            helpText = HUDMessage.getCenteredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
+            helpText = HUDMessage.centeredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
         if (deathText == null)
-            deathText = HUDMessage.getCenteredMessage("You died. Press the restart or quit button to continue.", screenSize, Color.WHITE);
-        if (winText == null)
-            winText = HUDMessage.getCenteredMessage("Congrats! You completed the level!\nPress the restart or quit button to continue.", screenSize, Color.WHITE);
+            deathText = HUDMessage.centeredMessage("You died. Press the restart or quit button to continue.", screenSize, Color.WHITE);
         if (pauseText == null)
-            pauseText = HUDMessage.getCenteredMessage("Game is paused.", screenSize, Color.WHITE);
+            pauseText = HUDMessage.centeredMessage("Game is paused.", screenSize, Color.WHITE);
+        if (winText == null)
+            winText = HUDMessage.centeredMessage((isReplaying() ? "Replay done." :  "Congrats! You completed the level!") +
+                   "\nPress the restart or quit button to continue.", screenSize, Color.WHITE);
 
         setGameState(GameState.ACTIVE);
     }
 
     private void restart(boolean checkpointPresent) {
+        setGameState(GameState.LOADING);
+
         if (lost())
             deathCounter++;
         else if (completed())
             deathCounter = 0;
 
-        setGameState(GameState.LOADING);
-
-        level.clean();
-        level.build();
+        if (!checkpointPresent) {
+            time = 0;
+            uniqueCounter = 0;
+        }
 
         setZoom(1);
         setRotation(0);
 
-        if (!checkpointPresent)
-            time = 0;
+        level.clean();
+        level.build();
+        level.insertDelete();
 
         frameCounter = 0;
         setGameState(GameState.ACTIVE);
@@ -285,8 +290,16 @@ public final class Engine {
                 }
             }
         } else {
+            Keystrokes keys = keys(level.getMainCharacters());
+
             if (lost() && level.cpPresent() && !replayEnded()) {
                 restart(true);
+            } else if (completed() || lost()) {
+                if (keys.restart) {
+                    restart(false);
+                } else if (keys.quit) {
+                    exit();
+                }
             }
         }
 

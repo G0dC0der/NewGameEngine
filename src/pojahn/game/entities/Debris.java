@@ -8,20 +8,19 @@ public class Debris extends Particle {
 
     private Particle impact, trailer;
     private Vector2 vel, tVel;
-    private float accX, gravity, mass, damping, delta, vx, toleranceX, vy, toleranceY;
+    private float gravity, mass, damping, delta, vx, toleranceX, vy, toleranceY;
     private int spawns, trailerDelay, counter;
     private boolean first;
 
     public Debris(float vx, float toleranceX, float vy, float toleranceY) {
         this.vx = vx;
         this.vy = vy;
-        this.toleranceY = toleranceY;
         this.toleranceX = toleranceX;
+        this.toleranceY = toleranceY;
         trailerDelay = 5;
 
         vel = new Vector2();
         tVel = new Vector2(1000, -800);
-        accX = 500;
         mass = 1.0f;
         gravity = -500;
         delta = 1.0f / 60.0f;
@@ -59,18 +58,8 @@ public class Debris extends Particle {
             }
         }
 
-        if(vel.x != 0.0f){
-            if(runningLeft()){
-                moveRight();
-                if(runningRight())
-                    vel.x = 0;
-            } else if(runningRight()){
-                moveLeft();
-                if(runningLeft())
-                    vel.x = 0;
-            }
-        }
         drag();
+        applyYForces();
         applyXForces();
 
         if(trailer != null && ++counter % trailerDelay == 0)
@@ -100,14 +89,8 @@ public class Debris extends Particle {
         bounds.pos.x -= vel.x * getEngine().delta;
     }
 
-    protected void moveLeft(){
-        if(vel.x < tVel.x)
-            vel.x += accX * getEngine().delta;
-    }
-
-    protected void moveRight(){
-        if(-vel.x < tVel.x)
-            vel.x -= accX * getEngine().delta;
+    protected void applyYForces() {
+        bounds.pos.y -= vel.y * getEngine().delta;
     }
 
     protected void drag(){
@@ -120,21 +103,9 @@ public class Debris extends Particle {
             vel.y -= (force / mass) * getEngine().delta;
     }
 
-    protected boolean runningLeft(){
-        return vel.x > 0;
-    }
-
-    protected boolean runningRight(){
-        return vel.x < 0;
-    }
-
     protected void copyData(Debris clone){
         super.copyData(clone);
         clone.impact = impact;
-        clone.vx = vx;
-        clone.vy = vy;
-        clone.toleranceX = toleranceX;
-        clone.toleranceY = toleranceY;
         clone.spawns = spawns;
         clone.gravity = gravity;
         clone.mass = mass;
@@ -145,16 +116,20 @@ public class Debris extends Particle {
     }
 
     private void setVelocity() {
-        boolean flag1 = MathUtils.random(0 ,10) > 5;
-        boolean flag2 = MathUtils.random(10,20) > 15;
+        float halfX = toleranceX / 2;
+        float halfY = toleranceY / 2;
 
-        float tolX = MathUtils.random(0.0f, toleranceX);
-        float tolY = MathUtils.random(0.0f, toleranceY);
-
-        if(flag1) tolX = -tolX;
-        if(flag2) tolY = -tolY;
+        float tolX = MathUtils.random(-halfX, halfX);
+        float tolY = MathUtils.random(-halfY, halfY);
 
         vel.x = vx + tolX;
         vel.y = vy + tolY;
+
+        if(random())
+            vel.x = -vel.x;
+    }
+
+    private boolean random() {
+        return MathUtils.random(0,100) > 50;
     }
 }

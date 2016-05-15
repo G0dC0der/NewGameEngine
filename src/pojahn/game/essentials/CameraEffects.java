@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import pojahn.game.core.Entity;
-import pojahn.game.core.PlayableEntity;
 
 public class CameraEffects {
 
     public static Entity cameraFocus(List<Entity> entities, int padding, boolean ignoreInvisible) {
-        return new Entity() {
-            {
+        return new Entity() {{
                 zIndex(Integer.MAX_VALUE - 1);
             }
 
