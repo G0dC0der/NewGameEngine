@@ -9,12 +9,12 @@ public class Shrapnel extends Particle {
 	private Projectile split;
 	private boolean once;
 
-	public Shrapnel(float x, float y, Projectile shrapnel) {
+	public Shrapnel(Projectile shrapnel) {
 		this.split = shrapnel;
 	}
 	
 	public Shrapnel getClone(float x, float y) {
-		Shrapnel s = new Shrapnel(x, y, split);
+		Shrapnel s = new Shrapnel(split);
 		copyData(s);
 		if (cloneEvent != null)
 			cloneEvent.handleClonded(s);

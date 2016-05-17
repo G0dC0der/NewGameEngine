@@ -10,19 +10,19 @@ public class LineMovement extends MobileEntity{
 		HORIZONTAL
 	}
 	
-	private Movement movment;
+	private Movement movement;
 	private boolean leftOrUp;
 	
 	public LineMovement(Movement movement){
 		if(movement == null)
 			throw new IllegalArgumentException("Must set a movement.");
 		
-		this.movment = movement;
+		this.movement = movement;
 	}
 	
 	@Override
 	public LineMovement getClone(){
-		LineMovement clone = new LineMovement(movment);
+		LineMovement clone = new LineMovement(movement);
 		copyData(clone);
 		if(cloneEvent != null)
 			cloneEvent.handleClonded(clone);
@@ -31,14 +31,14 @@ public class LineMovement extends MobileEntity{
 	}
 	
 	public void setMovement(Movement movement){
-		this.movment = movement;
+		this.movement = movement;
 	}
 	
 	@Override
 	public void logistics() {
 		Vector2 next;
 
-		if(movment == Movement.HORIZONTAL)
+		if(movement == Movement.HORIZONTAL)
 			next = attemptTowards(leftOrUp ? 0 : getLevel().getWidth(), y(), getMoveSpeed());
 		else
 			next = attemptTowards(x(), leftOrUp ? 0 : getLevel().getHeight(), getMoveSpeed());

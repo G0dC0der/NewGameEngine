@@ -88,10 +88,10 @@ public class Shuttle extends MobileEntity {
             if (x() == wp.target.x && y() == wp.target.y)    //Make sure we don't get NaN when normalizing.
                 bounds.pos.x--;
 
-            if (waypointDirection == null)
-                waypointDirection = Collisions.normalize(bounds.pos.x, bounds.pos.y, wp.target.x, wp.target.y);
-
             Vector2 currentDirection = Collisions.normalize(bounds.pos.x, bounds.pos.y, wp.target.x, wp.target.y);
+
+            if (waypointDirection == null)
+                waypointDirection = currentDirection.cpy();
 
             if (waypointDirection.dot(currentDirection) < 0) {
                 counter = ++counter % waypoints.size();

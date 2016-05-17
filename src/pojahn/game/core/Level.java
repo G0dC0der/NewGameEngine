@@ -1,12 +1,9 @@
 package pojahn.game.core;
 
+import java.awt.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import pojahn.game.essentials.*;
@@ -38,22 +35,63 @@ public abstract class Level {
         CUSTOM_10
     }
 
+    public static class TileLayer {
+
+        private int x, y;
+        private Tile[][] layer;
+
+        public TileLayer(int width, int height) {
+            setSize(width, height);
+        }
+
+        public void setPosition(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public void setSize(int width, int height) {
+            layer = new Tile[width][height];
+        }
+
+        public void setTile(int x, int y, Tile tile) {
+            layer[x][y] = tile;
+        }
+
+        public void fill(Tile tile) {
+            for (Tile[] layerRow : layer) {
+                Arrays.fill(layerRow, tile);
+            }
+        }
+
+        public static TileLayer from(Image2D image) {
+            TileLayer tileLayer = new TileLayer(image.getWidth(), image.getHeight());
+            for(int x = 0;  x < tileLayer.layer.length; x++) {
+                for(int y = 0; y < tileLayer.layer[x].length;  y++) {
+                    if(!image.isInvisible(x, y)) {
+                        tileLayer.setTile(x, y, Tile.SOLID);
+                    }
+                }
+            }
+            return tileLayer;
+        }
+    }
+
     private static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) -> obj1.getZIndex() - obj2.getZIndex();
-
-    Engine engine;
-
-    private List<Entry<Integer, Entity>> awatingObjects, deleteObjects;
+    private List<Entry<Integer, Entity>> awaitingObjects, deleteObjects;
     private List<PlayableEntity> mainCharacters;
+    private List<TileLayer> tileLayers;
     private CheckPointHandler cph;
 
     List<Entity> gameObjects, soundListeners;
+    Engine engine;
     boolean sort;
 
     protected Level() {
-        awatingObjects = new LinkedList<>();
+        awaitingObjects = new LinkedList<>();
         deleteObjects = new LinkedList<>();
         soundListeners = new ArrayList<>();
         gameObjects = new LinkedList<>();
+        tileLayers = new ArrayList<>();
         mainCharacters = new ArrayList<>();
         cph = new CheckPointHandler();
     }
@@ -62,23 +100,32 @@ public abstract class Level {
 
     public abstract int getHeight();
 
-    public abstract Tile tileAt(int x, int y);
-
-    public abstract void setTileOnLayer(int x, int y, Tile tile);
-
-    public abstract void removeTileOnLayer(int x, int y);
-
-    public abstract void clearTileLayer();
-
-    public abstract boolean isSolid(int x, int y);
-
-    public abstract boolean isHollow(int x, int y);
-
     public abstract void init() throws Exception;
 
     public abstract void build();
 
     public abstract void dispose();
+
+    protected abstract Tile tileAtInternal(int x, int y);
+
+    public boolean isSolid(int x, int y) {
+        return tileAt(x, y) == Tile.SOLID;
+    }
+
+    public boolean isHollow(int x, int y) {
+        return tileAt(x, y) == Tile.HOLLOW;
+    }
+
+    public final Tile tileAt(int x, int y) {
+        if (outOfBounds(x, y))
+            return Tile.HOLLOW;
+
+        Tile tile = onLayer(x, y);
+        if(tile != null)
+            return tile;
+
+        return tileAtInternal(x, y);
+    }
 
     public Tile tileAt(Vector2 cord) {
         return tileAt((int) cord.x, (int) cord.y);
@@ -112,6 +159,19 @@ public abstract class Level {
         return cph;
     }
 
+    public void addTileLayer(TileLayer tileLayer) {
+        tileLayers.add(tileLayer);
+    }
+
+    public void removeTileLayer(TileLayer tileLayer) {
+        for(int i = 0; i < tileLayers.size(); i++) {
+            if(tileLayers.get(i) == tileLayer) {
+                tileLayers.remove(i);
+                return;
+            }
+        }
+    }
+
     public boolean outOfBounds(float targetX, float targetY) {
         return targetX >= getWidth() ||
                 targetY >= getHeight() ||
@@ -121,11 +181,11 @@ public abstract class Level {
     }
 
     public void add(Entity entity) {
-        awatingObjects.add(new Entry<>(0, entity));
+        awaitingObjects.add(new Entry<>(0, entity));
     }
 
     public void addAfter(Entity entity, int framesDelay) {
-        awatingObjects.add(new Entry<>(framesDelay, entity));
+        awaitingObjects.add(new Entry<>(framesDelay, entity));
     }
 
     public void addWhen(Entity entity, TaskEvent addEvent) {
@@ -276,13 +336,17 @@ public abstract class Level {
         soundListeners.remove(listener);
     }
 
+    protected Tile onLayer(int x, int y) { //TODO: Implement!
+        return null;
+    }
+
     protected void clean() {
-        awatingObjects.clear();
+        awaitingObjects.clear();
         deleteObjects.clear();
         gameObjects.forEach(Entity::dispose);
         gameObjects.clear();
-        clearTileLayer();
         mainCharacters.clear();
+        tileLayers.clear();
         getCheckpointHandler().reset();
     }
 
@@ -362,10 +426,10 @@ public abstract class Level {
     }
 
     void insertDelete() {
-        for (int i = 0; i < awatingObjects.size(); i++) {
-            Entry<Integer, Entity> entry = awatingObjects.get(i);
+        for (int i = 0; i < awaitingObjects.size(); i++) {
+            Entry<Integer, Entity> entry = awaitingObjects.get(i);
             if (entry.key-- <= 0) {
-                awatingObjects.remove(i);
+                awaitingObjects.remove(i);
                 i--;
                 gameObjects.add(entry.value);
                 sort = true;

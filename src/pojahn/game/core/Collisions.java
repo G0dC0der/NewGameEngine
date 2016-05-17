@@ -281,7 +281,7 @@ public class Collisions {
     }
 
     public static double distance(Entity e1, Entity e2) {
-        return distance(e1.x(), e1.y(), e2.x(), e2.y());
+        return distance(e1.centerX(), e1.centerY(), e2.centerX(), e2.centerY());
     }
 
     public static Entity findClosest(Entity watcher, Entity... targets) {
@@ -425,6 +425,7 @@ public class Collisions {
      * @param y0   The y position of the first point.
      * @param x1   The x position of the second point.
      * @param y1   The y position of the second point.
+     * @param continuesly Whether or not to continue the given path if the given tile was not found when reached the second point(x1,y1).
      * @param tile The tile to scan for.
      * @return The point where the tile was found, or null if the tile was not found.
      */
@@ -436,10 +437,10 @@ public class Collisions {
         int err = dx - dy;
 
         while (true) {
+            if (level.tileAt(x0, y0) == tile)
+                return new Vector2(x0, y0);
             if (level.outOfBounds(x0, y0) || (!continuesly && x0 == x1 && y0 == y1))
                 return null;
-            else if (level.tileAt(x0, y0) == tile)
-                return new Vector2(x0, y0);
 
             final int e2 = 2 * err;
             if (e2 > -dy) {
@@ -577,46 +578,40 @@ public class Collisions {
             case NW:
                 targetX = x - 1;
                 targetY = y - 1;
-                return searchTile(x, y, targetX, targetY, true, Tile.SOLID, level);
-
+                break;
             case N:
                 targetX = x;
                 targetY = y - 1;
-                return searchTile(x, y, targetX, targetY, true, Tile.SOLID, level);
-
+                break;
             case NE:
                 targetX = x + 1;
                 targetY = y - 1;
-                return searchTile(x, y, targetX, targetY, true, Tile.SOLID, level);
-
+                break;
             case E:
                 targetX = x + 1;
                 targetY = y;
-                return searchTile(x, y, targetX, targetY, true, Tile.SOLID, level);
-
+                break;
             case SE:
                 targetX = x + 1;
                 targetY = y + 1;
-                return searchTile(x, y, targetX, targetY, true, Tile.SOLID, level);
-
+                break;
             case S:
                 targetX = x;
                 targetY = y + 1;
-                return searchTile(x, y, targetX, targetY, true, Tile.SOLID, level);
-
+                break;
             case SW:
                 targetX = x - 1;
                 targetY = y + 1;
-                return searchTile(x, y, targetX, targetY, true, Tile.SOLID, level);
-
+                break;
             case W:
                 targetX = x - 1;
                 targetY = y;
-                return searchTile(x, y, targetX, targetY, true, Tile.SOLID, level);
-
+                break;
             default:
                 return null;
         }
+
+        return findEdgePoint(x, y, targetX, targetY, level);
     }
 
     public static Direction getDirection(Vector2 normalizedPoint) {
@@ -650,26 +645,7 @@ public class Collisions {
             return null;
 
         Vector2 normalized = normalize(prevX, prevY, currX, currY);
-        final double fThreshold = Math.cos(Math.PI / 8);
-
-        if (normalized.x > fThreshold)
-            return Direction.W;
-        else if (normalized.x < -fThreshold)
-            return Direction.E;
-        else if (normalized.y > fThreshold)
-            return Direction.N;
-        else if (normalized.y < -fThreshold)
-            return Direction.S;
-        else if (normalized.x > 0 && normalized.y > 0)
-            return Direction.NW;
-        else if (normalized.x > 0 && normalized.y < 0)
-            return Direction.SW;
-        else if (normalized.x < 0 && normalized.y > 0)
-            return Direction.NE;
-        else if (normalized.x < 0 && normalized.y < 0)
-            return Direction.SE;
-
-        return null;
+        return getDirection(normalized);
     }
 
     public static Direction getDirection(MobileEntity mobile) {

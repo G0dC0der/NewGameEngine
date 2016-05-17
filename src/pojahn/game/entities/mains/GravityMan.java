@@ -212,12 +212,8 @@ public class GravityMan extends PlayableEntity {
     protected boolean isWallSliding() {
         Keystrokes strokes = getKeysDown();
 
-        if (!allowWallSlide || strokes.down)
-            return false;
-
-        return
-                ((strokes.left || isWallSliding) && !canLeft()) ||
-                        ((strokes.right || isWallSliding) && !canRight());
+        return !(!allowWallSlide || strokes.down) &&
+                (((strokes.left || isWallSliding) && !canLeft()) || ((strokes.right || isWallSliding) && !canRight()));
     }
 
     protected boolean partialLeft() {

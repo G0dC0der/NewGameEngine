@@ -1,168 +1,184 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
+import pojahn.game.essentials.Hitbox;
 
-import static pojahn.game.core.Collisions.rectanglesCollide;
+import static pojahn.game.core.Collisions.*;
 
-public class PushableObject extends MobileEntity { //TODO: This class is oddly written. Test it roughly.
+public class PushableObject extends MobileEntity {
 
-	public float mass, gravity, damping, pushStrength, accX;
-	public Vector2 vel, tVel;
-	private boolean useGravity, mustStand;
-	private MobileEntity[] pushers;
-	private Entity dummy;
-	private int pushingSoundDelay, pushingSoundCounter;
-	private Sound landingSound, pushingSound;
+    public float mass, gravity, damping, fallSpeedLimit, acceleration;
+    private Vector2 vel;
+    private float currAcc;
 
-	public PushableObject(float x, float y, MobileEntity... pushers) {
-		vel = new Vector2();
-		tVel = new Vector2(230, -1200);
-		move(x, y);
-		this.pushers = pushers;
-		useGravity = true;
-		mass = 1.0f;
-		gravity = -500;
-		damping = 0.0001f;
-		pushStrength = 500;
-		accX = 500;
-		dummy = new Entity();
+    private boolean useGravity, mustStand;
+    private MobileEntity[] pushers;
+    private Rectangle dummy;
+    private int pushingSoundDelay, pushingSoundCounter;
+    private Sound landingSound, pushingSound;
 
-		for (MobileEntity mobile : pushers){
-			mobile.addObstacle(this);
-			addObstacle(mobile);
-		}
-	}
+    public PushableObject(float x, float y, MobileEntity... pushers) {
+        vel = new Vector2();
+        move(x, y);
+        this.pushers = pushers;
+        dummy = new Rectangle();
+        for (MobileEntity mobile : pushers) {
+            mobile.addObstacle(this);
+            addObstacle(mobile);
+        }
 
-	@Override
-	public void logistics() {
-		if (useGravity) {
-			if (!canDown()) {
-				if (vel.y < 0 && landingSound != null)
-					landingSound.play(sounds.calc());
-				vel.y = 0;
-			} else {
-				drag();
-				float nextY = getFutureY();
+        useGravity = true;
+        mass = 1.0f;
+        gravity = -500;
+        damping = 0.0001f;
+        fallSpeedLimit = -1200;
 
-				if (!occupiedAt(x(), nextY))
-					move(x(), nextY);
-				else
-					tryDown(10);
-			}
-		}
+        acceleration = 300;
+    }
 
-		boolean moved = false;
-		if (pushStrength > 0.0f) {
-			for (MobileEntity mobile : pushers) {
-				dummy.move(x() - 1, y());
-				dummy.bounds.size.width = width() + 2;
-				
-				if(mustStand && mobile.canDown())
-					continue;
-				
-				if(rectanglesCollide(mobile.bounds.toRectangle(), dummy.bounds.toRectangle())){
-					if(Collisions.leftMost(mobile, this) == mobile){
-						moveRight();
-						moved = true;
-						float nextX = getFutureX();
-						if(!occupiedAt(nextX, y()))
-							move(nextX, y());
-						else
-							tryRight(10);
-					} else if (Collisions.rightMost(mobile, this) == mobile){
-						moveLeft();
-						moved = true;
-						float nextX = getFutureX();
-						if(!occupiedAt(nextX, y()))
-							move(nextX, y());
-						else
-							tryLeft(10);
-					}
-				}
-			}
-		}
-		
-		if(!moved){
-			if(runningRight()){
-				moveLeft();
-				if(runningLeft())
-					vel.x = 0;
-			}
-			else if(runningLeft()){
-				moveRight();
-				if(runningRight())
-					vel.x = 0;
-			}
-			
-			float nextX = getFutureX();
-			if(!occupiedAt(nextX, y()))
-				move(nextX,y());
-		}
+    @Override
+    public void logistics() {
+        if (useGravity) {
+            if (!canDown()) {
+                if (vel.y < 0 && landingSound != null)
+                    landingSound.play(sounds.calc());
+                vel.y = 0;
+            } else {
+                drag();
+                float nextY = bounds.pos.y - vel.y * getEngine().delta;
 
-		if (x() != prevX() && pushingSound != null && ++pushingSoundCounter % pushingSoundDelay == 0)
-			pushingSound.play(sounds.calc());
-	}
+                if (!occupiedAt(x(), nextY))
+                    move(x(), nextY);
+                else
+                    tryDown(10);
+            }
+        }
 
-	public void useGravity(boolean gravity) {
-		useGravity = gravity;
-	}
+        if(acceleration > 0.0f) {
+            for(MobileEntity mobile : pushers) {
+                if(mustStand && mobile.canDown())
+                    continue;
 
-	public void mustStand(boolean mustStand) {
-		this.mustStand = mustStand;
-	}
+                dummy.set(x() - 2, y(), width() + 4, height());
+                if(rectanglesCollide(mobile.bounds.toRectangle(), dummy)) {
+                    currAcc = leftMost(mobile, this) == mobile ? acceleration : -acceleration;
+                    break;
+                }
+            }
+        }
 
-	public void setSlammingSound(Sound sound) {
-		landingSound = sound;
-	}
+        final float DELTA = getEngine().delta;
+        if(currAcc > 0.0f) {
+            vel.x += currAcc * DELTA;
+        }
 
-	public void setPushingSound(Sound sound, int delay) {
-		pushingSound = sound;
-		pushingSoundDelay = delay;
-	}
+//        vel.x += acceleration * getEngine().delta;
+//        bounds.pos.x = vel.x * getEngine().delta;
 
-	@Override
-	public void dispose() {
-		for (MobileEntity mobile : pushers)
-			mobile.removeObstacle(this);
-	}
+//        boolean moved = false;
+//        if (pushStrength > 0.0f) {
+//            for (MobileEntity mobile : pushers) {
+//                dummy.set(x() - 2, y(), width() + 4, height());
+//
+//                if (mustStand && mobile.canDown())
+//                    continue;
+//
+//                if (rectanglesCollide(mobile.bounds.toRectangle(), dummy)) {
+//                    if (Collisions.leftMost(mobile, this) == mobile) {
+//                        moveRight();
+//                        moved = true;
+//                        float nextX = getFutureX();
+//                        if (!occupiedAt(nextX, y()))
+//                            move(nextX, y());
+//                        else
+//                            tryRight(10);
+//                    } else if (Collisions.rightMost(mobile, this) == mobile) {
+//                        moveLeft();
+//                        moved = true;
+//                        float nextX = getFutureX();
+//                        if (!occupiedAt(nextX, y()))
+//                            move(nextX, y());
+//                        else
+//                            tryLeft(10);
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (!moved) {
+//            if (runningRight()) {
+//                moveLeft();
+//                if (runningLeft())
+//                    vel.x = 0;
+//            } else if (runningLeft()) {
+//                moveRight();
+//                if (runningRight())
+//                    vel.x = 0;
+//            }
+//
+//            float nextX = getFutureX();
+//            if (!occupiedAt(nextX, y()))
+//                move(nextX, y());
+//        }
 
-	protected void moveLeft(){
-		if(vel.x < tVel.x)
-			vel.x += accX * getEngine().delta;
-	}
+        if (x() != prevX() && pushingSound != null && ++pushingSoundCounter % pushingSoundDelay == 0)
+            pushingSound.play(sounds.calc());
+    }
 
-	protected void moveRight(){
-		if(-vel.x < tVel.x)
-			vel.x -= accX * getEngine().delta;
-	}
+    public void useGravity(boolean gravity) {
+        useGravity = gravity;
+    }
 
-	protected void drag(){
-		float force = mass * gravity;
-		vel.y *= 1.0 - (damping * getEngine().delta);
+    public void mustStand(boolean mustStand) {
+        this.mustStand = mustStand;
+    }
 
-		if(tVel.y < vel.y){
-			vel.y += (force / mass) * getEngine().delta;
-		}else
-			vel.y -= (force / mass) * getEngine().delta;
-	}
+    public void setSlammingSound(Sound sound) {
+        landingSound = sound;
+    }
 
-	protected float getFutureX(){
-		return bounds.pos.x - vel.x * getEngine().delta;
-	}
+    public void setPushingSound(Sound sound, int delay) {
+        pushingSound = sound;
+        pushingSoundDelay = delay;
+    }
 
-	protected float getFutureY(){
-		return bounds.pos.y - vel.y * getEngine().delta;
-	}
+    @Deprecated
+    @Override
+    public void setHitbox(Hitbox hitbox) {
+        throw new UnsupportedOperationException("PushableObject is limited to rectangular hitbox.");
+    }
 
-	protected boolean runningLeft(){
-		return vel.x > 0;
-	}
+    @Override
+    public void dispose() {
+        for (MobileEntity mobile : pushers)
+            mobile.removeObstacle(this);
+    }
 
-	protected boolean runningRight(){
-		return vel.x < 0;
-	}
+    protected void drag() {
+        float force = mass * gravity;
+        vel.y *= 1.0 - (damping * getEngine().delta);
+
+        if (fallSpeedLimit < vel.y) {
+            vel.y += (force / mass) * getEngine().delta;
+        } else
+            vel.y -= (force / mass) * getEngine().delta;
+    }
+
+    protected float getFutureX() {
+        return bounds.pos.x - vel.x * getEngine().delta;
+    }
+
+
+    protected boolean runningLeft() {
+        return vel.x > 0;
+    }
+
+    protected boolean runningRight() {
+        return vel.x < 0;
+    }
 }

@@ -52,8 +52,9 @@ public class SimpleWeapon extends MobileEntity {
             float startY = bounds.pos.y + offsetY;
 
             Projectile projClone = proj.getClone();
-            projClone.move(startX, startY);
             Vector2 target = Collisions.getEdgePoint((int) startX, (int) startY, projDir, l);
+
+            projClone.move(startX, startY);
             projClone.setTarget(target.x, target.y);
 
             if (fireAnim != null)
@@ -65,5 +66,15 @@ public class SimpleWeapon extends MobileEntity {
             if (firingSound != null)
                 firingSound.play(sounds.calc());
         }
+    }
+
+    private Vector2 getTarget(float startX, float startY) {
+        switch (projDir) {
+            case N:
+                startY = 0;
+                break;
+        }
+
+        return new Vector2(startX, startY);
     }
 }

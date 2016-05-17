@@ -25,17 +25,14 @@ import java.util.Map;
 public abstract class TileBasedLevel extends Level {
 
     private int tilesX, tilesY, tileWidth, tileHeight;
-    private float rotation;
     private Entity worldImage;
     private TiledMap map;
     private TiledMapRenderer tiledMapRenderer;
     private TiledMapTileLayer layer;
-    private Map<Integer, Byte> tileLayer;
     private Map<Integer, Holder> orgTiles;
     private Image2D tileSet;
 
     protected TileBasedLevel() {
-        tileLayer = new HashMap<>();
         orgTiles = new HashMap<>();
     }
 
@@ -47,7 +44,6 @@ public abstract class TileBasedLevel extends Level {
         tilesY = props.get("height", Integer.class);
         tileWidth = props.get("tilewidth", Integer.class);
         tileHeight = props.get("tileheight", Integer.class);
-        Dimension size = getEngine().getScreenSize();
         encode();
     }
 
@@ -62,14 +58,7 @@ public abstract class TileBasedLevel extends Level {
     }
 
     @Override
-    public Tile tileAt(int x, int y) {
-        if (outOfBounds(x, y))
-            return Tile.HOLLOW;
-
-        Byte tile = tileLayer.get(x * 31 + y);
-        if(tile != null)
-            return PixelBasedLevel.mapToTile(tile);
-
+    protected Tile tileAtInternal(int x, int y) {
         int tileX = x / tileWidth;
         int tileY = y / tileHeight;
 
@@ -87,37 +76,7 @@ public abstract class TileBasedLevel extends Level {
             return Tile.HOLLOW;
     }
 
-    @Override
-    public boolean isHollow(int x, int y) {
-        return tileAt(x, y) == Tile.HOLLOW;
-    }
-
-    @Override
-    public boolean isSolid(int x, int y) {
-        return tileAt(x, y) == Tile.SOLID;
-    }
-
-    @Override
-    public void setTileOnLayer(int x, int y, Tile tile) {
-        int key = x * 31 + y;
-
-        if (tile == null)
-            tileLayer.remove(key);
-        else
-            tileLayer.put(key, PixelBasedLevel.mapToByte(tile));
-    }
-
-    @Override
-    public void removeTileOnLayer(int x, int y) {
-        tileLayer.remove(x * 31 + y);
-    }
-
-    @Override
-    public void clearTileLayer() {
-        tileLayer.clear();
-    }
-
-    public void setTile(int tileX, int tileY, Cell cell) {
+    public void setCell(int tileX, int tileY, Cell cell) {
         if (tileX < 0 || tileX > tilesX || tileY < 0 || tileY > tilesY)
             return;
 
@@ -137,7 +96,7 @@ public abstract class TileBasedLevel extends Level {
                 int dx = tileCx - x;
                 int dy = tileCy - y;
                 if ((dx * dx + dy * dy) < rr)
-                    setTile(x, y, cell);
+                    setCell(x, y, cell);
             }
         }
     }

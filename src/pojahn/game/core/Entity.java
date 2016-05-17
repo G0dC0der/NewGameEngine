@@ -274,6 +274,10 @@ public class Entity {
         return (float) Collisions.distance(x(), y(), entity.x(), entity.y());
     }
 
+    public boolean near(Entity entity, float epsilon) {
+        return epsilon >= dist(entity);
+    }
+
     public void expand(float amount) {
         bounds.pos.x -= amount;
         bounds.pos.y -= amount;

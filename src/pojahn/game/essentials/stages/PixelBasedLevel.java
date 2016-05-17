@@ -82,10 +82,8 @@ public abstract class PixelBasedLevel extends Level{
 	public static final int GREEN_10 = 0x000000ff;
 	
 	private byte[][] stageData;
-	private Map<Integer, Byte> tileLayer; 
 	
 	protected PixelBasedLevel() {
-		tileLayer = new HashMap<>();
 	}
 	
 	public void createMap(Pixmap map){
@@ -143,44 +141,10 @@ public abstract class PixelBasedLevel extends Level{
 			}
 		}
 	}
-	
-	
+
 	@Override
-	public boolean isHollow(int x, int y) {
-		return tileAt(x,y) == Tile.HOLLOW;
-	}
-	
-	@Override
-	public boolean isSolid(int x, int y) {
-		return tileAt(x,y) == Tile.SOLID;
-	}
-	
-	@Override
-	public Tile tileAt(int x, int y) {
-		Byte tile = tileLayer.get(x * 31 + y);
-		if(tile != null)
-			return mapToTile(tile);
-		
+	protected Tile tileAtInternal(int x, int y) {
 		return outOfBounds(x,y) ? Tile.SOLID : mapToTile(stageData[x][y]);
-	}
-	
-	@Override
-	public void setTileOnLayer(int x, int y, Tile tile){
-		int key = x * 31 + y;
-		if(tile == null)
-			tileLayer.remove(key);
-		else
-			tileLayer.put(key, mapToByte(tile));
-	}
-	
-	@Override
-	public void removeTileOnLayer(int x, int y) {
-		tileLayer.remove(x * 31 + y);
-	}
-	
-	@Override
-	public void clearTileLayer(){
-		tileLayer.clear();
 	}
 	
 	@Override

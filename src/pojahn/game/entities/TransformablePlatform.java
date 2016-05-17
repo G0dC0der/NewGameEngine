@@ -4,62 +4,62 @@ import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 
-public class TransformablePlatform extends SolidPlatform{
+import java.awt.*;
 
-	private Tile tile;
-	private MobileEntity[] subjects;
-	
-	public TransformablePlatform(float x, float y, MobileEntity... subjects) {
-		super(x, y, subjects);
-		tile = Tile.SOLID;
-		this.subjects = subjects;
-	}
-	
-	@Override
-	public TransformablePlatform getClone() {
-		TransformablePlatform clone = new TransformablePlatform(x(),y(),subjects);
-		copyData(clone);
-		if(cloneEvent != null)
-			cloneEvent.handleClonded(clone);
-		
-		return clone;
-	}
+public class TransformablePlatform extends SolidPlatform {
 
-	@Override
-	public void logistics() {
-		super.logistics();
-		deform(prevX(), prevY(), null);
-		
-		if(x() != prevX() || y() != prevY()){
-			deform(x(), y(), tile);
-		}
-	}
-	
-	public void setTile(Tile tile){
-		this.tile = tile;
-	}
-	
-	protected void copyData(TransformablePlatform clone){
-		super.copyData(clone);
-		clone.tile = tile;
-	}
-	
-	private void deform(float x, float y, Tile tile) {
-		Level l = getLevel();
+    private Tile tile;
+    private Level.TileLayer tileLayer;
+    private MobileEntity[] subjects;
+    private boolean prepared;
 
-		float width = width();
-		float height = height();
-		float halfHeight = halfHeight();
+    public TransformablePlatform(float x, float y, MobileEntity... subjects) {
+        super(x, y, subjects);
+        tile = Tile.SOLID;
+        this.subjects = subjects;
+    }
 
-		for (int x2 = 0; x2 < width; x2++) {
-			for (int y2 = 0; y2 < halfHeight; y2++) {
-				int posX = (int) (x2 + x);
-				int topY = (int) (y2 + y);
-				int bottomY = (int) (height - y2);
-				
-				l.setTileOnLayer(posX, topY, tile);
-				l.setTileOnLayer(posX, bottomY, tile);
-			}
-		}
-	}
+    @Override
+    public TransformablePlatform getClone() {
+        TransformablePlatform clone = new TransformablePlatform(x(), y(), subjects);
+        copyData(clone);
+        if (cloneEvent != null)
+            cloneEvent.handleClonded(clone);
+
+        return clone;
+    }
+
+    @Override
+    public void logistics() {
+        super.logistics();
+
+        if(!prepared) {
+            prepare();
+        }
+
+        tileLayer.setPosition((int)x() + 2, (int)y() + 2);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        getLevel().removeTileLayer(tileLayer);
+    }
+
+    private void prepare() {
+        prepared = true;
+        tileLayer = new Level.TileLayer((int)width() - 4, (int)height() - 4);
+        tileLayer.fill(tile);
+
+        getLevel().addTileLayer(tileLayer);
+    }
+
+    public void setTile(Tile tile) {
+        this.tile = tile;
+    }
+
+    protected void copyData(TransformablePlatform clone) {
+        super.copyData(clone);
+        clone.tile = tile;
+    }
 }

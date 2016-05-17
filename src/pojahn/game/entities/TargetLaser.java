@@ -55,7 +55,7 @@ public class TargetLaser extends PathDrone {
         Vector2 finalTarget;
 
         if (infBeam) {
-            finalTarget = Collisions.searchTile(cx, cy, tcx, tcy, stopTile, l);
+            finalTarget = Collisions.searchTile((int)cx, (int)cy, (int)tcx, (int)tcy, true, stopTile, l);
             if (finalTarget == null)
                 finalTarget = Collisions.findEdgePoint(cy, cy, tcx, tcy, l);
         } else
