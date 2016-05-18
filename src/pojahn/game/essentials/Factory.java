@@ -3,6 +3,7 @@ package pojahn.game.essentials;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
+import pojahn.game.core.Level.TileLayer;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.events.Event;
@@ -32,7 +33,7 @@ public class Factory {
     public static Entity drawText(HUDMessage message, BitmapFont font) {
         return new Entity() {
             {
-                zIndex(9000);
+                zIndex(Integer.MAX_VALUE);
             }
 
             @Override
@@ -41,6 +42,19 @@ public class Factory {
                 message.draw(batch, font);
                 getEngine().gameCamera();
             }
+        };
+    }
+
+    public static Event solidify(Entity entity) {
+        Image2D img = entity.getImage().getArray()[0];
+        TileLayer tileLayer = Utils.from(img);
+        boolean[] once = new boolean[1];
+        return () -> {
+            if(!once[0]) {
+                once[0] = true;
+                entity.getLevel().addTileLayer(tileLayer);
+            }
+            tileLayer.setPosition((int)entity.x(), (int)entity.y());
         };
     }
 

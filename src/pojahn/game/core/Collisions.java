@@ -20,6 +20,10 @@ import pojahn.game.essentials.Image2D;
 
 public class Collisions {
 
+    public static boolean pointRectangleOverlap(float x, float y, float w, float h, int px, float py) {
+        return px >= x && px <= x + w && py >= y && py <= y + h;
+    }
+
     public static boolean rectanglesCollide(Rectangle rec1, Rectangle rec2) {
         return !((rec1.y + rec1.height < rec2.y) ||
                 (rec1.y > rec2.y + rec2.height) ||

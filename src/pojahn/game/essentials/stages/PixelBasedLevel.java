@@ -144,7 +144,7 @@ public abstract class PixelBasedLevel extends Level{
 
 	@Override
 	protected Tile tileAtInternal(int x, int y) {
-		return outOfBounds(x,y) ? Tile.SOLID : mapToTile(stageData[x][y]);
+		return mapToTile(stageData[x][y]);
 	}
 	
 	@Override

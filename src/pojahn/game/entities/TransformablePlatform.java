@@ -4,14 +4,11 @@ import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 
-import java.awt.*;
-
 public class TransformablePlatform extends SolidPlatform {
 
     private Tile tile;
     private Level.TileLayer tileLayer;
     private MobileEntity[] subjects;
-    private boolean prepared;
 
     public TransformablePlatform(float x, float y, MobileEntity... subjects) {
         super(x, y, subjects);
@@ -30,13 +27,20 @@ public class TransformablePlatform extends SolidPlatform {
     }
 
     @Override
-    public void logistics() {
-        super.logistics();
+    public void init() {
+        super.init();
 
-        if(!prepared) {
-            prepare();
+        if(tileLayer == null) {
+            tileLayer = new Level.TileLayer((int)width() - 4, (int)height() - 4);
+            tileLayer.fill(tile);
         }
 
+        getLevel().addTileLayer(tileLayer);
+    }
+
+    @Override
+    public void logistics() {
+        super.logistics();
         tileLayer.setPosition((int)x() + 2, (int)y() + 2);
     }
 
@@ -46,14 +50,6 @@ public class TransformablePlatform extends SolidPlatform {
         getLevel().removeTileLayer(tileLayer);
     }
 
-    private void prepare() {
-        prepared = true;
-        tileLayer = new Level.TileLayer((int)width() - 4, (int)height() - 4);
-        tileLayer.fill(tile);
-
-        getLevel().addTileLayer(tileLayer);
-    }
-
     public void setTile(Tile tile) {
         this.tile = tile;
     }
@@ -61,5 +57,6 @@ public class TransformablePlatform extends SolidPlatform {
     protected void copyData(TransformablePlatform clone) {
         super.copyData(clone);
         clone.tile = tile;
+        clone.tileLayer = tileLayer.copy();
     }
 }

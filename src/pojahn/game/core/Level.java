@@ -1,20 +1,20 @@
 package pojahn.game.core;
 
-import java.awt.*;
-import java.io.Serializable;
-import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import pojahn.game.essentials.*;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.Vector2;
+import pojahn.game.essentials.CheckPointHandler;
+import pojahn.game.essentials.Keystrokes;
+import pojahn.game.essentials.Utils;
+import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.recording.PlaybackRecord;
 import pojahn.game.events.Event;
 import pojahn.game.events.TaskEvent;
 import pojahn.lang.Entry;
-
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.math.Vector2;
 import pojahn.lang.Int32;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Level {
 
@@ -44,6 +44,14 @@ public abstract class Level {
             setSize(width, height);
         }
 
+        public int width() {
+            return layer.length;
+        }
+
+        public int height() {
+            return layer[0].length;
+        }
+
         public void setPosition(int x, int y) {
             this.x = x;
             this.y = y;
@@ -63,15 +71,12 @@ public abstract class Level {
             }
         }
 
-        public static TileLayer from(Image2D image) {
-            TileLayer tileLayer = new TileLayer(image.getWidth(), image.getHeight());
-            for(int x = 0;  x < tileLayer.layer.length; x++) {
-                for(int y = 0; y < tileLayer.layer[x].length;  y++) {
-                    if(!image.isInvisible(x, y)) {
-                        tileLayer.setTile(x, y, Tile.SOLID);
-                    }
-                }
-            }
+        public TileLayer copy() {
+            TileLayer tileLayer = new TileLayer(0, 0);
+            tileLayer.x = x;
+            tileLayer.y = y;
+            tileLayer.layer = layer;
+
             return tileLayer;
         }
     }
@@ -336,7 +341,16 @@ public abstract class Level {
         soundListeners.remove(listener);
     }
 
-    protected Tile onLayer(int x, int y) { //TODO: Implement!
+    protected Tile onLayer(int x, int y) {
+        for(TileLayer tileLayer : tileLayers) {
+            if(Collisions.pointRectangleOverlap(tileLayer.x, tileLayer.y, tileLayer.layer.length - 1, tileLayer.layer[0].length - 1, x, y)) {
+                int relX = x - tileLayer.x;
+                int relY = y - tileLayer.y;
+
+                if(tileLayer.layer[relX][relY] != null)
+                    return tileLayer.layer[relX][relY];
+            }
+        }
         return null;
     }
 
