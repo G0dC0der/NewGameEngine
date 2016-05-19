@@ -198,14 +198,14 @@ public class Collisions {
      */
     public static boolean pixelPerfect(Rectangle rec1, Image2D image1, boolean flipX1, boolean flipY1,
                                        Rectangle rec2, Image2D image2, boolean flipX2, boolean flipY2) {
-        int width1 = image1.getWidth();
-        int width2 = image2.getWidth();
-        int height1 = image1.getHeight();
-        int height2 = image2.getHeight();
-        int top = (int) Math.max(rec1.x, rec2.y);
-        int bottom = (int) Math.min(rec1.y + height1, rec2.y + height2);
-        int left = (int) Math.max(rec1.x, rec2.y);
-        int right = (int) Math.min(rec1.x + width1, rec2.x + width2);
+        final int width1  = image1.getWidth();
+        final int width2  = image2.getWidth();
+        final int height1 = image1.getHeight();
+        final int height2 = image2.getHeight();
+        final int top     = (int) Math.max(rec1.y, rec2.y);
+        final int bottom  = (int) Math.min(rec1.y + height1, rec2.y + height2);
+        final int left    = (int) Math.max(rec1.x, rec2.x);
+        final int right   = (int) Math.min(rec1.x + width1, rec2.x + width2);
 
         for (int y = top; y < bottom; y++) {
             for (int x = left; x < right; x++) {

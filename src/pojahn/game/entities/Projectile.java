@@ -7,6 +7,7 @@ import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.EntityBuilder;
+
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
 
@@ -14,17 +15,14 @@ public abstract class Projectile extends MobileEntity {
 
     private Particle impact, gunfire, trailer;
     private Entity targets[], target;
-    private Vector2 lockedTarget;
+    private Vector2 cachedTarget;
     private boolean rotate;
     private int trailerDelay;
     private int trailerCounter;
-    private boolean fired, lock;
-    private float initialX, initialY;
+    private boolean follow, once;
 
     public Projectile(float x, float y, Entity... targets) {
         move(x, y);
-        initialX = x;
-        initialY = y;
         rotate = true;
         this.targets = targets;
         trailerDelay = 3;
@@ -60,45 +58,39 @@ public abstract class Projectile extends MobileEntity {
     }
 
     public void setTarget(Vector2 target) {
-        this.target = new EntityBuilder().move(target).build();
-        lockedTarget = new Vector2(target);
+        setTarget(target.x, target.y);
     }
 
     public void setTarget(float x, float y) {
-        this.target = new EntityBuilder().move(x, y).build();
-        lockedTarget = new Vector2(x,y);
+        setTarget(new EntityBuilder().move(x, y).build());
     }
 
     public void setTarget(Entity target) {
         this.target = target;
-        lockedTarget = target.getPos();
     }
 
-    public void lock(boolean lockTarget) {
-        this.lock = lockTarget;
+    public void follow(boolean lockTarget) {
+        this.follow = lockTarget;
     }
 
     @Override
     public final void logistics() {
-        if(target == null) {
-            target = Collisions.findClosestSeeable(this, targets);
-            if (target != null) {
-                lockedTarget = target.getPos();
-                fire();
-            }
-        } else if(!fired){
-            fire();
-        }
+        if (target != null) {
 
-        if (fired) {
             moveProjectile(getTarget());
             collisionCheck();
-            if(rotate)
+
+            if (rotate)
                 rotate();
 
             if (trailer != null && ++trailerCounter % trailerDelay == 0) {
                 Vector2 rare = getRarePosition();
                 getLevel().add(trailer.getClone().move(rare.x - trailer.halfWidth(), rare.y - trailer.halfHeight()));
+            }
+
+            if (gunfire != null && !once) {
+                once = true;
+                getLevel().add(gunfire.getClone().center(this));
             }
         }
     }
@@ -110,17 +102,15 @@ public abstract class Projectile extends MobileEntity {
         bounds.rotation = (float) Collisions.getAngle(centerX(), centerY(), target.x, target.y);
     }
 
-    protected Vector2 getTarget() {
-        Vector2 targetPos = lock ? lockedTarget : target.getPos();
-        float x = lock ? initialX : bounds.pos.x;
-        float y = lock ? initialY : bounds.pos.y;
-        return Collisions.findEdgePoint(x, y, targetPos.x, targetPos.y, getLevel());
-    }
+    private Vector2 getTarget() {
+        if (follow) {
+            return target.getPos();
+        } else {
+            if (cachedTarget == null)
+                cachedTarget = Collisions.findEdgePoint(x(), y(), target.x(), target.y(), getLevel());
 
-    private void fire() {
-        fired = true;
-        if (gunfire != null)
-            getLevel().add(gunfire.getClone().center(this));
+            return cachedTarget;
+        }
     }
 
     private void collisionCheck() {
@@ -157,6 +147,6 @@ public abstract class Projectile extends MobileEntity {
         clone.trailerDelay = trailerDelay;
         clone.rotate = rotate;
         clone.targets = targets;
-        clone.lock = lock;
+        clone.follow = follow;
     }
 }

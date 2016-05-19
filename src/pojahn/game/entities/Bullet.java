@@ -11,7 +11,7 @@ public class Bullet extends Projectile {
 	public Bullet(float x, float y, Entity... scanTargets) {
 		super(x, y, scanTargets);
         this.scanTargets = scanTargets;
-		lock(true);
+		follow(true);
 	}
 	
 	@Override

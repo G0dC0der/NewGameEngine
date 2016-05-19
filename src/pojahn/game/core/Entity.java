@@ -309,9 +309,7 @@ public class Entity {
     }
 
     public boolean canSee(Entity target) {
-        return !Collisions.solidSpace(x(), centerY(), target.x(), target.centerY(), getLevel()) ||
-                !Collisions.solidSpace(centerX(), centerY(), target.centerX(), target.centerY(), getLevel()) ||
-                !Collisions.solidSpace(x() + width(), centerY(), target.x() + target.width(), target.centerY(), getLevel());
+        return target != null && !Collisions.solidSpace(centerX(), centerY(), target.centerX(), target.centerY(), getLevel());
     }
 
     public Vector2 getFrontPosition() {
