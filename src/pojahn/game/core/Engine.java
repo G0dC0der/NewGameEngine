@@ -45,7 +45,7 @@ public final class Engine {
     private List<Replay> recordings;
     private OrthographicCamera gameCamera, hudCamera;
     private Map<GameState, Event> stateEvents;
-    private Exception exception;
+    private FutureObject<Exception> exception;
 
     private boolean replaying, flipY, showHelpText, shutdown;
     private int screenWidth, screenHeight, deathCounter;
@@ -196,7 +196,7 @@ public final class Engine {
         shutdown = true;
     }
 
-    public Exception getException() {
+    public FutureObject<Exception> getException() {
         return exception;
     }
 
@@ -514,7 +514,7 @@ public final class Engine {
                     engine.setGameState(GameState.DISPOSED);
                     throw e;
                 } catch (Exception e) {
-                    engine.exception = e;
+                    engine.exception.set(e);
                     engine.setGameState(GameState.CRASHED);
                     throw new RuntimeException(e);
                 }
@@ -525,7 +525,7 @@ public final class Engine {
                 try {
                     engine.setup();
                 } catch (Exception e) {
-                    engine.exception = e;
+                    engine.exception.set(e);
                     engine.setGameState(GameState.CRASHED);
                     throw new RuntimeException(e);
                 }
