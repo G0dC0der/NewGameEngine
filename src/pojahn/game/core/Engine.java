@@ -36,7 +36,7 @@ public final class Engine {
     public boolean renderText;
     public BitmapFont timeFont;
     public Color timeColor;
-    public HUDMessage helpText, winText, deathText, pauseText;
+    public HUDMessage helpText, winText, deathText, deathCheckpointText, pauseText;
 
     private final Level level;
     private SpriteBatch batch;
@@ -63,6 +63,7 @@ public final class Engine {
         replaying = replayData != null;
         recordings = new Vector<>();
         stateEvents = new HashMap<>();
+        exception = new FutureObject<>();
         renderText = true;
         timeColor = Color.WHITE;
         flipY = true;
@@ -225,7 +226,9 @@ public final class Engine {
         if (helpText == null)
             helpText = HUDMessage.centeredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
         if (deathText == null)
-            deathText = HUDMessage.centeredMessage("You died. Press the restart or quit button to continue.", screenSize, Color.WHITE);
+            deathText = HUDMessage.centeredMessage("You died. Press the quit or restart button to continue.", screenSize, Color.WHITE);
+        if (deathCheckpointText == null)
+            deathCheckpointText = HUDMessage.centeredMessage("You died. Press the quit or restart button to restart from latest checkpoint.", screenSize, Color.WHITE);
         if (pauseText == null)
             pauseText = HUDMessage.centeredMessage("Game is paused.", screenSize, Color.WHITE);
         if (winText == null)
@@ -238,7 +241,10 @@ public final class Engine {
     private void restart(boolean checkpointPresent) {
         setGameState(GameState.LOADING);
 
-        if (lost())
+        if(checkpointPresent && !level.cpPresent())
+            checkpointPresent = false;
+
+        if (lost() && checkpointPresent)
             deathCounter++;
         else if (completed())
             deathCounter = 0;
@@ -358,7 +364,7 @@ public final class Engine {
         if (state != this.getGameState()) {
             this.state = state;
 
-            if (lost() || completed())
+            if (isReplaying() && completed())
                 finalizeRecording();
 
             Event event = stateEvents.get(this.state);
@@ -446,9 +452,8 @@ public final class Engine {
         recording.time = getTimeInSeconds();
         recording.levelName = level.getLevelName();
         recording.meta = level.getMeta();
-        recording.result = getGameState();
-        recording.keystrokes = new ArrayList<>();
-        recording.keystrokes.addAll(level.getMainCharacters().stream().map(play -> new KeySession(play.getReplayData(), play.getBadge())).collect(Collectors.toList()));
+        recording.deaths = getDeathCounter();
+        recording.keystrokes = level.getMainCharacters().stream().map(play -> new KeySession(play.getReplayData(), play.getBadge())).collect(Collectors.toList());
         recordings.add(recording);
     }
 
@@ -487,7 +492,10 @@ public final class Engine {
         if (completed() && winText != null) {
             winText.draw(batch, timeFont);
         } else if (lost() && deathText != null) {
-            deathText.draw(batch, timeFont);
+            if(level.cpPresent())
+                deathCheckpointText.draw(batch, timeFont);
+            else
+                deathText.draw(batch, timeFont);
         }
     }
 
