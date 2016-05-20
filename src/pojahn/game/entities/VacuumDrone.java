@@ -15,10 +15,10 @@ public class VacuumDrone extends PathDrone {
         super(x, y);
         this.targets = targets;
         detectRadius = 300;
-        vacuumPower = 100;
+        vacuumPower = 500;
         vacuumShots = 3;
-        vacuumDelay = 10;
-        reload = 190;
+        vacuumDelay = 20;
+        reload = 120;
         burstDelayCounter = -1;
     }
 
@@ -54,10 +54,10 @@ public class VacuumDrone extends PathDrone {
     public void logistics() {
         super.logistics();
 
-        if (--reloadCounter > 0) {
+        if (--reloadCounter < 0) {
             for (GravityMan target : targets) {
                 if (near(target, detectRadius)) {
-                    if (burstCounter > vacuumShots) {
+                    if (burstCounter >= vacuumShots) {
                         reloadTime();
                         break;
                     } else if (++burstDelayCounter % vacuumDelay == 0) {

@@ -1,5 +1,6 @@
 package pojahn.game.entities;
 
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -15,8 +16,8 @@ public class PushableObject extends MobileEntity {
     private boolean useGravity, mustStand;
     private MobileEntity[] pushers;
     private Rectangle dummy;
-    private int pushingSoundDelay, pushingSoundCounter;
-    private Sound landingSound, pushingSound;
+    private Sound landingSound;
+    private Music pushingSound;
 
     public PushableObject(float x, float y, MobileEntity... pushers) {
         vel = new Vector2();
@@ -34,8 +35,8 @@ public class PushableObject extends MobileEntity {
         damping = 0.0001f;
         fallSpeedLimit = -1200;
 
-        pushStrength = 300;
-        deacceleration = 30;
+        pushStrength = 50;
+        deacceleration = 200;
     }
 
     @Override
@@ -93,8 +94,20 @@ public class PushableObject extends MobileEntity {
             }
         }
 
-        if (isMoving() && pushingSound != null && ++pushingSoundCounter % pushingSoundDelay == 0)
-            pushingSound.play(sounds.calc());
+        if (pushingSound != null) {
+            if (pushingSound.isPlaying()) {
+                pushingSound.setVolume(sounds.calc());
+            }
+
+            if (x() != prevX() && !canDown()) {
+                if (!pushingSound.isPlaying()) {
+                    pushingSound.setLooping(true);
+                    pushingSound.play();
+                }
+            } else {
+                pushingSound.setLooping(false);
+            }
+        }
     }
 
     public void useGravity(boolean gravity) {
@@ -109,9 +122,8 @@ public class PushableObject extends MobileEntity {
         landingSound = sound;
     }
 
-    public void setPushingSound(Sound sound, int delay) {
-        pushingSound = sound;
-        pushingSoundDelay = delay;
+    public void setPushingSound(Music pushingSound) {
+        this.pushingSound = pushingSound;
     }
 
     @Deprecated

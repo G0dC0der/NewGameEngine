@@ -1,23 +1,21 @@
 package pojahn.game.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static pojahn.game.core.Collisions.*;
-
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import pojahn.game.essentials.Animation;
-import pojahn.game.essentials.geom.Bounds;
 import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.SoundEmitter;
+import pojahn.game.essentials.geom.Bounds;
 import pojahn.game.events.ActionEvent;
 import pojahn.game.events.CloneEvent;
 import pojahn.game.events.Event;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Vector2;
+import java.util.ArrayList;
+import java.util.List;
+
+import static pojahn.game.core.Collisions.*;
 
 public class Entity {
 
@@ -32,7 +30,6 @@ public class Entity {
     Level level;
     Engine engine;
     List<Event> events, deleteEvents;
-    Polygon poly;
     boolean present;
     long badge = -1;
 
@@ -191,8 +188,6 @@ public class Entity {
             return circleRectangleCollide(circle.bounds.toCircle(), rectangle.bounds.toRectangle());
         } else if (hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.CIRCLE) {
             return circleVsCircle(bounds.toCircle(), entity.bounds.toCircle());
-        } else if (hitbox == Hitbox.POLYGON || entity.hitbox == Hitbox.POLYGON) {
-            //return polygonsCollide(this, entity);
         } else if (hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL) {
             if (rotated1 || rotated2)
                 return rectanglesCollide(getBoundingBox(bounds), getBoundingBox(entity.bounds)) &&
@@ -212,10 +207,6 @@ public class Entity {
 
     public Vector2 getPos() {
         return bounds.pos.cpy();
-    }
-
-    public void setPolygon(float[] vertices) {
-        poly = new Polygon(vertices);
     }
 
     public float getRotation() {
@@ -367,8 +358,6 @@ public class Entity {
         clone.sounds.useFalloff = sounds.useFalloff;
         if (image != null)
             clone.image = image.getClone();
-        if (poly != null)
-            clone.poly = new Polygon(poly.getTransformedVertices());
     }
 
     protected void basicRender(SpriteBatch batch, Image2D image) {

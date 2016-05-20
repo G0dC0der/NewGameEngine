@@ -1,7 +1,6 @@
 package pojahn.game.essentials;
 
 import pojahn.game.core.Entity;
-import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
 import pojahn.game.events.Event;

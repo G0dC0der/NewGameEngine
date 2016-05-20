@@ -5,13 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 
 import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.geom.Bounds;
@@ -167,28 +161,6 @@ public class Collisions {
         float d = c1.radius + c2.radius;
         return (dx * dx + dy * dy) < (d * d);
     }
-
-    /**
-     * Performs between the two entities polygons.
-     * Precondition: offsetX and offsetY == 0, flipX and flipY == false
-     * @return True if the two polygons are colliding.
-     */
-//	public static boolean polygonsCollide(Entity entity1, Entity entity2){
-//		preparePolygon(entity1);
-//		preparePolygon(entity2);
-//		return Intersector.overlapConvexPolygons(entity1.poly, entity2.poly);
-//	}
-//	
-//	private static void preparePolygon(Entity entity){
-//		if(	entity.poly.getX()	 			!= entity.bounds.x 		||
-//			entity.poly.getY() 				!= entity.bounds.y 		|| 
-//			entity.poly.getRotation() 		!= entity.getRotation())
-//		{
-//			entity.poly.setRotation(entity.getRotation());
-//			entity.poly.setPosition(entity.bounds.x, entity.bounds.y);
-//			entity.poly.setOrigin(entity.bounds.x - entity.bounds.width / 2, entity.bounds.y - entity.bounds.height / 2);
-//		}
-//	}
 
     /**
      * Performs a pixel perfect collision check.
