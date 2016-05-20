@@ -3,19 +3,15 @@ package pojahn.game.entities;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
-import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Hitbox;
 
-import static pojahn.game.core.Collisions.*;
+import static pojahn.game.core.Collisions.rectanglesCollide;
 
 public class PushableObject extends MobileEntity {
 
-    public float mass, gravity, damping, fallSpeedLimit, acceleration;
+    public float mass, gravity, damping, fallSpeedLimit, deacceleration, pushStrength;
     private Vector2 vel;
-    private float currAcc;
-
     private boolean useGravity, mustStand;
     private MobileEntity[] pushers;
     private Rectangle dummy;
@@ -38,11 +34,14 @@ public class PushableObject extends MobileEntity {
         damping = 0.0001f;
         fallSpeedLimit = -1200;
 
-        acceleration = 300;
+        pushStrength = 300;
+        deacceleration = 30;
     }
 
     @Override
     public void logistics() {
+        final float DELTA = getEngine().delta;
+
         if (useGravity) {
             if (!canDown()) {
                 if (vel.y < 0 && landingSound != null)
@@ -50,7 +49,7 @@ public class PushableObject extends MobileEntity {
                 vel.y = 0;
             } else {
                 drag();
-                float nextY = bounds.pos.y - vel.y * getEngine().delta;
+                float nextY = bounds.pos.y - vel.y * DELTA;
 
                 if (!occupiedAt(x(), nextY))
                     move(x(), nextY);
@@ -59,74 +58,42 @@ public class PushableObject extends MobileEntity {
             }
         }
 
-        if(acceleration > 0.0f) {
-            for(MobileEntity mobile : pushers) {
-                if(mustStand && mobile.canDown())
-                    continue;
+        if (pushStrength > 0.0f) {
+            dummy.set(x() - 2, y(), width() + 4, height());
 
-                dummy.set(x() - 2, y(), width() + 4, height());
-                if(rectanglesCollide(mobile.bounds.toRectangle(), dummy)) {
-                    currAcc = leftMost(mobile, this) == mobile ? acceleration : -acceleration;
-                    break;
+            for (MobileEntity mobile : pushers) {
+                if (!mustStand || !mobile.canDown()) {
+
+                    if (rectanglesCollide(mobile.bounds.toRectangle(), dummy)) {
+                        if (centerX() > mobile.centerX())
+                            vel.x = -pushStrength;
+                        else
+                            vel.x = pushStrength;
+                    }
                 }
             }
         }
 
-        final float DELTA = getEngine().delta;
-        if(currAcc > 0.0f) {
-            vel.x += currAcc * DELTA;
+        if (vel.x != 0) {
+            float nextX = bounds.pos.x - vel.x * getEngine().delta;
+            if (!occupiedAt(nextX, y())) {
+                move(nextX, y());
+
+                if (vel.x > 0) {
+                    vel.x -= deacceleration * DELTA;
+                    if (vel.x < 0)
+                        vel.x = 0;
+                } else if (vel.x < 0) {
+                    vel.x += deacceleration * DELTA;
+                    if (vel.x > 0)
+                        vel.x = 0;
+                }
+            } else {
+                vel.x = 0;
+            }
         }
 
-//        vel.x += acceleration * getEngine().delta;
-//        bounds.pos.x = vel.x * getEngine().delta;
-
-//        boolean moved = false;
-//        if (pushStrength > 0.0f) {
-//            for (MobileEntity mobile : pushers) {
-//                dummy.set(x() - 2, y(), width() + 4, height());
-//
-//                if (mustStand && mobile.canDown())
-//                    continue;
-//
-//                if (rectanglesCollide(mobile.bounds.toRectangle(), dummy)) {
-//                    if (Collisions.leftMost(mobile, this) == mobile) {
-//                        moveRight();
-//                        moved = true;
-//                        float nextX = getFutureX();
-//                        if (!occupiedAt(nextX, y()))
-//                            move(nextX, y());
-//                        else
-//                            tryRight(10);
-//                    } else if (Collisions.rightMost(mobile, this) == mobile) {
-//                        moveLeft();
-//                        moved = true;
-//                        float nextX = getFutureX();
-//                        if (!occupiedAt(nextX, y()))
-//                            move(nextX, y());
-//                        else
-//                            tryLeft(10);
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (!moved) {
-//            if (runningRight()) {
-//                moveLeft();
-//                if (runningLeft())
-//                    vel.x = 0;
-//            } else if (runningLeft()) {
-//                moveRight();
-//                if (runningRight())
-//                    vel.x = 0;
-//            }
-//
-//            float nextX = getFutureX();
-//            if (!occupiedAt(nextX, y()))
-//                move(nextX, y());
-//        }
-
-        if (x() != prevX() && pushingSound != null && ++pushingSoundCounter % pushingSoundDelay == 0)
+        if (isMoving() && pushingSound != null && ++pushingSoundCounter % pushingSoundDelay == 0)
             pushingSound.play(sounds.calc());
     }
 
@@ -159,7 +126,7 @@ public class PushableObject extends MobileEntity {
             mobile.removeObstacle(this);
     }
 
-    protected void drag() {
+    private void drag() {
         float force = mass * gravity;
         vel.y *= 1.0 - (damping * getEngine().delta);
 
@@ -167,18 +134,5 @@ public class PushableObject extends MobileEntity {
             vel.y += (force / mass) * getEngine().delta;
         } else
             vel.y -= (force / mass) * getEngine().delta;
-    }
-
-    protected float getFutureX() {
-        return bounds.pos.x - vel.x * getEngine().delta;
-    }
-
-
-    protected boolean runningLeft() {
-        return vel.x > 0;
-    }
-
-    protected boolean runningRight() {
-        return vel.x < 0;
     }
 }
