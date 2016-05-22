@@ -123,7 +123,7 @@ public class ResourceManager {
 			throw new IllegalArgumentException("Argument must be a directory:" + dir.file().getAbsolutePath());
 		
 		for(FileHandle content : dir.list()){
-			String name = content.path();
+			String name = content.path().toLowerCase();
 			if(name.contains("skip"))
 				continue;
 			

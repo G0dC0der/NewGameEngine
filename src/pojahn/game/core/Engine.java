@@ -364,7 +364,7 @@ public final class Engine {
         if (state != this.getGameState()) {
             this.state = state;
 
-            if (isReplaying() && completed())
+            if (!isReplaying() && completed())
                 finalizeRecording();
 
             Event event = stateEvents.get(this.state);

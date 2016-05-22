@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Hitbox;
+import pojahn.game.events.Event;
 
 import static pojahn.game.core.Collisions.rectanglesCollide;
 
@@ -15,6 +16,7 @@ public class PushableObject extends MobileEntity {
     private Vector2 vel;
     private boolean useGravity, mustStand;
     private MobileEntity[] pushers;
+    private Event slamEvent;
     private Rectangle dummy;
     private Sound landingSound;
     private Music pushingSound;
@@ -29,7 +31,7 @@ public class PushableObject extends MobileEntity {
             addObstacle(mobile);
         }
 
-        useGravity = true;
+        useGravity = mustStand = true;
         mass = 1.0f;
         gravity = -500;
         damping = 0.0001f;
@@ -45,8 +47,12 @@ public class PushableObject extends MobileEntity {
 
         if (useGravity) {
             if (!canDown()) {
-                if (vel.y < 0 && landingSound != null)
-                    landingSound.play(sounds.calc());
+                if (vel.y < 0) {
+                    if(landingSound != null)
+                        landingSound.play(sounds.calc());
+                    if(slamEvent != null)
+                        slamEvent.eventHandling();
+                }
                 vel.y = 0;
             } else {
                 drag();
@@ -95,17 +101,15 @@ public class PushableObject extends MobileEntity {
         }
 
         if (pushingSound != null) {
-            if (pushingSound.isPlaying()) {
-                pushingSound.setVolume(sounds.calc());
-            }
+            pushingSound.setVolume(sounds.calc());
 
-            if (x() != prevX() && !canDown()) {
+            if (vel.x != 0 && !canDown()) {
                 if (!pushingSound.isPlaying()) {
                     pushingSound.setLooping(true);
                     pushingSound.play();
                 }
             } else {
-                pushingSound.setLooping(false);
+                pushingSound.pause();
             }
         }
     }
@@ -124,6 +128,14 @@ public class PushableObject extends MobileEntity {
 
     public void setPushingSound(Music pushingSound) {
         this.pushingSound = pushingSound;
+    }
+
+    public boolean isFalling() {
+        return vel.y < 0;
+    }
+
+    public void setSlamEvent(Event slamEvent) {
+        this.slamEvent = slamEvent;
     }
 
     @Deprecated

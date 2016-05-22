@@ -8,6 +8,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Music.OnCompletionListener;
 
+import java.util.List;
+
 public class SoundEmitter {
 
     public float power, maxDistance, maxVolume;
@@ -24,8 +26,11 @@ public class SoundEmitter {
     public float calc() {
         if (!useFalloff)
             return maxVolume;
+        List<? extends Entity> soundListeners = emitter.getLevel().getSoundListeners();
+        if(soundListeners == null || soundListeners.isEmpty())
+            return maxVolume;
 
-        return calc(Collisions.findClosest(emitter, emitter.getLevel().getSoundListeners()));
+        return calc(Collisions.findClosest(emitter, soundListeners));
     }
 
     public float calc(Entity listener) {

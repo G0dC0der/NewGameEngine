@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import pojahn.game.core.Entity;
+import pojahn.game.events.Event;
 
 public class CameraEffects {
 

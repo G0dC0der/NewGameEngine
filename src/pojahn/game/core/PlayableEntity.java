@@ -40,11 +40,11 @@ public abstract class PlayableEntity extends MobileEntity {
         } else if (hurtCounter < 0) {
             hp += strength;
             hurtCounter = 100;
-            if (hurtSound != null)
+            if (hurtSound != null && hp > 0)
                 hurtSound.play(sounds.calc());
         }
 
-        if (0 >= hp)
+        if (0 >= hp && !isDead())
             setState(Vitality.DEAD);
     }
 

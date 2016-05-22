@@ -3,7 +3,9 @@ package pojahn.game.essentials;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Entity;
@@ -117,9 +119,8 @@ public class EntityBuilder {
             if (args.length == 0)
                 entity = clazz.newInstance();
             else {
-                @SuppressWarnings("rawtypes")
-                Class[] clazzez = (Class[]) Arrays.stream(args).map(Object::getClass).collect(Collectors.toList()).toArray();
-                entity = clazz.getDeclaredConstructor(clazzez).newInstance(args);
+                List<Class> clazzez = Stream.of(args).map(Object::getClass).collect(Collectors.toList());
+                entity = clazz.getDeclaredConstructor(clazzez.toArray(new Class[clazzez.size()])).newInstance(args);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

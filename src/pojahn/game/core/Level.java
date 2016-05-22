@@ -178,11 +178,10 @@ public abstract class Level {
     }
 
     public boolean outOfBounds(float targetX, float targetY) {
-        return targetX >= getWidth() ||
+        return  targetX >= getWidth() ||
                 targetY >= getHeight() ||
                 targetX < 0 ||
                 targetY < 0;
-
     }
 
     public void add(Entity entity) {
@@ -270,7 +269,7 @@ public abstract class Level {
 
         Entity wrapper = new Entity();
         wrapper.addEvent(() -> {
-            if (counter[0]++ > framesDelay) {
+            if (counter[0]++ == framesDelay) {
                 event.eventHandling();
                 discard(wrapper);
             }
