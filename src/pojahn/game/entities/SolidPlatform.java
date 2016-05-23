@@ -25,7 +25,6 @@ public class SolidPlatform extends PathDrone {
         super(x, y);
         intersectors = new ArrayList<>(subjects.length);
         this.subjects = subjects;
-        Stream.of(subjects).forEach(mobileEntity -> mobileEntity.addObstacle(this));
         setFollowMode(FollowMode.NORMAL);
     }
 
@@ -37,6 +36,12 @@ public class SolidPlatform extends PathDrone {
             cloneEvent.handleClonded(clone);
 
         return clone;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        Stream.of(subjects).forEach(mobileEntity -> mobileEntity.addObstacle(this));
     }
 
     @Override

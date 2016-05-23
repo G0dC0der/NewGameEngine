@@ -28,7 +28,7 @@ public class SoundEmitter {
             return maxVolume;
         List<? extends Entity> soundListeners = emitter.getLevel().getSoundListeners();
         if(soundListeners == null || soundListeners.isEmpty())
-            return maxVolume;
+            soundListeners = emitter.getLevel().getMainCharacters();
 
         return calc(Collisions.findClosest(emitter, soundListeners));
     }

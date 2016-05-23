@@ -87,7 +87,7 @@ public class GravityMan extends PlayableEntity {
         boolean jump = !isFrozen() && strokes.jump && vel.y == 0 && !canDown();
 
         if (jumpButtonPressedCounter > 0) {
-            if (Gdx.input.isKeyPressed(getController().jump))
+            if (Gdx.input.isKeyPressed(getController().jump)) //TODO: FIX!
                 jumpButtonPressedCounter++;
             else
                 jumpButtonPressedCounter = 0;

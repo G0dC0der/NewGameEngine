@@ -165,7 +165,7 @@ public class CameraEffects {
      */
     public static Entity vibration(float strength) {
         return new Entity() {
-            int counter;
+            int counter, counter2;
 
             {
                 zIndex(Integer.MAX_VALUE);
@@ -173,29 +173,31 @@ public class CameraEffects {
 
             @Override
             public void logistics() {
-                int value = counter++ % 4;
-                float tx = getEngine().tx();
-                float ty = getEngine().ty();
+                if (++counter2 % 2 == 0) {
+                    int value = counter++ % 4;
+                    float tx = getEngine().tx();
+                    float ty = getEngine().ty();
 
-                switch (value) {
-                    case 0:
-                        tx += -strength;
-                        ty += -strength;
-                        break;
-                    case 1:
-                        tx += strength;
-                        ty += -strength;
-                        break;
-                    case 2:
-                        tx += strength;
-                        ty += strength;
-                        break;
-                    case 3:
-                        tx -= strength;
-                        ty += strength;
-                        break;
+                    switch (value) {
+                        case 0:
+                            tx += -strength;
+                            ty += -strength;
+                            break;
+                        case 1:
+                            tx += strength;
+                            ty += -strength;
+                            break;
+                        case 2:
+                            tx += strength;
+                            ty += strength;
+                            break;
+                        case 3:
+                            tx -= strength;
+                            ty += strength;
+                            break;
+                    }
+                    getEngine().translate(tx, ty);
                 }
-                getEngine().translate(tx, ty);
             }
         };
     }

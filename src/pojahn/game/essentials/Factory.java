@@ -1,5 +1,6 @@
 package pojahn.game.essentials;
 
+import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
@@ -38,9 +39,7 @@ public class Factory {
 
             @Override
             public void render(SpriteBatch batch) {
-                getEngine().hudCamera();
                 message.draw(batch, font);
-                getEngine().gameCamera();
             }
         };
     }
@@ -102,6 +101,10 @@ public class Factory {
             if (enemy.collidesWith(play))
                 play.touch(hp);
         };
+    }
+
+    public static Event walkingSounds(MobileEntity target, Music start, Music end, Music... loop) {
+        return null; //TODO: Implement
     }
 
     public static LaserBeam dottedLaser(Animation<Image2D> dotImage, float size) {

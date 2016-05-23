@@ -13,184 +13,192 @@ import com.badlogic.gdx.math.Vector2;
 
 public class PathDrone extends MobileEntity {
 
-	public static class Waypoint {
+    public static class Waypoint {
 
-		public float targetX, targetY;
-		public int frames;
-		public boolean jump;
-		public Event event;
+        public float targetX, targetY;
+        public int frames;
+        public boolean jump;
+        public Event event;
 
-		public Waypoint(float targetX, float targetY, int frames, boolean jump, Event event) {
-			this.targetX = targetX;
-			this.targetY = targetY;
-			this.frames = frames;
-			this.jump = jump;
-			this.event = event;
-		}
+        public Waypoint(float targetX, float targetY, int frames, boolean jump, Event event) {
+            this.targetX = targetX;
+            this.targetY = targetY;
+            this.frames = frames;
+            this.jump = jump;
+            this.event = event;
+        }
 
-		public Waypoint(float targetX, float targetY) {
-			this(targetX, targetY, 0, false, null);
-		}
+        public Waypoint(float targetX, float targetY) {
+            this(targetX, targetY, 0, false, null);
+        }
 
-		@Override
-		public String toString() {
-			return targetX + ":" + targetY + " " + frames + " - " + jump;
-		}
-	}
+        @Override
+        public String toString() {
+            return targetX + ":" + targetY + " " + frames + " - " + jump;
+        }
+    }
 
-	private List<Waypoint> waypoints;
-	private boolean rock, skip;
-	private int dataCounter, stillCounter;
-	private boolean playEvent;
+    private List<Waypoint> waypoints;
+    private boolean rock, skip;
+    private int dataCounter, stillCounter;
+    private boolean playEvent;
 
-	public PathDrone(float x, float y) {
-		move(x, y);
-		waypoints = new ArrayList<>();
-		dataCounter = stillCounter = 0;
-	}
+    public PathDrone(float x, float y) {
+        move(x, y);
+        waypoints = new ArrayList<>();
+        dataCounter = stillCounter = 0;
+    }
 
-	public PathDrone getClone() {
-		PathDrone clone = new PathDrone(x(), y());
-		copyData(clone);
-		if(cloneEvent != null)
-			cloneEvent.handleClonded(clone);
-		
-		return clone;
-	}
+    public PathDrone getClone() {
+        PathDrone clone = new PathDrone(x(), y());
+        copyData(clone);
+        if (cloneEvent != null)
+            cloneEvent.handleClonded(clone);
 
-	protected void copyData(PathDrone clone) {
-		super.copyData(clone);
-		clone.waypoints.addAll(waypoints);
-		clone.skip = skip;
-		clone.rock = rock;
-	}
+        return clone;
+    }
 
-	public void appendPath(float x, float y, int frames, boolean jump, Event event) {
-		waypoints.add(new Waypoint(x, y, frames, jump, event));
-	}
+    protected void copyData(PathDrone clone) {
+        super.copyData(clone);
+        clone.waypoints.addAll(waypoints);
+        clone.skip = skip;
+        clone.rock = rock;
+    }
 
-	public void appendPath(Vector2 loc, int frames, boolean jump, Event event) {
-		waypoints.add(new Waypoint(loc.x, loc.y, frames, jump, event));
-	}
+    public void appendPath(float x, float y, int frames, boolean jump, Event event) {
+        waypoints.add(new Waypoint(x, y, frames, jump, event));
+    }
 
-	public void appendPath(Waypoint pd) {
-		waypoints.add(pd);
-	}
+    public void appendPath(Vector2 loc, int frames, boolean jump, Event event) {
+        waypoints.add(new Waypoint(loc.x, loc.y, frames, jump, event));
+    }
 
-	public void appendPath(Waypoint[] list) {
-		waypoints.addAll(Arrays.asList(list));
-	}
+    public void appendPath(Waypoint pd) {
+        waypoints.add(pd);
+    }
 
-	public void appendPath(float x, float y) {
-		appendPath(x, y, 0, false, null);
-	}
+    public void appendPath(Waypoint[] list) {
+        waypoints.addAll(Arrays.asList(list));
+    }
 
-	public void appendPath() {
-		waypoints.add(new Waypoint(x(), y(), 0, false, null));
-	}
+    public void appendPath(float x, float y) {
+        appendPath(x, y, 0, false, null);
+    }
 
-	public Vector2 getCurrentTarget() {
-		Waypoint wp = waypoints.get(dataCounter >= waypoints.size() ? 0 : dataCounter);
-		return new Vector2(wp.targetX, wp.targetY);
-	}
+    public void appendPath() {
+        waypoints.add(new Waypoint(x(), y(), 0, false, null));
+    }
 
-	public void appendReversed() {
-		List<Waypoint> reversed = new ArrayList<>(waypoints);
-		reversed.remove(reversed.size() - 1);
-		Collections.reverse(reversed);
+    public Vector2 getCurrentTarget() {
+        Waypoint wp = waypoints.get(dataCounter >= waypoints.size() ? 0 : dataCounter);
+        return new Vector2(wp.targetX, wp.targetY);
+    }
 
-		waypoints.addAll(reversed);
-	}
+    public void appendReversed() {
+        List<Waypoint> reversed = new ArrayList<>(waypoints);
+        reversed.remove(reversed.size() - 1);
+        Collections.reverse(reversed);
 
-	public void clearData() {
-		waypoints.clear();
-		rollback();
-	}
+        waypoints.addAll(reversed);
+    }
 
-	public void rollback() {
-		dataCounter = stillCounter = 0;
-	}
+    public void clearData() {
+        waypoints.clear();
+        rollback();
+    }
 
-	@Override
-	public void logistics() {
-		if (!waypoints.isEmpty() && getMoveSpeed() > 0 && !isFrozen()) {
-			if (dataCounter >= waypoints.size())
-				dataCounter = 0;
+    public void rollback() {
+        dataCounter = stillCounter = 0;
+    }
 
-			Waypoint wp = waypoints.get(dataCounter);
+    public void skipTo(int index) {
+        dataCounter = index;
+        stillCounter = 0;
+        Waypoint wp = waypoints.get(index);
+        move(wp.targetX, wp.targetY);
+    }
 
-			if (reached(wp)) {
-				if (++stillCounter > wp.frames)
-					dataCounter++;
+    @Override
+    public void logistics() {
+        if (!waypoints.isEmpty() && getMoveSpeed() > 0 && !isFrozen()) {
+            if (dataCounter >= waypoints.size())
+                dataCounter = 0;
 
-				forgetPast();
+            Waypoint wp = waypoints.get(dataCounter);
 
-				bounds.pos.x = wp.targetX;
-				bounds.pos.y = wp.targetY;
+            if (reached(wp)) {
+                if (++stillCounter > wp.frames)
+                    dataCounter++;
 
-				if (playEvent && wp.event != null) {
-					wp.event.eventHandling();
-					playEvent = false;
-				}
-			} else {
-				playEvent = true;
-				stillCounter = 0;
+                forgetPast();
 
-				if (wp.jump)
-					move(wp.targetX, wp.targetY);
-				else
-					moveTowards(wp.targetX, wp.targetY);
-			}
-		}
-	}
+                bounds.pos.x = wp.targetX;
+                bounds.pos.y = wp.targetY;
 
-	@Override
-	public void dumbMoveTowards(float targetX, float targetY, float steps) {
-		if (isFrozen())
-			return;
+                if (playEvent && wp.event != null) {
+                    wp.event.eventHandling();
+                    playEvent = false;
+                }
+            } else {
+                playEvent = true;
+                stillCounter = 0;
 
-		Vector2 next = attemptTowards(targetX, targetY, steps);
-		
-		if (rock) {
-			boolean canNext = !occupiedAt(next.x, next.y);
-			if (canNext)
-				move(next.x, next.y);
-			else if (skip)
-				dataCounter++;
-			else
-				forgetPast();
-		} else
-			move(next.x, next.y);
-	}
-	
-	@Override
-	protected void smartMoveTowards(float targetX, float targetY, float steps) {
-		if (isFrozen())
-			return;
+                if (wp.jump)
+                    move(wp.targetX, wp.targetY);
+                else
+                    moveTowards(wp.targetX, wp.targetY);
+            }
+        }
+    }
 
-		Vector2 next = attemptTowards(targetX, targetY, steps);
-		
-		if (rock) {
-			if(smartMove(next.x, next.y)){}
-			else if (skip)
-				dataCounter++;
-			else
-				forgetPast();
-		} else
-			smartMove(next.x, next.y);
-	}
+    @Override
+    public void dumbMoveTowards(float targetX, float targetY, float steps) {
+        if (isFrozen())
+            return;
 
-	/**
-	 * A PathDrone that is rocky will respect walls and solid objects.
-	 * @param rock True if this PathDrone respect walls.
-	 * @param skip Whether or not to skip the current waypoint and go for the next one when blocked.
-	 */
-	public void setRock(boolean rock, boolean skip) {
-		this.rock = rock;
-		this.skip = skip;
-	}
+        Vector2 next = attemptTowards(targetX, targetY, steps);
 
-	protected boolean reached(Waypoint pd) {
-		return getMoveSpeed() > Collisions.distance(pd.targetX, pd.targetY, x(), y());
-	}
+        if (rock) {
+            boolean canNext = !occupiedAt(next.x, next.y);
+            if (canNext)
+                move(next.x, next.y);
+            else if (skip)
+                dataCounter++;
+            else
+                forgetPast();
+        } else
+            move(next.x, next.y);
+    }
+
+    @Override
+    protected void smartMoveTowards(float targetX, float targetY, float steps) {
+        if (isFrozen())
+            return;
+
+        Vector2 next = attemptTowards(targetX, targetY, steps);
+
+        if (rock) {
+            if (smartMove(next.x, next.y)) {
+            } else if (skip)
+                dataCounter++;
+            else
+                forgetPast();
+        } else
+            smartMove(next.x, next.y);
+    }
+
+    /**
+     * A PathDrone that is rocky will respect walls and solid objects.
+     *
+     * @param rock True if this PathDrone respect walls.
+     * @param skip Whether or not to skip the current waypoint and go for the next one when blocked.
+     */
+    public void setRock(boolean rock, boolean skip) {
+        this.rock = rock;
+        this.skip = skip;
+    }
+
+    protected boolean reached(Waypoint pd) {
+        return getMoveSpeed() > Collisions.distance(pd.targetX, pd.targetY, x(), y());
+    }
 }

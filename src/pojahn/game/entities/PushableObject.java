@@ -101,14 +101,15 @@ public class PushableObject extends MobileEntity {
         }
 
         if (pushingSound != null) {
-            pushingSound.setVolume(sounds.calc());
 
             if (vel.x != 0 && !canDown()) {
+                pushingSound.setVolume(sounds.calc());
+
                 if (!pushingSound.isPlaying()) {
                     pushingSound.setLooping(true);
                     pushingSound.play();
                 }
-            } else {
+            } else if (pushingSound.isPlaying()) {
                 pushingSound.pause();
             }
         }

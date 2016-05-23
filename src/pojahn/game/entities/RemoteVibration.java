@@ -6,15 +6,25 @@ import pojahn.game.essentials.CameraEffects;
 
 public class RemoteVibration extends Entity {
 
-    private Entity[] targets;
+    private Entity targets[];
     private float vib, radius;
     private int duration;
 
     public RemoteVibration(Entity... targets) {
         this.targets = targets;
         vib  = 3;
-        duration = 25;
+        duration = 45;
         radius = 600;
+    }
+
+    @Override
+    public RemoteVibration getClone() {
+        RemoteVibration clone = new RemoteVibration(targets);
+        copyData(clone);
+        if (cloneEvent != null)
+            cloneEvent.handleClonded(clone);
+
+        return clone;
     }
 
     public void setVib(float vib) {
@@ -29,19 +39,24 @@ public class RemoteVibration extends Entity {
         this.duration = duration;
     }
 
-    @Override
-    public void logistics() {
-        Entity entity = Collisions.findClosest(this, targets);
+    public void vibrate(Entity vibProducer) {
+        Entity entity = Collisions.findClosest(vibProducer, targets);
 
         if(entity != null) {
-            float dist = dist(entity);
+            float dist = vibProducer.dist(entity);
 
             if(radius > dist) {
-                float strength = vib;
+                float strength = vib / dist;
 
-                getLevel().temp(CameraEffects.vibration(strength), duration);
-                getLevel().discard(this);
+                getLevel().temp(CameraEffects.vibration(strength * 3), duration);
             }
         }
+    }
+
+    protected void copyData(RemoteVibration clone) {
+        super.copyData(clone);
+        clone.vib = vib;
+        clone.radius = radius;
+        clone.duration = duration;
     }
 }
