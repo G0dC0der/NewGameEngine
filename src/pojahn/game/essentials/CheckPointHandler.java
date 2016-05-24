@@ -11,87 +11,92 @@ import pojahn.game.events.Event;
 
 public class CheckPointHandler {
 
-	private static class Checkpoint {
-		float startX, startY, x, y, width, height;
-		boolean taken;
+    private static class Checkpoint {
+        float startX, startY, x, y, width, height;
+        boolean taken;
 
-		Checkpoint(float startX, float startY, float x, float y, float width, float height) {
-			super();
-			this.startX = startX;
-			this.startY = startY;
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-		}
-	}
+        Checkpoint(float startX, float startY, float x, float y, float width, float height) {
+            super();
+            this.startX = startX;
+            this.startY = startY;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+    }
 
-	private ArrayList<Checkpoint> checkpoints;
-	private Entity users[];
-	private Event reachEvent;
+    private ArrayList<Checkpoint> checkpoints;
+    private ArrayList<Entity> users;
+    private Event reachEvent;
 
-	public CheckPointHandler() {
-		checkpoints = new ArrayList<>();
-	}
+    public CheckPointHandler() {
+        checkpoints = new ArrayList<>();
+        users = new ArrayList<>();
+    }
 
-	public void setUsers(Entity... users) {
-		this.users = users;
-	}
+    public void addUser(Entity user) {
+        users.add(user);
+    }
 
-	public void appendCheckpoint(Vector2 startPos, Rectangle area) {
-		appendCheckpoint(startPos.x, startPos.y, area.x, area.y, area.width, area.height);
-	}
+    public void appendCheckpoint(Vector2 startPos, Rectangle area) {
+        appendCheckpoint(startPos.x, startPos.y, area.x, area.y, area.width, area.height);
+    }
 
-	public void appendCheckpoint(float startX, float startY, Rectangle area) {
-		appendCheckpoint(startX, startY, area.x, area.y, area.width, area.height);
-	}
+    public void appendCheckpoint(float startX, float startY, Rectangle area) {
+        appendCheckpoint(startX, startY, area.x, area.y, area.width, area.height);
+    }
 
-	public void appendCheckpoint(Vector2 startPos, float x, float y, float width, float height) {
-		appendCheckpoint(startPos.x, startPos.y, x, y, width, height);
-	}
+    public void appendCheckpoint(Vector2 startPos, float x, float y, float width, float height) {
+        appendCheckpoint(startPos.x, startPos.y, x, y, width, height);
+    }
 
-	public void appendCheckpoint(float startX, float startY, float x, float y, float width, float height) {
-		checkpoints.add(new Checkpoint(startX, startY, x, y, width, height));
-	}
+    public void appendCheckpoint(float startX, float startY, float x, float y, float width, float height) {
+        checkpoints.add(new Checkpoint(startX, startY, x, y, width, height));
+    }
 
-	public void reset() {
-		for (Checkpoint cp : checkpoints)
-			cp.taken = false;
-	}
+    public void reset() {
+        for (Checkpoint cp : checkpoints)
+            cp.taken = false;
+    }
 
-	public Vector2 getLatestCheckpoint() {
-		for (int i = checkpoints.size() - 1; i >= 0; i--) {
-			Checkpoint cp = checkpoints.get(i);
+    public boolean available() {
+        return getLatestCheckpoint() != null;
+    }
 
-			if (cp.taken)
-				return new Vector2(cp.startX, cp.startY);
-		}
+    public Vector2 getLatestCheckpoint() {
+        for (int i = checkpoints.size() - 1; i >= 0; i--) {
+            Checkpoint cp = checkpoints.get(i);
 
-		return null;
-	}
+            if (cp.taken)
+                return new Vector2(cp.startX, cp.startY);
+        }
 
-	public boolean reached(int cpIndex) {
-		return checkpoints.get(cpIndex).taken;
-	}
+        return null;
+    }
 
-	public void setReachEvent(Event reachEvent) {
-		this.reachEvent = reachEvent;
-	}
+    public boolean reached(int cpIndex) {
+        return checkpoints.get(cpIndex).taken;
+    }
 
-	public void update() {
-		Outer:
-		for (Checkpoint cp : checkpoints) {
-			if (!cp.taken) {
-				for (Entity user : users) {
-					if (Collisions.rectanglesCollide(user.x(), user.y(), user.width(), user.height(), cp.x, cp.y, cp.width, cp.height)) {
-						cp.taken = true;
-						if (reachEvent != null)
-							reachEvent.eventHandling();
+    public void setReachEvent(Event reachEvent) {
+        this.reachEvent = reachEvent;
+    }
 
-						continue Outer;
-					}
-				}
-			}
-		}
-	}
+    public void update() {
+        Outer:
+        for (Checkpoint cp : checkpoints) {
+            if (!cp.taken) {
+                for (Entity user : users) {
+                    if (Collisions.rectanglesCollide(user.x(), user.y(), user.width(), user.height(), cp.x, cp.y, cp.width, cp.height)) {
+                        cp.taken = true;
+                        if (reachEvent != null)
+                            reachEvent.eventHandling();
+
+                        continue Outer;
+                    }
+                }
+            }
+        }
+    }
 }

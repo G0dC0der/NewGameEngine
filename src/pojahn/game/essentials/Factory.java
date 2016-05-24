@@ -103,10 +103,6 @@ public class Factory {
         };
     }
 
-    public static Event walkingSounds(MobileEntity target, Music start, Music end, Music... loop) {
-        return null; //TODO: Implement
-    }
-
     public static LaserBeam dottedLaser(Animation<Image2D> dotImage, float size) {
         return new LaserBeam() {
 

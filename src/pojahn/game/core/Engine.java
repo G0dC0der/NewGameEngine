@@ -244,6 +244,9 @@ public final class Engine {
         if(checkpointPresent && !level.cpPresent())
             checkpointPresent = false;
 
+        if(completed())
+            level.getCheckpointHandler().reset();
+
         if (lost() && checkpointPresent)
             deathCounter++;
         else if (completed())
@@ -251,9 +254,9 @@ public final class Engine {
 
         if (!checkpointPresent) {
             time = 0;
-            uniqueCounter = 0;
         }
 
+        uniqueCounter = 0;
         setZoom(1);
         setRotation(0);
 
@@ -325,7 +328,7 @@ public final class Engine {
 
     private void progress() {
         if (frameCounter++ > 2 && active()) //TODO: Why must frameCounter exceed 2?
-            time += Gdx.graphics.getRawDeltaTime();
+            time += delta;
 
         prevTx = gameCamera.position.x;
         prevTy = gameCamera.position.y;

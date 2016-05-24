@@ -99,15 +99,4 @@ public class SoundEmitter {
             }
         };
     }
-
-    public static void setLoopPosition(Music music, float seconds) {
-        music.setOnCompletionListener(new OnCompletionListener() {
-            @Override
-            public void onCompletion(Music music) {
-                music.setPosition(seconds);
-                if(!music.isPlaying())
-                    music.play();
-            }
-        });
-    }
 }

@@ -360,7 +360,6 @@ public abstract class Level {
         gameObjects.clear();
         mainCharacters.clear();
         tileLayers.clear();
-        getCheckpointHandler().reset();
     }
 
     void gameLoop() {
@@ -456,6 +455,7 @@ public abstract class Level {
                     PlayableEntity play = (PlayableEntity) entry.value;
                     if (!play.isGhost()) {
                         mainCharacters.add(play);
+                        cph.addUser(play);
                         if (engine.isReplaying()) {
                             PlaybackRecord pbr = engine.getPlayback();
                             play.setReplayData(pbr.getByBadge(play.getBadge()));

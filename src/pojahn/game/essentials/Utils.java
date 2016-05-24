@@ -1,5 +1,6 @@
 package pojahn.game.essentials;
 
+import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
@@ -10,6 +11,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 
 public class Utils {
+
+    public static void playMusic(Music music, float seconds, float volume) {
+        music.setVolume(volume);
+        music.play();
+        music.setOnCompletionListener(music1 -> {
+            music1.play();
+            music1.setPosition(seconds);
+        });
+    }
 
     public static Entity wrap(RenderEvent renderEvent) {
         return wrap(renderEvent, 0);
