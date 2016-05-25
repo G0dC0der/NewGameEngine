@@ -269,6 +269,10 @@ public class Entity {
         return epsilon >= dist(entity);
     }
 
+    public void setQuickCollision(boolean quickCollision) {
+        this.quickCollision = quickCollision;
+    }
+
     public void expand(float amount) {
         bounds.pos.x -= amount;
         bounds.pos.y -= amount;
@@ -370,7 +374,7 @@ public class Entity {
                 bounds.size.height,
                 1,
                 1,
-                bounds.rotation,
+                bounds.rotation % 360,
                 0,
                 0,
                 (int) bounds.size.width,

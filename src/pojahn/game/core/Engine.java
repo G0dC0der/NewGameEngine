@@ -228,7 +228,7 @@ public final class Engine {
         if (deathText == null)
             deathText = HUDMessage.centeredMessage("You died. Press the quit or restart button to continue.", screenSize, Color.WHITE);
         if (deathCheckpointText == null)
-            deathCheckpointText = HUDMessage.centeredMessage("You died. Press the quit or restart button to restart from latest checkpoint.", screenSize, Color.WHITE);
+            deathCheckpointText = HUDMessage.centeredMessage("You died.\nPress the quit or restart button\nto restart from latest checkpoint.", screenSize, Color.WHITE);
         if (pauseText == null)
             pauseText = HUDMessage.centeredMessage("Game is paused.", screenSize, Color.WHITE);
         if (winText == null)

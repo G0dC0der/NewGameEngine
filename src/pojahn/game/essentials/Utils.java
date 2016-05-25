@@ -9,6 +9,7 @@ import pojahn.game.events.RenderEvent;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import pojahn.lang.Int32;
 
 public class Utils {
 

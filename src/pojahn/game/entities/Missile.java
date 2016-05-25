@@ -14,6 +14,7 @@ public class Missile extends Projectile {
 		velocity = new Vector2();
 		this.scanTargets = scanTargets;
 		mediumFloaty();
+		follow(true);
 	}
 	
 	@Override
