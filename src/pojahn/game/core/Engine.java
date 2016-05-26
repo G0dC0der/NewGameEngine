@@ -239,6 +239,8 @@ public final class Engine {
     }
 
     private void restart(boolean checkpointPresent) {
+        boolean lost = lost();
+        boolean completed = completed();
         setGameState(GameState.LOADING);
 
         if(checkpointPresent && !level.cpPresent())
@@ -247,9 +249,9 @@ public final class Engine {
         if(completed())
             level.getCheckpointHandler().reset();
 
-        if (lost() && checkpointPresent)
+        if (lost && checkpointPresent)
             deathCounter++;
-        else if (completed())
+        else if (completed)
             deathCounter = 0;
 
         if (!checkpointPresent) {
@@ -293,7 +295,7 @@ public final class Engine {
                 Keystrokes keys = keys(level.getMainCharacters());
 
                 if (keys.restart) {
-                    restart(false);
+                    restart(lost() && level.cpPresent());
                 } else if (keys.quit) {
                     exit();
                 }
