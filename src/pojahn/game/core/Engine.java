@@ -47,7 +47,7 @@ public final class Engine {
     private Map<GameState, Event> stateEvents;
     private FutureObject<Exception> exception;
 
-    private boolean replaying, flipY, showHelpText, shutdown;
+    private boolean replaying, flipY, showHelpText;
     private int screenWidth, screenHeight, deathCounter;
     private float rotation, musicVolume, prevTx, prevTy, time;
     private long frameCounter, uniqueCounter;
@@ -190,11 +190,13 @@ public final class Engine {
         if (getGameState() == GameState.DISPOSED)
             throw new RuntimeException("Can not restart if the resources are disposed.");
 
-        restart(fromCheckpoint);
+        Gdx.app.postRunnable(()-> restart(fromCheckpoint));
     }
 
     public void exit() {
-        shutdown = true;
+        Gdx.app.postRunnable(()-> {
+            throw new ControlledException("Controlled termination.");
+        });
     }
 
     public FutureObject<Exception> getException() {
@@ -238,23 +240,15 @@ public final class Engine {
         setGameState(GameState.ACTIVE);
     }
 
-    private void restart(boolean checkpointPresent) {
+    private void restart(boolean fromCp) {
         boolean lost = lost();
         boolean completed = completed();
         setGameState(GameState.LOADING);
 
-        if(checkpointPresent && !level.cpPresent())
-            checkpointPresent = false;
+        if(fromCp && !level.cpPresent())
+            fromCp = false;
 
-        if(completed())
-            level.getCheckpointHandler().reset();
-
-        if (lost && checkpointPresent)
-            deathCounter++;
-        else if (completed)
-            deathCounter = 0;
-
-        if (!checkpointPresent) {
+        if (!fromCp) {
             time = 0;
         }
 
@@ -266,14 +260,19 @@ public final class Engine {
         level.build();
         level.insertDelete();
 
+        if (lost && fromCp) {
+            deathCounter++;
+            level.getCheckpointHandler().placeUsers();
+        } else if (completed) {
+            deathCounter = 0;
+            level.getCheckpointHandler().reset();
+        }
+
         frameCounter = 0;
         setGameState(GameState.ACTIVE);
     }
 
     private void overview() {
-        if (shutdown)
-            throw new ControlledException("Controlled termination.");
-
         if (!isReplaying()) {
 
             if ((active() || paused()) && keys(level.getAliveMainCharacters()).pause) {

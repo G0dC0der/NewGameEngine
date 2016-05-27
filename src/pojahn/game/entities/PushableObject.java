@@ -26,11 +26,6 @@ public class PushableObject extends MobileEntity {
         move(x, y);
         this.pushers = pushers;
         dummy = new Rectangle();
-        for (MobileEntity mobile : pushers) {
-            mobile.addObstacle(this);
-            addObstacle(mobile);
-        }
-
         useGravity = mustStand = true;
         mass = 1.0f;
         gravity = -500;
@@ -39,6 +34,15 @@ public class PushableObject extends MobileEntity {
 
         pushStrength = 50;
         deacceleration = 200;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        for (MobileEntity mobile : pushers) {
+            mobile.addObstacle(this);
+            addObstacle(mobile);
+        }
     }
 
     @Override

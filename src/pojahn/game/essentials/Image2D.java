@@ -70,6 +70,12 @@ public class Image2D extends Texture {
         }
     }
 
+    public static void createOnePixelData(Image2D[] arr) {
+        arr[0].clearData();
+        for(int i = 1; i < arr.length; i++)
+            arr[i].pixelData = arr[0].pixelData;
+    }
+
     public static Image2D[] loadAnimation(FileHandle directory) throws IOException {
         return loadAnimation(directory, false);
     }

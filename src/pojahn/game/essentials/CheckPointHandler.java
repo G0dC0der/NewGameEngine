@@ -83,6 +83,18 @@ public class CheckPointHandler {
         this.reachEvent = reachEvent;
     }
 
+    public void placeUsers() {
+        Vector2 latest = getLatestCheckpoint();
+        float width = 0;
+        if (latest != null) {
+            for (int i = 0; i < users.size() ; i++) {
+                users.get(i).move(latest.x + width, latest.y);
+                if(i > 0)
+                    width += users.get(i - 1).width();
+            }
+        }
+    }
+
     public void update() {
         Outer:
         for (Checkpoint cp : checkpoints) {

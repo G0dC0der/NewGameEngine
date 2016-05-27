@@ -371,7 +371,6 @@ public abstract class Level {
         }
 
         updateEntities();
-
         getCheckpointHandler().update();
     }
 

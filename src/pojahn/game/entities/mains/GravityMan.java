@@ -31,7 +31,7 @@ public class GravityMan extends PlayableEntity {
 
         wallGravity = -90;
         wallDamping = 1.1f;
-        wallJumpHorizontalStrength = 120;
+        wallJumpHorizontalStrength = 150;
 
         allowWallSlide = allowWallJump = true;
     }
@@ -64,7 +64,7 @@ public class GravityMan extends PlayableEntity {
 
     protected void wallSlide() {
         Keystrokes strokes = getKeysDown();
-        isWallSliding = isWallSliding() && canDown();
+        isWallSliding = isWallSliding();
 
         if (allowWallJump && isWallSliding && strokes.jump) {
             if (canRight())
@@ -74,12 +74,12 @@ public class GravityMan extends PlayableEntity {
 
             playSound();
             vel.y = jumpStrength * 1.5f;
-        } else if (allowWallJump && isWallSliding) {
+        } /*else if (allowWallJump && isWallSliding) {
             if (strokes.left && !canRight())
                 isWallSliding = false;
             else if (strokes.right && !canLeft())
                 isWallSliding = false;
-        }
+        }*/
     }
 
     protected void jump() {
@@ -123,9 +123,8 @@ public class GravityMan extends PlayableEntity {
 
     protected void run() {
         Keystrokes strokes = getKeysDown();
-        boolean wallSliding = isWallSliding();
-        boolean left = !isFrozen() && strokes.left && (!wallSliding || canRight());
-        boolean right = !isFrozen() && strokes.right && (!wallSliding || canLeft());
+        boolean left = !isFrozen() && strokes.left;
+        boolean right = !isFrozen() && strokes.right;
         boolean moving = left || right;
 
         if (left) {
@@ -213,7 +212,7 @@ public class GravityMan extends PlayableEntity {
     protected boolean isWallSliding() {
         Keystrokes strokes = getKeysDown();
 
-        return !(!allowWallSlide || strokes.down) &&
+        return !(!allowWallSlide || strokes.down) && canDown() &&
                 (((strokes.left || isWallSliding) && !canLeft()) || ((strokes.right || isWallSliding) && !canRight()));
     }
 
