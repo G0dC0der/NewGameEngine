@@ -6,7 +6,6 @@ import pojahn.game.events.Event;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Music.OnCompletionListener;
 
 import java.util.List;
 
@@ -26,11 +25,8 @@ public class SoundEmitter {
     public float calc() {
         if (!useFalloff)
             return maxVolume;
-        List<? extends Entity> soundListeners = emitter.getLevel().getSoundListeners();
-        if(soundListeners == null || soundListeners.isEmpty())
-            soundListeners = emitter.getLevel().getMainCharacters();
 
-        return calc(Collisions.findClosest(emitter, soundListeners));
+        return calc(getSoundListener());
     }
 
     public float calc(Entity listener) {
@@ -47,15 +43,23 @@ public class SoundEmitter {
         return Math.min(candidate, maxVolume);
     }
 
-    public Event dynamicVolume(Music music) { //TODO: Test.... Don't know wtf this does.
+    public Event dynamicVolume(Music music) {
         return () -> {
-            Entity listener = Collisions.findClosest(emitter, emitter.getLevel().getSoundListeners());
+            Entity listener = getSoundListener();
 
             double distance = emitter.dist(listener);
             float candidate = (float) (power * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(maxDistance)), 0));
 
             music.setVolume(Math.min(candidate, maxVolume));
         };
+    }
+
+    private Entity getSoundListener() {
+        List<? extends Entity> soundListeners = emitter.getLevel().getSoundListeners();
+        if(soundListeners == null || soundListeners.isEmpty())
+            soundListeners = emitter.getLevel().getMainCharacters();
+
+        return Collisions.findClosest(emitter, soundListeners);
     }
 
     public static SoundEmitter quiteEmitter(Entity emitter) {

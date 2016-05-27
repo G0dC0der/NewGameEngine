@@ -123,8 +123,9 @@ public class GravityMan extends PlayableEntity {
 
     protected void run() {
         Keystrokes strokes = getKeysDown();
-        boolean left = !isFrozen() && strokes.left;
-        boolean right = !isFrozen() && strokes.right;
+        boolean wallSliding = isWallSliding();
+        boolean left = !isFrozen() && strokes.left && (!wallSliding || canRight());
+        boolean right = !isFrozen() && strokes.right && (!wallSliding || canLeft());
         boolean moving = left || right;
 
         if (left) {
