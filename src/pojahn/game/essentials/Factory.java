@@ -103,6 +103,13 @@ public class Factory {
         };
     }
 
+    public static Event keepInBounds(Entity entity) {
+        return ()-> {
+            entity.bounds.pos.x = Math.max(0, Math.min(entity.x(), entity.getLevel().getWidth()));
+            entity.bounds.pos.y = Math.max(0, Math.min(entity.y(), entity.getLevel().getHeight()));
+        };
+    }
+
     public static LaserBeam dottedLaser(Animation<Image2D> dotImage, float size) {
         return new LaserBeam() {
 
