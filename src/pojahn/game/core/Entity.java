@@ -9,6 +9,7 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.SoundEmitter;
 import pojahn.game.essentials.geom.Bounds;
 import pojahn.game.events.ActionEvent;
+import pojahn.game.events.ChainEvent;
 import pojahn.game.events.CloneEvent;
 import pojahn.game.events.Event;
 
@@ -337,6 +338,15 @@ public class Entity {
 
     public void runActionEvent(Entity caller) {
         actionEvent.eventHandling(caller);
+    }
+
+    public ChainEvent ifCollides(Entity other) {
+        ChainEvent chainEvent = new ChainEvent();
+        addEvent(()->{
+            if (collidesWith(other))
+                chainEvent.getEvent().eventHandling(other);
+        });
+        return chainEvent;
     }
 
     protected void copyData(Entity clone) {
