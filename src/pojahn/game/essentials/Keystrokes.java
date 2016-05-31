@@ -43,7 +43,7 @@ public class Keystrokes implements Serializable {
         ks.left = Gdx.input.isKeyPressed(con.left);
         ks.right = Gdx.input.isKeyPressed(con.right);
         ks.up = Gdx.input.isKeyPressed(con.up);
-        ks.jump = Gdx.input.isKeyJustPressed(con.jump);
+        ks.jump = Gdx.input.isKeyPressed(con.jump);
         ks.pause = Gdx.input.isKeyJustPressed(con.pause);
         ks.special1 = Gdx.input.isKeyJustPressed(con.special1);
         ks.special2 = Gdx.input.isKeyJustPressed(con.special2);

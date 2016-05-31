@@ -5,7 +5,6 @@ import pojahn.game.core.Level;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.essentials.Keystrokes;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 
@@ -13,14 +12,18 @@ public class GravityMan extends PlayableEntity {
 
     public Vector2 vel, tVel, slidingTVel;
     public float accX, mass, gravity, damping, wallGravity, wallDamping, jumpStrength, wallJumpHorizontalStrength;
-    private int jumpButtonPressedCounter;
-    private boolean isWallSliding, allowWallSlide, allowWallJump;
-    private Sound jumpSound;
+    private int jumpKeyDownCounter, shortJumpGap;
+    private boolean isWallSliding, allowWallSlide, allowWallJump, jumpAllowed;
+    private Sound jumpSound, landingSound;
+    private Keystrokes prevStrokes, currStrokes;
 
     public GravityMan() {
         vel = new Vector2();
         tVel = new Vector2(260, -800);
         slidingTVel = new Vector2(0, -100);
+
+        jumpKeyDownCounter = Integer.MAX_VALUE;
+        shortJumpGap = 5;
 
         accX = 650;
 
@@ -34,6 +37,7 @@ public class GravityMan extends PlayableEntity {
         wallJumpHorizontalStrength = 150;
 
         allowWallSlide = allowWallJump = true;
+        prevStrokes = Keystrokes.AFK;
     }
 
     public GravityMan getClone() {
@@ -47,9 +51,13 @@ public class GravityMan extends PlayableEntity {
 
     @Override
     public void logistics() {
+        currStrokes = getKeysDown();
+
         run();
         wallSlide();
         jump();
+
+        prevStrokes = currStrokes;
     }
 
     @Override
@@ -63,50 +71,49 @@ public class GravityMan extends PlayableEntity {
     }
 
     protected void wallSlide() {
-        Keystrokes strokes = getKeysDown();
         isWallSliding = isWallSliding();
 
-        if (allowWallJump && isWallSliding && strokes.jump) {
-            if (canRight())
-                vel.x = -wallJumpHorizontalStrength;
-            else if (canLeft())
-                vel.x = wallJumpHorizontalStrength;
+        if (!isFrozen()) {
+            if (allowWallJump && isWallSliding && currStrokes.jump && !prevStrokes.jump) {
+                if (canRight())
+                    vel.x = -wallJumpHorizontalStrength;
+                else if (canLeft())
+                    vel.x = wallJumpHorizontalStrength;
 
-            playSound();
-            vel.y = jumpStrength * 1.5f;
-        } /*else if (allowWallJump && isWallSliding) {
-            if (strokes.left && !canRight())
-                isWallSliding = false;
-            else if (strokes.right && !canLeft())
-                isWallSliding = false;
-        }*/
+                playSound();
+                vel.y = jumpStrength;
+            } /*else if (allowWallJump && isWallSliding) {
+                if (strokes.left && !canRight())
+                    isWallSliding = false;
+                else if (strokes.right && !canLeft())
+                    isWallSliding = false;
+            }*/
+        }
     }
 
     protected void jump() {
-        Keystrokes strokes = getKeysDown();
-        boolean jump = !isFrozen() && strokes.jump && vel.y == 0 && !canDown();
+        if (!isFrozen()) {
+            if (jumpJustPressed() && vel.y == 0 && !canDown()) {
+                jumpKeyDownCounter = 0;
+            }
 
-        if (jumpButtonPressedCounter > 0) {
-            if (Gdx.input.isKeyPressed(getController().jump)) //TODO: FIX!
-                jumpButtonPressedCounter++;
-            else
-                jumpButtonPressedCounter = 0;
+            if (jumpAllowed && jumpKeyDownCounter <= shortJumpGap && currStrokes.jump) {
+                if (++jumpKeyDownCounter == 1 && jumpSound != null)
+                        jumpSound.play(sounds.calc());
+
+                if (jumpKeyDownCounter > 1 && jumpReleased())
+                    jumpAllowed = false;
+
+                vel.y += jumpStrength / jumpKeyDownCounter;
+            }
+
+            if (jumpJustPressed()) {
+                if (currStrokes.left && !partialLeft())
+                    vel.x = -wallJumpHorizontalStrength;
+                else if (currStrokes.right && !partialRight())
+                    vel.x = wallJumpHorizontalStrength;
+            }
         }
-
-        if (jump) {
-            vel.y = jumpStrength;
-            jumpButtonPressedCounter = 1;
-
-            if (strokes.left && !partialLeft())
-                vel.x = -wallJumpHorizontalStrength;
-            else if (strokes.right && !partialRight())
-                vel.x = wallJumpHorizontalStrength;
-        }
-
-        if (jumpButtonPressedCounter == 5)
-            vel.y = jumpStrength * 1.5f;
-        if (jump && jumpButtonPressedCounter == 1)
-            playSound();
 
         drag();
 
@@ -114,17 +121,20 @@ public class GravityMan extends PlayableEntity {
         if (!occupiedAt(x(), futureY))
             applyYForces();
         else {
-            if (vel.y < 0)
+            if (vel.y < 0) {
+                jumpAllowed = true;
                 tryDown(10);
+                if (landingSound != null)
+                    landingSound.play(sounds.calc());
+            }
 
             vel.y = 0;
         }
     }
 
     protected void run() {
-        Keystrokes strokes = getKeysDown();
-        boolean left = !isFrozen() && strokes.left;
-        boolean right = !isFrozen() && strokes.right;
+        boolean left = !isFrozen() && currStrokes.left;
+        boolean right = !isFrozen() && currStrokes.right;
         boolean moving = left || right;
 
         if (left) {
@@ -210,10 +220,8 @@ public class GravityMan extends PlayableEntity {
     }
 
     protected boolean isWallSliding() {
-        Keystrokes strokes = getKeysDown();
-
-        return !(!allowWallSlide || strokes.down) && canDown() &&
-                (((strokes.left || isWallSliding) && !canLeft()) || ((strokes.right || isWallSliding) && !canRight()));
+        return !(!allowWallSlide || currStrokes.down) && canDown() &&
+                (((currStrokes.left || isWallSliding) && !canLeft()) || ((currStrokes.right || isWallSliding) && !canRight()));
     }
 
     protected boolean partialLeft() {
@@ -251,7 +259,6 @@ public class GravityMan extends PlayableEntity {
     }
 
     protected void drag() {
-
         float force = mass * getGravity();
         vel.y *= 1.0 - (getDamping() * getDelta());
 
@@ -295,6 +302,14 @@ public class GravityMan extends PlayableEntity {
 
     protected float getDelta() {
         return getEngine().delta;
+    }
+
+    private boolean jumpJustPressed() {
+        return !prevStrokes.jump && currStrokes.jump;
+    }
+
+    private boolean jumpReleased() {
+        return prevStrokes.jump && !currStrokes.jump;
     }
 
     protected void copyData(GravityMan clone) {
