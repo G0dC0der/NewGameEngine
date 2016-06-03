@@ -12,8 +12,8 @@ public class GravityMan extends PlayableEntity {
 
     public Vector2 vel, tVel, slidingTVel;
     public float accX, mass, gravity, damping, wallGravity, wallDamping, jumpStrength, wallJumpHorizontalStrength;
-    private int jumpKeyDownCounter, shortJumpGap;
-    private boolean isWallSliding, allowWallSlide, allowWallJump, jumpAllowed;
+    private int jumpKeyDownCounter, shortJumpFrames;
+    private boolean isWallSliding, allowWallSlide, allowWallJump;
     private Sound jumpSound, landingSound;
     private Keystrokes prevStrokes, currStrokes;
 
@@ -23,7 +23,7 @@ public class GravityMan extends PlayableEntity {
         slidingTVel = new Vector2(0, -100);
 
         jumpKeyDownCounter = Integer.MAX_VALUE;
-        shortJumpGap = 5;
+        shortJumpFrames = 5;
 
         accX = 650;
 
@@ -70,44 +70,49 @@ public class GravityMan extends PlayableEntity {
         this.jumpSound = sound;
     }
 
+    public void setLandingSound(Sound landingSound) {
+        this.landingSound = landingSound;
+    }
+
     protected void wallSlide() {
         isWallSliding = isWallSliding();
 
-        if (!isFrozen()) {
-            if (allowWallJump && isWallSliding && currStrokes.jump && !prevStrokes.jump) {
-                if (canRight())
-                    vel.x = -wallJumpHorizontalStrength;
-                else if (canLeft())
-                    vel.x = wallJumpHorizontalStrength;
-
-                playSound();
-                vel.y = jumpStrength;
-            } /*else if (allowWallJump && isWallSliding) {
-                if (strokes.left && !canRight())
-                    isWallSliding = false;
-                else if (strokes.right && !canLeft())
-                    isWallSliding = false;
-            }*/
-        }
+//        if (!isFrozen()) {
+//            if (allowWallJump && isWallSliding && currStrokes.jump && !prevStrokes.jump) {
+//                if (canRight())
+//                    vel.x = -wallJumpHorizontalStrength;
+//                else if (canLeft())
+//                    vel.x = wallJumpHorizontalStrength;
+//
+//                playSound();
+//                vel.y = jumpStrength;
+//            } /*else if (allowWallJump && isWallSliding) {
+//                if (strokes.left && !canRight())
+//                    isWallSliding = false;
+//                else if (strokes.right && !canLeft())
+//                    isWallSliding = false;
+//            }*/
+//        }
     }
 
     protected void jump() {
         if (!isFrozen()) {
-            if (jumpJustPressed() && vel.y == 0 && !canDown()) {
-                jumpKeyDownCounter = 0;
+            if (jumpJustPressed() && vel.y == 0) {
+                if (!canDown())
+                    jumpKeyDownCounter = 0;
+                else if (isWallSliding)
+                    jumpKeyDownCounter = shortJumpFrames / 2;
             }
 
-            if (jumpAllowed && jumpKeyDownCounter <= shortJumpGap && currStrokes.jump) {
+            if (jumpKeyDownCounter <= shortJumpFrames && currStrokes.jump) {
                 if (++jumpKeyDownCounter == 1 && jumpSound != null)
                         jumpSound.play(sounds.calc());
 
-                if (jumpKeyDownCounter > 1 && jumpReleased())
-                    jumpAllowed = false;
-
                 vel.y += jumpStrength / jumpKeyDownCounter;
             }
-
-            if (jumpJustPressed()) {
+            if (jumpKeyDownCounter > 1 && jumpReleased()) {
+                jumpKeyDownCounter = Integer.MAX_VALUE;
+            } else if (jumpJustPressed() && isWallSliding) {
                 if (currStrokes.left && !partialLeft())
                     vel.x = -wallJumpHorizontalStrength;
                 else if (currStrokes.right && !partialRight())
@@ -122,7 +127,6 @@ public class GravityMan extends PlayableEntity {
             applyYForces();
         else {
             if (vel.y < 0) {
-                jumpAllowed = true;
                 tryDown(10);
                 if (landingSound != null)
                     landingSound.play(sounds.calc());
@@ -266,10 +270,6 @@ public class GravityMan extends PlayableEntity {
             vel.y += (force / mass) * getDelta();
         } else
             vel.y -= (force / mass) * getDelta();
-    }
-
-    protected void applyXForces() {
-        bounds.pos.x -= vel.x * getDelta();
     }
 
     protected void applyYForces() {
