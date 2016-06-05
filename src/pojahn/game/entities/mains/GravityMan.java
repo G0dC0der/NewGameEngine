@@ -30,7 +30,7 @@ public class GravityMan extends PlayableEntity {
         mass = 1.0f;
         gravity = -500;
         damping = 0.0001f;
-        jumpStrength = 180;
+        jumpStrength = 125;
 
         wallGravity = -90;
         wallDamping = 1.1f;
@@ -76,32 +76,24 @@ public class GravityMan extends PlayableEntity {
 
     protected void wallSlide() {
         isWallSliding = isWallSliding();
-
-//        if (!isFrozen()) {
-//            if (allowWallJump && isWallSliding && currStrokes.jump && !prevStrokes.jump) {
-//                if (canRight())
-//                    vel.x = -wallJumpHorizontalStrength;
-//                else if (canLeft())
-//                    vel.x = wallJumpHorizontalStrength;
-//
-//                playSound();
-//                vel.y = jumpStrength;
-//            } /*else if (allowWallJump && isWallSliding) {
-//                if (strokes.left && !canRight())
-//                    isWallSliding = false;
-//                else if (strokes.right && !canLeft())
-//                    isWallSliding = false;
-//            }*/
-//        }
     }
 
     protected void jump() {
         if (!isFrozen()) {
-            if (jumpJustPressed() && vel.y == 0) {
-                if (!canDown())
+            final boolean canDown = canDown();
+
+            if (jumpJustPressed()) {
+                if (vel.y == 0 && !canDown) {
                     jumpKeyDownCounter = 0;
-                else if (isWallSliding)
-                    jumpKeyDownCounter = shortJumpFrames / 2;
+                } else if (isWallSliding) {
+                    jumpKeyDownCounter = 0;
+                    vel.y = 0;
+                }
+
+                if (!canLeft() && (canDown || currStrokes.left))
+                    vel.x = -wallJumpHorizontalStrength;
+                else if (!canRight() && (canDown || currStrokes.right))
+                    vel.x = wallJumpHorizontalStrength;
             }
 
             if (jumpKeyDownCounter <= shortJumpFrames && currStrokes.jump) {
@@ -112,11 +104,6 @@ public class GravityMan extends PlayableEntity {
             }
             if (jumpKeyDownCounter > 1 && jumpReleased()) {
                 jumpKeyDownCounter = Integer.MAX_VALUE;
-            } else if (jumpJustPressed() && isWallSliding) {
-                if (currStrokes.left && !partialLeft())
-                    vel.x = -wallJumpHorizontalStrength;
-                else if (currStrokes.right && !partialRight())
-                    vel.x = wallJumpHorizontalStrength;
             }
         }
 

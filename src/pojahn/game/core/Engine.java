@@ -39,6 +39,7 @@ public final class Engine {
     public HUDMessage helpText, winText, deathText, deathCheckpointText, pauseText;
 
     private final Level level;
+    private final RecordingDevice device;
     private SpriteBatch batch;
     private GameState state;
     private PlaybackRecord playback;
@@ -60,6 +61,7 @@ public final class Engine {
         this.level = level;
         this.level.engine = this;
         this.playback = replayData;
+        device = new RecordingDevice();
         replaying = replayData != null;
         recordings = new Vector<>();
         stateEvents = new HashMap<>();
@@ -328,7 +330,7 @@ public final class Engine {
     }
 
     private void progress() {
-        if (frameCounter++ > 2 && active()) //TODO: Why must frameCounter exceed 2?
+        if (frameCounter++ > 2 && active())
             time += delta;
 
         prevTx = gameCamera.position.x;
@@ -445,6 +447,10 @@ public final class Engine {
         return playback;
     }
 
+    RecordingDevice getDevice() {
+        return device;
+    }
+
     private boolean replayEnded() {
         List<PlayableEntity> mains = level.getMainCharacters();
         return mains.size() == mains.stream().filter(PlayableEntity::hasEnded).count();
@@ -457,6 +463,7 @@ public final class Engine {
         recording.levelName = level.getLevelName();
         recording.meta = level.getMeta();
         recording.deaths = getDeathCounter();
+        recording.outcome = getGameState();
         recording.keystrokes = level.getMainCharacters().stream().map(play -> new KeySession(play.getReplayData(), play.getBadge())).collect(Collectors.toList());
         recordings.add(recording);
     }

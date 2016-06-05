@@ -132,10 +132,7 @@ public abstract class TileBasedLevel extends Level {
                         throw new RuntimeException("Rotation and flip are not supported for tile based image.");
 
                     Color color = batch.getColor();
-                    Color newColor = new Color(color);
-                    newColor.a = alpha;
-
-                    batch.setColor(newColor);
+                    batch.setColor(color.r, color.g, color.b, alpha);
 
                     OrthographicCamera cam = getEngine().getGameCamera();
                     cam.update();
