@@ -7,12 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 import com.badlogic.gdx.ApplicationListener;
 import pojahn.game.essentials.*;
-import pojahn.game.essentials.recording.KeySession;
 import pojahn.game.essentials.recording.PlaybackRecord;
+import pojahn.game.essentials.recording.RecordingDevice;
 import pojahn.game.essentials.recording.Replay;
 import pojahn.game.events.Event;
 import pojahn.lang.OtherMath;
@@ -42,7 +41,6 @@ public final class Engine {
     private final RecordingDevice device;
     private SpriteBatch batch;
     private GameState state;
-    private PlaybackRecord playback;
     private List<Replay> recordings;
     private OrthographicCamera gameCamera, hudCamera;
     private Map<GameState, Event> stateEvents;
@@ -60,10 +58,16 @@ public final class Engine {
         state = GameState.UNINITIALIZED;
         this.level = level;
         this.level.engine = this;
-        this.playback = replayData;
+
         device = new RecordingDevice();
-        replaying = replayData != null;
-        recordings = new Vector<>();
+        if (replayData != null) {
+            device.load(replayData.replayData);
+            level.meta = replayData.meta;
+            replaying = true;
+        } else {
+            recordings = new Vector<>();
+        }
+
         stateEvents = new HashMap<>();
         exception = new FutureObject<>();
         renderText = true;
@@ -223,9 +227,6 @@ public final class Engine {
         level.build();
         level.insertDelete();
 
-        if (isReplaying())
-            level.processMeta(playback.meta);
-
         Dimension screenSize = getScreenSize();
         if (helpText == null)
             helpText = HUDMessage.centeredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
@@ -304,7 +305,7 @@ public final class Engine {
         } else {
             Keystrokes keys = keys(level.getMainCharacters());
 
-            if (lost() && level.cpPresent() && !replayEnded()) {
+            if (lost() && level.cpPresent() && !device.allDone()) {
                 restart(true);
             } else if (completed() || lost()) {
                 if (keys.restart) {
@@ -443,17 +444,8 @@ public final class Engine {
         return getGameState() == GameState.ACTIVE;
     }
 
-    PlaybackRecord getPlayback() {
-        return playback;
-    }
-
     RecordingDevice getDevice() {
         return device;
-    }
-
-    private boolean replayEnded() {
-        List<PlayableEntity> mains = level.getMainCharacters();
-        return mains.size() == mains.stream().filter(PlayableEntity::hasEnded).count();
     }
 
     private void finalizeRecording() {
@@ -464,7 +456,7 @@ public final class Engine {
         recording.meta = level.getMeta();
         recording.deaths = getDeathCounter();
         recording.outcome = getGameState();
-        recording.keystrokes = level.getMainCharacters().stream().map(play -> new KeySession(play.getReplayData(), play.getBadge())).collect(Collectors.toList());
+        recording.keystrokes = device.export();
         recordings.add(recording);
     }
 

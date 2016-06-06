@@ -9,9 +9,22 @@ public class KeySession implements Serializable {
 
     public final List<Keystrokes> keystrokes;
     public final long badge;
+    private transient int index;
 
     public KeySession(List<Keystrokes> keystrokes, long badge) {
         this.keystrokes = keystrokes;
         this.badge = badge;
+    }
+
+    public boolean hasEnded() {
+        return index > keystrokes.size() - 1;
+    }
+
+    public Keystrokes nextInput() {
+        return hasEnded() ? Keystrokes.AFK : keystrokes.get(index++);
+    }
+
+    public void reset() {
+        index = 0;
     }
 }

@@ -10,8 +10,6 @@ import java.util.List;
 
 public abstract class PlayableEntity extends MobileEntity {
 
-    public static final Keystrokes STILL = new Keystrokes();
-
     public Animation<Image2D> healthHud;
     public Particle deathImage;
 
@@ -77,18 +75,6 @@ public abstract class PlayableEntity extends MobileEntity {
         isGhost = true;
     }
 
-    void addReplayFrame(Keystrokes keystrokes) {
-        replayData.add(keystrokes);
-    }
-
-    void setReplayData(List<Keystrokes> replayData) {
-        this.replayData = replayData;
-    }
-
-    List<Keystrokes> getReplayData() {
-        return replayData;
-    }
-
     public void setState(Vitality state) {
         if (state == Vitality.ALIVE && this.state == Vitality.COMPLETED)
             throw new IllegalArgumentException("Can not set to state to " + Vitality.ALIVE + " when the current state is " + Vitality.COMPLETED);
@@ -152,13 +138,9 @@ public abstract class PlayableEntity extends MobileEntity {
         setVisible(true);
     }
 
-    boolean hasEnded() {
-        return replayDataCounter > replayData.size() - 1;
-    }
-
     Keystrokes nextInput() {
-        if (isGhost || engine.isReplaying()) {
-            return hasEnded() ? STILL : replayData.get(replayDataCounter++);
+        if (isGhost) {
+            return replayDataCounter > replayData.size() - 1 ? Keystrokes.AFK : replayData.get(replayDataCounter++);
         } else {
             throw new IllegalStateException("This method can only be called if the entity is a ghost or replaying.");
         }

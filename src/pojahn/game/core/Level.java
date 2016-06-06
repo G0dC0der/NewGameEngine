@@ -87,6 +87,7 @@ public abstract class Level {
     private List<TileLayer> tileLayers;
     private CheckPointHandler cph;
 
+    Serializable meta;
     List<Entity> gameObjects, soundListeners;
     Engine engine;
     boolean sort;
@@ -136,12 +137,8 @@ public abstract class Level {
         return tileAt((int) cord.x, (int) cord.y);
     }
 
-    public void processMeta(Serializable meta) {
-
-    }
-
     public Serializable getMeta() {
-        return null;
+        return meta;
     }
 
     public boolean cpPresent() {
@@ -384,12 +381,12 @@ public abstract class Level {
                     if (play.isGhost())
                         buttonsDown = play.nextInput();
                     else if (engine.active() && play.isAlive())
-                        buttonsDown = engine.isReplaying() ? play.nextInput() : Keystrokes.from(play.getController());
+                        buttonsDown = engine.isReplaying() ? engine.getDevice().nextInput(play.getBadge()) : Keystrokes.from(play.getController());
                     else
-                        buttonsDown = PlayableEntity.STILL;
+                        buttonsDown = Keystrokes.AFK;
 
                     if (play.isAlive() && !play.isGhost() && engine.active() && !engine.isReplaying())
-                        play.addReplayFrame(buttonsDown);
+                        engine.getDevice().addFrame(play.getBadge(), buttonsDown);
 
                     if (buttonsDown.suicide) {
                         play.setState(Vitality.DEAD);
@@ -455,10 +452,7 @@ public abstract class Level {
                     if (!play.isGhost()) {
                         mainCharacters.add(play);
                         cph.addUser(play);
-                        if (engine.isReplaying()) {
-                            PlaybackRecord pbr = engine.getPlayback();
-                            play.setReplayData(pbr.getByBadge(play.getBadge()));
-                        }
+                        engine.getDevice().addEntry(play.getBadge());
                     }
                 }
             }
