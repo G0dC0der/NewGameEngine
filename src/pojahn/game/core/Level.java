@@ -87,7 +87,6 @@ public abstract class Level {
     private List<TileLayer> tileLayers;
     private CheckPointHandler cph;
 
-    Serializable meta;
     List<Entity> gameObjects, soundListeners;
     Engine engine;
     boolean sort;
@@ -138,7 +137,7 @@ public abstract class Level {
     }
 
     public Serializable getMeta() {
-        return meta;
+        return null;
     }
 
     public boolean cpPresent() {

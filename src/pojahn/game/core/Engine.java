@@ -38,7 +38,9 @@ public final class Engine {
     public HUDMessage helpText, winText, deathText, deathCheckpointText, pauseText;
 
     private final Level level;
+    //TODO: Store meta hera and pass it to build?
     private final RecordingDevice device;
+    private String playerName;
     private SpriteBatch batch;
     private GameState state;
     private List<Replay> recordings;
@@ -62,7 +64,7 @@ public final class Engine {
         device = new RecordingDevice();
         if (replayData != null) {
             device.load(replayData.replayData);
-            level.meta = replayData.meta;
+            level.processsedMeta = replayData.meta;
             replaying = true;
         } else {
             recordings = new Vector<>();
@@ -102,6 +104,10 @@ public final class Engine {
 
     public long getFrameCounter() {
         return frameCounter;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public void setScreenSize(int width, int height) {
@@ -248,14 +254,17 @@ public final class Engine {
         boolean completed = completed();
         setGameState(GameState.LOADING);
 
-        if(fromCp && !level.cpPresent())
-            fromCp = false;
+        fromCp = fromCp && level.cpPresent() && !completed;
 
         if (!fromCp) {
             time = 0;
+            device.clear();
         }
 
-        uniqueCounter = 0;
+        if (isReplaying() && completed)
+            device.reset();
+
+        uniqueCounter = frameCounter = 0;
         setZoom(1);
         setRotation(0);
 
@@ -271,7 +280,6 @@ public final class Engine {
             level.getCheckpointHandler().reset();
         }
 
-        frameCounter = 0;
         setGameState(GameState.ACTIVE);
     }
 
@@ -408,20 +416,22 @@ public final class Engine {
     }
 
     private void statusControl() {
-        List<PlayableEntity> mains = level.getMainCharacters();
-        int total = mains.size();
-        long alive = mains.stream().filter(PlayableEntity::isAlive).count();
-        long dead = mains.stream().filter(PlayableEntity::isDead).count();
-        long finished = mains.stream().filter(PlayableEntity::isDone).count();
+        if (getGameState() == GameState.ACTIVE) {
+            List<PlayableEntity> mains = level.getMainCharacters();
+            int total = mains.size();
+            long alive = mains.stream().filter(PlayableEntity::isAlive).count();
+            long dead = mains.stream().filter(PlayableEntity::isDead).count();
+            long finished = mains.stream().filter(PlayableEntity::isDone).count();
 
-        if (dead == total || (alive == 0 && finished == 0))
-            setGameState(GameState.LOST);
-        else if (finished > 0)
-            setGameState(GameState.SUCCESS);
-        else if (alive > 0)
-            setGameState(GameState.ACTIVE);
-        else
-            throw new IllegalStateException("Game is in a unknown state.");
+            if (dead == total || (alive == 0 && finished == 0))
+                setGameState(GameState.LOST);
+            else if (finished > 0)
+                setGameState(GameState.SUCCESS);
+            else if (alive > 0)
+                setGameState(GameState.ACTIVE);
+            else
+                throw new IllegalStateException("Game is in a unknown state.");
+        }
     }
 
     long provideBadge() {
@@ -453,10 +463,11 @@ public final class Engine {
         recording.date = ZonedDateTime.now();
         recording.time = getTimeInSeconds();
         recording.levelName = level.getLevelName();
-        recording.meta = level.getMeta();
+        recording.meta = level.getMeta(); //TODO: Need to redesign.
         recording.deaths = getDeathCounter();
         recording.outcome = getGameState();
         recording.keystrokes = device.export();
+        recording.playerName = playerName;
         recordings.add(recording);
     }
 

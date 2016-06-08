@@ -349,6 +349,10 @@ public class Entity {
         return chainEvent;
     }
 
+    public void die() {
+        getLevel().discard(this);
+    }
+
     protected void copyData(Entity clone) {
         clone.originator = this;
         clone.bounds.pos.x = bounds.pos.x;

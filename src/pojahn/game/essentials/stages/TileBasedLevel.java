@@ -16,20 +16,39 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.essentials.Image2D;
-
-import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class TileBasedLevel extends Level {
 
+    public static class PositionedCell {
+        public Cell cell;
+        public int x, y;
+
+        public PositionedCell(Cell cell, int x, int y) {
+            this.cell = cell;
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof PositionedCell) {
+                PositionedCell pCell = (PositionedCell) obj;
+                return this.cell == pCell.cell && (x * 31 + y) == (pCell.x * 31 + pCell.y);
+            } else {
+                return false;
+            }
+        }
+    }
+
     private int tilesX, tilesY, tileWidth, tileHeight;
     private Entity worldImage;
     private TiledMap map;
     private TiledMapRenderer tiledMapRenderer;
     private TiledMapTileLayer layer;
-    private Map<Integer, Holder> orgTiles;
+    private Map<Integer, PositionedCell> orgTiles;
     private Image2D tileSet;
 
     protected TileBasedLevel() {
@@ -85,7 +104,7 @@ public abstract class TileBasedLevel extends Level {
 
         int key = tileX * 31 + tileY;
         if (orgTiles.get(key) == null)
-            orgTiles.put(key, new Holder(org, tileX, tileY));
+            orgTiles.put(key, new PositionedCell(org, tileX, tileY));
     }
 
     public void transformTiles(int tileCx, int tileCy, int radius, Cell cell) {
@@ -167,23 +186,6 @@ public abstract class TileBasedLevel extends Level {
                     return;
                 }
             }
-        }
-    }
-
-    private static class Holder {
-        Cell cell;
-        int x, y;
-
-        Holder(Cell cell, int x, int y) {
-            this.cell = cell;
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            Holder holder = (Holder) obj;
-            return (x * 31 + y) == (holder.x * 31 + holder.y);
         }
     }
 }

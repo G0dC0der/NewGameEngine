@@ -1,12 +1,14 @@
 package pojahn.game.essentials;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
+import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.game.events.Event;
 import pojahn.game.events.TileEvent;
 import pojahn.lang.Int32;
@@ -20,6 +22,28 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Factory {
+
+    public static Entity tuneUp(Music music, float power) {
+        return new Entity() {
+            @Override
+            public void logistics() {
+                music.setVolume(Math.min(1, music.getVolume() + power));
+                if (music.getVolume() >= 1)
+                    die();
+            }
+        };
+    }
+
+    public static Entity tuneDown(Music music, float power) {
+        return new Entity() {
+            @Override
+            public void logistics() {
+                music.setVolume(Math.max(0, music.getVolume() - power));
+                if (music.getVolume() <= 0)
+                    die();
+            }
+        };
+    }
 
     public static Event spazz(Entity entity, float tolerance, int freq) {
         Int32 counter = new Int32();
@@ -105,8 +129,8 @@ public class Factory {
 
     public static Event keepInBounds(Entity entity) {
         return ()-> {
-            entity.bounds.pos.x = Math.max(0, Math.min(entity.x(), entity.getLevel().getWidth()));
-            entity.bounds.pos.y = Math.max(0, Math.min(entity.y(), entity.getLevel().getHeight()));
+            entity.bounds.pos.x = Math.max(0, Math.min(entity.x() + entity.width(), entity.getLevel().getWidth()));
+            entity.bounds.pos.y = Math.max(0, Math.min(entity.y() + entity.height(), entity.getLevel().getHeight()));
         };
     }
 

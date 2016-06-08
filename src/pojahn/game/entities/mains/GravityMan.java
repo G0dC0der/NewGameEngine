@@ -215,30 +215,6 @@ public class GravityMan extends PlayableEntity {
                 (((currStrokes.left || isWallSliding) && !canLeft()) || ((currStrokes.right || isWallSliding) && !canRight()));
     }
 
-    protected boolean partialLeft() {
-        Level l = getLevel();
-        int x = (int) x() - 1;
-        int partialHeight = (int) (height() / 3);
-
-        for (int y = (int) y(); y < y() + partialHeight; y++)
-            if (l.isSolid(x, y))
-                return false;
-
-        return !obstacleCollision(x() - 1, y());
-    }
-
-    protected boolean partialRight() {
-        Level l = getLevel();
-        int x = (int) (x() + width() + 1);
-        int partialHeight = (int) (height() / 3);
-
-        for (int y = (int) y(); y < y() + partialHeight; y++)
-            if (l.isSolid(x, y))
-                return false;
-
-        return !obstacleCollision(x() - 1, y());
-    }
-
     protected void moveLeft() {
         if (vel.x < thermVx())
             vel.x += accX * getDelta();
