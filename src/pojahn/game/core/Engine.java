@@ -231,7 +231,7 @@ public final class Engine {
         setGameState(GameState.LOADING);
         batch = new SpriteBatch();
         initCameras();
-        level.init(isReplaying(), meta);
+        level.init(meta);
         level.build();
         level.insertDelete();
 
