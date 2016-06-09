@@ -1,21 +1,18 @@
 package pojahn.game.essentials.stages;
 
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
+import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.Image2D;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +42,6 @@ public abstract class TileBasedLevel extends Level {
 
     private int tilesX, tilesY, tileWidth, tileHeight;
     private Entity worldImage;
-    private TiledMap map;
-    private TiledMapRenderer tiledMapRenderer;
     private TiledMapTileLayer layer;
     private Map<Integer, PositionedCell> orgTiles;
     private Image2D tileSet;
@@ -56,7 +51,6 @@ public abstract class TileBasedLevel extends Level {
     }
 
     public void parse(TiledMap map) throws IOException {
-        this.map = map;
         MapProperties props = map.getProperties();
         layer = (TiledMapTileLayer) map.getLayers().get(0);
         tilesX = props.get("width", Integer.class);
@@ -64,6 +58,7 @@ public abstract class TileBasedLevel extends Level {
         tileWidth = props.get("tilewidth", Integer.class);
         tileHeight = props.get("tileheight", Integer.class);
         encode();
+        worldImage = Factory.construct(map);
     }
 
     @Override
@@ -136,38 +131,11 @@ public abstract class TileBasedLevel extends Level {
     }
 
     public Entity getWorldImage() {
-        if (worldImage == null) {
-            worldImage = new Entity() {{
-                    zIndex(Integer.MAX_VALUE);
-                    identifier = "World Image";
-                }
-
-                @Override
-                public void render(SpriteBatch batch) {
-                    if (tiledMapRenderer == null)
-                        tiledMapRenderer = new OrthogonalTiledMapRenderer(map, batch);
-
-                    if (getRotation() != 0 || flipX || flipY)
-                        throw new RuntimeException("Rotation and flip are not supported for tile based image.");
-
-                    Color color = batch.getColor();
-                    batch.setColor(color.r, color.g, color.b, alpha);
-
-                    OrthographicCamera cam = getEngine().getGameCamera();
-                    cam.update();
-                    tiledMapRenderer.setView(cam);
-                    tiledMapRenderer.renderTileLayer(layer);
-
-                    batch.setColor(color);
-                }
-            };
-        }
-
         return worldImage;
     }
 
     @Override
-    protected void clean() {
+    protected final void clean() {
         super.clean();
         restoreTiles();
     }

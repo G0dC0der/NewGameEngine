@@ -1,6 +1,14 @@
 package pojahn.game.essentials;
 
+import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
@@ -9,6 +17,9 @@ import pojahn.game.events.RenderEvent;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Utils {
 
@@ -61,5 +72,36 @@ public class Utils {
             }
         }
         return tileLayer;
+    }
+
+    public static TiledMap loadTiledMap(FileHandle path){
+        String str = path.file().getAbsolutePath();
+        TmxMapLoader.Parameters params = new TmxMapLoader.Parameters();
+        params.flipY = false;
+        TiledMap map = new TmxMapLoader(new AbsoluteFileHandleResolver()).load(str, params);
+        MapProperties props = map.getProperties();
+
+        int tilesX = props.get("width", Integer.class);
+        int tilesY = props.get("height", Integer.class);
+
+        MapLayers layers = map.getLayers();
+        layers.forEach(l->{
+            TiledMapTileLayer layer = (TiledMapTileLayer) l;
+            Set<TextureRegion> used = new HashSet<>();
+
+            for(int x = 0; x < tilesX; x++){
+                for(int y = 0; y < tilesY; y++){
+                    TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+                    if(cell != null){
+                        TextureRegion region = cell.getTile().getTextureRegion();
+                        if(used.add(region)){
+                            region.flip(false, true);
+                        }
+                    }
+                }
+            }
+        });
+
+        return map;
     }
 }

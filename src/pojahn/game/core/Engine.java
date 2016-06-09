@@ -341,9 +341,10 @@ public final class Engine {
     }
 
     private void progress() {
-        if (frameCounter++ > 2 && active())
+        if (active())
             time += delta;
 
+        frameCounter++;
         prevTx = gameCamera.position.x;
         prevTy = gameCamera.position.y;
 

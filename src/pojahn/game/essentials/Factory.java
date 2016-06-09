@@ -1,14 +1,19 @@
 package pojahn.game.essentials;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
-import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.game.events.Event;
 import pojahn.game.events.TileEvent;
 import pojahn.lang.Int32;
@@ -22,6 +27,34 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Factory {
+
+    public static Entity construct(TiledMap tiledMap) {
+        return new Entity() {
+            TiledMapRenderer tiledMapRenderer;
+            MapLayers layers = tiledMap.getLayers();
+
+            @Override
+            public void render(SpriteBatch batch) {
+                if (tiledMapRenderer == null)
+                    tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, batch);
+
+                if (getRotation() != 0 || flipX || flipY)
+                    throw new RuntimeException("Rotation and flip are not supported for tile based image.");
+
+                Color color = batch.getColor();
+                batch.setColor(color.r, color.g, color.b, alpha);
+
+                OrthographicCamera cam = getEngine().getGameCamera();
+                cam.update();
+                tiledMapRenderer.setView(cam);
+                for (int i = layers.getCount() - 1; i >= 0; i--) {
+                    tiledMapRenderer.renderTileLayer((TiledMapTileLayer)layers.get(i));
+                }
+
+                batch.setColor(color);
+            }
+        };
+    }
 
     public static Entity tuneUp(Music music, float power) {
         return new Entity() {

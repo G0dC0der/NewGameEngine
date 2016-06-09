@@ -2,24 +2,14 @@ package pojahn.game.essentials;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader.Parameters;
 import com.badlogic.gdx.utils.Disposable;
 
 public class ResourceManager {
@@ -43,7 +33,7 @@ public class ResourceManager {
 	}
 	
 	public void loadTiledMap(FileHandle path){
-		stuff.put(path.name(), getTiledMap(path));
+		stuff.put(path.name(), Utils.loadTiledMap(path));
 	}
 	
 	public TiledMap getTiledMap(String key){
@@ -168,38 +158,6 @@ public class ResourceManager {
 		StringBuilder bu = new StringBuilder();
 		stuff.forEach((key, value) -> bu.append(key).append(": ").append(value.getClass().getSimpleName()).append(System.lineSeparator()));
 		return bu.toString();
-	}
-	
-	public static TiledMap getTiledMap(FileHandle path){
-		String str = path.file().getAbsolutePath();
-		Parameters params = new Parameters();
-		params.flipY = false;
-		TiledMap map = new TmxMapLoader(new AbsoluteFileHandleResolver()).load(str, params);
-		MapProperties props = map.getProperties();
-		
-		int tilesX = props.get("width", Integer.class);
-		int tilesY = props.get("height", Integer.class);
-		
-		MapLayers layers = map.getLayers();
-		layers.forEach(l->{
-			TiledMapTileLayer layer = (TiledMapTileLayer) l;
-			Set<TextureRegion> used = new HashSet<>();
-
-			for(int x = 0; x < tilesX; x++){
-				for(int y = 0; y < tilesY; y++){
-					Cell cell = layer.getCell(x, y);
-					if(cell != null){
-						TextureRegion region = cell.getTile().getTextureRegion();
-						if(used.add(region)){
-							region.flip(false, true);
-						}
-					}
-				}
-			}
-			
-		});
-		
-		return map;
 	}
 	
 	private void tryDispose(Object obj){
