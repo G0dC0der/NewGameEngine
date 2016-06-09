@@ -1,6 +1,7 @@
 package pojahn.game.core;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +39,8 @@ public final class Engine {
     public HUDMessage helpText, winText, deathText, deathCheckpointText, pauseText;
 
     private final Level level;
-    //TODO: Store meta hera and pass it to build?
     private final RecordingDevice device;
+    private final Serializable meta;
     private String playerName;
     private SpriteBatch batch;
     private GameState state;
@@ -64,10 +65,11 @@ public final class Engine {
         device = new RecordingDevice();
         if (replayData != null) {
             device.load(replayData.replayData);
-            level.processsedMeta = replayData.meta;
+            meta = replayData.meta;
             replaying = true;
         } else {
             recordings = new Vector<>();
+            meta = null;
         }
 
         stateEvents = new HashMap<>();
@@ -229,7 +231,7 @@ public final class Engine {
         setGameState(GameState.LOADING);
         batch = new SpriteBatch();
         initCameras();
-        level.init();
+        level.init(isReplaying(), meta);
         level.build();
         level.insertDelete();
 

@@ -105,7 +105,7 @@ public abstract class Level {
 
     public abstract int getHeight();
 
-    public abstract void init() throws Exception;
+    public abstract void init(boolean isReplaying, Serializable meta) throws Exception;
 
     public abstract void build();
 
