@@ -69,6 +69,7 @@ public class Keystrokes implements Serializable {
         pb.special2 = ks1.special2 || ks2.special2;
         pb.special3 = ks1.special3 || ks2.special3;
         pb.suicide = ks1.suicide || ks2.suicide;
+        pb.restart = ks1.restart || ks2.restart;
 
         return pb;
     }

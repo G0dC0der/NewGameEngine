@@ -162,8 +162,8 @@ public class Factory {
 
     public static Event keepInBounds(Entity entity) {
         return ()-> {
-            entity.bounds.pos.x = Math.max(0, Math.min(entity.x() + entity.width(), entity.getLevel().getWidth()));
-            entity.bounds.pos.y = Math.max(0, Math.min(entity.y() + entity.height(), entity.getLevel().getHeight()));
+            entity.bounds.pos.x = Math.max(0, Math.min(entity.x(), entity.getLevel().getWidth()));
+            entity.bounds.pos.y = Math.max(0, Math.min(entity.y(), entity.getLevel().getHeight()));
         };
     }
 

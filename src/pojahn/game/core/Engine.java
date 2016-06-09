@@ -257,18 +257,17 @@ public final class Engine {
         setGameState(GameState.LOADING);
 
         fromCp = fromCp && level.cpPresent() && !completed;
-
-        if (!fromCp) {
-            time = 0;
-            device.clear();
-        }
-
-        if (isReplaying() && completed)
-            device.reset();
-
+        time = !fromCp ? 0 : time;
         uniqueCounter = frameCounter = 0;
         setZoom(1);
         setRotation(0);
+
+        if (completed || lost && !fromCp) {
+            if (isReplaying())
+                device.reset();
+            else
+                device.clear();
+        }
 
         level.clean();
         level.build();
@@ -287,25 +286,11 @@ public final class Engine {
 
     private void overview() {
         if (!isReplaying()) {
-
             if ((active() || paused()) && keys(level.getAliveMainCharacters()).pause) {
                 setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
-
-                if (active()) {
-                    Music music = level.getStageMusic();
-                    if (music != null)
-                        music.setVolume(musicVolume);
-
-                } else if (paused()) {
-                    Music music = level.getStageMusic();
-                    if (music != null) {
-                        musicVolume = music.getVolume();
-                        music.setVolume(.1f);
-                    }
-                }
+                adjustMusic();
             } else if (lost() || completed()) {
                 Keystrokes keys = keys(level.getMainCharacters());
-
                 if (keys.restart) {
                     restart(lost() && level.cpPresent());
                 } else if (keys.quit) {
@@ -313,11 +298,10 @@ public final class Engine {
                 }
             }
         } else {
-            Keystrokes keys = keys(level.getMainCharacters());
-
             if (lost() && level.cpPresent() && !device.allDone()) {
                 restart(true);
             } else if (completed() || lost()) {
+                Keystrokes keys = keys(level.getMainCharacters());
                 if (keys.restart) {
                     restart(false);
                 } else if (keys.quit) {
@@ -331,6 +315,21 @@ public final class Engine {
         } else {
             progress();
             paint();
+        }
+    }
+
+    private void adjustMusic() {
+        if (active()) {
+            Music music = level.getStageMusic();
+            if (music != null)
+                music.setVolume(musicVolume);
+
+        } else if (paused()) {
+            Music music = level.getStageMusic();
+            if (music != null) {
+                musicVolume = music.getVolume();
+                music.setVolume(.1f);
+            }
         }
     }
 

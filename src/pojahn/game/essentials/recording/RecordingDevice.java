@@ -54,10 +54,10 @@ public class RecordingDevice {
 
     public boolean allDone () {
         for (KeySession recordEntry : recordEntries) {
-            if (recordEntry.hasEnded()) {
-                return true;
+            if (!recordEntry.hasEnded()) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 }
