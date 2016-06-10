@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.ApplicationListener;
 import pojahn.game.essentials.*;
@@ -41,13 +43,14 @@ public final class Engine {
     private final Level level;
     private final RecordingDevice device;
     private final Serializable meta;
+    private final Executor eventExecutor;
     private String playerName;
     private SpriteBatch batch;
     private GameState state;
     private List<Replay> recordings;
     private OrthographicCamera gameCamera, hudCamera;
     private Map<GameState, Event> stateEvents;
-    private FutureObject<Exception> exception;
+    private Exception exception;
 
     private boolean replaying, flipY, showHelpText;
     private int screenWidth, screenHeight, deathCounter;
@@ -72,8 +75,8 @@ public final class Engine {
             meta = null;
         }
 
+        eventExecutor = Executors.newCachedThreadPool();
         stateEvents = new HashMap<>();
-        exception = new FutureObject<>();
         renderText = true;
         timeColor = Color.WHITE;
         flipY = true;
@@ -213,7 +216,7 @@ public final class Engine {
         });
     }
 
-    public FutureObject<Exception> getException() {
+    public Exception getException() {
         return exception;
     }
 
@@ -233,7 +236,7 @@ public final class Engine {
         initCameras();
         level.init(meta);
         level.build();
-        level.insertDelete();
+        level.place();
 
         Dimension screenSize = getScreenSize();
         if (helpText == null)
@@ -271,7 +274,7 @@ public final class Engine {
 
         level.clean();
         level.build();
-        level.insertDelete();
+        level.place();
 
         if (lost && fromCp) {
             deathCounter++;
@@ -386,7 +389,7 @@ public final class Engine {
 
             Event event = stateEvents.get(this.state);
             if (event != null) {
-                new Thread(event::eventHandling).start();
+                eventExecutor.execute(event::eventHandling);
             }
         }
     }
@@ -465,7 +468,7 @@ public final class Engine {
         recording.date = ZonedDateTime.now();
         recording.time = getTimeInSeconds();
         recording.levelName = level.getLevelName();
-        recording.meta = level.getMeta(); //TODO: Need to redesign.
+        recording.meta = level.getMeta();
         recording.deaths = getDeathCounter();
         recording.outcome = getGameState();
         recording.keystrokes = device.export();
@@ -538,7 +541,7 @@ public final class Engine {
                     engine.setGameState(GameState.DISPOSED);
                     throw e;
                 } catch (Exception e) {
-                    engine.exception.set(e);
+                    engine.exception = e;
                     engine.setGameState(GameState.CRASHED);
                     throw new RuntimeException(e);
                 }
@@ -549,7 +552,7 @@ public final class Engine {
                 try {
                     engine.setup();
                 } catch (Exception e) {
-                    engine.exception.set(e);
+                    engine.exception  = e;
                     engine.setGameState(GameState.CRASHED);
                     throw new RuntimeException(e);
                 }

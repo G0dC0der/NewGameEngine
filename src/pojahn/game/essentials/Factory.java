@@ -19,6 +19,7 @@ import pojahn.game.events.TileEvent;
 import pojahn.lang.Int32;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -31,7 +32,11 @@ public class Factory {
     public static Entity construct(TiledMap tiledMap) {
         return new Entity() {
             TiledMapRenderer tiledMapRenderer;
-            MapLayers layers = tiledMap.getLayers();
+            List<TiledMapTileLayer> layers = new ArrayList<>();
+            {
+                tiledMap.getLayers().forEach(mapLayer -> layers.add((TiledMapTileLayer)mapLayer));
+                Collections.reverse(layers);
+            }
 
             @Override
             public void render(SpriteBatch batch) {
@@ -47,9 +52,7 @@ public class Factory {
                 OrthographicCamera cam = getEngine().getGameCamera();
                 cam.update();
                 tiledMapRenderer.setView(cam);
-                for (int i = layers.getCount() - 1; i >= 0; i--) {
-                    tiledMapRenderer.renderTileLayer((TiledMapTileLayer)layers.get(i));
-                }
+                layers.forEach(tiledMapRenderer::renderTileLayer);
 
                 batch.setColor(color);
             }

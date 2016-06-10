@@ -40,8 +40,8 @@ public abstract class TileBasedLevel extends Level {
         }
     }
 
+    private TiledMap map;
     private int tilesX, tilesY, tileWidth, tileHeight;
-    private Entity worldImage;
     private TiledMapTileLayer layer;
     private Map<Integer, PositionedCell> orgTiles;
     private Image2D tileSet;
@@ -51,6 +51,7 @@ public abstract class TileBasedLevel extends Level {
     }
 
     public void parse(TiledMap map) throws IOException {
+        this.map = map;
         MapProperties props = map.getProperties();
         layer = (TiledMapTileLayer) map.getLayers().get(0);
         tilesX = props.get("width", Integer.class);
@@ -58,7 +59,6 @@ public abstract class TileBasedLevel extends Level {
         tileWidth = props.get("tilewidth", Integer.class);
         tileHeight = props.get("tileheight", Integer.class);
         encode();
-        worldImage = Factory.construct(map);
     }
 
     @Override
@@ -131,7 +131,7 @@ public abstract class TileBasedLevel extends Level {
     }
 
     public Entity getWorldImage() {
-        return worldImage;
+        return Factory.construct(map);
     }
 
     @Override

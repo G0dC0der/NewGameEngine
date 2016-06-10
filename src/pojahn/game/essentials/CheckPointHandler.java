@@ -56,8 +56,7 @@ public class CheckPointHandler {
     }
 
     public void reset() {
-        for (Checkpoint cp : checkpoints)
-            cp.taken = false;
+        checkpoints.forEach(cp -> cp.taken = false);
     }
 
     public boolean available() {

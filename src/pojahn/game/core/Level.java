@@ -6,7 +6,6 @@ import pojahn.game.essentials.CheckPointHandler;
 import pojahn.game.essentials.Keystrokes;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
-import pojahn.game.essentials.recording.PlaybackRecord;
 import pojahn.game.events.Event;
 import pojahn.game.events.TaskEvent;
 import pojahn.lang.Entry;
@@ -359,7 +358,7 @@ public abstract class Level {
     }
 
     void gameLoop() {
-        insertDelete();
+        place();
 
         if (sort) {
             Collections.sort(gameObjects, Z_INDEX_SORT);
@@ -432,7 +431,7 @@ public abstract class Level {
         }
     }
 
-    void insertDelete() {
+    void place() {
         for (int i = 0; i < awaitingObjects.size(); i++) {
             Entry<Integer, Entity> entry = awaitingObjects.get(i);
             if (entry.key-- <= 0) {
