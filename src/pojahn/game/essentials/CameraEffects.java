@@ -23,7 +23,6 @@ public class CameraEffects {
                 float tx = 0;
                 float ty = 0;
                 float zoom = 0;
-                float gameZoom = getEngine().getZoom();
                 float stageWidth = getLevel().getWidth();
                 float stageHeight = getLevel().getHeight();
                 float windowWidth = size.width;
@@ -31,11 +30,25 @@ public class CameraEffects {
 
                 List<Entity> list = ignoreInvisible ? entities.stream().filter(Entity::isActive).collect(Collectors.toList()) : entities;
 
-                if (!list.isEmpty()) {
+                if (list.size() == 1 ) {
+                    Entity entity = list.get(0);
+                    if (getEngine().getZoom() == 1.0f) {
+                        float marginX = windowWidth  / 2;
+                        float marginY = windowHeight  / 2;
+
+                        tx = Math.min(stageWidth  - windowWidth,   Math.max(0, entity.centerX() - marginX)) + marginX;
+                        ty = Math.min(stageHeight - windowHeight,  Math.max(0, entity.centerY() - marginY)) + marginY;
+                    } else {
+                        tx = entity.centerX();
+                        ty = entity.centerY();
+                    }
+
+                    getEngine().translate(tx, ty);
+                } else if (list.size() > 1) {
                     Entity first = list.get(0);
 
-                    final float marginX = gameZoom == 1 ? windowWidth / 2 : 0;
-                    final float marginY = gameZoom == 1 ? windowHeight / 2 : 0;
+                    final float marginX = windowWidth / 2;
+                    final float marginY = windowHeight / 2;
 
                     float boxX = first.x();
                     float boxY = first.y();
@@ -56,8 +69,8 @@ public class CameraEffects {
 
                     boxX -= padding;
                     boxY -= padding;
-                    boxWidth += padding * 2;
-                    boxHeight += padding * 2;
+                    boxWidth += padding * 2.0f;
+                    boxHeight += padding * 2.0f;
 
                     boxX = Math.max(boxX, 0);
                     boxX = Math.min(boxX, stageWidth - boxWidth);
@@ -70,10 +83,10 @@ public class CameraEffects {
                     else
                         zoom = boxHeight / windowHeight;
 
-                    zoom = gameZoom == 1 ? Math.max(zoom, 1.0f) : gameZoom;
+                    zoom = Math.max( zoom, 1.0f );
 
-                    tx = boxX + (boxWidth / 2);
-                    ty = boxY + (boxHeight / 2);
+                    tx = boxX + (boxWidth / 2.0f);
+                    ty = boxY + (boxHeight / 2.0f);
 
                     if (marginX > tx)
                         tx = marginX;
