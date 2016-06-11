@@ -64,7 +64,6 @@ public class BigImage extends Entity {
         Engine e = getLevel().getEngine();
         Dimension screen = e.getScreenSize();
         Color defColor = batch.getColor();
-        Color newColor = new Color(defColor.r, defColor.g, defColor.b, alpha);
 
         switch (strategy) {
             case FULL:
@@ -79,7 +78,7 @@ public class BigImage extends Entity {
                 float v = startY / height();
                 float u2 = (startX + width) / width();
                 float v2 = (startY + height) / height();
-                batch.setColor(newColor);
+                batch.setColor(tint);
                 batch.draw(nextImage(), startX, startY, width, height, u, v, u2, v2);
                 batch.setColor(defColor);
                 break;
@@ -89,7 +88,7 @@ public class BigImage extends Entity {
                 e.gameCamera();
                 break;
             case REPEAT:
-                batch.setColor(newColor);
+                batch.setColor(tint);
                 repeat(batch);
                 batch.setColor(defColor);
                 break;

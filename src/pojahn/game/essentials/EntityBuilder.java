@@ -137,7 +137,7 @@ public class EntityBuilder {
         dest.bounds.size.height = height;
         dest.offsetX = offsetX;
         dest.offsetY = offsetY;
-        dest.alpha = alpha;
+        dest.tint.a = alpha;
         dest.setRotation(rotation);
         dest.zIndex(zIndex);
         dest.setHitbox(hitbox);

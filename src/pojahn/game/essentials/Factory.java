@@ -47,7 +47,7 @@ public class Factory {
                     throw new RuntimeException("Rotation and flip are not supported for tile based image.");
 
                 Color color = batch.getColor();
-                batch.setColor(color.r, color.g, color.b, alpha);
+                batch.setColor(tint);
 
                 OrthographicCamera cam = getEngine().getGameCamera();
                 cam.update();

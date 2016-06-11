@@ -23,7 +23,8 @@ public class Entity {
     public final Bounds bounds;
     public SoundEmitter sounds;
     public String identifier;
-    public float alpha, offsetX, offsetY;
+    public Color tint;
+    public float offsetX, offsetY;
     public boolean flipX, flipY;
 
     protected CloneEvent cloneEvent;
@@ -44,7 +45,8 @@ public class Entity {
     public Entity() {
         bounds = new Bounds();
         sounds = new SoundEmitter(this);
-        alpha = offsetX = offsetY = 1;
+        offsetX = offsetY = 1;
+        tint = Color.valueOf("fffffffe");
         active = true;
         events = new ArrayList<>();
         hitbox = Hitbox.RECTANGLE;
@@ -120,13 +122,12 @@ public class Entity {
     }
 
     public void render(SpriteBatch batch) {
-        if (!visible || alpha == 0)
-            return;
-
-        Color defColor = batch.getColor();
-        batch.setColor(new Color(defColor.r, defColor.g, defColor.b, alpha));
-        basicRender(batch, nextImage());
-        batch.setColor(defColor);
+        if (visible && tint.a > 0.0f) {
+            Color defColor = batch.getColor();
+            batch.setColor(tint);
+            basicRender(batch, nextImage());
+            batch.setColor(defColor);
+        }
     }
 
     public Engine getEngine() {
@@ -361,7 +362,7 @@ public class Entity {
         clone.bounds.size.height = bounds.size.height;
         clone.active = active;
         clone.visible = visible;
-        clone.alpha = alpha;
+        clone.tint = new Color(tint);
         clone.bounds.rotation = bounds.rotation;
         clone.zIndex = zIndex;
         clone.hitbox = hitbox;

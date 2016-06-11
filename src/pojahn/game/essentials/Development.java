@@ -1,10 +1,26 @@
 package pojahn.game.essentials;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.events.Event;
 
 public class Development {
+
+    public static Event adjustColor(Color color) {
+        return ()-> {
+            if (Gdx.input.isKeyPressed(Keys.NUM_5))
+                color.r += .01f;
+            else if (Gdx.input.isKeyPressed(Keys.T))
+                color.r -= .01f;
+            else if (Gdx.input.isKeyPressed(Keys.NUM_6))
+                color.g += .01f;
+            else if (Gdx.input.isKeyPressed(Keys.Y))
+                color.g -= .01f;
+        };
+    }
 
     public static Event debugMovement(PlayableEntity play) {
         return () -> {

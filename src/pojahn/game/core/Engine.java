@@ -272,6 +272,7 @@ public final class Engine {
                 device.clear();
         }
 
+        level.getCheckpointHandler().clearUsers();
         level.clean();
         level.build();
         level.place();

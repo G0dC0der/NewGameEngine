@@ -39,6 +39,10 @@ public class CheckPointHandler {
         users.add(user);
     }
 
+    public void clearUsers() {
+        users.clear();
+    }
+
     public void appendCheckpoint(Vector2 startPos, Rectangle area) {
         appendCheckpoint(startPos.x, startPos.y, area.x, area.y, area.width, area.height);
     }
@@ -87,9 +91,9 @@ public class CheckPointHandler {
         float width = 0;
         if (latest != null) {
             for (int i = 0; i < users.size() ; i++) {
-                users.get(i).move(latest.x + width, latest.y);
                 if(i > 0)
                     width += users.get(i - 1).width();
+                users.get(i).move(latest.x + width, latest.y);
             }
         }
     }
