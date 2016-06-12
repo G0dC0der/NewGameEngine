@@ -31,8 +31,7 @@ public class TransformablePlatform extends SolidPlatform {
         super.init();
 
         if(tileLayer == null) {
-            tileLayer = new Level.TileLayer((int)width() - 4, (int)height() - 4);
-            tileLayer.fill(tile);
+            initTileLayer();
         }
 
         getLevel().addTileLayer(tileLayer);
@@ -54,9 +53,16 @@ public class TransformablePlatform extends SolidPlatform {
         this.tile = tile;
     }
 
+    private void initTileLayer() {
+        tileLayer = new Level.TileLayer((int)width() - 4, (int)height() - 4);
+        tileLayer.fill(tile);
+    }
+
     protected void copyData(TransformablePlatform clone) {
         super.copyData(clone);
         clone.tile = tile;
+        if (tileLayer == null)
+            initTileLayer();
         clone.tileLayer = tileLayer.copy();
     }
 }

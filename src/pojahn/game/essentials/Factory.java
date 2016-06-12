@@ -1,6 +1,7 @@
 package pojahn.game.essentials;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayers;
@@ -14,6 +15,7 @@ import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
+import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.events.Event;
 import pojahn.game.events.TileEvent;
 import pojahn.lang.Int32;
@@ -28,6 +30,15 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Factory {
+
+    public static Event repeatSound(Entity emitter, Sound sound, int delay) {
+        Int32 c = new Int32();
+        return ()-> {
+            if (++c.value % delay == 0) {
+                sound.play(emitter.sounds.calc());
+            }
+        };
+    }
 
     public static Entity construct(TiledMap tiledMap) {
         return new Entity() {

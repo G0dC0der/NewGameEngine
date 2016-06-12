@@ -80,7 +80,17 @@ public abstract class Level {
         }
     }
 
-    private static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) -> obj1.getZIndex() - obj2.getZIndex();
+    private static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) -> {
+        int z1 = obj1.getZIndex();
+        int z2 = obj2.getZIndex();
+
+        if (z1 == z2)
+            return 0;
+        else if (z1 > z2)
+            return 1;
+        else
+            return -1;
+    };
     private List<Entry<Integer, Entity>> awaitingObjects, deleteObjects;
     private List<PlayableEntity> mainCharacters;
     private List<TileLayer> tileLayers;
