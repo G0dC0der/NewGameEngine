@@ -75,6 +75,14 @@ public abstract class PlayableEntity extends MobileEntity {
         isGhost = true;
     }
 
+    public void win() {
+        setState(Vitality.COMPLETED);
+    }
+
+    public void lose() {
+        setState(Vitality.DEAD);
+    }
+
     public void setState(Vitality state) {
         if (state == Vitality.ALIVE && this.state == Vitality.COMPLETED)
             throw new IllegalArgumentException("Can not set to state to " + Vitality.ALIVE + " when the current state is " + Vitality.COMPLETED);

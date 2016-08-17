@@ -2,13 +2,13 @@ package pojahn.game.events;
 
 public class ChainEvent {
 
-    private ActionEvent event;
+    private Event event;
 
-    public void then(ActionEvent event) {
+    public void then(Event event) {
         this.event = event;
     }
 
-    public ActionEvent getEvent() {
+    public Event getEvent() {
         return event;
     }
 }

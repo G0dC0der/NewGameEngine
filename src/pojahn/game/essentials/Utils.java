@@ -3,12 +3,16 @@ package pojahn.game.essentials;
 import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
@@ -22,6 +26,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Utils {
+
+    public static Image2D toImage(Color color) {
+        return toImage(color, 1 ,1);
+    }
+
+    public static Image2D toImage(Color color, int width, int height) {
+        Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
+        pixmap.setColor(color);
+        pixmap.fill();
+        Image2D image = new Image2D(pixmap);
+        pixmap.dispose();
+
+        return image;
+    }
 
     public static void playMusic(Music music, float seconds, float volume) {
         music.setVolume(volume);

@@ -258,6 +258,7 @@ public final class Engine {
         boolean lost = lost();
         boolean completed = completed();
         setGameState(GameState.LOADING);
+        initCameras();
 
         fromCp = fromCp && level.cpPresent() && !completed;
         time = !fromCp ? 0 : time;

@@ -345,7 +345,7 @@ public class Entity {
         ChainEvent chainEvent = new ChainEvent();
         addEvent(()->{
             if (collidesWith(other))
-                chainEvent.getEvent().eventHandling(other);
+                chainEvent.getEvent().eventHandling();
         });
         return chainEvent;
     }
@@ -379,12 +379,16 @@ public class Entity {
             clone.image = image.getClone();
     }
 
-    protected void basicRender(SpriteBatch batch, Image2D image) {
+    protected void basicRender(SpriteBatch batch, Image2D image2D) {
+        basicRender(batch, image2D, x(), y());
+    }
+
+    protected void basicRender(SpriteBatch batch, Image2D image, float x, float y) {
         batch.draw(image,
-                bounds.pos.x + offsetX,
-                bounds.pos.y + offsetY,
-                centerX() - (bounds.pos.x + offsetX),
-                centerY() - (bounds.pos.y + offsetY),
+                x + offsetX,
+                y + offsetY,
+                (x + bounds.size.width /  2) - (x + offsetX),
+                (y + bounds.size.height / 2) - (y + offsetY),
                 bounds.size.width,
                 bounds.size.height,
                 1,

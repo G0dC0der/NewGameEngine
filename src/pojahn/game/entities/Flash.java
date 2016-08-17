@@ -17,17 +17,6 @@ public class Flash extends Particle {
 		zIndex(Integer.MAX_VALUE);
 	}
 
-	public Flash(Color color, float duration) {
-		this.duration = duration;
-
-		Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
-		px.setColor(color);
-		px.fill();
-
-		this.flashImage = new Texture(px);
-		px.dispose();
-    }
-
 	public Flash(Texture flashImage, float duration) {
 		this.duration = duration;
 		this.flashImage = flashImage;

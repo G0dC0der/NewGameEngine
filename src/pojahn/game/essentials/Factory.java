@@ -18,6 +18,7 @@ import pojahn.game.core.PlayableEntity;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.events.Event;
 import pojahn.game.events.TileEvent;
+import pojahn.lang.Bool;
 import pojahn.lang.Int32;
 
 import java.util.ArrayList;
@@ -30,6 +31,17 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Factory {
+
+    public static Event fadeIn(Entity target, float speed) {
+        Bool bool = new Bool();
+        return ()->{
+            if(!bool.value && target.tint.a < 1.0f) {
+                target.tint.a = Math.min(1, target.tint.a += speed);
+            } else {
+                bool.value = true;
+            }
+        };
+    }
 
     public static Event repeatSound(Entity emitter, Sound sound, int delay) {
         Int32 c = new Int32();
@@ -111,6 +123,21 @@ public class Factory {
             @Override
             public void render(SpriteBatch batch) {
                 message.draw(batch, font);
+            }
+        };
+    }
+
+    public static Entity drawCenteredText(HUDMessage message, BitmapFont font) {
+        return new Entity() {
+            {
+                zIndex(Integer.MAX_VALUE);
+            }
+
+            @Override
+            public void render(SpriteBatch batch) {
+                getEngine().hudCamera();
+                message.draw(batch, font);
+                getEngine().gameCamera();
             }
         };
     }
