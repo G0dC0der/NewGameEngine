@@ -214,9 +214,9 @@ public abstract class Level {
         discardAfter(entity, lifeFrames);
     }
 
-    public void temp(Entity entity, TaskEvent discardEvent) {
+    public void temp(Entity entity, TaskEvent discardCondition) {
         add(entity);
-        discardWhen(entity, discardEvent);
+        discardWhen(entity, discardCondition);
     }
 
     public Entity add(Event event) {
@@ -248,10 +248,10 @@ public abstract class Level {
         return wrapper;
     }
 
-    public Entity temp(Event event, TaskEvent discardEvent) {
+    public Entity temp(Event event, TaskEvent discardCondition) {
         Entity wrapper = Utils.wrap(event);
         add(wrapper);
-        discardWhen(wrapper, discardEvent);
+        discardWhen(wrapper, discardCondition);
 
         return wrapper;
     }
@@ -284,12 +284,29 @@ public abstract class Level {
         return wrapper;
     }
 
-    public Entity runInterval(Event event, int freq) {
+    public Entity interval(Event event, int freq) {
         Entity wrapped = new Entity();
         Int32 counter = new Int32();
         wrapped.addEvent(() -> {
             if (++counter.value % freq == 0) {
                 event.eventHandling();
+            }
+        });
+
+        add(wrapped);
+        return wrapped;
+    }
+
+    public Entity interval(Event event, int freq, TaskEvent discardCondition) {
+        Entity wrapped = new Entity();
+        Int32 counter = new Int32();
+        wrapped.addEvent(() -> {
+            if(discardCondition.eventHandling()) {
+                discard(wrapped);
+            } else {
+                if (++counter.value % freq == 0) {
+                    event.eventHandling();
+                }
             }
         });
 
