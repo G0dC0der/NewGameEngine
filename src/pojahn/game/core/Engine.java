@@ -8,15 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import pojahn.game.essentials.*;
 import pojahn.game.essentials.recording.PlaybackRecord;
 import pojahn.game.essentials.recording.RecordingDevice;
 import pojahn.game.essentials.recording.Replay;
 import pojahn.game.events.Event;
+import pojahn.lang.Obj;
 import pojahn.lang.OtherMath;
 
 import com.badlogic.gdx.Gdx;
@@ -32,7 +35,7 @@ import com.badlogic.gdx.math.Rectangle;
  * An instance of Engine is used to play one course.
  * To play a new course, dispose this one and create a new instance.
  */
-public final class Engine {
+public class Engine {
 
     public float delta = 1.0f / 60.0f;
     public boolean renderText;
@@ -56,6 +59,10 @@ public final class Engine {
     private int screenWidth, screenHeight, deathCounter;
     private float rotation, musicVolume, prevTx, prevTy, time;
     private long frameCounter, uniqueCounter;
+
+    public Engine(Level level) {
+        this(level, null);
+    }
 
     public Engine(Level level, PlaybackRecord replayData) {
         if (level == null)
@@ -232,24 +239,20 @@ public final class Engine {
 
     private void setup() throws Exception {
         setGameState(GameState.LOADING);
-        batch = new SpriteBatch();
+        batch = new SpriteBatch(1000, Shaders.DefaultShader.get());
+        ShaderProgram.pedantic = false;
         initCameras();
         level.init(meta);
         level.build();
         level.place();
 
         Dimension screenSize = getScreenSize();
-        if (helpText == null)
-            helpText = HUDMessage.centeredMessage("Can not pause in replay mode.", screenSize, Color.WHITE);
-        if (deathText == null)
-            deathText = HUDMessage.centeredMessage("You died. Press the quit or restart button to continue.", screenSize, Color.WHITE);
-        if (deathCheckpointText == null)
-            deathCheckpointText = HUDMessage.centeredMessage("You died.\nPress the quit or restart button\nto restart from latest checkpoint.", screenSize, Color.WHITE);
-        if (pauseText == null)
-            pauseText = HUDMessage.centeredMessage("Game is paused.", screenSize, Color.WHITE);
-        if (winText == null)
-            winText = HUDMessage.centeredMessage((isReplaying() ? "Replay done." :  "Congrats! You completed the level!") +
-                   "\nPress the restart or quit button to continue.", screenSize, Color.WHITE);
+        helpText = Obj.nonNull(helpText, HUDMessage.centeredMessage("Can not pause in replay mode.", screenSize, Color.WHITE));
+        deathText = Obj.nonNull(deathText, HUDMessage.centeredMessage("You died. Press the quit or restart button to continue.", screenSize, Color.WHITE));
+        deathCheckpointText = Obj.nonNull(deathCheckpointText, HUDMessage.centeredMessage("You died.\nPress the quit or restart button\nto restart from latest checkpoint.", screenSize, Color.WHITE));
+        pauseText = Obj.nonNull(pauseText, HUDMessage.centeredMessage("Game is paused.", screenSize, Color.WHITE));
+        winText = Obj.nonNull(winText, HUDMessage.centeredMessage((isReplaying() ? "Replay done." :  "Congrats! You completed the level!") +
+                   "\nPress the restart or quit button to continue.", screenSize, Color.WHITE));
 
         setGameState(GameState.ACTIVE);
     }
@@ -339,8 +342,10 @@ public final class Engine {
     }
 
     private void destroy() {
-        batch.dispose();
-        level.dispose();
+        if (batch != null)
+            batch.dispose();
+        if (level != null)
+            level.dispose();
         batch = null;
     }
 
@@ -389,10 +394,14 @@ public final class Engine {
             if (!isReplaying() && completed())
                 finalizeRecording();
 
-            Event event = stateEvents.get(this.state);
-            if (event != null) {
-                eventExecutor.execute(event::eventHandling);
-            }
+            runStateEvent();
+        }
+    }
+
+    private void runStateEvent() {
+        Event event = stateEvents.get(this.state);
+        if (event != null) {
+            eventExecutor.execute(event::eventHandling);
         }
     }
 
@@ -530,9 +539,24 @@ public final class Engine {
 
     static ApplicationListener wrap(Engine engine) {
         return new ApplicationListener() {
+
+            void forwardError(Exception e) {
+                if (engine.exception != null) {
+                    e.initCause(engine.exception);
+                }
+                engine.exception = e;
+                engine.state = GameState.CRASHED;
+                engine.runStateEvent();
+                throw new RuntimeException(e);
+            }
+
             @Override
             public void dispose() {
-                engine.destroy();
+                try {
+                    engine.destroy();
+                } catch (Exception e) {
+                    forwardError(e);
+                }
             }
 
             @Override
@@ -543,9 +567,7 @@ public final class Engine {
                     engine.setGameState(GameState.DISPOSED);
                     throw e;
                 } catch (Exception e) {
-                    engine.exception = e;
-                    engine.setGameState(GameState.CRASHED);
-                    throw new RuntimeException(e);
+                    forwardError(e);
                 }
             }
 
@@ -554,9 +576,7 @@ public final class Engine {
                 try {
                     engine.setup();
                 } catch (Exception e) {
-                    engine.exception  = e;
-                    engine.setGameState(GameState.CRASHED);
-                    throw new RuntimeException(e);
+                    forwardError(e);
                 }
             }
 

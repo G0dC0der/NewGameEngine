@@ -292,9 +292,4 @@ public class GravityMan extends PlayableEntity {
         clone.wallJumpHorizontalStrength = wallJumpHorizontalStrength;
         clone.jumpSound = jumpSound;
     }
-
-    private void playSound() {
-        if (jumpSound != null)
-            jumpSound.play(sounds.calc());
-    }
 }
