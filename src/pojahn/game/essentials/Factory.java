@@ -83,22 +83,30 @@ public class Factory {
     }
 
     public static Entity tuneUp(Music music, float power) {
+        return tuneUp(music, power, 1.0f);
+    }
+
+    public static Entity tuneUp(Music music, float power, float targetVolume) {
         return new Entity() {
             @Override
             public void logistics() {
-                music.setVolume(Math.min(1, music.getVolume() + power));
-                if (music.getVolume() >= 1)
+                music.setVolume(Math.min(targetVolume, music.getVolume() + power));
+                if (music.getVolume() >= targetVolume)
                     die();
             }
         };
     }
 
     public static Entity tuneDown(Music music, float power) {
+        return tuneDown(music, power, 0);
+    }
+
+    public static Entity tuneDown(Music music, float power, float targetVolume) {
         return new Entity() {
             @Override
             public void logistics() {
-                music.setVolume(Math.max(0, music.getVolume() - power));
-                if (music.getVolume() <= 0)
+                music.setVolume(Math.max(targetVolume, music.getVolume() - power));
+                if (music.getVolume() <= targetVolume)
                     die();
             }
         };

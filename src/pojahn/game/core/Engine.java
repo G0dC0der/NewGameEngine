@@ -18,6 +18,7 @@ import pojahn.game.essentials.*;
 import pojahn.game.essentials.recording.PlaybackRecord;
 import pojahn.game.essentials.recording.RecordingDevice;
 import pojahn.game.essentials.recording.Replay;
+import pojahn.game.essentials.shaders.DefaultShader;
 import pojahn.game.events.Event;
 import pojahn.lang.Obj;
 import pojahn.lang.OtherMath;
@@ -191,6 +192,10 @@ public class Engine {
         batch.setProjectionMatrix(hudCamera.combined);
     }
 
+    public SpriteBatch getSpriteBatch() {
+        return batch;
+    }
+
     public void updateGameCamera() {
         gameCamera.update();
     }
@@ -239,7 +244,7 @@ public class Engine {
 
     private void setup() throws Exception {
         setGameState(GameState.LOADING);
-        batch = new SpriteBatch(1000, Shaders.DefaultShader.get());
+        batch = new SpriteBatch(1000, new DefaultShader().get());
         ShaderProgram.pedantic = false;
         initCameras();
         level.init(meta);
