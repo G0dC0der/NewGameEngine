@@ -80,7 +80,8 @@ public abstract class PlayableEntity extends MobileEntity {
     }
 
     public void lose() {
-        setState(Vitality.DEAD);
+        if (getState() != Vitality.DEAD)
+            setState(Vitality.DEAD);
     }
 
     public void setState(Vitality state) {
