@@ -11,8 +11,10 @@ import pojahn.game.events.TaskEvent;
 import pojahn.lang.Entry;
 import pojahn.lang.Int32;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class Level {
@@ -83,8 +85,10 @@ public abstract class Level {
     private static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) -> Integer.compare(obj1.getZIndex(), obj2.getZIndex());
     private List<Entry<Integer, Entity>> awaitingObjects, deleteObjects;
     private List<PlayableEntity> mainCharacters;
+    private List<Entity> focusObjects;
     private List<TileLayer> tileLayers;
     private CheckPointHandler cph;
+    private boolean focusOnPassive;
 
     List<Entity> gameObjects, soundListeners;
     Engine engine;
@@ -97,7 +101,9 @@ public abstract class Level {
         gameObjects = new LinkedList<>();
         tileLayers = new ArrayList<>();
         mainCharacters = new ArrayList<>();
+        focusObjects = new ArrayList<>();
         cph = new CheckPointHandler();
+        focusOnPassive = true;
     }
 
     public abstract int getWidth();
@@ -352,6 +358,18 @@ public abstract class Level {
         soundListeners.remove(listener);
     }
 
+    public void addFocusObject(Entity entity) {
+        focusObjects.add(entity);
+    }
+
+    public void removeFocusObject(Entity entity) {
+        focusObjects.remove(entity);
+    }
+
+    public void focusOnPassive(boolean focusOnPassive) {
+        this.focusOnPassive = focusOnPassive;
+    }
+
     protected Tile onLayer(int x, int y) {
         for(TileLayer tileLayer : tileLayers) {
             if(Collisions.pointRectangleOverlap(tileLayer.x, tileLayer.y, tileLayer.layer.length - 1, tileLayer.layer[0].length - 1, x, y)) {
@@ -372,6 +390,7 @@ public abstract class Level {
         gameObjects.clear();
         mainCharacters.clear();
         tileLayers.clear();
+        focusObjects.clear();
     }
 
     void gameLoop() {
@@ -382,6 +401,7 @@ public abstract class Level {
             sort = false;
         }
 
+        focusCamera();
         updateEntities();
         getCheckpointHandler().update();
     }
@@ -490,5 +510,90 @@ public abstract class Level {
                 }
             }
         }
+    }
+
+    private void focusCamera() {
+        List<? extends Entity> list = focusObjects.isEmpty() ? getNonDeadMainCharacters() : focusObjects;
+        list = focusOnPassive ? list : list.stream().filter(Entity::isActive).collect(Collectors.toList());
+
+        final Dimension size = getEngine().getScreenSize();
+        final float stageWidth = getWidth();
+        final float stageHeight = getHeight();
+        final float windowWidth = size.width;
+        final float windowHeight = size.height;
+        float tx = 0;
+        float ty = 0;
+        float zoom = getEngine().getZoom();
+
+        if (list.size() == 1 ) {
+            Entity entity = list.get(0);
+            if (getEngine().getZoom() == 1.0f) {
+                float marginX = windowWidth  / 2;
+                float marginY = windowHeight  / 2;
+
+                tx = Math.min(stageWidth  - windowWidth,   Math.max(0, entity.centerX() - marginX)) + marginX;
+                ty = Math.min(stageHeight - windowHeight,  Math.max(0, entity.centerY() - marginY)) + marginY;
+            } else {
+                tx = entity.centerX();
+                ty = entity.centerY();
+            }
+        } else if (list.size() > 1) {
+            Entity first = list.get(0);
+
+            final float marginX = windowWidth / 2;
+            final float marginY = windowHeight / 2;
+            final float padding = 20;
+
+            float boxX = first.x();
+            float boxY = first.y();
+            float boxWidth = boxX + first.width();
+            float boxHeight = boxY + first.height();
+
+            for (int i = 1; i < list.size(); i++) {
+                Entity focus = list.get(i);
+
+                boxX = Math.min(boxX, focus.x());
+                boxY = Math.min(boxY, focus.y());
+
+                boxWidth = Math.max(boxWidth, focus.x() + focus.width());
+                boxHeight = Math.max(boxHeight, focus.y() + focus.height());
+            }
+            boxWidth = boxWidth - boxX;
+            boxHeight = boxHeight - boxY;
+
+            boxX -= padding;
+            boxY -= padding;
+            boxWidth += padding * 2.0f;
+            boxHeight += padding * 2.0f;
+
+            boxX = Math.max(boxX, 0);
+            boxX = Math.min(boxX, stageWidth - boxWidth);
+
+            boxY = Math.max(boxY, 0);
+            boxY = Math.min(boxY, stageHeight - boxHeight);
+
+            if ((float) boxWidth / (float) boxHeight > (float) windowWidth / (float) windowHeight)
+                zoom = boxWidth / windowWidth;
+            else
+                zoom = boxHeight / windowHeight;
+
+            zoom = Math.max( zoom, 1.0f );
+
+            tx = boxX + (boxWidth / 2.0f);
+            ty = boxY + (boxHeight / 2.0f);
+
+            if (marginX > tx)
+                tx = marginX;
+            else if (tx > stageWidth - marginX)
+                tx = stageWidth - marginX;
+
+            if (marginY > ty)
+                ty = marginY;
+            else if (ty > stageHeight - marginY)
+                ty = stageHeight - marginY;
+
+        }
+        getEngine().setZoom(zoom);
+        getEngine().translate(tx, ty);
     }
 }

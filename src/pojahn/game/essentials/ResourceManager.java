@@ -144,9 +144,7 @@ public class ResourceManager {
     }
 
     public void disposeAll() {
-        stuff.forEach((key, value) -> {
-            tryDispose(value);
-        });
+        stuff.forEach((key, value) ->  tryDispose(value) );
     }
 
     public void dispose(String key) {
