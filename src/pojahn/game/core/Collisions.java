@@ -18,6 +18,13 @@ public class Collisions {
         return px >= x && px <= x + w && py >= y && py <= y + h;
     }
 
+    public static boolean rectanglesCollide(Rectangle rec, float x, float y, float width, float height) {
+        return !((rec.y + rec.height < y) ||
+                (rec.y > y + height) ||
+                (rec.x + width < x) ||
+                (rec.x > x + width));
+    }
+
     public static boolean rectanglesCollide(Rectangle rec1, Rectangle rec2) {
         return !((rec1.y + rec1.height < rec2.y) ||
                 (rec1.y > rec2.y + rec2.height) ||

@@ -175,7 +175,7 @@ public class Factory {
     }
 
     /**
-     * Rotate the given unit towards its given direction.
+     * Rotate the given unit towards its current direction.
      */
     public static Event stareAt(MobileEntity walker) {
         return () -> {

@@ -84,9 +84,9 @@ public class Button extends SolidPlatform {
                 break;
             case S:
                 reuse.x = x();
-                reuse.y = y() - 2;
+                reuse.y = y() - 3;
                 reuse.width = width();
-                reuse.height = 4;
+                reuse.height = 6;
                 break;
             case E:
                 reuse.x = x() - 2;

@@ -23,6 +23,24 @@ public class SimpleWeapon extends MobileEntity {
         this.reloadTime = reloadTime;
     }
 
+    @Override
+    public SimpleWeapon getClone() {
+        SimpleWeapon clone = new SimpleWeapon(x(), y(), proj, projDir, reloadTime);
+        copyData(clone);
+        if (cloneEvent != null)
+            cloneEvent.handleClonded(clone);
+
+        return clone;
+    }
+
+    protected void copyData(SimpleWeapon clone) {
+        super.copyData(clone);
+        clone.fireAnim = fireAnim;
+        clone.offsetX = offsetX;
+        clone.offsetY = offsetY;
+        clone.firingSound = firingSound;
+    }
+
     public void spawnOffset(float offsetX, float offsetY) {
         this.offsetX = offsetX;
         this.offsetY = offsetY;

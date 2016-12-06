@@ -113,8 +113,8 @@ public class GravityMan extends PlayableEntity {
         if (!occupiedAt(x(), futureY))
             applyYForces();
         else {
-            if (vel.y < 0) {
-                tryDown(10);
+            if (landed()) {
+                land();
                 if (landingSound != null)
                     landingSound.play(sounds.calc());
             }
@@ -154,6 +154,14 @@ public class GravityMan extends PlayableEntity {
             else if (vel.x < 0)
                 runRight(futureX);
         }
+    }
+
+    protected boolean landed()  {
+        return vel.y < 0;
+    }
+
+    protected void land() {
+        tryDown(10);
     }
 
     protected void runLeft(float targetX) {

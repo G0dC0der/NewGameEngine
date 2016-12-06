@@ -514,6 +514,7 @@ public abstract class Level {
 
     private void focusCamera() {
         List<? extends Entity> list = focusObjects.isEmpty() ? getNonDeadMainCharacters() : focusObjects;
+        list = list.isEmpty() ? getMainCharacters() : list;
         list = focusOnPassive ? list : list.stream().filter(Entity::isActive).collect(Collectors.toList());
 
         final Dimension size = getEngine().getScreenSize();

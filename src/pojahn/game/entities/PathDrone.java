@@ -102,6 +102,10 @@ public class PathDrone extends MobileEntity {
         waypoints.addAll(reversed);
     }
 
+    public void reverse() {
+        Collections.reverse(waypoints);
+    }
+
     public void clearData() {
         waypoints.clear();
         rollback();
