@@ -31,6 +31,16 @@ public class Flipper extends GravityMan {
         }
     }
 
+    @Override
+    protected boolean landed() {
+        return flip ? vel.y > 0 : super.landed();
+    }
+
+    @Override
+    protected boolean launching() {
+        return flip ? vel.y < 0 : super.launching();
+    }
+
     public boolean isFlipped() {
         return flip;
     }

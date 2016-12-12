@@ -107,7 +107,8 @@ public class GravityMan extends PlayableEntity {
             }
         }
 
-        drag();
+        if (canDown() || launching())
+            drag();
 
         float futureY = getFutureY();
         if (!occupiedAt(x(), futureY))
@@ -156,13 +157,18 @@ public class GravityMan extends PlayableEntity {
         }
     }
 
-    protected boolean landed()  {
+    protected boolean landed() {
         return vel.y < 0;
+    }
+
+    protected boolean launching() {
+        return vel.y > 0;
     }
 
     protected void land() {
         tryDown(10);
     }
+
 
     protected void runLeft(float targetX) {
         for (float next = bounds.pos.x; next >= targetX; next -= 0.5f) {

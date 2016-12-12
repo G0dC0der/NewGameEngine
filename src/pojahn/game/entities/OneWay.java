@@ -55,8 +55,8 @@ public class OneWay extends Entity {
 		}
 	}
 
-	public OneWay getClone(float x, float y) {
-		OneWay clone = new OneWay(x, y, direction, targets);
+	public OneWay getClone() {
+		OneWay clone = new OneWay(x(), y(), direction, targets);
 		copyData(clone);
 
 		if (cloneEvent != null)
