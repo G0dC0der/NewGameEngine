@@ -266,13 +266,14 @@ public class Engine {
         boolean lost = lost();
         boolean completed = completed();
         setGameState(GameState.LOADING);
+
+        rotation = 0;
+        flipY = true;
         initCameras();
 
         fromCp = fromCp && level.cpPresent() && !completed;
         time = !fromCp ? 0 : time;
         uniqueCounter = frameCounter = 0;
-        setZoom(1);
-        setRotation(0);
 
         if (completed || lost && !fromCp) {
             if (isReplaying())

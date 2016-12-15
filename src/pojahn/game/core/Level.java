@@ -280,6 +280,17 @@ public abstract class Level {
         return wrapper;
     }
 
+    public Entity runWhile(Event event, TaskEvent condition) {
+        Entity wrapper = new Entity();
+        wrapper.addEvent(()->{
+            if (condition.eventHandling())
+                event.eventHandling();
+        });
+
+        add(wrapper);
+        return wrapper;
+    }
+
     public Entity interval(Event event, int freq) {
         Entity wrapped = new Entity();
         Int32 counter = new Int32();

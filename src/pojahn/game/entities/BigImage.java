@@ -99,10 +99,12 @@ public class BigImage extends Entity {
                 e.gameCamera();
                 break;
             case PARALLAX_REPEAT:
+                batch.setColor(tint);
                 updateParallaxCamera();
                 batch.setProjectionMatrix(parallaxCamera.combined);
                 repeat(batch);
                 e.gameCamera();
+                batch.setColor(defColor);
                 break;
         }
     }

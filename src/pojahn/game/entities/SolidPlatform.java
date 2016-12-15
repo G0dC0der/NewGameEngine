@@ -1,6 +1,7 @@
 package pojahn.game.entities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -20,6 +21,7 @@ public class SolidPlatform extends PathDrone {
     private List<MobileEntity> intersectors;
     private FollowMode followMode;
     private float scanSize;
+    private boolean ignoreInactive;
 
     public SolidPlatform(float x, float y, MobileEntity... subjects) {
         super(x, y);
@@ -54,7 +56,7 @@ public class SolidPlatform extends PathDrone {
         float w = width() + scanSize * 2;
         float h = height() + scanSize * 2;
 
-        for (MobileEntity sub : subjects) {
+        Arrays.stream(subjects).filter(sub -> !ignoreInactive || sub.isActive()).forEach(sub -> {
             if (Collisions.rectanglesCollide(x, y, w, h, sub.x(), sub.y(), sub.width(), sub.height())) {
                 intersectors.add(sub);
 
@@ -67,7 +69,7 @@ public class SolidPlatform extends PathDrone {
                 if (Collisions.rectanglesCollide(bounds.toRectangle(), sub.bounds.toRectangle()))
                     collisionResponse(sub);
             }
-        }
+        });
     }
 
     public void setFollowMode(FollowMode followMode) {
@@ -87,6 +89,10 @@ public class SolidPlatform extends PathDrone {
 
     public List<MobileEntity> getActiveSubjects() {
         return new ArrayList<>(intersectors);
+    }
+
+    public void setIgnoreInactive(boolean ignoreInactive) {
+        this.ignoreInactive = ignoreInactive;
     }
 
     @Override
@@ -112,5 +118,6 @@ public class SolidPlatform extends PathDrone {
         super.copyData(clone);
         clone.followMode = followMode;
         clone.scanSize = scanSize;
+        clone.ignoreInactive = ignoreInactive;
     }
 }
