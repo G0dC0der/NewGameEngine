@@ -28,6 +28,7 @@ public class SolidPlatform extends PathDrone {
         intersectors = new ArrayList<>(subjects.length);
         this.subjects = subjects;
         setFollowMode(FollowMode.NORMAL);
+        ignoreInactive = true;
     }
 
     @Override

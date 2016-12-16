@@ -19,13 +19,14 @@ public abstract class Projectile extends MobileEntity {
     private boolean rotate;
     private int trailerDelay;
     private int trailerCounter;
-    private boolean follow, once;
+    private boolean follow, once, ignoreInactive;
 
     public Projectile(float x, float y, Entity... targets) {
         move(x, y);
         rotate = true;
         this.targets = targets;
         trailerDelay = 3;
+        ignoreInactive = true;
     }
 
     @Override
@@ -71,6 +72,10 @@ public abstract class Projectile extends MobileEntity {
 
     public void follow(boolean lockTarget) {
         this.follow = lockTarget;
+    }
+
+    public void setIgnoreInactive(boolean ignoreInactive) {
+        this.ignoreInactive = ignoreInactive;
     }
 
     @Override
@@ -120,6 +125,7 @@ public abstract class Projectile extends MobileEntity {
             impact(null);
         } else {
             concat(of(targets), of(target))
+                    .filter(entity -> !ignoreInactive || entity.isActive())
                     .filter(this::collidesWith)
                     .findFirst()
                     .ifPresent(this::impact);
@@ -148,5 +154,6 @@ public abstract class Projectile extends MobileEntity {
         clone.rotate = rotate;
         clone.targets = targets;
         clone.follow = follow;
+        clone.ignoreInactive = ignoreInactive;
     }
 }

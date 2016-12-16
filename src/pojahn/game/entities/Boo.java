@@ -3,10 +3,13 @@ package pojahn.game.entities;
 import com.badlogic.gdx.audio.Sound;
 
 import pojahn.game.core.Collisions;
+import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.Image2D;
+
+import java.util.stream.Stream;
 
 public class Boo extends MobileEntity {
 
@@ -14,7 +17,7 @@ public class Boo extends MobileEntity {
     private Animation<Image2D> hideImage, huntImage;
     private Sound detectSound, hideSound;
     private boolean resetHideImage, resetHuntImage;
-    private boolean hunting;
+    private boolean hunting, ignoreInactive;
     private float velocity;
     public float acc, maxSpeed;
 
@@ -24,11 +27,13 @@ public class Boo extends MobileEntity {
         this.victims = victims;
         maxSpeed = 3;
         acc = 0.03f;
+        ignoreInactive = true;
     }
 
     @Override
     public void logistics() {
-        MobileEntity victim = (MobileEntity) Collisions.findClosest(this, victims);
+        MobileEntity[] targets = getTargets();
+        MobileEntity victim = (MobileEntity) Collisions.findClosest(this, targets);
 
         if (canSneak(victim)) {
             if (maxSpeed > velocity + acc)
@@ -63,7 +68,7 @@ public class Boo extends MobileEntity {
             hunting = false;
         }
 
-        for (MobileEntity mobile : victims) {
+        for (MobileEntity mobile : targets) {
             if (collidesWith(mobile)) {
                 if(mobile.hasActionEvent())
                     mobile.runActionEvent(this);
@@ -72,10 +77,20 @@ public class Boo extends MobileEntity {
         }
     }
 
+    private MobileEntity[] getTargets() {
+        return Stream.of(victims)
+                .filter(mobileEntity -> !ignoreInactive || mobileEntity.isActive())
+                .toArray(MobileEntity[]::new);
+    }
+
     @Override
     public void setImage(Animation<Image2D> obj) {
         super.setImage(obj);
         huntImage = obj;
+    }
+
+    public void setIgnoreInactive(boolean ignoreInactive) {
+        this.ignoreInactive = ignoreInactive;
     }
 
     public void setHuntImage(Animation<Image2D> huntImage) {

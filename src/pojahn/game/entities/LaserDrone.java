@@ -10,12 +10,15 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.LaserBeam;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 public class LaserDrone extends PathDrone {
 
     private float targetX, targetY;
     private int laserStartup, laserDuration, reload, sucounter, ducounter, reloadCounter;
     private Tile stopTile;
-    private boolean fireAtVisible, firing, allowFiringSound;
+    private boolean fireAtVisible, firing, allowFiringSound, ignoreInactive;
     private Particle exp;
     private Color laserTint;
     private final Entity[] targets;
@@ -33,6 +36,7 @@ public class LaserDrone extends PathDrone {
         sucounter = ducounter = reloadCounter = 0;
         stopTile = Tile.SOLID;
         laserTint = Color.valueOf("CC0000FF");
+        ignoreInactive = true;
     }
 
     public void setStartupSound(Sound startupSound) {
@@ -79,6 +83,10 @@ public class LaserDrone extends PathDrone {
         this.chargeBeam = chargeBeam;
     }
 
+    public void setIgnoreInactive(boolean ignoreInactive) {
+        this.ignoreInactive = ignoreInactive;
+    }
+
     @Override
     public void logistics() {
         if (--reloadCounter > 0) {
@@ -91,9 +99,9 @@ public class LaserDrone extends PathDrone {
             allowFiringSound = true;
             Entity target = null;
             if (fireAtVisible)
-                target = Collisions.findClosestSeeable(this, targets);
+                target = Collisions.findClosestSeeable(this, getTargets());
             else
-                target = Collisions.findClosest(this, targets);
+                target = Collisions.findClosest(this, getTargets());
 
             if (target != null) {
                 int x1 = (int) (x() + width() / 2), y1 = (int) (y() + height() / 2);
@@ -145,6 +153,12 @@ public class LaserDrone extends PathDrone {
                 if(chargeBeam != null)
                     chargeBeam.fireAt(x() + width() / 2, y() + height() / 2, targetX, targetY, 1);
         }
+    }
+
+    private Entity[] getTargets() {
+        return Stream.of(targets)
+                .filter(entity -> !ignoreInactive || entity.isActive())
+                .toArray(Entity[]::new);
     }
 
     @Override

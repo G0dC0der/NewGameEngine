@@ -84,7 +84,7 @@ public class Image2D extends Texture {
         if (!directory.isDirectory())
             throw new IllegalArgumentException("The argument must be a directory.");
 
-        FileHandle[] pngFiles = directory.list((fileName) -> fileName.toString().endsWith(".png"));
+        FileHandle[] pngFiles = directory.list((fileName) -> fileName.toString().toLowerCase().endsWith(".png"));
 
         Image2D[] images = new Image2D[pngFiles.length];
         for (int i = 0; i < images.length; i++)

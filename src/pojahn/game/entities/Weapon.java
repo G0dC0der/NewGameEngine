@@ -4,11 +4,13 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 
+import java.util.stream.Stream;
+
 public class Weapon extends PathDrone {
 
     private float firingOffsetX, firingOffsetY, rotationSpeed;
     private int burst, burstDelay, reload, burstCounter, delayCounter, reloadCounter;
-    private boolean rotationAllowed, alwaysRotate, frontFire, firing, rotateWhileRecover, targeting;
+    private boolean rotationAllowed, alwaysRotate, frontFire, firing, rotateWhileRecover, targeting, ignoreInactive;
     private Entity targets[], currTarget;
     private Projectile proj;
     private Particle firingParticle;
@@ -23,6 +25,7 @@ public class Weapon extends PathDrone {
         rotationAllowed = rotateWhileRecover = true;
         burstCounter = reloadCounter = 0;
         delayCounter = burstDelay - 1;
+        ignoreInactive = true;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class Weapon extends PathDrone {
     public void logistics() {
         super.logistics();
 
-        currTarget = Collisions.findClosestSeeable(this, targets);
+        currTarget = Collisions.findClosestSeeable(this, getTargets());
         targeting = targeting();
         rotateWeapon();
 
@@ -114,17 +117,27 @@ public class Weapon extends PathDrone {
         this.rotateWhileRecover = rotateWhileRecover;
     }
 
+    public void setIgnoreInactive(boolean ignoreInactive) {
+        this.ignoreInactive = ignoreInactive;
+    }
+
     private void rotateWeapon() {
         Entity target = null;
 
         if(currTarget == null && alwaysRotate) {
-            target = Collisions.findClosest(this, targets);
+            target = Collisions.findClosest(this, getTargets());
         } else if (rotationAllowed && rotationSpeed != 0.0f && targets != null && canSee(currTarget)) {
             target = currTarget;
         }
 
         if(target != null)
             bounds.rotation = Collisions.rotateTowardsPoint(centerX(), centerY(), target.centerX(), target.centerY(), bounds.rotation, rotationSpeed);
+    }
+
+    private Entity[] getTargets() {
+        return Stream.of(targets)
+                .filter(entity -> !ignoreInactive || entity.isActive())
+                .toArray(Entity[]::new);
     }
 
     private void reset() {
