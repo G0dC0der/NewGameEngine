@@ -93,6 +93,8 @@ public class MobileEntity extends Entity {
 					this.facing = Direction.W;
 				else if(facing.isEastSide())
 					this.facing = Direction.E;
+			} else {
+
 			}
 		}
 	}

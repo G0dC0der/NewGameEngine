@@ -282,17 +282,19 @@ public class Engine {
                 device.clear();
         }
 
-        level.getCheckpointHandler().clearUsers();
+        if (lost && fromCp) {
+            deathCounter++;
+        } else if (completed) {
+            deathCounter = 0;
+            level.getCheckpointHandler().reset();
+        }
+
         level.clean();
         level.build();
         level.place();
 
         if (lost && fromCp) {
-            deathCounter++;
             level.getCheckpointHandler().placeUsers();
-        } else if (completed) {
-            deathCounter = 0;
-            level.getCheckpointHandler().reset();
         }
 
         setGameState(GameState.ACTIVE);

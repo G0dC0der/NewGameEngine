@@ -395,6 +395,7 @@ public abstract class Level {
     }
 
     protected void clean() {
+        getCheckpointHandler().clearUsers();
         awaitingObjects.clear();
         deleteObjects.clear();
         gameObjects.forEach(Entity::dispose);

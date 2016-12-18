@@ -23,7 +23,7 @@ public class GravityMan extends PlayableEntity {
         slidingTVel = new Vector2(0, -100);
 
         jumpKeyDownCounter = Integer.MAX_VALUE;
-        shortJumpFrames = 5;
+        shortJumpFrames = 6;
 
         accX = 650;
 

@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class PathDrone extends MobileEntity {
 
-    public static class Waypoint {
+    public static class Waypoint implements java.io.Serializable{
 
         public float targetX, targetY;
         public int frames;

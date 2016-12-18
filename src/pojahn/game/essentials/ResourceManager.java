@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Disposable;
+import pojahn.lang.IO;
 
 public class ResourceManager {
 
@@ -41,7 +42,7 @@ public class ResourceManager {
     }
 
     public void loadObject(FileHandle path) throws ClassNotFoundException, IOException {
-        stuff.put(path.name(), path);
+        stuff.put(path.name(), IO.importObject(path));
     }
 
     public Object getAsset(String key) {
