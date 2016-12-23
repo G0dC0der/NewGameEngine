@@ -157,6 +157,10 @@ public abstract class Level {
         return "Level " + toString();
     }
 
+    public String getDescription() {
+        return null;
+    }
+
     public Engine getEngine() {
         return engine;
     }
