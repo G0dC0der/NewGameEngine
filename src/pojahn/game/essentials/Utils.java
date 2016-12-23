@@ -76,7 +76,7 @@ public class Utils {
         if (array.length == 0)
             return null;
 
-        return array[MathUtils.random(array.length)];
+        return array[MathUtils.random(0, array.length - 1)];
     }
 
     public static TileLayer from(Image2D image) {
