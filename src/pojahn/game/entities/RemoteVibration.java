@@ -4,6 +4,7 @@ import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.essentials.CameraEffects;
 
+@Deprecated
 public class RemoteVibration extends Entity {
 
     private Entity targets[];

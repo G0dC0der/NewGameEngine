@@ -40,8 +40,15 @@ public class LineMovement extends MobileEntity {
         this.slamSound = slamSound;
     }
 
+    public void flipMovement() {
+        leftOrUp = !leftOrUp;
+    }
+
     @Override
     public void logistics() {
+        if (isFrozen())
+            return;
+
         Vector2 next;
 
         if (movement == Movement.HORIZONTAL)

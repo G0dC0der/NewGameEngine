@@ -23,8 +23,8 @@ public class Thor extends PathDrone {
     public Thor(float x, float y, Entity... targets) {
         super(x, y);
         this.targets = targets;
-        displace = 150;
-        detail = .5f;
+        displace = 100;
+        detail = 2;
         thickness = 2.5f;
         precision = 0;
         bolts = 1;
@@ -70,7 +70,7 @@ public class Thor extends PathDrone {
     }
 
     /**
-     * The jagged level of the line. Lower means more.
+     * The jagged level of the line. Lower means more. Something really high will result in a straight line.
      */
     public void setDetailLevel(float detail) {
         this.detail = detail;
@@ -84,7 +84,7 @@ public class Thor extends PathDrone {
     }
 
     /**
-     * How precise should the beam. 0 means 100% accurate.
+     * The precision of the bolt. 0 means 100% accurate.
      */
     public void setPrecisionLevel(float precision) {
         this.precision = precision;
@@ -171,7 +171,7 @@ public class Thor extends PathDrone {
 
         for (int i = 0; i < numberOfBolts; i++) {
             batch.setColor(Utils.getRandomElement(colors));
-            drawSingleP2PLightning(batch, x1, y1, x2 + MathUtils.random(-noise, noise), y2 + MathUtils.random(-noise, noise), 117, 1.8f, thickness, dot);
+            drawSingleP2PLightning(batch, x1, y1, x2 + MathUtils.random(-noise, noise), y2 + MathUtils.random(-noise, noise), displace, detail, thickness, dot);
         }
 
         batch.setColor(orgColor);

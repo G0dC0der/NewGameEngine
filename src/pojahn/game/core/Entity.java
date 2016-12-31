@@ -24,7 +24,7 @@ public class Entity {
     public SoundEmitter sounds;
     public String identifier;
     public Color tint;
-    public float offsetX, offsetY;
+    public float offsetX, offsetY, scaleX, scaleY;
     public boolean flipX, flipY;
 
     protected CloneEvent cloneEvent;
@@ -51,6 +51,7 @@ public class Entity {
         events = new ArrayList<>();
         hitbox = Hitbox.RECTANGLE;
         deleteEvents = new ArrayList<>();
+        scaleX = scaleY = 1.0f;
     }
 
     public void logistics() {
@@ -375,6 +376,8 @@ public class Entity {
         clone.sounds.maxVolume = sounds.maxVolume;
         clone.sounds.power = sounds.power;
         clone.sounds.useFalloff = sounds.useFalloff;
+        clone.scaleX = scaleX;
+        clone.scaleY = scaleY;
         if (image != null)
             clone.image = image.getClone();
     }
@@ -391,8 +394,8 @@ public class Entity {
                 (y + bounds.size.height / 2) - (y + offsetY),
                 bounds.size.width,
                 bounds.size.height,
-                1,
-                1,
+                scaleX,
+                scaleY,
                 bounds.rotation % 360,
                 0,
                 0,

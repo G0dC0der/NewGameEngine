@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.badlogic.gdx.math.*;
 
@@ -269,6 +270,25 @@ public class Collisions {
 
     public static Entity findClosest(Entity watcher, Entity... targets) {
         return findClosest(watcher, Arrays.asList(targets));
+    }
+
+    public static Vector2 findClosest(Vector2 watcher, Vector2... targets) {
+        if (targets == null || targets.length == 0)
+            return null;
+        else if (targets.length == 1)
+            return targets[0];
+
+        float shortestDist = 0;
+        Vector2 closestVector = null;
+        for(Vector2 point : targets){
+
+            float dst2 = watcher.dst2(point);
+            if(closestVector == null || dst2 < shortestDist){
+                shortestDist = dst2;
+                closestVector = point;
+            }
+        }
+        return closestVector;
     }
 
     public static Entity findClosest(Entity watcher, List<? extends Entity> targets) {
