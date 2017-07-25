@@ -85,14 +85,4 @@ public class SimpleWeapon extends MobileEntity {
                 firingSound.play(sounds.calc());
         }
     }
-
-    private Vector2 getTarget(float startX, float startY) {
-        switch (projDir) {
-            case N:
-                startY = 0;
-                break;
-        }
-
-        return new Vector2(startX, startY);
-    }
 }

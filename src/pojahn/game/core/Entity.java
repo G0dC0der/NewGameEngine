@@ -21,7 +21,7 @@ import static pojahn.game.core.Collisions.*;
 public class Entity {
 
     public final Bounds bounds;
-    public SoundEmitter sounds;
+    public SoundEmitter sounds; //TODO: Make final?
     public String identifier;
     public Color tint;
     public float offsetX, offsetY, scaleX, scaleY;
@@ -197,7 +197,8 @@ public class Entity {
                         pixelPerfectRotation(buildMatrix(this), getImage().getCurrentObject(), buildMatrix(entity), entity.getImage().getCurrentObject());
 
             return rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) &&
-                    pixelPerfect(bounds.toRectangle(), getImage().getCurrentObject(), flipX, flipY,
+                    pixelPerfect(
+                            bounds.toRectangle(), getImage().getCurrentObject(), flipX, flipY,
                             entity.bounds.toRectangle(), entity.getImage().getCurrentObject(), entity.flipX, entity.flipY);
         }
 

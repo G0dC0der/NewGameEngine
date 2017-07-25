@@ -122,7 +122,7 @@ public abstract class PlayableEntity extends MobileEntity {
 
     @Override
     public void render(SpriteBatch batch) {
-        if (--hurtCounter > 0 && ++counter % 5 == 0)
+        if (--hurtCounter > 0 && ++counter % 5 == 0 || isDead())
             return;
 
         super.render(batch);

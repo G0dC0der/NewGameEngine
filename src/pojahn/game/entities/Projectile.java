@@ -78,6 +78,10 @@ public abstract class Projectile extends MobileEntity {
         this.ignoreInactive = ignoreInactive;
     }
 
+    public Entity[] getTargets() {
+        return targets;
+    }
+
     @Override
     public final void logistics() {
         if (target != null) {

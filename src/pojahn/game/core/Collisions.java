@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.badlogic.gdx.math.*;
@@ -292,40 +294,17 @@ public class Collisions {
     }
 
     public static Entity findClosest(Entity watcher, List<? extends Entity> targets) {
-        if (targets.size() <= 0)
-            throw new IllegalArgumentException("The target list is empty.");
-
-        if (targets.size() == 1)
-            return targets.get(0);
-
-        int closestIndex = -1;
-        double closestLength = 0;
-
-        for (int i = 0; i < targets.size(); i++) {
-            double distance = distance(watcher, targets.get(0));
-
-            if (closestLength == 0) {
-                closestLength = distance;
-                closestIndex = i;
-            }
-            if (distance < closestLength) {
-                closestLength = distance;
-                closestIndex = i;
-            }
-        }
-        return targets.get(closestIndex);
+        return targets.stream()
+                .min((e1, e2) -> (int) Math.min(watcher.dist(e1), watcher.dist(e2)))
+                .orElseThrow(() -> new IllegalArgumentException("The target list is empty."));
     }
 
     public static Entity findClosestSeeable(Entity watcher, Entity... targets) {
-        List<Entity> seeable = new ArrayList<>();
-        for (Entity target : targets)
-            if (watcher.canSee(target))
-                seeable.add(target);
+        List<Entity> seeable = Stream.of(targets)
+                .filter(watcher::canSee)
+                .collect(Collectors.toList());
 
-        if (seeable.isEmpty())
-            return null;
-        else
-            return findClosest(watcher, seeable);
+        return seeable.isEmpty() ? null : findClosest(watcher, seeable);
     }
 
     public static boolean lineIntersects(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
@@ -479,10 +458,10 @@ public class Collisions {
      * @return True if the specified {@code Entity} is intersecting with the given line.
      */
     public static boolean lineRectangle(float x1, float y1, float x2, float y2, Rectangle rec) {
-        return lineIntersect(x1, y1, x2, y2, rec.x, rec.y, rec.x + rec.width, rec.y) ||
-                lineIntersect(x1, y1, x2, y2, rec.x, rec.y, rec.x, rec.y + rec.height) ||
-                lineIntersect(x1, y1, x2, y2, rec.x + rec.width, rec.y, rec.x + rec.width, rec.y + rec.height) ||
-                lineIntersect(x1, y1, x2, y2, rec.x, rec.y + rec.height, rec.x + rec.width, rec.y + rec.height);
+        return lineIntersect(x1, y1, x2, y2, rec.x, rec.y, rec.x + rec.width, rec.y)
+                || lineIntersect(x1, y1, x2, y2, rec.x, rec.y, rec.x, rec.y + rec.height)
+                || lineIntersect(x1, y1, x2, y2, rec.x + rec.width, rec.y, rec.x + rec.width, rec.y + rec.height)
+                || lineIntersect(x1, y1, x2, y2, rec.x, rec.y + rec.height, rec.x + rec.width, rec.y + rec.height);
     }
 
     public static Vector2 findEdgePoint(float obsX, float obsY, float tarX, float tarY, Level level) {
@@ -667,8 +646,8 @@ public class Collisions {
 
     private static void rotateVector2DClockwise(Vector2 v, float ang) {
         float cosa = (float) Math.cos(ang),
-                sina = (float) Math.sin(ang),
-                t = v.x;
+              sina = (float) Math.sin(ang),
+              t = v.x;
 
         v.x = t * cosa + v.y * sina;
         v.y = -t * sina + v.y * cosa;

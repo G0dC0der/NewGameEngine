@@ -82,7 +82,6 @@ public abstract class Level {
         }
     }
 
-    private static final Comparator<Entity> Z_INDEX_SORT = (obj1, obj2) -> Integer.compare(obj1.getZIndex(), obj2.getZIndex());
     private List<Entry<Integer, Entity>> awaitingObjects, deleteObjects;
     private List<PlayableEntity> mainCharacters;
     private List<Entity> focusObjects;
@@ -413,7 +412,7 @@ public abstract class Level {
         place();
 
         if (sort) {
-            Collections.sort(gameObjects, Z_INDEX_SORT);
+            gameObjects.sort(Comparator.comparingInt(Entity::getZIndex));
             sort = false;
         }
 

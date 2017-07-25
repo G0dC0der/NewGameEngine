@@ -5,18 +5,15 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Entity;
 
 public class Bullet extends Projectile {
-	
-	private Entity[] scanTargets;
 
 	public Bullet(float x, float y, Entity... scanTargets) {
 		super(x, y, scanTargets);
-        this.scanTargets = scanTargets;
-		follow(true);
+		follow(false);
 	}
 	
 	@Override
 	public Bullet getClone() {
-		Bullet clone = new Bullet(x(),y(),scanTargets);
+		Bullet clone = new Bullet(x(),y(),getTargets());
 		copyData(clone);
 		if(cloneEvent != null)
 			cloneEvent.handleClonded(clone);

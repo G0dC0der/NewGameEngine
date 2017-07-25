@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import pojahn.game.core.*;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
@@ -30,7 +31,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Factory {
 
     public static Event preventHorizontalOverlap(GravityMan man, Level level) {
-        return ()-> {
+        return () -> {
             int x = (int) man.x();
             int right = (int) (x + man.width());
 
@@ -45,8 +46,8 @@ public class Factory {
 
     public static Event fadeIn(Entity target, float speed) {
         Bool bool = new Bool();
-        return ()->{
-            if(!bool.value && target.tint.a < 1.0f) {
+        return () -> {
+            if (!bool.value && target.tint.a < 1.0f) {
                 target.tint.a = Math.min(1, target.tint.a += speed);
             } else {
                 bool.value = true;
@@ -56,7 +57,7 @@ public class Factory {
 
     public static Event repeatSound(Entity emitter, Sound sound, int delay) {
         Int32 c = new Int32();
-        return ()-> {
+        return () -> {
             if (++c.value % delay == 0) {
                 sound.play(emitter.sounds.calc());
             }
@@ -67,8 +68,9 @@ public class Factory {
         return new Entity() {
             TiledMapRenderer tiledMapRenderer;
             List<TiledMapTileLayer> layers = new ArrayList<>();
+
             {
-                tiledMap.getLayers().forEach(mapLayer -> layers.add((TiledMapTileLayer)mapLayer));
+                tiledMap.getLayers().forEach(mapLayer -> layers.add((TiledMapTileLayer) mapLayer));
                 Collections.reverse(layers);
             }
 
@@ -166,11 +168,11 @@ public class Factory {
         TileLayer tileLayer = Utils.from(img);
         boolean[] once = new boolean[1];
         return () -> {
-            if(!once[0]) {
+            if (!once[0]) {
                 once[0] = true;
                 entity.getLevel().addTileLayer(tileLayer);
             }
-            tileLayer.setPosition((int)entity.x(), (int)entity.y());
+            tileLayer.setPosition((int) entity.x(), (int) entity.y());
         };
     }
 
@@ -221,9 +223,47 @@ public class Factory {
     }
 
     public static Event keepInBounds(Entity entity) {
-        return ()-> {
+        return () -> {
             entity.bounds.pos.x = Math.max(0, Math.min(entity.x(), entity.getLevel().getWidth()));
             entity.bounds.pos.y = Math.max(0, Math.min(entity.y(), entity.getLevel().getHeight()));
+        };
+    }
+
+    /**
+     * Fade to the room music if inside the given rectangle. When a {@code listener} is colliding with the given rectangle, {@code roomMusic} will start fade in and {@code outsideMusic} out.
+     *
+     * @param room         The room where {@code roomMusic} is played.
+     * @param roomMusic    The music to play in the room.
+     * @param outsideMusic The music thats played outside the room. Usually the stage music. Null is accepted.
+     * @param fadeSpeed    The speed to fade in/out.
+     * @param maxVolume    The max volume of the songs when fading.
+     * @param listeners    The entities interacting with this event.
+     * @return The event.
+     */
+    public static Event roomMusic(Rectangle room, Music roomMusic, Music outsideMusic, double fadeSpeed, double maxVolume, Entity... listeners) {
+        return () -> {
+            boolean oneColliding = false;
+
+            for (Entity listener : listeners) {
+                if (Collisions.rectanglesCollide(listener.x(), listener.y(), listener.width(), listener.height(), room.x, room.y, room.width, room.height)) {
+                    roomMusic.setVolume((float) Math.min(roomMusic.getVolume() + fadeSpeed, maxVolume));
+
+                    if (outsideMusic != null) {
+                        outsideMusic.setVolume((float) Math.max(outsideMusic.getVolume() - fadeSpeed, 0));
+                    }
+
+                    oneColliding = true;
+                    break;
+                }
+            }
+
+            if (!oneColliding) {
+                roomMusic.setVolume((float) Math.max(roomMusic.getVolume() - fadeSpeed, 0));
+
+                if (outsideMusic != null) {
+                    outsideMusic.setVolume((float) Math.min(outsideMusic.getVolume() + fadeSpeed, maxVolume));
+                }
+            }
         };
     }
 

@@ -3,7 +3,6 @@ package pojahn.game.entities;
 import com.badlogic.gdx.audio.Sound;
 
 import pojahn.game.core.Collisions;
-import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Direction;
@@ -33,9 +32,9 @@ public class Boo extends MobileEntity {
     @Override
     public void logistics() {
         MobileEntity[] targets = getTargets();
-        MobileEntity victim = (MobileEntity) Collisions.findClosest(this, targets);
+        MobileEntity victim = targets.length > 0 ? (MobileEntity) Collisions.findClosest(this, targets) : null;
 
-        if (canSneak(victim)) {
+        if (victim != null && canSneak(victim)) {
             if (maxSpeed > velocity + acc)
                 velocity += acc;
 
