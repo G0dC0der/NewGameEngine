@@ -1,15 +1,14 @@
 package pojahn.game.entities;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.events.Event;
 
-import com.badlogic.gdx.math.Vector2;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class PathDrone extends MobileEntity {
 

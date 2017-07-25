@@ -1,9 +1,8 @@
 package pojahn.game.entities.mains;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.essentials.Keystrokes;
-
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class FlyMan extends PlayableEntity{
 

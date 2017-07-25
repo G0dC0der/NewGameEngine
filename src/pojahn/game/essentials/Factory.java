@@ -4,15 +4,22 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import pojahn.game.core.*;
+import com.badlogic.gdx.math.Vector2;
+import pojahn.game.core.Collisions;
+import pojahn.game.core.Entity;
+import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
+import pojahn.game.core.MobileEntity;
+import pojahn.game.core.PlayableEntity;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.events.Event;
 import pojahn.game.events.TileEvent;
@@ -22,11 +29,6 @@ import pojahn.lang.Int32;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 
 public class Factory {
 

@@ -2,7 +2,6 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;

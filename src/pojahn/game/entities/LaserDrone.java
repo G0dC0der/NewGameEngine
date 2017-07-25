@@ -4,13 +4,11 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.LaserBeam;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 public class LaserDrone extends PathDrone {

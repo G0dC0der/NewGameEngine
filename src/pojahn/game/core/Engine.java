@@ -1,20 +1,21 @@
 package pojahn.game.core;
 
-import java.awt.Dimension;
-import java.io.Serializable;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import pojahn.game.essentials.*;
+import com.badlogic.gdx.math.Rectangle;
+import pojahn.game.essentials.ControlledException;
+import pojahn.game.essentials.GameState;
+import pojahn.game.essentials.HUDMessage;
+import pojahn.game.essentials.Image2D;
+import pojahn.game.essentials.Keystrokes;
+import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.recording.PlaybackRecord;
 import pojahn.game.essentials.recording.RecordingDevice;
 import pojahn.game.essentials.recording.Replay;
@@ -23,14 +24,16 @@ import pojahn.game.events.Event;
 import pojahn.lang.Obj;
 import pojahn.lang.OtherMath;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
+import java.awt.*;
+import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * An instance of Engine is used to play one course.

@@ -1,9 +1,5 @@
 package pojahn.game.essentials;
 
-import java.awt.Dimension;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import pojahn.game.core.Entity;
 
 public class CameraEffects {

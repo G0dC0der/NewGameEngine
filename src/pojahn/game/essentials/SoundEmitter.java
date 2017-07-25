@@ -1,11 +1,10 @@
 package pojahn.game.essentials;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 
 import java.util.List;
 

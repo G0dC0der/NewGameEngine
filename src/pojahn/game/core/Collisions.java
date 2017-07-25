@@ -1,19 +1,22 @@
 package pojahn.game.core;
 
-import java.util.ArrayList;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import pojahn.game.core.Level.Tile;
+import pojahn.game.essentials.Direction;
+import pojahn.game.essentials.Image2D;
+import pojahn.game.essentials.geom.Bounds;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.badlogic.gdx.math.*;
-
-import pojahn.game.core.Level.Tile;
-import pojahn.game.essentials.geom.Bounds;
-import pojahn.game.essentials.Direction;
-import pojahn.game.essentials.Image2D;
 
 public class Collisions {
 

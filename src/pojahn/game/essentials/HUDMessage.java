@@ -1,11 +1,11 @@
 package pojahn.game.essentials;
 
-import java.awt.Dimension;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import java.awt.*;
 
 public interface HUDMessage {
 

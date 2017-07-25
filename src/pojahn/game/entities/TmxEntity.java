@@ -1,14 +1,12 @@
 package pojahn.game.entities;
 
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector3;
-import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Hitbox;

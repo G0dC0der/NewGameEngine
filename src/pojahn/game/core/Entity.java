@@ -16,7 +16,14 @@ import pojahn.game.events.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pojahn.game.core.Collisions.*;
+import static pojahn.game.core.Collisions.buildMatrix;
+import static pojahn.game.core.Collisions.circleRectangleCollide;
+import static pojahn.game.core.Collisions.circleVsCircle;
+import static pojahn.game.core.Collisions.getBoundingBox;
+import static pojahn.game.core.Collisions.pixelPerfect;
+import static pojahn.game.core.Collisions.pixelPerfectRotation;
+import static pojahn.game.core.Collisions.rectanglesCollide;
+import static pojahn.game.core.Collisions.rotatedRectanglesCollide;
 
 public class Entity {
 

@@ -3,7 +3,11 @@ package pojahn.game.core;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import pojahn.game.entities.Particle;
-import pojahn.game.essentials.*;
+import pojahn.game.essentials.Animation;
+import pojahn.game.essentials.Controller;
+import pojahn.game.essentials.Image2D;
+import pojahn.game.essentials.Keystrokes;
+import pojahn.game.essentials.Vitality;
 
 import java.util.LinkedList;
 import java.util.List;

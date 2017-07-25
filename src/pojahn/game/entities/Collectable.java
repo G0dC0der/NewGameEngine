@@ -1,7 +1,6 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
-
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.events.Event;

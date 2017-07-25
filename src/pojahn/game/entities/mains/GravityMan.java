@@ -1,12 +1,11 @@
 package pojahn.game.entities.mains;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Level;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.essentials.Keystrokes;
-
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.math.Vector2;
 
 public class GravityMan extends PlayableEntity {
 

@@ -1,7 +1,6 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
-
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 

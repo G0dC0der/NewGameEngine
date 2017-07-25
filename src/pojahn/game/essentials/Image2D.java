@@ -1,11 +1,11 @@
 package pojahn.game.essentials;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
+
+import java.io.IOException;
 
 public class Image2D extends Texture {
 

@@ -1,13 +1,13 @@
 package pojahn.game.entities;
 
+import pojahn.game.core.Collisions;
+import pojahn.game.core.MobileEntity;
+import pojahn.game.essentials.Hitbox;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
-
-import pojahn.game.core.Collisions;
-import pojahn.game.core.MobileEntity;
-import pojahn.game.essentials.Hitbox;
 
 public class SolidPlatform extends PathDrone {
 

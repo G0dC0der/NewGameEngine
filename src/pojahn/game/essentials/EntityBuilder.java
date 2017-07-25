@@ -1,15 +1,14 @@
 package pojahn.game.essentials;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntityBuilder {
 

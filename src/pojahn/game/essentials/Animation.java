@@ -1,9 +1,9 @@
 package pojahn.game.essentials;
 
+import pojahn.game.events.Event;
+
 import java.lang.reflect.Array;
 import java.util.HashMap;
-
-import pojahn.game.events.Event;
 
 /**
  * This class is often used in game loops, where {@code getObject()} is called every frame, returning the next object in the array every time called(depends on the speed setting).<br>

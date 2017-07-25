@@ -1,13 +1,12 @@
 package pojahn.game.essentials;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
+
+import java.util.ArrayList;
 
 public class CheckPointHandler {
 

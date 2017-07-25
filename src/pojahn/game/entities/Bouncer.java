@@ -1,7 +1,6 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
-
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
@@ -9,8 +8,6 @@ import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Direction;
 import pojahn.lang.Entry;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
