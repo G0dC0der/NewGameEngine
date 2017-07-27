@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
-import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.EntityBuilder;
 
@@ -125,7 +124,7 @@ public abstract class Projectile extends MobileEntity {
     private void collisionCheck() {
         Level l = getLevel();
 
-        if (l.tileAt(getFrontPosition()) == Tile.SOLID || l.tileAt(getRarePosition()) == Tile.SOLID) {
+        if (outOfBounds()) {//l.tileAt(getFrontPosition()) == Tile.SOLID || l.tileAt(getRarePosition()) == Tile.SOLID) {
             impact(null);
         } else {
             concat(of(targets), of(target))

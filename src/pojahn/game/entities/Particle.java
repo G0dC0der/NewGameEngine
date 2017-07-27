@@ -12,6 +12,13 @@ public class Particle extends MobileEntity {
     public Particle() {
     }
 
+    public static Particle fromSound(Sound sound) {
+        Particle particle = new Particle();
+        particle.setIntroSound(sound);
+
+        return particle;
+    }
+
     public Particle getClone() {
         Particle clone = new Particle();
         copyData(clone);
