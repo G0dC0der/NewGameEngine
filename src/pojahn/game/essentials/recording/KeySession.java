@@ -7,11 +7,13 @@ import java.util.List;
 
 public class KeySession implements Serializable {
 
+    private static final long serialVersionUID = -1L;
+
     public final List<Keystrokes> keystrokes;
-    public final long badge;
+    final long badge;
     private transient int index;
 
-    public KeySession(List<Keystrokes> keystrokes, long badge) {
+    KeySession(List<Keystrokes> keystrokes, long badge) {
         this.keystrokes = keystrokes;
         this.badge = badge;
     }
