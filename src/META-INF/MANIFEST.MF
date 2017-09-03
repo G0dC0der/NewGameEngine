@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: lwjgl-natives.jar gdx-backend-lwjgl-natives.jar gdx.jar gd
- x-backend-lwjgl3.jar gdx-natives.jar
-Main-Class: pojahn.gui.MainClass
-
