@@ -8,13 +8,20 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
+import pojahn.game.core.PlayableEntity;
 import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.Image2D;
+import pojahn.game.essentials.geom.Size;
+import pojahn.game.events.Event;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class TileBasedLevel extends Level {
@@ -132,6 +139,25 @@ public abstract class TileBasedLevel extends Level {
 
     public Entity getWorldImage() {
         return Factory.construct(map);
+    }
+
+    public Rectangle getRectangle(int tileX, int tileY, int tilesX, int tilesY) {
+        return new Rectangle(tileX * getTileWidth(), tileY * getTileHeight(), tilesX * getTileWidth(), tilesY * getTileHeight());
+    }
+
+    public Vector2 center(int tileX, int tileY, Size entitySize) {
+        float x = (tileX * getTileWidth()) + (getTileWidth() / 2) - (entitySize.width / 2);
+        float y = (tileY * getTileHeight()) + (getTileHeight() / 2) - (entitySize.height / 2);
+
+        return new Vector2(x, y);
+    }
+
+    public void runOnceWhenMainCollides(Event event, int tileX, int tileY, int tilesX, int tilesY) {
+        runOnceWhen(event, ()-> getAliveMainCharacters()
+                .stream()
+                .map(main -> Collisions.rectanglesCollide(main.bounds.toRectangle(), getRectangle(tileX, tileY, tilesX, tilesY)))
+                .findFirst()
+                .orElse(false));
     }
 
     @Override

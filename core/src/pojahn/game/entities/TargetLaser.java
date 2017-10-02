@@ -7,7 +7,6 @@ import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
-import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.LaserBeam;
 
 public class TargetLaser extends PathDrone {
@@ -16,12 +15,11 @@ public class TargetLaser extends PathDrone {
     private int delay, delayCounter;
     private Tile stopTile;
     private Entity targets[], laserTarget;
-    private MobileEntity dummy;
     private Particle impact;
     private LaserBeam beam;
     private Color laserTint;
 
-    public TargetLaser(float x, float y, Entity laserTarget, Entity... targets) {
+    public TargetLaser(float x, float y, Entity... targets) {
         super(x, y);
 
         this.targets = targets;
@@ -31,20 +29,23 @@ public class TargetLaser extends PathDrone {
         infBeam = true;
         delayCounter = 10;
         laserTint = Color.valueOf("CC0000FF");
-
-        dummy = new MobileEntity();
-        dummy.setMoveSpeed(17.2f);
     }
 
-    public void setLaserBeam(LaserBeam beam) {
-        this.beam = beam;
+    @Override
+    public TargetLaser getClone() {
+        TargetLaser clone = new TargetLaser(x(), y(), targets);
+        copyData(clone);
+        if (cloneEvent != null)
+            cloneEvent.handleClonded(clone);
+
+        return clone;
     }
 
     @Override
     public void logistics() {
         super.logistics();
 
-        if (stop)
+        if (stop || !laserTarget.isActive())
             return;
 
         float cx = centerX();
@@ -78,6 +79,14 @@ public class TargetLaser extends PathDrone {
         }
 
         beam.fireAt(cx, cy, finalTarget.x, finalTarget.y, 1);
+    }
+
+    public void setLaserBeam(LaserBeam beam) {
+        this.beam = beam;
+    }
+
+    public void setLaserTarget(Entity laserTarget) {
+        this.laserTarget = laserTarget;
     }
 
     public void setStopTile(Tile stopTile) {
@@ -142,5 +151,19 @@ public class TargetLaser extends PathDrone {
 
             super.render(b);
         }
+    }
+
+    protected void copyData(TargetLaser clone) {
+        super.copyData(clone);
+        clone.stop = stop;
+        clone.faceTarget = faceTarget;
+        clone.infBeam = infBeam;
+        clone.frontFire = frontFire;
+        clone.highLaserPrio = highLaserPrio;
+        clone.stopTile = stopTile;
+        clone.laserTarget = laserTarget;
+        clone.impact = impact;
+        clone.beam = beam;
+        clone.laserTint = laserTint;
     }
 }

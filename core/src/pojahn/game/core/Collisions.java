@@ -299,7 +299,7 @@ public class Collisions {
     public static Entity findClosest(Entity watcher, List<? extends Entity> targets) {
         return targets.stream()
                 .min((e1, e2) -> (int) Math.min(watcher.dist(e1), watcher.dist(e2)))
-                .orElseThrow(() -> new IllegalArgumentException("The target list is empty."));
+                .orElse(null);
     }
 
     public static Entity findClosestSeeable(Entity watcher, Entity... targets) {

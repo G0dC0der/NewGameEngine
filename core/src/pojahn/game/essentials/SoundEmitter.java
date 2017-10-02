@@ -1,7 +1,7 @@
 package pojahn.game.essentials;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
@@ -11,7 +11,7 @@ import java.util.List;
 public class SoundEmitter {
 
     public float power, maxDistance, maxVolume;
-    public boolean useFalloff;
+    public boolean useFalloff, mute;
     private final Entity emitter;
 
     public SoundEmitter(Entity emitter) {
@@ -21,6 +21,17 @@ public class SoundEmitter {
         maxVolume = 1.0f;
     }
 
+    public void play(final Sound sound) {
+        if (!mute && sound != null) {
+            final Entity soundListener = getSoundListener();
+            float volume = useFalloff ? calc(soundListener.x(), soundListener.y()) : maxVolume;
+            if (volume > 0.0f) {
+                sound.play(volume);
+            }
+        }
+    }
+
+    @Deprecated
     public float calc() {
         if (!useFalloff)
             return maxVolume;
@@ -28,14 +39,12 @@ public class SoundEmitter {
         return calc(getSoundListener());
     }
 
+    @Deprecated
     public float calc(Entity listener) {
         return calc(listener.x(), listener.y());
     }
 
-    public float calc(float listenerX, float listenerY) {
-        if (!useFalloff)
-            return maxVolume;
-
+    private float calc(float listenerX, float listenerY) {
         double distance = Collisions.distance(emitter.x(), emitter.y(), listenerX, listenerY);
         float candidate = (float) (power * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(maxDistance)), 0));
 
@@ -59,47 +68,5 @@ public class SoundEmitter {
             soundListeners = emitter.getLevel().getMainCharacters();
 
         return Collisions.findClosest(emitter, soundListeners);
-    }
-
-    public static SoundEmitter quiteEmitter(Entity emitter) {
-        SoundEmitter se = new SoundEmitter(emitter);
-        se.maxDistance = 400;
-        se.maxVolume = .6f;
-        se.power = 10;
-        se.useFalloff = true;
-        return se;
-    }
-
-    public static SoundEmitter loudEmitter(Entity emitter) {
-        SoundEmitter se = new SoundEmitter(emitter);
-        se.maxDistance = 1300;
-        se.power = 40;
-        se.useFalloff = true;
-        return se;
-    }
-
-    public static Event fade(Music music, float targetVolume, int duration, boolean stopWhenDone) {
-        return new Event() {
-
-            int fadeTime = duration;
-            double startVolume = music.getVolume();
-            boolean done;
-
-            @Override
-            public void eventHandling() {
-                if (!done) {
-                    fadeTime -= Gdx.graphics.getDeltaTime();
-                    if (fadeTime < 0) {
-                        fadeTime = 0;
-                        done = true;
-                        if (stopWhenDone)
-                            music.stop();
-                    } else {
-                        double offset = (targetVolume - startVolume) * (1 - (fadeTime / (double) duration));
-                        music.setVolume((float) (startVolume + offset));
-                    }
-                }
-            }
-        };
     }
 }

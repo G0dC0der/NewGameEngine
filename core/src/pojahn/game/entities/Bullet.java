@@ -5,23 +5,27 @@ import pojahn.game.core.Entity;
 
 public class Bullet extends Projectile {
 
-	public Bullet(float x, float y, Entity... scanTargets) {
-		super(x, y, scanTargets);
-		follow(false);
-	}
-	
-	@Override
-	public Bullet getClone() {
-		Bullet clone = new Bullet(x(),y(),getTargets());
-		copyData(clone);
-		if(cloneEvent != null)
-			cloneEvent.handleClonded(clone);
-		
-		return clone;
-	}
+    public Bullet(Entity... scanTargets) {
+        this(0,0,scanTargets);
+    }
 
-	@Override
-	protected void moveProjectile(Vector2 target) {
+    public Bullet(float x, float y, Entity... scanTargets) {
+        super(x, y, scanTargets);
+        follow(false);
+    }
+
+    @Override
+    public Bullet getClone() {
+        Bullet clone = new Bullet(x(), y(), getTargets());
+        copyData(clone);
+        if (cloneEvent != null)
+            cloneEvent.handleClonded(clone);
+
+        return clone;
+    }
+
+    @Override
+    protected void moveProjectile(Vector2 target) {
         moveTowards(target.x, target.y);
-	}
+    }
 }

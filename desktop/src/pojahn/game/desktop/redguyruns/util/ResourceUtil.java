@@ -29,6 +29,7 @@ public class ResourceUtil {
         flipper.setJumpSound(res.getSound("jump.wav"));
         flipper.addEvent(()-> flipper.flipY = flipper.isFlipped());
         flipper.setLandingSound(res.getSound("land.wav"));
+        flipper.addEvent(Factory.keepGravityManInBounds(flipper));
 
         return flipper;
     }
@@ -38,6 +39,7 @@ public class ResourceUtil {
         setMainAttributes(res, man);
         man.setJumpSound(res.getSound("jump.wav"));
         man.setLandingSound(res.getSound("land.wav"));
+        man.addEvent(Factory.keepGravityManInBounds(man));
 
         return man;
     }
@@ -68,7 +70,6 @@ public class ResourceUtil {
         play.setDieSound(res.getSound("maindie.wav"));
         play.addEvent(play::face);
         play.setFacings(2);
-        play.addEvent(Factory.keepInBounds(play));
     }
 
     public static LaserBeam getFiringLaser(ResourceManager res) {

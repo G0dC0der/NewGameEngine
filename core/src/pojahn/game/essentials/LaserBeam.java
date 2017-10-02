@@ -14,7 +14,7 @@ public interface LaserBeam {
 	 */
 	void drawLasers(SpriteBatch batch);
 	
-	public static class Task {
+	class Task {
 		float srcX, srcY, destX, destY;
 		int active;
 		

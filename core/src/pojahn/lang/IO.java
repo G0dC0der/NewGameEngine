@@ -13,6 +13,10 @@ import java.util.zip.GZIPOutputStream;
 public class IO {
 
     public static void exportObject(Object obj, FileHandle dest) throws IOException {
+        if (!dest.file().exists()) {
+            dest.file().createNewFile();
+        }
+
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dest.file()))) {
             out.writeObject(obj);
         }

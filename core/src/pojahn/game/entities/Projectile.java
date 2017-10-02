@@ -10,6 +10,9 @@ import pojahn.game.essentials.EntityBuilder;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
 
+/**
+ * You can see 'targets' as the objects the projectile can interact with and 'target' the object the projectile is firing at.
+ */
 public abstract class Projectile extends MobileEntity {
 
     private Particle impact, gunfire, trailer;
@@ -122,7 +125,7 @@ public abstract class Projectile extends MobileEntity {
     }
 
     private void collisionCheck() {
-        if (outOfBounds()) {
+        if (outOfBounds() || getOccupyingCells().contains(Level.Tile.SOLID)) {
             impact(null);
         } else {
             concat(of(targets), of(target))

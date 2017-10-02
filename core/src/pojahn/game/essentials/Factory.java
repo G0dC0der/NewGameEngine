@@ -178,16 +178,6 @@ public class Factory {
         };
     }
 
-    /**
-     * Rotate the given unit towards its current direction.
-     */
-    public static Event stareAt(MobileEntity walker) {
-        return () -> {
-            Vector2 center = walker.getCenterCord();
-            walker.setRotation((float) Collisions.getAngle(walker.prevX(), walker.prevY(), center.x, center.y));
-        };
-    }
-
     public static Event follow(Entity src, Entity tail, float offsetX, float offsetY) {
         return () -> tail.move(src.bounds.pos.x + offsetX, src.bounds.pos.y + offsetY);
     }
@@ -228,6 +218,26 @@ public class Factory {
         return () -> {
             entity.bounds.pos.x = Math.max(0, Math.min(entity.x(), entity.getLevel().getWidth()));
             entity.bounds.pos.y = Math.max(0, Math.min(entity.y(), entity.getLevel().getHeight()));
+        };
+    }
+
+    public static Event keepGravityManInBounds(GravityMan gravityMan) {
+        return () -> {
+            if (gravityMan.x() < 0) {
+                gravityMan.bounds.pos.x = 0;
+                gravityMan.vel.x = 0;
+            } else if (gravityMan.x() + gravityMan.width() > gravityMan.getLevel().getWidth()) {
+                gravityMan.bounds.pos.x = gravityMan.getLevel().getWidth() - gravityMan.width();
+                gravityMan.vel.y = 0;
+            }
+
+            if (gravityMan.y() < 0) {
+                gravityMan.bounds.pos.y = 0;
+                gravityMan.vel.y = 0;
+            } else if (gravityMan.y() + gravityMan.height() > gravityMan.getLevel().getHeight()) {
+                gravityMan.bounds.pos.y = gravityMan.getLevel().getHeight() - gravityMan.height();
+                gravityMan.vel.y = 0;
+            }
         };
     }
 

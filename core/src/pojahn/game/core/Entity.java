@@ -28,7 +28,7 @@ import static pojahn.game.core.Collisions.rotatedRectanglesCollide;
 public class Entity {
 
     public final Bounds bounds;
-    public SoundEmitter sounds; //TODO: Make final?
+    public final SoundEmitter sounds;
     public String identifier;
     public Color tint;
     public float offsetX, offsetY, scaleX, scaleY;
@@ -384,6 +384,7 @@ public class Entity {
         clone.sounds.maxVolume = sounds.maxVolume;
         clone.sounds.power = sounds.power;
         clone.sounds.useFalloff = sounds.useFalloff;
+        clone.sounds.mute = sounds.mute;
         clone.scaleX = scaleX;
         clone.scaleY = scaleY;
         if (image != null)

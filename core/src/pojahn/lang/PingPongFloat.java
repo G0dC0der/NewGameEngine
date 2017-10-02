@@ -22,6 +22,14 @@ public class PingPongFloat {
         this.increase = increase;
     }
 
+    public void setMin(float min) {
+        this.min = min;
+    }
+
+    public void setMax(float max) {
+        this.max = max;
+    }
+
     public float get() {
         if (increase) {
             value += amount;

@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -506,13 +507,15 @@ public abstract class Level {
     }
 
     void place() {
-        for (int i = 0; i < awaitingObjects.size(); i++) {
-            Entry<Integer, Entity> entry = awaitingObjects.get(i);
+        final Iterator<Entry<Integer, Entity>> iterator = awaitingObjects.iterator();
+        while (iterator.hasNext()) {
+            final Entry<Integer, Entity> entry = iterator.next();
+
             if (entry.key-- <= 0) {
-                awaitingObjects.remove(i);
-                i--;
+                iterator.remove();
                 gameObjects.add(entry.value);
                 sort = true;
+
                 entry.value.level = this;
                 entry.value.engine = engine;
                 entry.value.present = true;

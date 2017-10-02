@@ -36,7 +36,7 @@ public class Particle extends MobileEntity {
     public void logistics() {
         if (!soundPlayed && introSound != null) {
             soundPlayed = true;
-            introSound.play(sounds.calc());
+            sounds.play(introSound);
         }
 
         if (completed())
