@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import pojahn.game.core.Entity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.mains.GravityMan;
@@ -19,7 +20,6 @@ import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.recording.KeySession;
 import pojahn.game.essentials.stages.PixelBasedLevel;
 import pojahn.lang.Bool;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -29,7 +29,7 @@ public class Race extends PixelBasedLevel {
     private ResourceManager res;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -43,7 +43,7 @@ public class Race extends PixelBasedLevel {
         Stream.of(res.getAnimation("main")).forEach(Image2D::createPixelData);
         Stream.of(res.getAnimation("bounce2")).forEach(Image2D::createPixelData);
 
-        Music music = res.getMusic("music.ogg");
+        final Music music = res.getMusic("music.ogg");
         music.setOnCompletionListener(m -> {
             music.play();
             music.setPosition(3.325f);
@@ -56,16 +56,16 @@ public class Race extends PixelBasedLevel {
         /*
          * Main Character
          */
-        GravityMan play = ResourceUtil.getGravityMan(res);
+        final GravityMan play = ResourceUtil.getGravityMan(res);
         play.move(40, 538);
         add(play);
 
         /*
          * Contestants
          */
-        GravityMan cont1 = getContestant((KeySession) res.getAsset("cont1.rlp"), res.getAnimation("cont1"), "Weedy");
-        GravityMan cont2 = getContestant((KeySession) res.getAsset("cont2.rlp"), res.getAnimation("cont2"), "White Boy");
-        GravityMan cont3 = getContestant((KeySession) res.getAsset("cont3.rlp"), res.getAnimation("cont3"), "Black Guy");
+        final GravityMan cont1 = getContestant((KeySession) res.getAsset("cont1.rlp"), res.getAnimation("cont1"), "Weedy");
+        final GravityMan cont2 = getContestant((KeySession) res.getAsset("cont2.rlp"), res.getAnimation("cont2"), "White Boy");
+        final GravityMan cont3 = getContestant((KeySession) res.getAsset("cont3.rlp"), res.getAnimation("cont3"), "Black Guy");
         add(cont1);
         add(cont2);
         add(cont3);
@@ -77,40 +77,40 @@ public class Race extends PixelBasedLevel {
         add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
 
         /*
-		 * Hindrances
+         * Hindrances
 		 */
-        SolidPlatform blocker1 = new SolidPlatform(1104, 511, play, cont1, cont2, cont3);
+        final SolidPlatform blocker1 = new SolidPlatform(1104, 511, play, cont1, cont2, cont3);
         blocker1.setImage(new Animation<>(1, res.getImage("blocker.png")));
         blocker1.setMoveSpeed(1);
         blocker1.setFollowMode(SolidPlatform.FollowMode.NORMAL);
         blocker1.appendPath(1104, 511, 0, false, null);
         blocker1.appendPath(1176, 511, 0, false, null);
 
-        SolidPlatform blocker2 = blocker1.getClone();
+        final SolidPlatform blocker2 = blocker1.getClone();
         blocker2.move(1176, 310);
         blocker2.clearData();
         blocker2.appendPath(1176, 310, 0, false, null);
         blocker2.appendPath(1104, 310, 0, false, null);
 
-        SolidPlatform blocker3 = blocker1.getClone();
+        final SolidPlatform blocker3 = blocker1.getClone();
         blocker3.move(1104, 119);
         blocker3.clearData();
         blocker3.appendPath(1104, 119, 0, false, null);
         blocker3.appendPath(1176, 119, 0, false, null);
 
-        SolidPlatform blocker4 = blocker1.getClone();
+        final SolidPlatform blocker4 = blocker1.getClone();
         blocker4.move(1272, 511);
         blocker4.clearData();
         blocker4.appendPath(1272, 511, 0, false, null);
         blocker4.appendPath(1363, 511, 0, false, null);
 
-        SolidPlatform blocker5 = blocker1.getClone();
+        final SolidPlatform blocker5 = blocker1.getClone();
         blocker5.move(1363, 310);
         blocker5.clearData();
         blocker5.appendPath(1363, 310, 0, false, null);
         blocker5.appendPath(1272, 310, 0, false, null);
 
-        SolidPlatform blocker6 = blocker1.getClone();
+        final SolidPlatform blocker6 = blocker1.getClone();
         blocker6.move(1272, 119);
         blocker6.clearData();
         blocker6.appendPath(1272, 119, 0, false, null);
@@ -123,7 +123,7 @@ public class Race extends PixelBasedLevel {
         add(blocker5);
         add(blocker6);
 
-        OldBouncer b = new OldBouncer(1670, 491, 360, 1, null, play, cont1, cont2, cont3);
+        final OldBouncer b = new OldBouncer(1670, 491, 360, 1, null, play, cont1, cont2, cont3);
         b.setImage(new Animation<>(1, res.getImage("bounce.png")));
         b.setHitbox(Hitbox.CIRCLE);
         b.setMoveSpeed(2);
@@ -133,7 +133,7 @@ public class Race extends PixelBasedLevel {
         b.setShakeSound(res.getSound("bounceball.wav"), 5);
         b.sounds.useFalloff = true;
 
-        OldBouncer b2 = new OldBouncer(1800, 532, 400, 3, Direction.W, play, cont1, cont2, cont3);
+        final OldBouncer b2 = new OldBouncer(1800, 532, 400, 3, Direction.W, play, cont1, cont2, cont3);
         b2.setImage(new Animation<>(5, res.getAnimation("bounce2")));
         b2.setHitbox(Hitbox.PIXEL);
         b2.setMoveSpeed(2);
@@ -141,7 +141,7 @@ public class Race extends PixelBasedLevel {
         b2.appendPath(2110, 532, 0, false, null);
         b2.setShakeSound(res.getSound("bounceblock.wav"), 5);
 
-        OldBouncer b3 = new OldBouncer(2110, 500, 400, 3, Direction.W, play, cont1, cont2, cont3);
+        final OldBouncer b3 = new OldBouncer(2110, 500, 400, 3, Direction.W, play, cont1, cont2, cont3);
         b3.setImage(new Animation<>(5, res.getAnimation("bounce2")));
         b3.setHitbox(Hitbox.PIXEL);
         b3.setMoveSpeed(2);
@@ -156,14 +156,14 @@ public class Race extends PixelBasedLevel {
 		/*
 		 * Other
 		 */
-        Entity flag = new Entity();
+        final Entity flag = new Entity();
         flag.setImage(new Animation<>(6, res.getAnimation("flag")));
         flag.move(3912, 514);
         add(flag);
     }
 
-    private GravityMan getContestant(KeySession data, Image2D[] img, String name) {
-        GravityMan cont = new GravityMan();
+    private GravityMan getContestant(final KeySession data, final Image2D[] img, final String name) {
+        final GravityMan cont = new GravityMan();
         cont.setImage(4, img);
         cont.setController(Controller.DEFAULT_CONTROLLER);
         cont.setJumpSound(res.getSound("jump.wav"));
@@ -172,15 +172,15 @@ public class Race extends PixelBasedLevel {
         cont.move(40, 538);
         cont.sounds.useFalloff = true;
         cont.setGhostData(data.keystrokes);
-        Bool bool = new Bool();
+        final Bool bool = new Bool();
         cont.addTileEvent(tile -> {
             if (!bool.value && tile == Tile.GOAL) {
                 bool.value = true;
-                HUDMessage winText = HUDMessage.centeredMessage(name + " completed!", getEngine().getScreenSize(), Color.BLACK);
+                final HUDMessage winText = HUDMessage.centeredMessage(name + " completed!", getEngine().getScreenSize(), Color.BLACK);
                 temp(Factory.drawCenteredText(winText, getEngine().timeFont), 100);
             }
         });
-        return  cont;
+        return cont;
     }
 
     @Override

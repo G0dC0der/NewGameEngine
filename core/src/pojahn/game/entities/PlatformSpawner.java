@@ -18,15 +18,15 @@ public class PlatformSpawner extends Entity {
     private int spawnCounter, removeCounter, index;
     private boolean cleared;
 
-    public PlatformSpawner(float x, float y, MobileEntity... users) {
+    public PlatformSpawner(final float x, final float y, final MobileEntity... users) {
         move(x, y);
         this.users = users;
         cleared = true;
         spawnDelay = removeDelay = 10;
     }
 
-    public void setBlocks(Entity... blocks) {
-        Entity[] bls = new Entity[blocks.length + 1];
+    public void setBlocks(final Entity... blocks) {
+        final Entity[] bls = new Entity[blocks.length + 1];
         bls[0] = null;
         for (int i = 1; i < bls.length; i++)
             bls[i] = blocks[i - 1];
@@ -34,46 +34,46 @@ public class PlatformSpawner extends Entity {
         this.blocks = bls;
     }
 
-    public void blocksSolid(boolean solid) {
+    public void blocksSolid(final boolean solid) {
         this.solid = solid;
     }
 
-    public void setPermanent(boolean permanent) {
+    public void setPermanent(final boolean permanent) {
         this.permanent = permanent;
     }
 
-    public void setSpawnDelay(int spawnDelay) {
+    public void setSpawnDelay(final int spawnDelay) {
         this.spawnDelay = spawnDelay;
         spawnCounter = spawnDelay - 1;
     }
 
-    public void setRemoveDelay(int removeDelay) {
+    public void setRemoveDelay(final int removeDelay) {
         this.removeDelay = removeDelay;
         removeCounter = removeDelay - 1;
     }
 
-    public void setActionImage(Animation<Image2D> image) {
+    public void setActionImage(final Animation<Image2D> image) {
         actionImage = image;
         orgImage = getImage();
     }
 
-    public void setRemoveParticle(Particle removePart) {
+    public void setRemoveParticle(final Particle removePart) {
         this.removePart = removePart;
     }
 
-    public void resetBlockImage(boolean resetBlockImage) {
+    public void resetBlockImage(final boolean resetBlockImage) {
         this.resetBlockImage = resetBlockImage;
     }
 
-    public void setSpawnSound(Sound sound) {
+    public void setSpawnSound(final Sound sound) {
         spawnSound = sound;
     }
 
-    public void setRemoveSound(Sound sound) {
+    public void setRemoveSound(final Sound sound) {
         removeSound = sound;
     }
 
-    public void triggerBlocks(boolean trigger) {
+    public void triggerBlocks(final boolean trigger) {
         this.trigger = trigger;
     }
 
@@ -98,7 +98,7 @@ public class PlatformSpawner extends Entity {
                 if (spawnSound != null)
                     spawnSound.play(sounds.calc());
                 if (solid)
-                    for (MobileEntity mobile : users)
+                    for (final MobileEntity mobile : users)
                         mobile.addObstacle(blocks[index]);
 
                 cleared = false;
@@ -114,10 +114,10 @@ public class PlatformSpawner extends Entity {
                 if (index == 0)
                     return;
 
-                if(removeSound != null)
+                if (removeSound != null)
                     removeSound.play(sounds.calc());
                 if (solid)
-                    for (MobileEntity mobile : users)
+                    for (final MobileEntity mobile : users)
                         mobile.removeObstacle(blocks[index]);
 
                 if (index <= 0)
@@ -133,7 +133,7 @@ public class PlatformSpawner extends Entity {
     }
 
     private boolean buttonDown() {
-        for (Entity user : users)
+        for (final Entity user : users)
             if (collidesWith(user))
                 return true;
         return false;

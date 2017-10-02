@@ -40,7 +40,7 @@ public class GravityMan extends PlayableEntity {
     }
 
     public GravityMan getClone() {
-        GravityMan clone = new GravityMan();
+        final GravityMan clone = new GravityMan();
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -60,16 +60,16 @@ public class GravityMan extends PlayableEntity {
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(final SpriteBatch batch) {
         getImage().stop(vel.x == 0);
         super.render(batch);
     }
 
-    public void setJumpSound(Sound sound) {
+    public void setJumpSound(final Sound sound) {
         this.jumpSound = sound;
     }
 
-    public void setLandingSound(Sound landingSound) {
+    public void setLandingSound(final Sound landingSound) {
         this.landingSound = landingSound;
     }
 
@@ -97,7 +97,7 @@ public class GravityMan extends PlayableEntity {
 
             if (jumpKeyDownCounter <= shortJumpFrames && currStrokes.jump) {
                 if (++jumpKeyDownCounter == 1 && jumpSound != null)
-                        jumpSound.play(sounds.calc());
+                    jumpSound.play(sounds.calc());
 
                 vel.y += jumpStrength / jumpKeyDownCounter;
             }
@@ -109,7 +109,7 @@ public class GravityMan extends PlayableEntity {
         if (canDown() || launching())
             drag();
 
-        float futureY = getFutureY();
+        final float futureY = getFutureY();
         if (!occupiedAt(x(), futureY))
             applyYForces();
         else {
@@ -124,9 +124,9 @@ public class GravityMan extends PlayableEntity {
     }
 
     protected void run() {
-        boolean left = !isFrozen() && currStrokes.left;
-        boolean right = !isFrozen() && currStrokes.right;
-        boolean moving = left || right;
+        final boolean left = !isFrozen() && currStrokes.left;
+        final boolean right = !isFrozen() && currStrokes.right;
+        final boolean moving = left || right;
 
         if (left) {
             moveLeft();
@@ -147,7 +147,7 @@ public class GravityMan extends PlayableEntity {
         }
 
         if (vel.x != 0) {
-            float futureX = getFutureX();
+            final float futureX = getFutureX();
 
             if (vel.x > 0)
                 runLeft(futureX);
@@ -169,7 +169,7 @@ public class GravityMan extends PlayableEntity {
     }
 
 
-    protected void runLeft(float targetX) {
+    protected void runLeft(final float targetX) {
         for (float next = bounds.pos.x; next >= targetX; next -= 0.5f) {
             if (!occupiedAt(next, y())) {
                 bounds.pos.x = next;
@@ -185,7 +185,7 @@ public class GravityMan extends PlayableEntity {
         }
     }
 
-    protected void runRight(float targetX) {
+    protected void runRight(final float targetX) {
         for (float next = x(); next <= targetX; next += 0.5f) {
             if (!occupiedAt(next, y())) {
                 bounds.pos.x = next;
@@ -201,9 +201,10 @@ public class GravityMan extends PlayableEntity {
         }
     }
 
-    protected boolean canSlopeLeft(float targetX) {
-        int y = (int) bounds.pos.y - 1, tar = (int) targetX;
-        Level l = getLevel();
+    protected boolean canSlopeLeft(final float targetX) {
+        final int y = (int) bounds.pos.y - 1;
+        final int tar = (int) targetX;
+        final Level l = getLevel();
 
         for (int i = 0; i < height(); i++)
             if (l.isSolid(tar, y + i))
@@ -212,9 +213,10 @@ public class GravityMan extends PlayableEntity {
         return !obstacleCollision(targetX, bounds.pos.y);
     }
 
-    protected boolean canSlopeRight(float targetX) {
-        int y = (int) y() - 1, tar = (int) (targetX + width());
-        Level l = getLevel();
+    protected boolean canSlopeRight(final float targetX) {
+        final int y = (int) y() - 1;
+        final int tar = (int) (targetX + width());
+        final Level l = getLevel();
 
         for (int i = 0; i < height(); i++)
             if (l.isSolid(tar, y + i))
@@ -239,7 +241,7 @@ public class GravityMan extends PlayableEntity {
     }
 
     protected void drag() {
-        float force = mass * getGravity();
+        final float force = mass * getGravity();
         vel.y *= 1.0 - (getDamping() * getDelta());
 
         if (thermVy() < vel.y) {
@@ -288,7 +290,7 @@ public class GravityMan extends PlayableEntity {
         return prevStrokes.jump && !currStrokes.jump;
     }
 
-    protected void copyData(GravityMan clone) {
+    protected void copyData(final GravityMan clone) {
         super.copyData(clone);
         clone.vel.set(vel);
         clone.tVel.set(tVel);

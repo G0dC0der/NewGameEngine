@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.Circle;
 import pojahn.game.entities.Particle;
 import pojahn.game.entities.TargetLaser;
@@ -12,7 +13,6 @@ import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.stages.PixelBasedLevel;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 
@@ -25,7 +25,7 @@ public class LaserMadness extends PixelBasedLevel {
     private boolean taken;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -60,34 +60,34 @@ public class LaserMadness extends PixelBasedLevel {
         add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-5).build());
 
         /*
-		 * Circle pathing
+         * Circle pathing
 		 */
-        float mx = getWidth() / 2;
-        float my = getHeight() / 2;
-        float moveSpeed = 0.0035f;
+        final float mx = getWidth() / 2;
+        final float my = getHeight() / 2;
+        final float moveSpeed = 0.0035f;
 
-        Circle c1 = new Circle(mx, my, 100, 0);
+        final Circle c1 = new Circle(mx, my, 100, 0);
         c1.setMoveSpeed(moveSpeed);
 
-        Circle c2 = new Circle(mx, my, 100, (float) Math.toRadians(45));
+        final Circle c2 = new Circle(mx, my, 100, (float) Math.toRadians(45));
         c2.setMoveSpeed(moveSpeed);
 
-        Circle c3 = new Circle(mx, my, 100, (float) Math.toRadians(90));
+        final Circle c3 = new Circle(mx, my, 100, (float) Math.toRadians(90));
         c3.setMoveSpeed(moveSpeed);
 
-        Circle c4 = new Circle(mx, my, 100, (float) Math.toRadians(135));
+        final Circle c4 = new Circle(mx, my, 100, (float) Math.toRadians(135));
         c4.setMoveSpeed(moveSpeed);
 
-        Circle c5 = new Circle(mx, my, 100, (float) Math.toRadians(180));
+        final Circle c5 = new Circle(mx, my, 100, (float) Math.toRadians(180));
         c5.setMoveSpeed(moveSpeed);
 
-        Circle c6 = new Circle(mx, my, 100, (float) Math.toRadians(225));
+        final Circle c6 = new Circle(mx, my, 100, (float) Math.toRadians(225));
         c6.setMoveSpeed(moveSpeed);
 
-        Circle c7 = new Circle(mx, my, 100, (float) Math.toRadians(270));
+        final Circle c7 = new Circle(mx, my, 100, (float) Math.toRadians(270));
         c7.setMoveSpeed(moveSpeed);
 
-        Circle c8 = new Circle(mx, my, 100, (float) Math.toRadians(315));
+        final Circle c8 = new Circle(mx, my, 100, (float) Math.toRadians(315));
         c8.setMoveSpeed(moveSpeed);
 
         add(c1);
@@ -102,7 +102,7 @@ public class LaserMadness extends PixelBasedLevel {
         /*
 		 * Lasers
 		 */
-        Particle impact = new Particle();
+        final Particle impact = new Particle();
         impact.setImage(3, res.getAnimation("trailer"));
         impact.setIntroSound(res.getSound("boom.wav"));
         impact.sounds.useFalloff = true;
@@ -111,49 +111,49 @@ public class LaserMadness extends PixelBasedLevel {
 
         final int expDelay = 8;
 
-        TargetLaser tl1 = new TargetLaser(mx,my, c1, play);
+        final TargetLaser tl1 = new TargetLaser(mx, my, c1, play);
         tl1.setLaserBeam(ResourceUtil.getFiringLaser(res));
         tl1.setExplosion(impact);
         tl1.setExplosionDelay(expDelay);
         tl1.setStopTile(Tile.CUSTOM_1);
 
-        TargetLaser tl2 = new TargetLaser(mx,my, c2, play);
+        final TargetLaser tl2 = new TargetLaser(mx, my, c2, play);
         tl2.setLaserBeam(ResourceUtil.getFiringLaser(res));
         tl2.setExplosion(impact);
         tl2.setExplosionDelay(expDelay);
         tl2.setStopTile(Tile.CUSTOM_1);
 
-        TargetLaser tl3 = new TargetLaser(mx,my, c3, play);
+        final TargetLaser tl3 = new TargetLaser(mx, my, c3, play);
         tl3.setLaserBeam(ResourceUtil.getFiringLaser(res));
         tl3.setExplosion(impact);
         tl3.setExplosionDelay(expDelay);
         tl3.setStopTile(Tile.CUSTOM_1);
 
-        TargetLaser tl4 = new TargetLaser(mx,my, c4, play);
+        final TargetLaser tl4 = new TargetLaser(mx, my, c4, play);
         tl4.setLaserBeam(ResourceUtil.getFiringLaser(res));
         tl4.setExplosion(impact);
         tl4.setExplosionDelay(expDelay);
         tl4.setStopTile(Tile.CUSTOM_1);
 
-        TargetLaser tl5 = new TargetLaser(mx,my, c5, play);
+        final TargetLaser tl5 = new TargetLaser(mx, my, c5, play);
         tl5.setLaserBeam(ResourceUtil.getFiringLaser(res));
         tl5.setExplosion(impact);
         tl5.setExplosionDelay(expDelay);
         tl5.setStopTile(Tile.CUSTOM_1);
 
-        TargetLaser tl6 = new TargetLaser(mx,my, c6, play);
+        final TargetLaser tl6 = new TargetLaser(mx, my, c6, play);
         tl6.setLaserBeam(ResourceUtil.getFiringLaser(res));
         tl6.setExplosion(impact);
         tl6.setExplosionDelay(expDelay);
         tl6.setStopTile(Tile.CUSTOM_1);
 
-        TargetLaser tl7 = new TargetLaser(mx,my, c7, play);
+        final TargetLaser tl7 = new TargetLaser(mx, my, c7, play);
         tl7.setLaserBeam(ResourceUtil.getFiringLaser(res));
         tl7.setExplosion(impact);
         tl7.setExplosionDelay(expDelay);
         tl7.setStopTile(Tile.CUSTOM_1);
 
-        TargetLaser tl8 = new TargetLaser(mx,my, c8, play);
+        final TargetLaser tl8 = new TargetLaser(mx, my, c8, play);
         tl8.setLaserBeam(ResourceUtil.getFiringLaser(res));
         tl8.setExplosion(impact);
         tl8.setExplosionDelay(expDelay);
@@ -166,10 +166,10 @@ public class LaserMadness extends PixelBasedLevel {
         /*
 		 * Diamond
 		 */
-        Entity diamond = new Entity();
+        final Entity diamond = new Entity();
         diamond.setImage(6, res.getAnimation("diamond"));
         diamond.move(64, 106);
-        diamond.ifCollides(play).then(()->{
+        diamond.ifCollides(play).then(() -> {
             discard(diamond);
             laserSound.loop();
             taken = true;
@@ -189,11 +189,11 @@ public class LaserMadness extends PixelBasedLevel {
                 /*
 		 * Flag
 		 */
-        Entity f = new Entity();
+        final Entity f = new Entity();
         f.setImage(4, res.getAnimation("flag"));
         f.move(125, 1261);
-        f.addEvent(()->{
-            if(taken && f.collidesWith(play)) {
+        f.addEvent(() -> {
+            if (taken && f.collidesWith(play)) {
                 play.win();
                 laserSound.stop();
                 discard(tl1);

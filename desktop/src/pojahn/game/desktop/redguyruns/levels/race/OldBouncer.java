@@ -21,8 +21,8 @@ class OldBouncer extends PathDrone {
     private Sound shakeSound;
     private int shakeSoundDelay, shakeSoundCounter;
 
-    OldBouncer(float x, float y, float bounceStrength, int times, Direction explicitDir, GravityMan... victims) {
-        super(x,y);
+    OldBouncer(final float x, final float y, final float bounceStrength, final int times, final Direction explicitDir, final GravityMan... victims) {
+        super(x, y);
         this.times = times;
         this.bounceStrength = bounceStrength;
         this.explicitDir = explicitDir;
@@ -35,7 +35,7 @@ class OldBouncer extends PathDrone {
 
     @Override
     public OldBouncer getClone() {
-        OldBouncer b = new OldBouncer(x(), y(), bounceStrength, times, explicitDir, victims);
+        final OldBouncer b = new OldBouncer(x(), y(), bounceStrength, times, explicitDir, victims);
         copyData(b);
 
         if (cloneEvent != null)
@@ -44,7 +44,7 @@ class OldBouncer extends PathDrone {
         return b;
     }
 
-    protected void copyData(OldBouncer clone) {
+    protected void copyData(final OldBouncer clone) {
         super.copyData(clone);
 
         clone.shakeX = shakeX;
@@ -53,14 +53,14 @@ class OldBouncer extends PathDrone {
         clone.shake = shake;
     }
 
-    void setShake(boolean shake, int shakeTime, float shakeX, float shakeY) {
+    void setShake(final boolean shake, final int shakeTime, final float shakeX, final float shakeY) {
         this.shake = shake;
         this.shakeTime = shakeTime;
         this.shakeX = shakeX;
         this.shakeY = shakeY;
     }
 
-    void setShakeSound(Sound sound, int delay) {
+    void setShakeSound(final Sound sound, final int delay) {
         shakeSound = sound;
         shakeSoundDelay = delay;
     }
@@ -71,18 +71,18 @@ class OldBouncer extends PathDrone {
         ++shakeSoundCounter;
 
         if (shake && shakeCounter-- > 0) {
-            float x = (float) r.nextGaussian(),
-                    y = (float) r.nextGaussian();
+            final float x = (float) r.nextGaussian();
+            final float y = (float) r.nextGaussian();
 
             offsetX = x + ((x > 0.5f) ? shakeX : -shakeX);
             offsetY = y + ((y > 0.5f) ? shakeY : -shakeY);
         } else
             offsetX = offsetY = 0;
-        float middleX = centerX(),
-                middleY = centerY();
+        final float middleX = centerX();
+        final float middleY = centerY();
 
         for (int i = 0; i < victims.length; i++) {
-            MobileEntity mo = victims[i];
+            final MobileEntity mo = victims[i];
 
             if (!mo.isActive())
                 continue;
@@ -110,9 +110,9 @@ class OldBouncer extends PathDrone {
             if (pushCounter[i]-- == times) {
             }
 
-            GravityMan man = victims[i];
+            final GravityMan man = victims[i];
 
-            Direction pushingDirr = (explicitDir == null) ? victimDirrections[i] : explicitDir;
+            final Direction pushingDirr = (explicitDir == null) ? victimDirrections[i] : explicitDir;
             switch (pushingDirr) {
                 case N:
                     man.vel.y = bounceStrength;

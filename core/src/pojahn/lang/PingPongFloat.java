@@ -8,7 +8,7 @@ public class PingPongFloat {
     private float max;
     private float amount;
 
-    public PingPongFloat(float min, float max, float amount) {
+    public PingPongFloat(final float min, final float max, final float amount) {
         this.min = min;
         this.max = max;
         this.amount = amount;
@@ -18,15 +18,15 @@ public class PingPongFloat {
         return increase;
     }
 
-    public void setIncrease(boolean increase) {
+    public void setIncrease(final boolean increase) {
         this.increase = increase;
     }
 
-    public void setMin(float min) {
+    public void setMin(final float min) {
         this.min = min;
     }
 
-    public void setMax(float max) {
+    public void setMax(final float max) {
         this.max = max;
     }
 

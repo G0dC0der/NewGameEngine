@@ -12,7 +12,7 @@ import java.util.zip.GZIPOutputStream;
 
 public class IO {
 
-    public static void exportObject(Object obj, FileHandle dest) throws IOException {
+    public static void exportObject(final Object obj, final FileHandle dest) throws IOException {
         if (!dest.file().exists()) {
             dest.file().createNewFile();
         }
@@ -22,19 +22,19 @@ public class IO {
         }
     }
 
-    public static Object importObject(FileHandle src) throws ClassNotFoundException, IOException {
+    public static Object importObject(final FileHandle src) throws ClassNotFoundException, IOException {
         try (ObjectInputStream in = new ObjectInputStream(src.read())) {
             return in.readObject();
         }
     }
 
-    public static void exportObjectCompressed(Object obj, FileHandle dest) throws FileNotFoundException, IOException {
+    public static void exportObjectCompressed(final Object obj, final FileHandle dest) throws FileNotFoundException, IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(dest.file())))) {
             out.writeObject(obj);
         }
     }
 
-    public static Object importObjectCompressed(FileHandle src) throws ClassNotFoundException, IOException {
+    public static Object importObjectCompressed(final FileHandle src) throws ClassNotFoundException, IOException {
         try (ObjectInputStream in = new ObjectInputStream(new GZIPInputStream(src.read()))) {
             return in.readObject();
         }

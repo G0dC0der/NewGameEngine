@@ -25,21 +25,21 @@ import java.util.Set;
 
 public class Utils {
 
-    public static Image2D toImage(Color color) {
-        return toImage(color, 1 ,1);
+    public static Image2D toImage(final Color color) {
+        return toImage(color, 1, 1);
     }
 
-    public static Image2D toImage(Color color, int width, int height) {
-        Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
+    public static Image2D toImage(final Color color, final int width, final int height) {
+        final Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
         pixmap.setColor(color);
         pixmap.fill();
-        Image2D image = new Image2D(pixmap);
+        final Image2D image = new Image2D(pixmap);
         pixmap.dispose();
 
         return image;
     }
 
-    public static void playMusic(Music music, float seconds, float volume) {
+    public static void playMusic(final Music music, final float seconds, final float volume) {
         music.setVolume(volume);
         music.play();
         music.setOnCompletionListener(music1 -> {
@@ -48,11 +48,11 @@ public class Utils {
         });
     }
 
-    public static Entity wrap(RenderEvent renderEvent) {
+    public static Entity wrap(final RenderEvent renderEvent) {
         return wrap(renderEvent, 0);
     }
 
-    public static Entity wrap(RenderEvent renderEvent, int zIndex) {
+    public static Entity wrap(final RenderEvent renderEvent, final int zIndex) {
         return new Entity() {
             {
                 this.zIndex(zIndex);
@@ -60,26 +60,26 @@ public class Utils {
             }
 
             @Override
-            public void render(SpriteBatch batch) {
+            public void render(final SpriteBatch batch) {
                 super.render(batch);
                 renderEvent.eventHandling(batch);
             }
         };
     }
 
-    public static Entity wrap(Event event) {
+    public static Entity wrap(final Event event) {
         return new EntityBuilder().events(event).build();
     }
 
-    public static <T> T getRandomElement(T[] array) {
+    public static <T> T getRandomElement(final T[] array) {
         if (array.length == 0)
             return null;
 
         return array[MathUtils.random(0, array.length - 1)];
     }
 
-    public static TileLayer from(Image2D image) {
-        TileLayer tileLayer = new TileLayer(image.getWidth(), image.getHeight());
+    public static TileLayer from(final Image2D image) {
+        final TileLayer tileLayer = new TileLayer(image.getWidth(), image.getHeight());
         for (int x = 0; x < tileLayer.width(); x++) {
             for (int y = 0; y < tileLayer.height(); y++) {
                 if (!image.isInvisible(x, y)) {
@@ -90,27 +90,27 @@ public class Utils {
         return tileLayer;
     }
 
-    public static TiledMap loadTiledMap(FileHandle path){
-        String str = path.file().getAbsolutePath();
-        TmxMapLoader.Parameters params = new TmxMapLoader.Parameters();
+    public static TiledMap loadTiledMap(final FileHandle path) {
+        final String str = path.file().getAbsolutePath();
+        final TmxMapLoader.Parameters params = new TmxMapLoader.Parameters();
         params.flipY = false;
-        TiledMap map = new TmxMapLoader(new AbsoluteFileHandleResolver()).load(str, params);
-        MapProperties props = map.getProperties();
+        final TiledMap map = new TmxMapLoader(new AbsoluteFileHandleResolver()).load(str, params);
+        final MapProperties props = map.getProperties();
 
-        int tilesX = props.get("width", Integer.class);
-        int tilesY = props.get("height", Integer.class);
+        final int tilesX = props.get("width", Integer.class);
+        final int tilesY = props.get("height", Integer.class);
 
-        MapLayers layers = map.getLayers();
-        layers.forEach(l->{
-            TiledMapTileLayer layer = (TiledMapTileLayer) l;
-            Set<TextureRegion> used = new HashSet<>();
+        final MapLayers layers = map.getLayers();
+        layers.forEach(l -> {
+            final TiledMapTileLayer layer = (TiledMapTileLayer) l;
+            final Set<TextureRegion> used = new HashSet<>();
 
-            for(int x = 0; x < tilesX; x++){
-                for(int y = 0; y < tilesY; y++){
-                    TiledMapTileLayer.Cell cell = layer.getCell(x, y);
-                    if(cell != null){
-                        TextureRegion region = cell.getTile().getTextureRegion();
-                        if(used.add(region)){
+            for (int x = 0; x < tilesX; x++) {
+                for (int y = 0; y < tilesY; y++) {
+                    final TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+                    if (cell != null) {
+                        final TextureRegion region = cell.getTile().getTextureRegion();
+                        if (used.add(region)) {
                             region.flip(false, true);
                         }
                     }

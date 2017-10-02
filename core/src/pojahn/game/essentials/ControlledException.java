@@ -2,7 +2,7 @@ package pojahn.game.essentials;
 
 public class ControlledException extends RuntimeException {
 
-    public ControlledException(String msg) {
+    public ControlledException(final String msg) {
         super(msg);
     }
 }

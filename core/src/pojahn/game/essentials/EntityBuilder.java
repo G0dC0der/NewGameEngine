@@ -24,104 +24,104 @@ public class EntityBuilder {
         hitbox = Hitbox.RECTANGLE;
     }
 
-    public EntityBuilder zIndex(int zIndex) {
+    public EntityBuilder zIndex(final int zIndex) {
         this.zIndex = zIndex;
         return this;
     }
 
-    public EntityBuilder image(Image2D... image) {
+    public EntityBuilder image(final Image2D... image) {
         image(3, image);
         return this;
     }
 
-    public EntityBuilder image(int speed, Image2D... image) {
+    public EntityBuilder image(final int speed, final Image2D... image) {
         image(new Animation<>(3, image));
         return this;
     }
 
-    public EntityBuilder image(Animation<Image2D> image) {
+    public EntityBuilder image(final Animation<Image2D> image) {
         this.image = image;
         return this;
     }
 
-    public EntityBuilder x(float x) {
+    public EntityBuilder x(final float x) {
         this.x = x;
         return this;
     }
 
-    public EntityBuilder y(float y) {
+    public EntityBuilder y(final float y) {
         this.y = y;
         return this;
     }
 
-    public EntityBuilder move(float x, float y) {
+    public EntityBuilder move(final float x, final float y) {
         this.x = x;
         this.y = y;
         return this;
     }
 
-    public EntityBuilder move(Vector2 pos) {
+    public EntityBuilder move(final Vector2 pos) {
         this.x = pos.x;
         this.y = pos.y;
         return this;
     }
 
-    public EntityBuilder width(float width) {
+    public EntityBuilder width(final float width) {
         this.width = width;
         return this;
     }
 
-    public EntityBuilder height(float heigh) {
+    public EntityBuilder height(final float heigh) {
         this.height = heigh;
         return this;
     }
 
-    public EntityBuilder offsetX(float offsetX) {
+    public EntityBuilder offsetX(final float offsetX) {
         this.offsetX = offsetX;
         return this;
     }
 
-    public EntityBuilder offsetY(float offsetY) {
+    public EntityBuilder offsetY(final float offsetY) {
         this.offsetY = offsetY;
         return this;
     }
 
-    public EntityBuilder alpha(float alpha) {
+    public EntityBuilder alpha(final float alpha) {
         this.alpha = alpha;
         return this;
     }
 
-    public EntityBuilder rotation(float rotation) {
+    public EntityBuilder rotation(final float rotation) {
         this.rotation = rotation;
         return this;
     }
 
-    public EntityBuilder events(Event... events) {
+    public EntityBuilder events(final Event... events) {
         this.events.addAll(Arrays.asList(events));
         return this;
     }
 
-    public EntityBuilder hitbox(Hitbox hitbox) {
+    public EntityBuilder hitbox(final Hitbox hitbox) {
         this.hitbox = hitbox;
         return this;
     }
 
     public Entity build() {
-        Entity entity = new Entity();
+        final Entity entity = new Entity();
         pasteData(entity);
         return entity;
     }
 
-    public <T extends Entity> T build(Class<T> clazz, Object... args) {
-        T entity;
+    public <T extends Entity> T build(final Class<T> clazz, final Object... args) {
+        final T entity;
         try {
             if (args.length == 0)
                 entity = clazz.newInstance();
             else {
-                List<Class> clazzez = Stream.of(args).map(Object::getClass).collect(Collectors.toList());
+                final List<Class> clazzez = Stream.of(args).map(Object::getClass).collect(Collectors.toList());
                 entity = clazz.getDeclaredConstructor(clazzez.toArray(new Class[clazzez.size()])).newInstance(args);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -129,7 +129,7 @@ public class EntityBuilder {
         return entity;
     }
 
-    private void pasteData(Entity dest) {
+    private void pasteData(final Entity dest) {
         dest.bounds.pos.x = x;
         dest.bounds.pos.y = y;
         dest.bounds.size.width = width;

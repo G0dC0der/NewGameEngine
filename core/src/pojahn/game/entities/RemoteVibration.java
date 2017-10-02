@@ -11,16 +11,16 @@ public class RemoteVibration extends Entity {
     private float vib, radius;
     private int duration;
 
-    public RemoteVibration(Entity... targets) {
+    public RemoteVibration(final Entity... targets) {
         this.targets = targets;
-        vib  = 3;
+        vib = 3;
         duration = 45;
         radius = 600;
     }
 
     @Override
     public RemoteVibration getClone() {
-        RemoteVibration clone = new RemoteVibration(targets);
+        final RemoteVibration clone = new RemoteVibration(targets);
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -28,33 +28,33 @@ public class RemoteVibration extends Entity {
         return clone;
     }
 
-    public void setVib(float vib) {
+    public void setVib(final float vib) {
         this.vib = vib;
     }
 
-    public void setRadius(float radius) {
+    public void setRadius(final float radius) {
         this.radius = radius;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(final int duration) {
         this.duration = duration;
     }
 
-    public void vibrate(Entity vibProducer) {
-        Entity entity = Collisions.findClosest(vibProducer, targets);
+    public void vibrate(final Entity vibProducer) {
+        final Entity entity = Collisions.findClosest(vibProducer, targets);
 
-        if(entity != null) {
-            float dist = vibProducer.dist(entity);
+        if (entity != null) {
+            final float dist = vibProducer.dist(entity);
 
-            if(radius > dist) {
-                float strength = vib / dist;
+            if (radius > dist) {
+                final float strength = vib / dist;
 
                 getLevel().temp(CameraEffects.vibration(strength * 3), duration);
             }
         }
     }
 
-    protected void copyData(RemoteVibration clone) {
+    protected void copyData(final RemoteVibration clone) {
         super.copyData(clone);
         clone.vib = vib;
         clone.radius = radius;

@@ -2,12 +2,10 @@ package pojahn.game.desktop.redguyruns.levels.sand;
 
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
-import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.AcceleratingBullet;
-import pojahn.game.entities.Bullet;
 import pojahn.game.entities.LaserDrone;
 import pojahn.game.entities.Particle;
 import pojahn.game.entities.Projectile;
@@ -41,11 +39,11 @@ public class UglySun extends MobileEntity {
         laserDrone.setStartupSound(res.getSound("lasercharge.wav"));
         laserDrone.setFiringSound(res.getSound("laserattack.wav"));
 
-        ShrinkingParticle trailer = new ShrinkingParticle();
+        final ShrinkingParticle trailer = new ShrinkingParticle();
         trailer.setImage(res.getAnimation("fireball"));
         trailer.scaleX = trailer.scaleY = .85f;
 
-        Particle soundParticle = Particle.fromSound(res.getSound("firesound.wav"));
+        final Particle soundParticle = Particle.fromSound(res.getSound("firesound.wav"));
         soundParticle.sounds.maxVolume = .65f;
 
         bullet = new AcceleratingBullet(target);
@@ -57,30 +55,30 @@ public class UglySun extends MobileEntity {
         bullet.setGunfire(soundParticle);
 
         target.setActionEvent(hitter -> {
-            if(hitter == laserDrone || hitter.isCloneOf(bullet)) {
+            if (hitter == laserDrone || hitter.isCloneOf(bullet)) {
                 target.touch(-1);
             }
         });
     }
 
-    public void setHappyImage(Animation<Image2D> happyImage) {
+    public void setHappyImage(final Animation<Image2D> happyImage) {
         setImage(happyImage);
     }
 
-    public void setAngryImage(Animation<Image2D> angryImage) {
+    public void setAngryImage(final Animation<Image2D> angryImage) {
         this.angryImage = angryImage;
     }
 
-    public void setPissedImage(Animation<Image2D> pissedImage) {
+    public void setPissedImage(final Animation<Image2D> pissedImage) {
         this.pissedImage = pissedImage;
     }
 
-    public void setRes(ResourceManager res) {
+    public void setRes(final ResourceManager res) {
         this.res = res;
     }
 
     public void hit() {
-        getLevel().temp(Factory.spazz(this, 2, 0), 40, ()-> offsetX = offsetY = 0);
+        getLevel().temp(Factory.spazz(this, 2, 0), 40, () -> offsetX = offsetY = 0);
         //TODO: Hit sound
 
         if (++damageTaken == 1) {
@@ -91,10 +89,10 @@ public class UglySun extends MobileEntity {
             super.setImage(pissedImage);
             setMoveSpeed(3.2f);
 
-            Int32 c = new Int32();
-            addEvent(()->{
+            final Int32 c = new Int32();
+            addEvent(() -> {
                 if (target.isAlive() && ++c.value % 75 == 0) {
-                    Projectile bullet = this.bullet.getClone();
+                    final Projectile bullet = this.bullet.getClone();
                     bullet.setTarget(target);
                     bullet.center(this);
                     getLevel().add(bullet);
@@ -103,17 +101,17 @@ public class UglySun extends MobileEntity {
         } else if (damageTaken == 3) {
             getLevel().discard(this);
 
-            Particle deathImg = new Particle();
+            final Particle deathImg = new Particle();
             deathImg.setIntroSound(res.getSound("bossdie.wav"));
             deathImg.setImage(2, res.getAnimation("bossexp"));
             getLevel().add(deathImg);
-            getLevel().runOnceAfter(()-> target.setState(Vitality.COMPLETED), 120);
+            getLevel().runOnceAfter(() -> target.setState(Vitality.COMPLETED), 120);
         }
     }
 
     @Override
     public void logistics() {
-        Vector2 dest = new Vector2(target.x(), getEngine().ty() - (getEngine().getScreenSize().height / 2) + 20);
+        final Vector2 dest = new Vector2(target.x(), getEngine().ty() - (getEngine().getScreenSize().height / 2) + 20);
 
         if (10 < Collisions.distance(x(), y(), dest.x, dest.y)) {
             moveTowards(dest.x, dest.y);

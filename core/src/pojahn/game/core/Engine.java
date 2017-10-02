@@ -93,7 +93,7 @@ public class Engine {
 
     public List<Replay> getRecordings() {
         if (!isReplaying()) {
-            List<Replay> recordings = new ArrayList<>(this.recordings);
+            final List<Replay> recordings = new ArrayList<>(this.recordings);
             this.recordings.clear();
             return recordings;
         }
@@ -120,17 +120,17 @@ public class Engine {
         return frameCounter;
     }
 
-    public void setPlayerName(String playerName) {
+    public void setPlayerName(final String playerName) {
         this.playerName = playerName;
     }
 
-    public void setScreenSize(int width, int height) {
+    public void setScreenSize(final int width, final int height) {
         screenWidth = width;
         screenHeight = height;
         initCameras();
     }
 
-    public void setRotation(float rotation) {
+    public void setRotation(final float rotation) {
         gameCamera.rotate(-this.rotation);
         gameCamera.rotate(rotation);
         this.rotation = rotation;
@@ -144,7 +144,7 @@ public class Engine {
         return rotation;
     }
 
-    public void setZoom(float zoom) {
+    public void setZoom(final float zoom) {
         gameCamera.zoom = zoom;
     }
 
@@ -161,7 +161,7 @@ public class Engine {
         return !flipY;
     }
 
-    public void translate(float tx, float ty) {
+    public void translate(final float tx, final float ty) {
         gameCamera.position.set(tx, ty, 0);
     }
 
@@ -201,8 +201,8 @@ public class Engine {
         gameCamera.update();
     }
 
-    public boolean onScreen(Entity entity) {
-        Rectangle bbox = Collisions.getBoundingBox(entity.bounds);
+    public boolean onScreen(final Entity entity) {
+        final Rectangle bbox = Collisions.getBoundingBox(entity.bounds);
         return gameCamera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2, 0);
     }
 
@@ -210,7 +210,7 @@ public class Engine {
         retry(level.cpPresent());
     }
 
-    public void retry(boolean fromCheckpoint) {
+    public void retry(final boolean fromCheckpoint) {
         if (isReplaying())
             throw new RuntimeException("Can not retry a replay.");
         if (getGameState() == GameState.CRASHED)
@@ -220,11 +220,11 @@ public class Engine {
         if (getGameState() == GameState.DISPOSED)
             throw new RuntimeException("Can not restart if the resources are disposed.");
 
-        Gdx.app.postRunnable(()-> restart(fromCheckpoint));
+        Gdx.app.postRunnable(() -> restart(fromCheckpoint));
     }
 
     public void exit() {
-        Gdx.app.postRunnable(()-> {
+        Gdx.app.postRunnable(() -> {
             throw new ControlledException("Controlled termination.");
         });
     }
@@ -239,7 +239,7 @@ public class Engine {
      * @param gameState The state to listen to.
      * @param event     The event to execute.
      */
-    public void setGameStateEvent(GameState gameState, Event event) {
+    public void setGameStateEvent(final GameState gameState, final Event event) {
         stateEvents.put(gameState, event);
     }
 
@@ -252,20 +252,20 @@ public class Engine {
         level.build();
         level.place();
 
-        Dimension screenSize = getScreenSize();
+        final Dimension screenSize = getScreenSize();
         helpText = Obj.nonNull(helpText, HUDMessage.centeredMessage("Can not pause in replay mode.", screenSize, Color.WHITE));
         deathText = Obj.nonNull(deathText, HUDMessage.centeredMessage("You died. Press the quit or restart button to continue.", screenSize, Color.WHITE));
         deathCheckpointText = Obj.nonNull(deathCheckpointText, HUDMessage.centeredMessage("You died.\nPress the quit or restart button\nto restart from latest checkpoint.", screenSize, Color.WHITE));
         pauseText = Obj.nonNull(pauseText, HUDMessage.centeredMessage("Game is paused.", screenSize, Color.WHITE));
-        winText = Obj.nonNull(winText, HUDMessage.centeredMessage((isReplaying() ? "Replay done." :  "Congrats! You completed the level!") +
-                   "\nPress the restart or quit button to continue.", screenSize, Color.WHITE));
+        winText = Obj.nonNull(winText, HUDMessage.centeredMessage((isReplaying() ? "Replay done." : "Congrats! You completed the level!") +
+                "\nPress the restart or quit button to continue.", screenSize, Color.WHITE));
 
         setGameState(GameState.ACTIVE);
     }
 
     private void restart(boolean fromCp) {
-        boolean lost = lost();
-        boolean completed = completed();
+        final boolean lost = lost();
+        final boolean completed = completed();
         setGameState(GameState.LOADING);
 
         rotation = 0;
@@ -307,7 +307,7 @@ public class Engine {
                 setGameState(paused() ? GameState.ACTIVE : GameState.PAUSED);
                 adjustMusic();
             } else if (lost() || completed()) {
-                Keystrokes keys = keys(level.getMainCharacters());
+                final Keystrokes keys = keys(level.getMainCharacters());
                 if (keys.restart) {
                     restart(lost() && level.cpPresent());
                 } else if (keys.quit) {
@@ -318,7 +318,7 @@ public class Engine {
             if (lost() && level.cpPresent() && !device.allDone()) {
                 restart(true);
             } else if (completed() || lost()) {
-                Keystrokes keys = keys(level.getMainCharacters());
+                final Keystrokes keys = keys(level.getMainCharacters());
                 if (keys.restart) {
                     restart(false);
                 } else if (keys.quit) {
@@ -337,12 +337,12 @@ public class Engine {
 
     private void adjustMusic() {
         if (active()) {
-            Music music = level.getStageMusic();
+            final Music music = level.getStageMusic();
             if (music != null)
                 music.setVolume(musicVolume);
 
         } else if (paused()) {
-            Music music = level.getStageMusic();
+            final Music music = level.getStageMusic();
             if (music != null) {
                 musicVolume = music.getVolume();
                 music.setVolume(.1f);
@@ -388,7 +388,7 @@ public class Engine {
         batch.end();
     }
 
-    void setGameState(GameState state) {
+    void setGameState(final GameState state) {
         if (this.getGameState() == GameState.CRASHED)
             throw new IllegalStateException("This instance have crashed an no longer usable.");
         if (state == GameState.PAUSED && isReplaying())
@@ -407,7 +407,7 @@ public class Engine {
     }
 
     void runStateEvent() {
-        Event event = stateEvents.get(this.state);
+        final Event event = stateEvents.get(this.state);
         if (event != null) {
             eventExecutor.execute(event::eventHandling);
         }
@@ -441,11 +441,11 @@ public class Engine {
 
     private void statusControl() {
         if (getGameState() == GameState.ACTIVE) {
-            List<PlayableEntity> mains = level.getMainCharacters();
-            int total = mains.size();
-            long alive = mains.stream().filter(PlayableEntity::isAlive).count();
-            long dead = mains.stream().filter(PlayableEntity::isDead).count();
-            long finished = mains.stream().filter(PlayableEntity::isDone).count();
+            final List<PlayableEntity> mains = level.getMainCharacters();
+            final int total = mains.size();
+            final long alive = mains.stream().filter(PlayableEntity::isAlive).count();
+            final long dead = mains.stream().filter(PlayableEntity::isDead).count();
+            final long finished = mains.stream().filter(PlayableEntity::isDone).count();
 
             if (dead == total || (alive == 0 && finished == 0))
                 setGameState(GameState.LOST);
@@ -483,7 +483,7 @@ public class Engine {
     }
 
     private void finalizeRecording() {
-        Replay recording = new Replay();
+        final Replay recording = new Replay();
         recording.date = ZonedDateTime.now();
         recording.time = getTimeInSeconds();
         recording.levelName = level.getLevelName();
@@ -499,14 +499,14 @@ public class Engine {
         timeFont.setColor(state == GameState.PAUSED ? Color.WHITE : timeColor);
         timeFont.draw(batch, getTimeInSeconds() + "", 10, 10);
 
-        List<PlayableEntity> mains = level.getNonDeadMainCharacters();
+        final List<PlayableEntity> mains = level.getNonDeadMainCharacters();
 
         for (int index = 0, y = 40; index < mains.size(); index++) {
-            PlayableEntity main = mains.get(index);
-            int hp = main.getHP();
+            final PlayableEntity main = mains.get(index);
+            final int hp = main.getHP();
 
             if (main.healthHud != null && main.getState() != Vitality.DEAD && hp > 0) {
-                Image2D healthHud = main.healthHud.getObject();
+                final Image2D healthHud = main.healthHud.getObject();
                 final float width = healthHud.getWidth() + 3;
 
                 for (int i = 0, posX = 10; i < hp; i++, posX += width)
@@ -530,14 +530,14 @@ public class Engine {
         if (completed() && winText != null) {
             winText.draw(batch, timeFont);
         } else if (lost() && deathText != null) {
-            if(level.cpPresent())
+            if (level.cpPresent())
                 deathCheckpointText.draw(batch, timeFont);
             else
                 deathText.draw(batch, timeFont);
         }
     }
 
-    private Keystrokes keys(List<PlayableEntity> plays) {
+    private Keystrokes keys(final List<PlayableEntity> plays) {
         return plays
                 .stream()
                 .map(play -> Keystrokes.from(play.getController()))

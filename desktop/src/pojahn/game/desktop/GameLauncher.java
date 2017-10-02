@@ -9,7 +9,7 @@ import pojahn.game.essentials.ControlledException;
 public class GameLauncher {
 
     public static void launch(final Engine engine, final Lwjgl3ApplicationConfiguration cfg) {
-        new Thread(()->{
+        new Thread(() -> {
             try {
                 new Lwjgl3Application(new GameContainer(engine), cfg);
             } catch (ControlledException e) {

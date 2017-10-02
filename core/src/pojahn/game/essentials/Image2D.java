@@ -11,27 +11,27 @@ public class Image2D extends Texture {
 
     private int[][] pixelData;
 
-    public Image2D(FileHandle file) {
+    public Image2D(final FileHandle file) {
         this(file, false);
     }
 
-    public Image2D(FileHandle file, boolean createPixelData) {
+    public Image2D(final FileHandle file, final boolean createPixelData) {
         super(file);
         if (createPixelData)
             createPixelData();
     }
 
-    public Image2D(Pixmap map) {
+    public Image2D(final Pixmap map) {
         this(map, false);
     }
 
-    public Image2D(Pixmap map, boolean createPixelData) {
+    public Image2D(final Pixmap map, final boolean createPixelData) {
         super(map);
         if (createPixelData)
             createPixelData(map);
     }
 
-    public int getPixel(int x, int y) {
+    public int getPixel(final int x, final int y) {
         return pixelData[x][y];
     }
 
@@ -39,7 +39,7 @@ public class Image2D extends Texture {
         return pixelData != null;
     }
 
-    public void setPixelData(Image2D source) {
+    public void setPixelData(final Image2D source) {
         pixelData = source.pixelData;
     }
 
@@ -47,20 +47,20 @@ public class Image2D extends Texture {
         pixelData = null;
     }
 
-    public boolean isInvisible(int x, int y) {
+    public boolean isInvisible(final int x, final int y) {
         return (pixelData[x][y] & 0x000000FF) == 0;
     }
 
     public void createPixelData() {
-        FileTextureData td = (FileTextureData) getTextureData();
+        final FileTextureData td = (FileTextureData) getTextureData();
         td.prepare();
 
-        Pixmap map = td.consumePixmap();
+        final Pixmap map = td.consumePixmap();
         createPixelData(map);
         map.dispose();
     }
 
-    public void createPixelData(Pixmap img) {
+    public void createPixelData(final Pixmap img) {
         pixelData = new int[img.getWidth()][img.getHeight()];
 
         for (int x = 0; x < img.getWidth(); x++) {
@@ -70,31 +70,31 @@ public class Image2D extends Texture {
         }
     }
 
-    public static void createOnePixelData(Image2D[] arr) {
+    public static void createOnePixelData(final Image2D[] arr) {
         arr[0].clearData();
-        for(int i = 1; i < arr.length; i++)
+        for (int i = 1; i < arr.length; i++)
             arr[i].pixelData = arr[0].pixelData;
     }
 
-    public static Image2D[] loadAnimation(FileHandle directory) throws IOException {
+    public static Image2D[] loadAnimation(final FileHandle directory) throws IOException {
         return loadAnimation(directory, false);
     }
 
-    public static Image2D[] loadAnimation(FileHandle directory, boolean createPixelData) throws IOException {
+    public static Image2D[] loadAnimation(final FileHandle directory, final boolean createPixelData) throws IOException {
         if (!directory.isDirectory())
             throw new IllegalArgumentException("The argument must be a directory.");
 
-        FileHandle[] pngFiles = directory.list((fileName) -> fileName.toString().toLowerCase().endsWith(".png"));
+        final FileHandle[] pngFiles = directory.list((fileName) -> fileName.toString().toLowerCase().endsWith(".png"));
 
-        Image2D[] images = new Image2D[pngFiles.length];
+        final Image2D[] images = new Image2D[pngFiles.length];
         for (int i = 0; i < images.length; i++)
             images[i] = new Image2D(pngFiles[i], createPixelData);
 
         return images;
     }
 
-    public static void mergePixelData(Image2D... images) {
-        int[][] first = images[0].pixelData;
+    public static void mergePixelData(final Image2D... images) {
+        final int[][] first = images[0].pixelData;
         for (int i = 1; i < images.length; i++)
             images[i].pixelData = first;
     }

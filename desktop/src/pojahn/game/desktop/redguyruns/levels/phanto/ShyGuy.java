@@ -17,7 +17,7 @@ public class ShyGuy extends LineMovement {
     }
 
     @Override
-    public void setMovement(Movement movement) {
+    public void setMovement(final Movement movement) {
         throw new UnsupportedOperationException("Shy Guy is restricted to horizontal movement.");
     }
 
@@ -28,7 +28,7 @@ public class ShyGuy extends LineMovement {
         if (canDown() || vel.y > 0)
             drag();
 
-        float futureY = getFutureY();
+        final float futureY = getFutureY();
         if (!occupiedAt(x(), futureY))
             applyYForces();
         else {
@@ -40,8 +40,8 @@ public class ShyGuy extends LineMovement {
     }
 
     void drag() {
-        float force = mass * gravity;
-        float delta = getEngine().delta;
+        final float force = mass * gravity;
+        final float delta = getEngine().delta;
         vel.y *= 1.0 - (damping * delta);
 
         if (-800 < vel.y) {

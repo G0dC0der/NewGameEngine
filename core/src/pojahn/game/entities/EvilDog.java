@@ -22,7 +22,7 @@ public class EvilDog extends MobileEntity {
     private Animation<Image2D> idleImg, huntImg;
     private Sound hitSound;
 
-    public EvilDog(float x, float y, float maxDistance, Entity... targets) {
+    public EvilDog(final float x, final float y, final float maxDistance, final Entity... targets) {
         move(x, y);
         this.maxDistance = maxDistance;
         this.targets = targets;
@@ -32,11 +32,11 @@ public class EvilDog extends MobileEntity {
         soundDelay = 20;
     }
 
-    public void setCollisionSound(Sound sound) {
+    public void setCollisionSound(final Sound sound) {
         hitSound = sound;
     }
 
-    public void setCollisionSoundDelay(int delay) {
+    public void setCollisionSoundDelay(final int delay) {
         soundDelay = delay;
     }
 
@@ -44,16 +44,16 @@ public class EvilDog extends MobileEntity {
         return hunting;
     }
 
-    public void setMaxDistance(float maxDistance) {
+    public void setMaxDistance(final float maxDistance) {
         this.maxDistance = maxDistance;
     }
 
-    public void idleImage(Animation<Image2D> idleImg) {
+    public void idleImage(final Animation<Image2D> idleImg) {
         this.idleImg = idleImg;
     }
 
     @Override
-    public void setImage(Animation<Image2D> obj) {
+    public void setImage(final Animation<Image2D> obj) {
         huntImg = obj;
         super.setImage(obj);
     }
@@ -63,14 +63,14 @@ public class EvilDog extends MobileEntity {
         ++soundCounter;
 
         if (!isFrozen()) {
-            Entity closest = Collisions.findClosest(this, targets);
+            final Entity closest = Collisions.findClosest(this, targets);
 
             if (maxDistance < 0 || maxDistance > Collisions.distance(this, closest)) {
 
-                Vector2 norP = normalize(closest, this);
+                final Vector2 norP = normalize(closest, this);
 
-                float accX = thrust * norP.x - drag * vx;
-                float accY = thrust * norP.y - drag * vy;
+                final float accX = thrust * norP.x - drag * vx;
+                final float accY = thrust * norP.y - drag * vy;
 
                 vx += delta * accX;
                 vy += delta * accY;
@@ -93,7 +93,7 @@ public class EvilDog extends MobileEntity {
             }
 
             Stream.of(targets).filter(this::collidesWith).forEach(entity -> {
-                if(entity.hasActionEvent())
+                if (entity.hasActionEvent())
                     entity.runActionEvent(this);
                 if (hitSound != null && soundCounter % soundDelay == 0)
                     hitSound.play(sounds.calc());

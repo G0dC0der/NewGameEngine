@@ -13,7 +13,7 @@ class Bear extends Entity {
     private int recovery;
     private boolean attacking;
 
-    Bear(float x, float y, Entity target) {
+    Bear(final float x, final float y, final Entity target) {
         move(x, y);
         this.target = target;
 
@@ -23,17 +23,17 @@ class Bear extends Entity {
         scanBox.bounds.size.height = 20;
     }
 
-    void setAttackSound(Sound attack) {
+    void setAttackSound(final Sound attack) {
         this.attack = attack;
     }
 
-    void setAttackImage(Animation<Image2D> attackImage) {
+    void setAttackImage(final Animation<Image2D> attackImage) {
         this.attackImage = attackImage;
         attackImage.setLoop(false);
     }
 
     @Override
-    public void setImage(Animation<Image2D> obj) {
+    public void setImage(final Animation<Image2D> obj) {
         orgImage = obj;
         super.setImage(obj);
     }

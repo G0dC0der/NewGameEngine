@@ -12,7 +12,7 @@ public class Debris extends Particle {
     private int spawns, trailerDelay, counter;
     private boolean first;
 
-    public Debris(float vx, float toleranceX, float vy, float toleranceY) {
+    public Debris(final float vx, final float toleranceX, final float vy, final float toleranceY) {
         this.vx = vx;
         this.vy = vy;
         this.toleranceX = toleranceX;
@@ -30,8 +30,8 @@ public class Debris extends Particle {
     }
 
     @Override
-    public Debris getClone(){
-        Debris clone = new Debris(vx, toleranceX, vy, toleranceY);
+    public Debris getClone() {
+        final Debris clone = new Debris(vx, toleranceX, vy, toleranceY);
         copyData(clone);
 
         if (cloneEvent != null)
@@ -42,17 +42,17 @@ public class Debris extends Particle {
 
     @Override
     public void logistics() {
-        Level l = getLevel();
+        final Level l = getLevel();
 
-        if(!first){
+        if (!first) {
             first = true;
-            if(introSound != null)
+            if (introSound != null)
                 introSound.play(sounds.calc());
 
-            for(int i = 0; i < spawns; i++){
-                Debris clone = getClone();
+            for (int i = 0; i < spawns; i++) {
+                final Debris clone = getClone();
                 clone.spawns = 0;
-                if(spawns > 3)
+                if (spawns > 3)
                     clone.introSound = null;
                 l.add(clone);
             }
@@ -62,30 +62,30 @@ public class Debris extends Particle {
         applyYForces();
         applyXForces();
 
-        if(trailer != null && ++counter % trailerDelay == 0)
+        if (trailer != null && ++counter % trailerDelay == 0)
             l.add(trailer.getClone().center(this));
 
-        if(occupiedAt(x(), y())){
+        if (occupiedAt(x(), y())) {
             l.discard(this);
-            if(impact != null)
+            if (impact != null)
                 l.add(impact.getClone().center(this));
         }
     }
 
-    public void setTrailer(Particle trailer, int trailerDelay) {
+    public void setTrailer(final Particle trailer, final int trailerDelay) {
         this.trailer = trailer;
         this.trailerDelay = trailerDelay;
     }
 
-    public void setSpawns(int spawns) {
+    public void setSpawns(final int spawns) {
         this.spawns = spawns;
     }
 
-    public void setImpact(Particle impact){
+    public void setImpact(final Particle impact) {
         this.impact = impact;
     }
 
-    protected void applyXForces(){
+    protected void applyXForces() {
         bounds.pos.x -= vel.x * getEngine().delta;
     }
 
@@ -93,17 +93,17 @@ public class Debris extends Particle {
         bounds.pos.y -= vel.y * getEngine().delta;
     }
 
-    protected void drag(){
-        float force = mass * gravity;
+    protected void drag() {
+        final float force = mass * gravity;
         vel.y *= 1.0 - (damping * getEngine().delta);
 
-        if(tVel.y < vel.y){
+        if (tVel.y < vel.y) {
             vel.y += (force / mass) * getEngine().delta;
-        }else
+        } else
             vel.y -= (force / mass) * getEngine().delta;
     }
 
-    protected void copyData(Debris clone){
+    protected void copyData(final Debris clone) {
         super.copyData(clone);
         clone.impact = impact;
         clone.spawns = spawns;
@@ -116,20 +116,20 @@ public class Debris extends Particle {
     }
 
     private void setVelocity() {
-        float halfX = toleranceX / 2;
-        float halfY = toleranceY / 2;
+        final float halfX = toleranceX / 2;
+        final float halfY = toleranceY / 2;
 
-        float tolX = MathUtils.random(-halfX, halfX);
-        float tolY = MathUtils.random(-halfY, halfY);
+        final float tolX = MathUtils.random(-halfX, halfX);
+        final float tolY = MathUtils.random(-halfY, halfY);
 
         vel.x = vx + tolX;
         vel.y = vy + tolY;
 
-        if(random())
+        if (random())
             vel.x = -vel.x;
     }
 
     private boolean random() {
-        return MathUtils.random(0,100) > 50;
+        return MathUtils.random(0, 100) > 50;
     }
 }

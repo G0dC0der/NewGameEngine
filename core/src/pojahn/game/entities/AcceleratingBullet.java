@@ -8,7 +8,7 @@ public class AcceleratingBullet extends Projectile {
     private float acceleration;
     private float speed;
 
-    public AcceleratingBullet(Entity... scanTargets) {
+    public AcceleratingBullet(final Entity... scanTargets) {
         super(0, 0, scanTargets);
         follow(false);
         acceleration = .08f;
@@ -16,7 +16,7 @@ public class AcceleratingBullet extends Projectile {
 
     @Override
     public AcceleratingBullet getClone() {
-        AcceleratingBullet clone = new AcceleratingBullet(getTargets());
+        final AcceleratingBullet clone = new AcceleratingBullet(getTargets());
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -24,21 +24,21 @@ public class AcceleratingBullet extends Projectile {
         return clone;
     }
 
-    public void setAcceleration(float acceleration) {
+    public void setAcceleration(final float acceleration) {
         this.acceleration = acceleration;
     }
 
-    public void setSpeed(float speed) {
+    public void setSpeed(final float speed) {
         this.speed = speed;
     }
 
-    protected void copyData(AcceleratingBullet clone) {
+    protected void copyData(final AcceleratingBullet clone) {
         super.copyData(clone);
         clone.acceleration = acceleration;
     }
 
     @Override
-    protected void moveProjectile(Vector2 target) {
+    protected void moveProjectile(final Vector2 target) {
         speed = Math.min(speed + acceleration, getMoveSpeed());
         dumbMoveTowards(target.x, target.y, speed);
     }

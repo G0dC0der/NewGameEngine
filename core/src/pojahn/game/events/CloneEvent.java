@@ -5,5 +5,5 @@ import pojahn.game.core.Entity;
 @FunctionalInterface
 public interface CloneEvent {
 
-	void handleClonded(Entity clonie);
+    void handleClonded(Entity clonie);
 }

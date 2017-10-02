@@ -9,12 +9,12 @@ public class Size {
     public Size() {
     }
 
-    public Size(float width, float height) {
+    public Size(final float width, final float height) {
         this.width = width;
         this.height = height;
     }
 
-    public void set(float width, float height) {
+    public void set(final float width, final float height) {
         this.width = width;
         this.height = height;
     }

@@ -7,7 +7,7 @@ class Fireball extends Entity {
 
     private float initialX, initialY, mass, gravity, damping, vy, flyPower;
 
-    Fireball(float initialX, float initialY, float flyPower) {
+    Fireball(final float initialX, final float initialY, final float flyPower) {
         move(initialX, initialY);
         this.initialX = initialX;
         this.initialY = initialY;
@@ -18,7 +18,7 @@ class Fireball extends Entity {
         damping = 0.0001f;
     }
 
-    void setFlyPower(float flyPower) {
+    void setFlyPower(final float flyPower) {
         this.flyPower = flyPower;
     }
 
@@ -28,7 +28,7 @@ class Fireball extends Entity {
             vy = flyPower;
 
         vy *= 1.0 - (damping * getEngine().delta);
-        float force = mass * gravity;
+        final float force = mass * gravity;
         vy += (force / mass) * getEngine().delta;
 
         bounds.pos.y -= vy * getEngine().delta;

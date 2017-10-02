@@ -4,21 +4,21 @@ public class ShrinkingParticle extends Particle {
 
     private float shrinkSpeed;
 
-    public ShrinkingParticle(){
+    public ShrinkingParticle() {
         this(.05f);
     }
 
-    public ShrinkingParticle(float shrinkSpeed) {
+    public ShrinkingParticle(final float shrinkSpeed) {
         this.shrinkSpeed = shrinkSpeed;
     }
 
-    public void setShrinkSpeed(float shrinkSpeed) {
+    public void setShrinkSpeed(final float shrinkSpeed) {
         this.shrinkSpeed = shrinkSpeed;
     }
 
     @Override
     public ShrinkingParticle getClone() {
-        ShrinkingParticle clone = new ShrinkingParticle(shrinkSpeed);
+        final ShrinkingParticle clone = new ShrinkingParticle(shrinkSpeed);
         copyData(clone);
 
         if (cloneEvent != null) {

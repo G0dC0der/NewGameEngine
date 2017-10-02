@@ -16,26 +16,26 @@ import pojahn.game.essentials.ResourceManager;
 
 public class ResourceUtil {
 
-    public static FlyMan getFlyMan(ResourceManager res) {
-        FlyMan fly = new FlyMan();
+    public static FlyMan getFlyMan(final ResourceManager res) {
+        final FlyMan fly = new FlyMan();
         setMainAttributes(res, fly);
 
         return fly;
     }
 
-    public static Flipper getFlipper(ResourceManager res) {
-        Flipper flipper = new Flipper();
+    public static Flipper getFlipper(final ResourceManager res) {
+        final Flipper flipper = new Flipper();
         setMainAttributes(res, flipper);
         flipper.setJumpSound(res.getSound("jump.wav"));
-        flipper.addEvent(()-> flipper.flipY = flipper.isFlipped());
+        flipper.addEvent(() -> flipper.flipY = flipper.isFlipped());
         flipper.setLandingSound(res.getSound("land.wav"));
         flipper.addEvent(Factory.keepGravityManInBounds(flipper));
 
         return flipper;
     }
 
-    public static GravityMan getGravityMan(ResourceManager res) {
-        GravityMan man = new GravityMan();
+    public static GravityMan getGravityMan(final ResourceManager res) {
+        final GravityMan man = new GravityMan();
         setMainAttributes(res, man);
         man.setJumpSound(res.getSound("jump.wav"));
         man.setLandingSound(res.getSound("land.wav"));
@@ -44,10 +44,10 @@ public class ResourceUtil {
         return man;
     }
 
-    public static Entity getHearth(ResourceManager res, PlayableEntity play) {
-        Entity hearth = new Entity();
+    public static Entity getHearth(final ResourceManager res, final PlayableEntity play) {
+        final Entity hearth = new Entity();
         hearth.setImage(5, res.getAnimation("health"));
-        hearth.addEvent(()->{
+        hearth.addEvent(() -> {
             if (hearth.collidesWith(play)) {
                 res.getSound("health.wav").play();
                 play.touch(1);
@@ -57,8 +57,8 @@ public class ResourceUtil {
 
         return hearth;
     }
-    
-    private static void setMainAttributes(ResourceManager res, PlayableEntity play) {
+
+    private static void setMainAttributes(final ResourceManager res, final PlayableEntity play) {
         play.setImage(4, res.getAnimation("main"));
         play.healthHud = new Animation<>(3, res.getImage("hearth.png"));
         play.deathImage = new EntityBuilder().image(4, res.getAnimation("maindeath")).build(Particle.class);
@@ -72,16 +72,16 @@ public class ResourceUtil {
         play.setFacings(2);
     }
 
-    public static LaserBeam getFiringLaser(ResourceManager res) {
-        Animation<Image2D> laserFront = new Animation<>(5, res.getAnimation("laser_front"));
-        Animation<Image2D> laserBeam = new Animation<>(4, res.getAnimation("laser"));
-        Animation<Image2D> laserEnd = new Animation<>(4, res.getAnimation("laser_end"));
+    public static LaserBeam getFiringLaser(final ResourceManager res) {
+        final Animation<Image2D> laserFront = new Animation<>(5, res.getAnimation("laser_front"));
+        final Animation<Image2D> laserBeam = new Animation<>(4, res.getAnimation("laser"));
+        final Animation<Image2D> laserEnd = new Animation<>(4, res.getAnimation("laser_end"));
         laserEnd.pingPong(true);
 
         return Factory.threeStageLaser(laserFront, laserBeam, laserEnd);
     }
 
-    public static LaserBeam getChargingLaser(ResourceManager res) {
+    public static LaserBeam getChargingLaser(final ResourceManager res) {
         return Factory.threeStageLaser(null, new Animation<>(4, res.getAnimation("charge")), null);
     }
 }

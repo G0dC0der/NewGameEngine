@@ -5,18 +5,18 @@ import pojahn.game.core.Entity;
 
 public class Bullet extends Projectile {
 
-    public Bullet(Entity... scanTargets) {
-        this(0,0,scanTargets);
+    public Bullet(final Entity... scanTargets) {
+        this(0, 0, scanTargets);
     }
 
-    public Bullet(float x, float y, Entity... scanTargets) {
+    public Bullet(final float x, final float y, final Entity... scanTargets) {
         super(x, y, scanTargets);
         follow(false);
     }
 
     @Override
     public Bullet getClone() {
-        Bullet clone = new Bullet(x(), y(), getTargets());
+        final Bullet clone = new Bullet(x(), y(), getTargets());
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -25,7 +25,7 @@ public class Bullet extends Projectile {
     }
 
     @Override
-    protected void moveProjectile(Vector2 target) {
+    protected void moveProjectile(final Vector2 target) {
         moveTowards(target.x, target.y);
     }
 }

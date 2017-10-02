@@ -65,7 +65,7 @@ public class Entity {
     }
 
     public Entity getClone() {
-        Entity clone = new Entity();
+        final Entity clone = new Entity();
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -73,15 +73,15 @@ public class Entity {
         return clone;
     }
 
-    public void setImage(Image2D... images) {
+    public void setImage(final Image2D... images) {
         setImage(3, images);
     }
 
-    public void setImage(int speed, Image2D... images) {
+    public void setImage(final int speed, final Image2D... images) {
         setImage(new Animation<>(speed, images));
     }
 
-    public void setImage(Animation<Image2D> image) {
+    public void setImage(final Animation<Image2D> image) {
         this.image = image;
 
         visible = true;
@@ -100,25 +100,25 @@ public class Entity {
         return badge;
     }
 
-    public Entity move(float x, float y) {
+    public Entity move(final float x, final float y) {
         bounds.pos.x = x;
         bounds.pos.y = y;
         return this;
     }
 
-    public Entity move(Vector2 loc) {
+    public Entity move(final Vector2 loc) {
         bounds.pos.x = loc.x;
         bounds.pos.y = loc.y;
         return this;
     }
 
-    public Entity center(Entity target) {
+    public Entity center(final Entity target) {
         bounds.pos.x = target.centerX() - (width() / 2);
         bounds.pos.y = target.centerY() - (height() / 2);
         return this;
     }
 
-    public void nudge(float relX, float relY) {
+    public void nudge(final float relX, final float relY) {
         bounds.pos.x += relX;
         bounds.pos.y += relY;
     }
@@ -129,9 +129,9 @@ public class Entity {
     public void dispose() {
     }
 
-    public void render(SpriteBatch batch) {
+    public void render(final SpriteBatch batch) {
         if (visible && tint.a > 0.0f) {
-            Color defColor = batch.getColor();
+            final Color defColor = batch.getColor();
             batch.setColor(tint);
             basicRender(batch, nextImage());
             batch.setColor(defColor);
@@ -142,7 +142,7 @@ public class Entity {
         return engine;
     }
 
-    public final void zIndex(int zIndex) {
+    public final void zIndex(final int zIndex) {
         this.zIndex = zIndex;
         if (level != null)
             level.sort = true;
@@ -160,7 +160,7 @@ public class Entity {
         return visible;
     }
 
-    public void setVisible(boolean visible) {
+    public void setVisible(final boolean visible) {
         this.visible = visible;
     }
 
@@ -168,29 +168,29 @@ public class Entity {
         return active;
     }
 
-    public void activate(boolean activate) {
+    public void activate(final boolean activate) {
         this.active = activate;
     }
 
-    public void addEvent(Event event) {
+    public void addEvent(final Event event) {
         events.add(event);
     }
 
-    public void removeEvent(Event event) {
+    public void removeEvent(final Event event) {
         deleteEvents.add(event);
     }
 
-    public boolean collidesWith(Entity entity) {
-        boolean rotated1 = bounds.rotation != 0 && !quickCollision;
-        boolean rotated2 = entity.bounds.rotation != 0 && !entity.quickCollision;
+    public boolean collidesWith(final Entity entity) {
+        final boolean rotated1 = bounds.rotation != 0 && !quickCollision;
+        final boolean rotated2 = entity.bounds.rotation != 0 && !entity.quickCollision;
 
         if (hitbox == Hitbox.NONE || entity.hitbox == Hitbox.NONE) {
             return false;
         } else if (hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.RECTANGLE) {
             return (rotated1 || rotated2) ? rotatedRectanglesCollide(bounds, entity.bounds) : rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle());
         } else if ((hitbox == Hitbox.RECTANGLE && entity.hitbox == Hitbox.CIRCLE) || (hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.RECTANGLE)) {
-            Entity rectangle = hitbox == Hitbox.RECTANGLE ? this : entity;
-            Entity circle = hitbox == Hitbox.CIRCLE ? this : entity;
+            final Entity rectangle = hitbox == Hitbox.RECTANGLE ? this : entity;
+            final Entity circle = hitbox == Hitbox.CIRCLE ? this : entity;
 
             if (rectangle.getRotation() != 0)
                 throw new RuntimeException("No collision method for rotated rectangle vs circle.");
@@ -224,11 +224,11 @@ public class Entity {
         return bounds.rotation;
     }
 
-    public void setRotation(float rotation) {
+    public void setRotation(final float rotation) {
         bounds.rotation = rotation;
     }
 
-    public void rotate(float amount) {
+    public void rotate(final float amount) {
         bounds.rotation += amount;
     }
 
@@ -268,30 +268,30 @@ public class Entity {
         return hitbox;
     }
 
-    public void setHitbox(Hitbox hitbox) {
+    public void setHitbox(final Hitbox hitbox) {
         this.hitbox = hitbox;
     }
 
-    public float dist(Entity entity) {
+    public float dist(final Entity entity) {
         return (float) Collisions.distance(x(), y(), entity.x(), entity.y());
     }
 
-    public boolean near(Entity entity, float epsilon) {
+    public boolean near(final Entity entity, final float epsilon) {
         return epsilon >= dist(entity);
     }
 
-    public void setQuickCollision(boolean quickCollision) {
+    public void setQuickCollision(final boolean quickCollision) {
         this.quickCollision = quickCollision;
     }
 
-    public void expand(float amount) {
+    public void expand(final float amount) {
         bounds.pos.x -= amount;
         bounds.pos.y -= amount;
         bounds.size.width += amount * 2;
         bounds.size.height += amount * 2;
     }
 
-    public void contract(float amount) {
+    public void contract(final float amount) {
         bounds.pos.x += amount;
         bounds.pos.y += amount;
         bounds.size.width -= amount * 2;
@@ -306,15 +306,15 @@ public class Entity {
         return visible && image != null ? image.getObject() : null;
     }
 
-    public boolean isCloneOf(Entity originator) {
+    public boolean isCloneOf(final Entity originator) {
         return this.originator == originator;
     }
 
-    public void setCloneEvent(CloneEvent cloneEvent) {
+    public void setCloneEvent(final CloneEvent cloneEvent) {
         this.cloneEvent = cloneEvent;
     }
 
-    public boolean canSee(Entity target) {
+    public boolean canSee(final Entity target) {
         return target != null && !Collisions.solidSpace(centerX(), centerY(), target.centerX(), target.centerY(), getLevel());
     }
 
@@ -338,7 +338,7 @@ public class Entity {
         return new Vector2(locX, locY);
     }
 
-    public void setActionEvent(ActionEvent actionEvent) {
+    public void setActionEvent(final ActionEvent actionEvent) {
         this.actionEvent = actionEvent;
     }
 
@@ -346,13 +346,13 @@ public class Entity {
         return actionEvent != null;
     }
 
-    public void runActionEvent(Entity caller) {
+    public void runActionEvent(final Entity caller) {
         actionEvent.eventHandling(caller);
     }
 
-    public ChainEvent ifCollides(Entity other) {
-        ChainEvent chainEvent = new ChainEvent();
-        addEvent(()->{
+    public ChainEvent ifCollides(final Entity other) {
+        final ChainEvent chainEvent = new ChainEvent();
+        addEvent(() -> {
             if (collidesWith(other))
                 chainEvent.getEvent().eventHandling();
         });
@@ -363,7 +363,7 @@ public class Entity {
         getLevel().discard(this);
     }
 
-    protected void copyData(Entity clone) {
+    protected void copyData(final Entity clone) {
         clone.originator = this;
         clone.bounds.pos.x = bounds.pos.x;
         clone.bounds.pos.y = bounds.pos.y;
@@ -391,15 +391,15 @@ public class Entity {
             clone.image = image.getClone();
     }
 
-    protected void basicRender(SpriteBatch batch, Image2D image2D) {
+    protected void basicRender(final SpriteBatch batch, final Image2D image2D) {
         basicRender(batch, image2D, x(), y());
     }
 
-    protected void basicRender(SpriteBatch batch, Image2D image, float x, float y) {
+    protected void basicRender(final SpriteBatch batch, final Image2D image, final float x, final float y) {
         batch.draw(image,
                 x + offsetX,
                 y + offsetY,
-                (x + bounds.size.width /  2) - (x + offsetX),
+                (x + bounds.size.width / 2) - (x + offsetX),
                 (y + bounds.size.height / 2) - (y + offsetY),
                 bounds.size.width,
                 bounds.size.height,

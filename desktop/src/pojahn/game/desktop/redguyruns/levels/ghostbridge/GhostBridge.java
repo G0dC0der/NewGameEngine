@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.Boo;
 import pojahn.game.entities.Particle;
@@ -21,7 +22,6 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.PingPongFloat;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -34,7 +34,7 @@ public class GhostBridge extends TileBasedLevel {
     private boolean keyTaken;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -69,11 +69,11 @@ public class GhostBridge extends TileBasedLevel {
         /*
          * Background and foreground
          */
-        Entity worldImage = getWorldImage();
+        final Entity worldImage = getWorldImage();
         worldImage.zIndex(2000);
         add(worldImage);
 
-        BigImage bgImage = new BigImage(BigImage.RenderStrategy.PARALLAX_REPEAT);
+        final BigImage bgImage = new BigImage(BigImage.RenderStrategy.PARALLAX_REPEAT);
         bgImage.setImage(resources.getImage("background.png"));
         bgImage.zIndex(-100);
         add(bgImage);
@@ -94,11 +94,11 @@ public class GhostBridge extends TileBasedLevel {
         /*
          * Acid
          */
-        PingPongFloat alpha = new PingPongFloat(.85f, 1f, .005f);
-        PingPongFloat yPos = new PingPongFloat(850, 852, .1f);
-        Entity acid = new EntityBuilder().y(850).image(resources.getImage("acid.png")).zIndex(-1).build();
+        final PingPongFloat alpha = new PingPongFloat(.85f, 1f, .005f);
+        final PingPongFloat yPos = new PingPongFloat(850, 852, .1f);
+        final Entity acid = new EntityBuilder().y(850).image(resources.getImage("acid.png")).zIndex(-1).build();
         acid.addEvent(Factory.hitMain(acid, play, -1));
-        acid.addEvent(()-> {
+        acid.addEvent(() -> {
             acid.tint.a = alpha.get();
             acid.bounds.pos.y = yPos.get();
         });
@@ -107,19 +107,19 @@ public class GhostBridge extends TileBasedLevel {
         /*
          * Bubbles
          */
-        Entity bubbles = new Entity();
+        final Entity bubbles = new Entity();
         bubbles.move(0, 850);
-        bubbles.setImage(2,resources.getAnimation("bubbles"));
+        bubbles.setImage(2, resources.getAnimation("bubbles"));
         bubbles.tint.a = .3f;
         add(bubbles);
 
         /*
          * Key
          */
-        Entity key = new Entity();
+        final Entity key = new Entity();
         key.move(1240, 402);
         key.setImage(4, resources.getAnimation("key"));
-        key.ifCollides(play).then(()-> {
+        key.ifCollides(play).then(() -> {
             key.die();
             resources.getSound("collect3.wav").play();
             keyTaken = true;
@@ -129,11 +129,11 @@ public class GhostBridge extends TileBasedLevel {
         /*
          * Goal Door
          */
-        Entity door = new Entity();
+        final Entity door = new Entity();
         door.move(67, 385);
         door.setImage(resources.getImage("door.png"));
         door.zIndex(-2);
-        door.addEvent(()-> {
+        door.addEvent(() -> {
             if (keyTaken && play.getState() == Vitality.ALIVE && play.collidesWith(door)) {
                 play.win();
             }
@@ -143,52 +143,52 @@ public class GhostBridge extends TileBasedLevel {
         /*
          * Bars
          */
-        Entity bars = new Entity();
+        final Entity bars = new Entity();
         bars.move(67, 385);
         bars.setImage(4, resources.getImage("bars.png"));
         bars.zIndex(-1);
-        bars.addEvent(()-> {
+        bars.addEvent(() -> {
             if (keyTaken)
                 bars.move(-1000, -1000);
         });
         add(bars);
     }
 
-    private SolidPlatform getBlock(float x, float y) {
-        SolidPlatform solp = new SolidPlatform(x, y, play);
+    private SolidPlatform getBlock(final float x, final float y) {
+        final SolidPlatform solp = new SolidPlatform(x, y, play);
         solp.setImage(resources.getImage("evileye.png"));
         solp.move(x, y);
         solp.tint.a = .7f;
 
-        runOnceWhen(()-> {
+        runOnceWhen(() -> {
 //            add(getGlow(solp));
-            runOnceAfter(()-> {
+            runOnceAfter(() -> {
                 add(getSpikes(Direction.N, x, y));
                 resources.getSound("spikesintro.wav").play();
             }, 40);
-        }, ()-> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x, y - 1, 64, 1));
+        }, () -> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x, y - 1, 64, 1));
 
-        runOnceWhen(()-> {
+        runOnceWhen(() -> {
 //            add(getGlow(solp));
-            runOnceAfter(()-> {
+            runOnceAfter(() -> {
                 add(getSpikes(Direction.E, x, y));
                 resources.getSound("spikesintro.wav").play();
             }, 40);
-        }, ()-> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x + 64, y, 1, 64));
+        }, () -> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x + 64, y, 1, 64));
 
-        runOnceWhen(()-> {
+        runOnceWhen(() -> {
 //            add(getGlow(solp));
-            runOnceAfter(()-> {
+            runOnceAfter(() -> {
                 add(getSpikes(Direction.W, x, y));
                 resources.getSound("spikesintro.wav").play();
             }, 40);
-        }, ()-> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x - 1, y, 1, 64));
+        }, () -> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x - 1, y, 1, 64));
 
         return solp;
     }
 
-    private Particle getGlow(Entity parent) {
-        Particle glow = new Particle();
+    private Particle getGlow(final Entity parent) {
+        final Particle glow = new Particle();
         glow.zIndex(10);
         glow.setImage(7, resources.getAnimation("glow"));
         glow.center(parent);
@@ -196,8 +196,8 @@ public class GhostBridge extends TileBasedLevel {
         return glow;
     }
 
-    private Entity getSpikes(Direction dir, float x, float y) {
-        PathDrone spikes = new PathDrone(x, y);
+    private Entity getSpikes(final Direction dir, final float x, final float y) {
+        final PathDrone spikes = new PathDrone(x, y);
         if (dir == Direction.N) {
             spikes.setImage(resources.getImage("spikes_n.png"));
             spikes.appendPath(x, y - 19);
@@ -217,11 +217,11 @@ public class GhostBridge extends TileBasedLevel {
         return spikes;
     }
 
-    private Boo getBoo(float x, float y) {
-        Animation<Image2D> booImg = new Animation<>(8, resources.getImage("hide.png"));
-        Animation<Image2D> booAttackImg = new Animation<>(5, resources.getImage("attack.png"));
+    private Boo getBoo(final float x, final float y) {
+        final Animation<Image2D> booImg = new Animation<>(8, resources.getImage("hide.png"));
+        final Animation<Image2D> booAttackImg = new Animation<>(5, resources.getImage("attack.png"));
 
-        Boo boo = new Boo(x, y, play);
+        final Boo boo = new Boo(x, y, play);
         boo.setHideImage(booImg);
         boo.setHuntImage(booAttackImg);
         boo.setFacings(2);

@@ -11,7 +11,7 @@ public class CameraEffects {
      * @param speed  The speed of the vertical movement.
      * @return The event.
      */
-    public static Entity verticalMovement(float length, float speed) {
+    public static Entity verticalMovement(final float length, final float speed) {
         return pingPongMovement(length, speed, 0);
     }
 
@@ -24,7 +24,7 @@ public class CameraEffects {
      * @param speed  The speed of the horizontal movement.
      * @return The event.
      */
-    public static Entity horizontalMovement(float length, float speed) {
+    public static Entity horizontalMovement(final float length, final float speed) {
         return pingPongMovement(length, speed, 1);
     }
 
@@ -38,7 +38,7 @@ public class CameraEffects {
      * @param speed The speed of the pingpong motion.
      * @return The event.
      */
-    public static Entity zoomEffect(float min, float max, float speed) {
+    public static Entity zoomEffect(final float min, final float max, final float speed) {
         if (0 > min || 0 > max || 0 > speed)
             throw new IllegalArgumentException("All values must be positive.");
 
@@ -77,7 +77,7 @@ public class CameraEffects {
      * @param strength The strength of the vibration.
      * @return The event.
      */
-    public static Entity vibration(float strength) {
+    public static Entity vibration(final float strength) {
         return new Entity() {
             int counter, counter2;
 
@@ -88,7 +88,7 @@ public class CameraEffects {
             @Override
             public void logistics() {
                 if (++counter2 % 2 == 0) {
-                    int value = counter++ % 4;
+                    final int value = counter++ % 4;
                     float tx = getEngine().tx();
                     float ty = getEngine().ty();
 
@@ -116,7 +116,7 @@ public class CameraEffects {
         };
     }
 
-    static Entity pingPongMovement(float length, float speed, int axis) {
+    static Entity pingPongMovement(final float length, final float speed, final int axis) {
         if (0 > length || 0 > speed)
             throw new IllegalArgumentException("Both values must be positive.");
 

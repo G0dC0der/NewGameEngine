@@ -20,7 +20,7 @@ public class Bouncer extends MobileEntity {
     private List<Entry<Integer, Entity>> soundControl;
     private float power;
 
-    public Bouncer(float x, float y, GravityMan... targets) {
+    public Bouncer(final float x, final float y, final GravityMan... targets) {
         move(x, y);
         this.targets = targets;
         power = 150;
@@ -30,24 +30,24 @@ public class Bouncer extends MobileEntity {
                 .collect(Collectors.toList());
     }
 
-    public void setPower(float power) {
+    public void setPower(final float power) {
         this.power = power;
     }
 
-    public void setBounceSound(Sound bounceSound) {
+    public void setBounceSound(final Sound bounceSound) {
         this.bounceSound = bounceSound;
     }
 
-    public void setBouncingDirection(Direction dir) {
+    public void setBouncingDirection(final Direction dir) {
         this.dir = dir;
     }
 
     @Override
     public void logistics() {
-        for (GravityMan man : targets) {
+        for (final GravityMan man : targets) {
             if (collidesWith(man)) {
-                Direction dir;
-                if(this.dir != null) {
+                final Direction dir;
+                if (this.dir != null) {
                     dir = this.dir;
                 } else {
                     dir = Collisions.getDirection(Collisions.normalize(centerX(), centerY(), man.prevX() - man.halfWidth(), man.prevY() - man.halfHeight()));
@@ -93,17 +93,17 @@ public class Bouncer extends MobileEntity {
         soundControl.forEach(entry -> entry.key--);
     }
 
-    private boolean soundAllowed(GravityMan man) {
-        for (Entry<Integer, Entity> entry : soundControl) {
+    private boolean soundAllowed(final GravityMan man) {
+        for (final Entry<Integer, Entity> entry : soundControl) {
             if (entry.key < 0 && entry.value == man)
                 return true;
         }
         return false;
     }
 
-    private void addDelay(GravityMan man, int delay) {
-        for(Entry<Integer, Entity> entry : soundControl) {
-            if(entry.value == man) {
+    private void addDelay(final GravityMan man, final int delay) {
+        for (final Entry<Integer, Entity> entry : soundControl) {
+            if (entry.value == man) {
                 entry.key = delay;
                 return;
             }

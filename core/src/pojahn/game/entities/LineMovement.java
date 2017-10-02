@@ -15,7 +15,7 @@ public class LineMovement extends MobileEntity {
     private Sound slamSound;
     private boolean leftOrUp;
 
-    public LineMovement(Movement movement) {
+    public LineMovement(final Movement movement) {
         if (movement == null)
             throw new IllegalArgumentException("Must set a movement.");
 
@@ -24,7 +24,7 @@ public class LineMovement extends MobileEntity {
 
     @Override
     public LineMovement getClone() {
-        LineMovement clone = new LineMovement(movement);
+        final LineMovement clone = new LineMovement(movement);
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -32,11 +32,11 @@ public class LineMovement extends MobileEntity {
         return clone;
     }
 
-    public void setMovement(Movement movement) {
+    public void setMovement(final Movement movement) {
         this.movement = movement;
     }
 
-    public void setSlamSound(Sound slamSound) {
+    public void setSlamSound(final Sound slamSound) {
         this.slamSound = slamSound;
     }
 
@@ -49,7 +49,7 @@ public class LineMovement extends MobileEntity {
         if (isFrozen())
             return;
 
-        Vector2 next;
+        final Vector2 next;
 
         if (movement == Movement.HORIZONTAL)
             next = attemptTowards(leftOrUp ? 0 : getLevel().getWidth(), y(), getMoveSpeed());

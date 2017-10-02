@@ -16,7 +16,7 @@ public class BackgroundImage {
         private final float rateY;
         private final boolean repeat;
 
-        private ParallaxImage(float rateX, float rateY, boolean repeat) {
+        private ParallaxImage(final float rateX, final float rateY, final boolean repeat) {
             this.rateX = rateX;
             this.rateY = rateY;
             this.repeat = repeat;
@@ -38,11 +38,10 @@ public class BackgroundImage {
         }
 
         @Override
-        public void render(SpriteBatch batch) {
+        public void render(final SpriteBatch batch) {
             if (repeat) {
                 final Color defColor = batch.getColor();
                 batch.setColor(tint);
-
 
 
                 batch.setColor(defColor);

@@ -9,7 +9,7 @@ public class FallingProjectile extends Bullet {
     private Entity parent, targets[];
     private Level level;
 
-    public FallingProjectile(float x, float y, Entity parent, Level level, Entity... scanTargets) {
+    public FallingProjectile(final float x, final float y, final Entity parent, final Level level, final Entity... scanTargets) {
         super(x, y, scanTargets);
         this.parent = parent;
         this.targets = scanTargets;
@@ -19,7 +19,7 @@ public class FallingProjectile extends Bullet {
 
     @Override
     public FallingProjectile getClone() {
-        FallingProjectile clone = new FallingProjectile(x(), y(), parent, level, targets);
+        final FallingProjectile clone = new FallingProjectile(x(), y(), parent, level, targets);
         copyData(clone);
 
         if (cloneEvent != null) {

@@ -19,7 +19,7 @@ public class Boo extends MobileEntity {
     private float velocity;
     public float acc, maxSpeed;
 
-    public Boo(float x, float y, MobileEntity... victims) {
+    public Boo(final float x, final float y, final MobileEntity... victims) {
         super();
         move(x, y);
         this.victims = victims;
@@ -30,8 +30,8 @@ public class Boo extends MobileEntity {
 
     @Override
     public void logistics() {
-        MobileEntity[] targets = getTargets();
-        MobileEntity victim = targets.length > 0 ? (MobileEntity) Collisions.findClosest(this, targets) : null;
+        final MobileEntity[] targets = getTargets();
+        final MobileEntity victim = targets.length > 0 ? (MobileEntity) Collisions.findClosest(this, targets) : null;
 
         if (victim != null && canSneak(victim)) {
             if (maxSpeed > velocity + acc)
@@ -66,9 +66,9 @@ public class Boo extends MobileEntity {
             hunting = false;
         }
 
-        for (MobileEntity mobile : targets) {
+        for (final MobileEntity mobile : targets) {
             if (collidesWith(mobile)) {
-                if(mobile.hasActionEvent())
+                if (mobile.hasActionEvent())
                     mobile.runActionEvent(this);
                 velocity = 0;
             }
@@ -82,36 +82,36 @@ public class Boo extends MobileEntity {
     }
 
     @Override
-    public void setImage(Animation<Image2D> obj) {
+    public void setImage(final Animation<Image2D> obj) {
         super.setImage(obj);
         huntImage = obj;
     }
 
-    public void setIgnoreInactive(boolean ignoreInactive) {
+    public void setIgnoreInactive(final boolean ignoreInactive) {
         this.ignoreInactive = ignoreInactive;
     }
 
-    public void setHuntImage(Animation<Image2D> huntImage) {
+    public void setHuntImage(final Animation<Image2D> huntImage) {
         setImage(huntImage);
     }
 
-    public void setHideImage(Animation<Image2D> hideImage) {
+    public void setHideImage(final Animation<Image2D> hideImage) {
         this.hideImage = hideImage;
     }
 
-    public void setDetectSound(Sound sound) {
+    public void setDetectSound(final Sound sound) {
         detectSound = sound;
     }
 
-    public void setHideSound(Sound hideSound) {
+    public void setHideSound(final Sound hideSound) {
         this.hideSound = hideSound;
     }
 
-    public void resetHideImage(boolean reset) {
+    public void resetHideImage(final boolean reset) {
         this.resetHideImage = reset;
     }
 
-    public void resetHuntImage(boolean reset) {
+    public void resetHuntImage(final boolean reset) {
         this.resetHuntImage = reset;
     }
 
@@ -119,13 +119,13 @@ public class Boo extends MobileEntity {
         return hunting;
     }
 
-    private boolean canSneak(MobileEntity victim) {
-        Direction victimFacing = victim.getFacing();
+    private boolean canSneak(final MobileEntity victim) {
+        final Direction victimFacing = victim.getFacing();
 
-        boolean toTheLeft = x() + width() / 2 > victim.x();
-        if( toTheLeft && (victimFacing == Direction.NW || victimFacing == Direction.W || victimFacing == Direction.SW))
+        final boolean toTheLeft = x() + width() / 2 > victim.x();
+        if (toTheLeft && (victimFacing == Direction.NW || victimFacing == Direction.W || victimFacing == Direction.SW))
             return true;
-        if(!toTheLeft && (victimFacing == Direction.NE || victimFacing == Direction.E || victimFacing == Direction.SE))
+        if (!toTheLeft && (victimFacing == Direction.NE || victimFacing == Direction.E || victimFacing == Direction.SE))
             return true;
 
         return false;

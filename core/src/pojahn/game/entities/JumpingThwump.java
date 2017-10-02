@@ -20,8 +20,8 @@ public class JumpingThwump extends MobileEntity {
     private Event slamEvent;
     private Sound slamSound, jumpSound;
 
-    public JumpingThwump(float x, float y, MobileEntity... targets) {
-        move(x,y);
+    public JumpingThwump(final float x, final float y, final MobileEntity... targets) {
+        move(x, y);
         this.targets = targets;
         chillFrames = 260;
         jumpStrength = 900;
@@ -35,7 +35,7 @@ public class JumpingThwump extends MobileEntity {
 
     @Override
     public JumpingThwump getClone() {
-        JumpingThwump clone = new JumpingThwump(x(), y(), targets);
+        final JumpingThwump clone = new JumpingThwump(x(), y(), targets);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
 
@@ -63,7 +63,7 @@ public class JumpingThwump extends MobileEntity {
         if (vy != 0.0f)
             drag();
 
-        float futureY = getFutureY();
+        final float futureY = getFutureY();
         if (!occupiedAt(x(), futureY))
             applyYForces();
         else {
@@ -80,17 +80,17 @@ public class JumpingThwump extends MobileEntity {
             vy = 0;
         }
 
-        float scanSize = 1;
-        float x = x() - scanSize;
-        float y = y() - scanSize;
-        float w = width() + scanSize * 2;
-        float h = height() + scanSize * 2;
+        final float scanSize = 1;
+        final float x = x() - scanSize;
+        final float y = y() - scanSize;
+        final float w = width() + scanSize * 2;
+        final float h = height() + scanSize * 2;
 
-        for (MobileEntity sub : targets) {
+        for (final MobileEntity sub : targets) {
             if (Collisions.rectanglesCollide(x, y, w, h, sub.x(), sub.y(), sub.width(), sub.height())) {
 
-                float nextX = sub.x() + (x() - prevX());
-                float nextY = sub.y() + (y() - prevY());
+                final float nextX = sub.x() + (x() - prevX());
+                final float nextY = sub.y() + (y() - prevY());
 
                 if (!sub.occupiedAt(nextX, nextY))
                     sub.move(nextX, nextY);
@@ -101,33 +101,33 @@ public class JumpingThwump extends MobileEntity {
         }
     }
 
-    public void setJumpImage(Animation<Image2D> jumpImage) {
+    public void setJumpImage(final Animation<Image2D> jumpImage) {
         this.jumpImage = jumpImage;
     }
 
     @Override
-    public void setImage(Animation<Image2D> image) {
+    public void setImage(final Animation<Image2D> image) {
         super.setImage(image);
         this.chillImage = image;
     }
 
-    public void setChillFrames(int chillFrames) {
+    public void setChillFrames(final int chillFrames) {
         this.chillFrames = chillFrames;
     }
 
-    public void setJumpStrength(float jumpStrength) {
+    public void setJumpStrength(final float jumpStrength) {
         this.jumpStrength = jumpStrength;
     }
 
-    public void setJumpSound(Sound jumpSound) {
+    public void setJumpSound(final Sound jumpSound) {
         this.jumpSound = jumpSound;
     }
 
-    public void setSlamSound(Sound slamSound) {
+    public void setSlamSound(final Sound slamSound) {
         this.slamSound = slamSound;
     }
 
-    public void setSlamEvent(Event slamEvent) {
+    public void setSlamEvent(final Event slamEvent) {
         this.slamEvent = slamEvent;
     }
 
@@ -139,7 +139,7 @@ public class JumpingThwump extends MobileEntity {
     }
 
     private void drag() {
-        float force = mass * gravity;
+        final float force = mass * gravity;
         vy *= 1.0 - (damping * delta);
 
         if (tvy < vy) {
@@ -156,7 +156,7 @@ public class JumpingThwump extends MobileEntity {
         bounds.pos.y -= vy * delta;
     }
 
-    protected void copyData(JumpingThwump clone) {
+    protected void copyData(final JumpingThwump clone) {
         super.copyData(clone);
         clone.mass = mass;
         clone.gravity = gravity;
@@ -165,7 +165,7 @@ public class JumpingThwump extends MobileEntity {
         clone.chillFrames = chillFrames;
         clone.delta = delta;
         clone.jumpStrength = jumpStrength;
-        clone.slamSound =slamSound;
+        clone.slamSound = slamSound;
         clone.jumpSound = jumpSound;
         if (jumpImage != null)
             clone.jumpImage = jumpImage.getClone();

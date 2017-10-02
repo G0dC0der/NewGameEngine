@@ -16,25 +16,25 @@ public class Button extends SolidPlatform {
     private Sound pushSound;
     private boolean pushed;
 
-    public Button(float x, float y, MobileEntity... subjects) {
+    public Button(final float x, final float y, final MobileEntity... subjects) {
         super(x, y, subjects);
         pushingDirection = Direction.S;
         reuse = new Rectangle();
         this.subjects = subjects;
     }
 
-    public void setPushingDirection(Direction pushingDirection){
-        if(pushingDirection.isDiagonal())
+    public void setPushingDirection(final Direction pushingDirection) {
+        if (pushingDirection.isDiagonal())
             throw new IllegalArgumentException("The pushing direction must be non diagonal: " + pushingDirection);
 
         this.pushingDirection = pushingDirection;
     }
 
-    public void setPushEvent(Event pushEvent) {
+    public void setPushEvent(final Event pushEvent) {
         this.pushEvent = pushEvent;
     }
 
-    public void setPushSound(Sound pushSound) {
+    public void setPushSound(final Sound pushSound) {
         this.pushSound = pushSound;
     }
 
@@ -42,13 +42,13 @@ public class Button extends SolidPlatform {
     public void logistics() {
         super.logistics();
 
-        if(!pushed){
-            for(MobileEntity subject : subjects){
-                if(Collisions.rectanglesCollide(subject.bounds.toRectangle(), getDummy())){
+        if (!pushed) {
+            for (final MobileEntity subject : subjects) {
+                if (Collisions.rectanglesCollide(subject.bounds.toRectangle(), getDummy())) {
                     pushed = true;
-                    if(pushSound != null)
+                    if (pushSound != null)
                         pushSound.play(sounds.calc());
-                    if(pushEvent != null)
+                    if (pushEvent != null)
                         pushEvent.eventHandling();
                     setWaypoint();
                     break;
@@ -58,7 +58,7 @@ public class Button extends SolidPlatform {
     }
 
     private void setWaypoint() {
-        switch (pushingDirection){
+        switch (pushingDirection) {
             case N:
                 appendPath(x(), y() - halfHeight());
                 break;
@@ -74,8 +74,8 @@ public class Button extends SolidPlatform {
         }
     }
 
-    private Rectangle getDummy(){
-        switch (pushingDirection){
+    private Rectangle getDummy() {
+        switch (pushingDirection) {
             case N:
                 reuse.x = x();
                 reuse.y = y() + height();

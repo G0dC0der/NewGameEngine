@@ -8,46 +8,47 @@ import java.awt.*;
 
 public class Flash extends Particle {
 
-	private float duration, framesAlive;
-	private Texture flashImage;
+    private float duration, framesAlive;
+    private Texture flashImage;
 
-	{
-		zIndex(Integer.MAX_VALUE);
-	}
+    {
+        zIndex(Integer.MAX_VALUE);
+    }
 
-	public Flash(Texture flashImage, float duration) {
-		this.duration = duration;
-		this.flashImage = flashImage;
-	}
-
-    @Override
-    public void logistics() {}
+    public Flash(final Texture flashImage, final float duration) {
+        this.duration = duration;
+        this.flashImage = flashImage;
+    }
 
     @Override
-	public void render(SpriteBatch batch) {
-		if (framesAlive++ < duration) {
-			Dimension viewport = getEngine().getScreenSize();
-			Color orgColor = batch.getColor();
-			Color newColor = new Color(orgColor);
-			newColor.a = (duration - framesAlive) * (1.0f / duration);
+    public void logistics() {
+    }
 
-			batch.setColor(newColor);
-			getEngine().hudCamera();
-			batch.draw(flashImage, 0, 0, viewport.width, viewport.height);
-			getEngine().gameCamera();
-			batch.setColor(orgColor);
-		} else
-			getLevel().discard(this);
-	}
+    @Override
+    public void render(final SpriteBatch batch) {
+        if (framesAlive++ < duration) {
+            final Dimension viewport = getEngine().getScreenSize();
+            final Color orgColor = batch.getColor();
+            final Color newColor = new Color(orgColor);
+            newColor.a = (duration - framesAlive) * (1.0f / duration);
 
-	@Override
-	public Flash getClone() {
-		Flash clone = new Flash(flashImage, duration);
-		copyData(clone);
+            batch.setColor(newColor);
+            getEngine().hudCamera();
+            batch.draw(flashImage, 0, 0, viewport.width, viewport.height);
+            getEngine().gameCamera();
+            batch.setColor(orgColor);
+        } else
+            getLevel().discard(this);
+    }
 
-		if (cloneEvent != null)
-			cloneEvent.handleClonded(clone);
+    @Override
+    public Flash getClone() {
+        final Flash clone = new Flash(flashImage, duration);
+        copyData(clone);
 
-		return clone;
-	}
+        if (cloneEvent != null)
+            cloneEvent.handleClonded(clone);
+
+        return clone;
+    }
 }

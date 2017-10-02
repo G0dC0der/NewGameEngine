@@ -16,7 +16,7 @@ public class SimpleWeapon extends MobileEntity {
     private float offsetX, offsetY;
     private Sound firingSound;
 
-    public SimpleWeapon(float x, float y, Projectile proj, Direction projDir, int reloadTime) {
+    public SimpleWeapon(final float x, final float y, final Projectile proj, final Direction projDir, final int reloadTime) {
         move(x, y);
         this.proj = proj;
         this.projDir = projDir;
@@ -25,7 +25,7 @@ public class SimpleWeapon extends MobileEntity {
 
     @Override
     public SimpleWeapon getClone() {
-        SimpleWeapon clone = new SimpleWeapon(x(), y(), proj, projDir, reloadTime);
+        final SimpleWeapon clone = new SimpleWeapon(x(), y(), proj, projDir, reloadTime);
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -33,7 +33,7 @@ public class SimpleWeapon extends MobileEntity {
         return clone;
     }
 
-    protected void copyData(SimpleWeapon clone) {
+    protected void copyData(final SimpleWeapon clone) {
         super.copyData(clone);
         clone.fireAnim = fireAnim;
         clone.offsetX = offsetX;
@@ -41,12 +41,12 @@ public class SimpleWeapon extends MobileEntity {
         clone.firingSound = firingSound;
     }
 
-    public void spawnOffset(float offsetX, float offsetY) {
+    public void spawnOffset(final float offsetX, final float offsetY) {
         this.offsetX = offsetX;
         this.offsetY = offsetY;
     }
 
-    public void setFiringAnimation(Particle fireAnim) {
+    public void setFiringAnimation(final Particle fireAnim) {
         this.fireAnim = fireAnim;
     }
 
@@ -54,23 +54,23 @@ public class SimpleWeapon extends MobileEntity {
         return reloadCounter > 0;
     }
 
-    public void setFiringDirection(Direction projDir) {
+    public void setFiringDirection(final Direction projDir) {
         this.projDir = projDir;
     }
 
-    public void setFiringSound(Sound sound) {
+    public void setFiringSound(final Sound sound) {
         firingSound = sound;
     }
 
     @Override
     public void logistics() {
         if (--reloadCounter < 0) {
-            Level l = getLevel();
-            float startX = bounds.pos.x + offsetX;
-            float startY = bounds.pos.y + offsetY;
+            final Level l = getLevel();
+            final float startX = bounds.pos.x + offsetX;
+            final float startY = bounds.pos.y + offsetY;
 
-            Projectile projClone = proj.getClone();
-            Vector2 target = Collisions.getEdgePoint((int) startX, (int) startY, projDir, l);
+            final Projectile projClone = proj.getClone();
+            final Vector2 target = Collisions.getEdgePoint((int) startX, (int) startY, projDir, l);
 
             projClone.move(startX, startY);
             projClone.setTarget(target.x, target.y);

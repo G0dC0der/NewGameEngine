@@ -14,12 +14,12 @@ public class RecordingDevice {
         recordEntries = new ArrayList<>();
     }
 
-    public void addEntry(long badge) {
+    public void addEntry(final long badge) {
         recordEntries.add(new KeySession(new LinkedList<>(), badge));
     }
 
-    public void addFrame(long badge, Keystrokes keystrokes) {
-        for (KeySession recordEntry : recordEntries) {
+    public void addFrame(final long badge, final Keystrokes keystrokes) {
+        for (final KeySession recordEntry : recordEntries) {
             if (recordEntry.badge == badge) {
                 recordEntry.keystrokes.add(keystrokes);
                 return;
@@ -27,8 +27,8 @@ public class RecordingDevice {
         }
     }
 
-    public Keystrokes nextInput(long badge) {
-        for (KeySession recordEntry : recordEntries) {
+    public Keystrokes nextInput(final long badge) {
+        for (final KeySession recordEntry : recordEntries) {
             if (recordEntry.badge == badge) {
                 return recordEntry.nextInput();
             }
@@ -44,7 +44,7 @@ public class RecordingDevice {
         return recordEntries;
     }
 
-    public void load(List<KeySession> recordEntries) {
+    public void load(final List<KeySession> recordEntries) {
         this.recordEntries = recordEntries;
     }
 
@@ -52,8 +52,8 @@ public class RecordingDevice {
         recordEntries = new ArrayList<>();
     }
 
-    public boolean allDone () {
-        for (KeySession recordEntry : recordEntries) {
+    public boolean allDone() {
+        for (final KeySession recordEntry : recordEntries) {
             if (!recordEntry.hasEnded()) {
                 return false;
             }

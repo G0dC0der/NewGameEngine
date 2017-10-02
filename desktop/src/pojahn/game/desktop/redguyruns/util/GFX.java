@@ -10,10 +10,11 @@ import java.awt.*;
 
 public class GFX {
 
-    public static void renderCheckpoint(ResourceManager resource, Level level) {
-        level.temp(new Entity(){
+    public static void renderCheckpoint(final ResourceManager resource, final Level level) {
+        level.temp(new Entity() {
             boolean once;
             Sound takeSound;
+
             {
                 zIndex(Integer.MAX_VALUE);
                 setImage(resource.getImage("checkpoint.png"));
@@ -21,9 +22,9 @@ public class GFX {
             }
 
             @Override
-            public void render(SpriteBatch batch) {
+            public void render(final SpriteBatch batch) {
                 getEngine().hudCamera();
-                Dimension screenSize = getEngine().getScreenSize();
+                final Dimension screenSize = getEngine().getScreenSize();
 
                 batch.draw(nextImage(),
                         screenSize.width / 2 - halfWidth(),
@@ -44,7 +45,7 @@ public class GFX {
 
                 getEngine().gameCamera();
 
-                if(!once) {
+                if (!once) {
                     once = true;
                     takeSound.play();
                 }

@@ -14,7 +14,7 @@ public class Shuttle extends MobileEntity {
         Vector2 target;
         Event event;
 
-        Waypoint(float x, float y, Event event) {
+        Waypoint(final float x, final float y, final Event event) {
             this.target = new Vector2(x, y);
             this.event = event;
         }
@@ -25,7 +25,7 @@ public class Shuttle extends MobileEntity {
     private Vector2 waypointDirection;
     private List<Waypoint> waypoints;
 
-    public Shuttle(float x, float y) {
+    public Shuttle(final float x, final float y) {
         move(x, y);
         this.waypoints = new ArrayList<>();
     }
@@ -41,20 +41,20 @@ public class Shuttle extends MobileEntity {
         appendPath(x(), y());
     }
 
-    public void appendPath(float x, float y) {
+    public void appendPath(final float x, final float y) {
         appendPath(x, y, null);
     }
 
-    public void appendPath(Vector2 path) {
+    public void appendPath(final Vector2 path) {
         appendPath(path.x, path.y);
     }
 
-    public void appendPath(Vector2[] paths) {
-        for (Vector2 path : paths)
+    public void appendPath(final Vector2[] paths) {
+        for (final Vector2 path : paths)
             appendPath(path.x, path.y);
     }
 
-    public void appendPath(float x, float y, Event reachEvent) {
+    public void appendPath(final float x, final float y, final Event reachEvent) {
         waypoints.add(new Waypoint(x, y, reachEvent));
     }
 
@@ -76,19 +76,19 @@ public class Shuttle extends MobileEntity {
 
     @Override
     @Deprecated
-    public void setMoveSpeed(float moveSpeed) {
+    public void setMoveSpeed(final float moveSpeed) {
         throw new UnsupportedOperationException("The Shuttle class use maxX, maxY, accX and accY to control the speed.");
     }
 
     @Override
     public void logistics() {
         if (!isFrozen() && !waypoints.isEmpty()) {
-            Waypoint wp = waypoints.get(counter);
+            final Waypoint wp = waypoints.get(counter);
 
             if (x() == wp.target.x && y() == wp.target.y)    //Make sure we don't get NaN when normalizing.
                 bounds.pos.x--;
 
-            Vector2 currentDirection = Collisions.normalize(bounds.pos.x, bounds.pos.y, wp.target.x, wp.target.y);
+            final Vector2 currentDirection = Collisions.normalize(bounds.pos.x, bounds.pos.y, wp.target.x, wp.target.y);
 
             if (waypointDirection == null)
                 waypointDirection = currentDirection.cpy();
@@ -100,8 +100,8 @@ public class Shuttle extends MobileEntity {
                 if (wp.event != null)
                     wp.event.eventHandling();
             } else {
-                float accX = thrust * -currentDirection.x - drag * vx;
-                float accY = thrust * -currentDirection.y - drag * vy;
+                final float accX = thrust * -currentDirection.x - drag * vx;
+                final float accY = thrust * -currentDirection.y - drag * vy;
 
                 vx += delta * accX;
                 vy += delta * accY;

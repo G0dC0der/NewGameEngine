@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
-import pojahn.game.core.PlayableEntity;
 import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.geom.Size;
@@ -21,7 +20,6 @@ import pojahn.game.events.Event;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class TileBasedLevel extends Level {
@@ -30,16 +28,16 @@ public abstract class TileBasedLevel extends Level {
         public Cell cell;
         public int x, y;
 
-        public PositionedCell(Cell cell, int x, int y) {
+        public PositionedCell(final Cell cell, final int x, final int y) {
             this.cell = cell;
             this.x = x;
             this.y = y;
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (obj instanceof PositionedCell) {
-                PositionedCell pCell = (PositionedCell) obj;
+                final PositionedCell pCell = (PositionedCell) obj;
                 return this.cell == pCell.cell && (x * 31 + y) == (pCell.x * 31 + pCell.y);
             } else {
                 return false;
@@ -57,9 +55,9 @@ public abstract class TileBasedLevel extends Level {
         orgTiles = new HashMap<>();
     }
 
-    public void parse(TiledMap map) throws IOException {
+    public void parse(final TiledMap map) throws IOException {
         this.map = map;
-        MapProperties props = map.getProperties();
+        final MapProperties props = map.getProperties();
         layer = (TiledMapTileLayer) map.getLayers().get(0);
         tilesX = props.get("width", Integer.class);
         tilesY = props.get("height", Integer.class);
@@ -79,17 +77,17 @@ public abstract class TileBasedLevel extends Level {
     }
 
     @Override
-    protected Tile tileAtInternal(int x, int y) {
-        int tileX = x / tileWidth;
-        int tileY = y / tileHeight;
+    protected Tile tileAtInternal(final int x, final int y) {
+        final int tileX = x / tileWidth;
+        final int tileY = y / tileHeight;
 
-        Cell cell = layer.getCell(tileX, tileY);
+        final Cell cell = layer.getCell(tileX, tileY);
         if (cell != null) {
-            TextureRegion region = cell.getTile().getTextureRegion();
-            int regX = region.getRegionX();
+            final TextureRegion region = cell.getTile().getTextureRegion();
+            final int regX = region.getRegionX();
             int regY = region.getRegionY();
-            int relX = x % tileWidth;
-            int relY = y % tileHeight;
+            final int relX = x % tileWidth;
+            final int relY = y % tileHeight;
             regY -= tileHeight;
 
             return (tileSet.getPixel(regX + relX, regY + relY) & 0x000000FF) > 0 ? Tile.SOLID : Tile.HOLLOW;
@@ -97,25 +95,25 @@ public abstract class TileBasedLevel extends Level {
             return Tile.HOLLOW;
     }
 
-    public void setCell(int tileX, int tileY, Cell cell) {
+    public void setCell(final int tileX, final int tileY, final Cell cell) {
         if (tileX < 0 || tileX > tilesX || tileY < 0 || tileY > tilesY)
             return;
 
-        Cell org = layer.getCell(tileX, tileY);
+        final Cell org = layer.getCell(tileX, tileY);
         layer.setCell(tileX, tileY, cell);
 
-        int key = tileX * 31 + tileY;
+        final int key = tileX * 31 + tileY;
         if (orgTiles.get(key) == null)
             orgTiles.put(key, new PositionedCell(org, tileX, tileY));
     }
 
-    public void transformTiles(int tileCx, int tileCy, int radius, Cell cell) {
-        int rr = radius * radius;
+    public void transformTiles(final int tileCx, final int tileCy, final int radius, final Cell cell) {
+        final int rr = radius * radius;
 
         for (int x = tileCx - radius; x <= tileCx + radius; ++x) {
             for (int y = tileCy - radius; y <= tileCy + radius; ++y) {
-                int dx = tileCx - x;
-                int dy = tileCy - y;
+                final int dx = tileCx - x;
+                final int dy = tileCy - y;
                 if ((dx * dx + dy * dy) < rr)
                     setCell(x, y, cell);
             }
@@ -141,19 +139,19 @@ public abstract class TileBasedLevel extends Level {
         return Factory.construct(map);
     }
 
-    public Rectangle getRectangle(int tileX, int tileY, int tilesX, int tilesY) {
+    public Rectangle getRectangle(final int tileX, final int tileY, final int tilesX, final int tilesY) {
         return new Rectangle(tileX * getTileWidth(), tileY * getTileHeight(), tilesX * getTileWidth(), tilesY * getTileHeight());
     }
 
-    public Vector2 center(int tileX, int tileY, Size entitySize) {
-        float x = (tileX * getTileWidth()) + (getTileWidth() / 2) - (entitySize.width / 2);
-        float y = (tileY * getTileHeight()) + (getTileHeight() / 2) - (entitySize.height / 2);
+    public Vector2 center(final int tileX, final int tileY, final Size entitySize) {
+        final float x = (tileX * getTileWidth()) + (getTileWidth() / 2) - (entitySize.width / 2);
+        final float y = (tileY * getTileHeight()) + (getTileHeight() / 2) - (entitySize.height / 2);
 
         return new Vector2(x, y);
     }
 
-    public void runOnceWhenMainCollides(Event event, int tileX, int tileY, int tilesX, int tilesY) {
-        runOnceWhen(event, ()-> getAliveMainCharacters()
+    public void runOnceWhenMainCollides(final Event event, final int tileX, final int tileY, final int tilesX, final int tilesY) {
+        runOnceWhen(event, () -> getAliveMainCharacters()
                 .stream()
                 .map(main -> Collisions.rectanglesCollide(main.bounds.toRectangle(), getRectangle(tileX, tileY, tilesX, tilesY)))
                 .findFirst()
@@ -169,12 +167,12 @@ public abstract class TileBasedLevel extends Level {
     private void encode() throws IOException {
         for (int x = 0; x < tilesX; x++) {
             for (int y = 0; y < tilesY; y++) {
-                Cell cell = layer.getCell(x, y);
+                final Cell cell = layer.getCell(x, y);
                 if (cell != null) {
-                    TextureRegion region = cell.getTile().getTextureRegion();
-                    TextureData tdata = region.getTexture().getTextureData();
+                    final TextureRegion region = cell.getTile().getTextureRegion();
+                    final TextureData tdata = region.getTexture().getTextureData();
                     tdata.prepare();
-                    Pixmap pix = tdata.consumePixmap();
+                    final Pixmap pix = tdata.consumePixmap();
                     tileSet = new Image2D(pix, true);
                     pix.dispose();
                     return;

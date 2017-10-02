@@ -18,7 +18,7 @@ class Ghost extends PathDrone {
     private Sound talkSound, successSound;
     public boolean reachedDest;
 
-    public Ghost(float x, float y, Entity follower, Entity reward, BitmapFont font, Sound talkSound, Sound successSound) {
+    public Ghost(final float x, final float y, final Entity follower, final Entity reward, final BitmapFont font, final Sound talkSound, final Sound successSound) {
         super(x, y);
         this.font = font;
         this.follower = follower;
@@ -38,13 +38,13 @@ class Ghost extends PathDrone {
                 firstEncounter = false;
                 talkSound.play();
                 getLevel().temp(Factory.drawText(HUDMessage.getMessage("Stay close to the end and I shall give you a present.", x() - 120, y() - 20, Color.PURPLE), font), 200);
-                getLevel().runOnceAfter(()-> {
+                getLevel().runOnceAfter(() -> {
                     distanceCheck = 430;
                     setMoveSpeed(1.8f);
                 }, 200);
             } else {
                 if (reachedDest) {
-                    getLevel().temp(()-> tint.a -= .02f, ()->tint.a == 0.0f);
+                    getLevel().temp(() -> tint.a -= .02f, () -> tint.a == 0.0f);
                     getLevel().add(reward.center(this));
                     activate(false);
                     successSound.play();

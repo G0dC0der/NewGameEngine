@@ -19,7 +19,7 @@ public class Thor extends PathDrone {
     private Color[] boltColors;
     private Music thunderSound;
 
-    public Thor(float x, float y, Entity... targets) {
+    public Thor(final float x, final float y, final Entity... targets) {
         super(x, y);
         this.targets = targets;
         displace = 100;
@@ -29,13 +29,13 @@ public class Thor extends PathDrone {
         bolts = 1;
         blend = true;
         fire = true;
-        boltColors = new Color[]{ Color.BLUE };
+        boltColors = new Color[]{Color.BLUE};
     }
 
     /**
      * The firing offset of the bolts.
      */
-    public void setFiringOffset(float x, float y) {
+    public void setFiringOffset(final float x, final float y) {
         offsetX = x;
         offsetY = y;
     }
@@ -43,7 +43,7 @@ public class Thor extends PathDrone {
     /**
      * Whether or not to fire. Setting this flag to false stops the bolts.
      */
-    public void setFire(boolean fire) {
+    public void setFire(final boolean fire) {
         this.fire = fire;
     }
 
@@ -57,56 +57,56 @@ public class Thor extends PathDrone {
     /**
      * The music to loop while firing the bolts.
      */
-    public void thunderSound(Music thunderSound) {
+    public void thunderSound(final Music thunderSound) {
         this.thunderSound = thunderSound;
     }
 
     /**
      * The amount of pixels to travel outside the given line.
      */
-    public void setDisplaceAmount(float displace) {
+    public void setDisplaceAmount(final float displace) {
         this.displace = displace;
     }
 
     /**
      * The jagged level of the line. Lower means more. Something really high will result in a straight line.
      */
-    public void setDetailLevel(float detail) {
+    public void setDetailLevel(final float detail) {
         this.detail = detail;
     }
 
     /**
      * The thickness of a bolt.
      */
-    public void setThickness(float thickness) {
+    public void setThickness(final float thickness) {
         this.thickness = thickness;
     }
 
     /**
      * The precision of the bolt. 0 means 100% accurate.
      */
-    public void setPrecisionLevel(float precision) {
+    public void setPrecisionLevel(final float precision) {
         this.precision = precision;
     }
 
     /**
      * The number of bolts
      */
-    public void setBolts(int bolts) {
+    public void setBolts(final int bolts) {
         this.bolts = bolts;
     }
 
     /**
      * Whether or not to blend the bolts.
      */
-    public void setBlend(boolean blend) {
+    public void setBlend(final boolean blend) {
         this.blend = blend;
     }
 
     /**
      * The colors of the bolts.
      */
-    public void setBoltColors(Color... boltColors) {
+    public void setBoltColors(final Color... boltColors) {
         this.boltColors = boltColors;
     }
 
@@ -132,20 +132,20 @@ public class Thor extends PathDrone {
                     thunderSound.setLooping(true);
                     thunderSound.play();
                 }
-            } else if (thunderSound.isPlaying()){
+            } else if (thunderSound.isPlaying()) {
                 thunderSound.stop();
             }
         }
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(final SpriteBatch batch) {
         super.render(batch);
 
         if (!fire)
             return;
 
-        Entity target = Collisions.findClosest(this, targets);
+        final Entity target = Collisions.findClosest(this, targets);
 
         drawLightning(
                 batch,
@@ -163,8 +163,8 @@ public class Thor extends PathDrone {
                 boltColors);
     }
 
-    private static void drawLightning(SpriteBatch batch, float x1, float y1, float x2, float y2, float displace, float detail, float thickness, float noise, int numberOfBolts, boolean blend, Texture dot, Color... colors) {
-        Color orgColor = batch.getColor();
+    private static void drawLightning(final SpriteBatch batch, final float x1, final float y1, final float x2, final float y2, final float displace, final float detail, final float thickness, final float noise, final int numberOfBolts, final boolean blend, final Texture dot, final Color... colors) {
+        final Color orgColor = batch.getColor();
         if (blend)
             batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
@@ -178,8 +178,8 @@ public class Thor extends PathDrone {
             batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     }
 
-    private static void drawLine(SpriteBatch batch, float _x1, float _y1, float _x2, float _y2, float thickness, Texture dot) {
-        float length = (float) Collisions.distance(_x1, _y1, _x2, _y2);
+    private static void drawLine(final SpriteBatch batch, final float _x1, final float _y1, final float _x2, final float _y2, final float thickness, final Texture dot) {
+        final float length = (float) Collisions.distance(_x1, _y1, _x2, _y2);
         float dx = _x1;
         float dy = _y1;
         dx = dx - _x2;
@@ -190,7 +190,7 @@ public class Thor extends PathDrone {
         batch.draw(dot, _x1, _y1, 0f, thickness * 0.5f, length, thickness, 1f, 1f, angle, 0, 0, dot.getWidth(), dot.getHeight(), false, false);
     }
 
-    private static void drawSingleP2PLightning(SpriteBatch batch, float x1, float y1, float x2, float y2, float displace, float detail, float thickness, Texture dot) {
+    private static void drawSingleP2PLightning(final SpriteBatch batch, final float x1, final float y1, final float x2, final float y2, final float displace, final float detail, final float thickness, final Texture dot) {
         if (displace < detail)
             drawLine(batch, x1, y1, x2, y2, thickness, dot);
         else {

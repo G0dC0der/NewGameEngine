@@ -12,30 +12,30 @@ public class BigRoller extends MobileEntity {
     private Vibrator rollingVib, crashingVib;
     private Sound rollSound, crashSound;
 
-    public BigRoller(float x, float y) {
-        move(x,y);
+    public BigRoller(final float x, final float y) {
+        move(x, y);
         accX = 200f;
         maxSpeed = 400f;
         rollSpeed = 100;
     }
 
-    public void setRollingVib(Vibrator rollingVib) {
+    public void setRollingVib(final Vibrator rollingVib) {
         this.rollingVib = rollingVib;
     }
 
-    public void setCrashingVib(Vibrator crashingVib) {
+    public void setCrashingVib(final Vibrator crashingVib) {
         this.crashingVib = crashingVib;
     }
 
-    public void setRollSound(Sound rollSound) {
+    public void setRollSound(final Sound rollSound) {
         this.rollSound = rollSound;
     }
 
-    public void setCrashSound(Sound crashSound) {
+    public void setCrashSound(final Sound crashSound) {
         this.crashSound = crashSound;
     }
 
-    public void setRollSpeed(float rollSpeed) {
+    public void setRollSpeed(final float rollSpeed) {
         this.rollSpeed = rollSpeed;
     }
 
@@ -48,7 +48,7 @@ public class BigRoller extends MobileEntity {
             if (vel < maxSpeed)
                 vel += accX * getEngine().delta;
 
-            float futureX = getFutureX();
+            final float futureX = getFutureX();
             if (occupiedAt(futureX, y())) {
                 movingLeft = false;
                 reached();
@@ -59,7 +59,7 @@ public class BigRoller extends MobileEntity {
             if (-vel < maxSpeed)
                 vel -= accX * getEngine().delta;
 
-            float futureX = getFutureX();
+            final float futureX = getFutureX();
             if (occupiedAt(futureX, y())) {
                 movingLeft = true;
                 reached();

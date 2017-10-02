@@ -10,11 +10,11 @@ public class GameContainer implements ApplicationListener {
 
     private final Engine engine;
 
-    public GameContainer(Engine engine) {
+    public GameContainer(final Engine engine) {
         this.engine = Objects.requireNonNull(engine);
     }
 
-    private void forwardError(Exception e) {
+    private void forwardError(final Exception e) {
         if (engine.exception != null) {
             e.initCause(engine.exception);
         }
@@ -28,7 +28,7 @@ public class GameContainer implements ApplicationListener {
     public void dispose() {
         try {
             engine.destroy();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             forwardError(e);
         }
     }
@@ -37,10 +37,10 @@ public class GameContainer implements ApplicationListener {
     public void render() {
         try {
             engine.overview();
-        } catch (ControlledException e) {
+        } catch (final ControlledException e) {
             engine.setGameState(GameState.DISPOSED);
             throw e;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             forwardError(e);
         }
     }
@@ -49,13 +49,13 @@ public class GameContainer implements ApplicationListener {
     public void create() {
         try {
             engine.setup();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             forwardError(e);
         }
     }
 
     @Override
-    public void resize(int i, int i1) {
+    public void resize(final int i, final int i1) {
     }
 
     @Override

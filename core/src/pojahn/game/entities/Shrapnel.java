@@ -5,87 +5,88 @@ import pojahn.game.core.Collisions;
 import pojahn.game.core.Level;
 
 public class Shrapnel extends Particle {
-	private Projectile split;
-	private boolean once;
+    private Projectile split;
+    private boolean once;
 
-	public Shrapnel(Projectile shrapnel) {
-		this.split = shrapnel;
-	}
-	
-	public Shrapnel getClone(float x, float y) {
-		Shrapnel s = new Shrapnel(split);
-		copyData(s);
-		if (cloneEvent != null)
-			cloneEvent.handleClonded(s);
+    public Shrapnel(final Projectile shrapnel) {
+        this.split = shrapnel;
+    }
 
-		return s;
-	}
+    public Shrapnel getClone(final float x, final float y) {
+        final Shrapnel s = new Shrapnel(split);
+        copyData(s);
+        if (cloneEvent != null)
+            cloneEvent.handleClonded(s);
 
-	@Override
-	public void logistics() {
-		if (!once) {
-			once = true;
+        return s;
+    }
 
-			Vector2[] edgePoints = getEightDirection();
-			Level l = getLevel();
+    @Override
+    public void logistics() {
+        if (!once) {
+            once = true;
 
-			for (Vector2 edgePoint : edgePoints) {
-				Projectile proj = split.getClone();
-				proj.center(this);
-				proj.setTarget(edgePoint);
-				l.add(proj);
-			}
+            final Vector2[] edgePoints = getEightDirection();
+            final Level l = getLevel();
 
-		}
+            for (final Vector2 edgePoint : edgePoints) {
+                final Projectile proj = split.getClone();
+                proj.center(this);
+                proj.setTarget(edgePoint);
+                l.add(proj);
+            }
 
-		super.logistics();
-	}
+        }
 
-	Vector2[] getEightDirection(){
-		float middleX = centerX(),
-			  middleY = centerY(),
-			  x,y;
-		
-		//NW Point
-		x = middleX - 1;
-		y = middleY - 1;
-		Vector2 p1 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
-		
-		//N Point
-		x = middleX;
-		y = middleY - 1;
-		Vector2 p2 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
-		
-		//NE Point
-		x = middleX + 1;
-		y = middleY - 1;
-		Vector2 p3 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
-		
-		//E Point
-		x = middleX + 1;
-		y = middleY;
-		Vector2 p4 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
-		
-		//SE Point
-		x = middleX + 1;
-		y = middleY + 1;
-		Vector2 p5 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
-		
-		//S Point
-		x = middleX;
-		y = middleY + 1;
-		Vector2 p6 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
-		
-		//SW Point
-		x = middleX - 1;
-		y = middleY + 1;
-		Vector2 p7 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
-		
-		//W Point
-		x = middleX - 1;
-		y = middleY;
-		Vector2 p8 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
-		
-		return new Vector2[]{p1,p2,p3,p4,p5,p6,p7,p8};
-	}
+        super.logistics();
+    }
+
+    Vector2[] getEightDirection() {
+        final float middleX = centerX();
+        final float middleY = centerY();
+        float x;
+        float y;
+
+        //NW Point
+        x = middleX - 1;
+        y = middleY - 1;
+        final Vector2 p1 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+
+        //N Point
+        x = middleX;
+        y = middleY - 1;
+        final Vector2 p2 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+
+        //NE Point
+        x = middleX + 1;
+        y = middleY - 1;
+        final Vector2 p3 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+
+        //E Point
+        x = middleX + 1;
+        y = middleY;
+        final Vector2 p4 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+
+        //SE Point
+        x = middleX + 1;
+        y = middleY + 1;
+        final Vector2 p5 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+
+        //S Point
+        x = middleX;
+        y = middleY + 1;
+        final Vector2 p6 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+
+        //SW Point
+        x = middleX - 1;
+        y = middleY + 1;
+        final Vector2 p7 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+
+        //W Point
+        x = middleX - 1;
+        y = middleY;
+        final Vector2 p8 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+
+        return new Vector2[]{p1, p2, p3, p4, p5, p6, p7, p8};
+    }
 }

@@ -35,7 +35,7 @@ public abstract class PlayableEntity extends MobileEntity {
         return hp;
     }
 
-    public void touch(int strength) {
+    public void touch(final int strength) {
         if (strength >= 0) {
             hp += strength;
             hurtCounter = 0;
@@ -58,15 +58,15 @@ public abstract class PlayableEntity extends MobileEntity {
         return controller;
     }
 
-    public void setController(Controller controller) {
+    public void setController(final Controller controller) {
         this.controller = controller;
     }
 
-    public void setHurtSound(Sound hurtSound) {
+    public void setHurtSound(final Sound hurtSound) {
         this.hurtSound = hurtSound;
     }
 
-    public void setDieSound(Sound dieSound) {
+    public void setDieSound(final Sound dieSound) {
         this.dieSound = dieSound;
     }
 
@@ -74,7 +74,7 @@ public abstract class PlayableEntity extends MobileEntity {
         return isGhost;
     }
 
-    public void setGhostData(List<Keystrokes> replayData) {
+    public void setGhostData(final List<Keystrokes> replayData) {
         this.replayData = replayData;
         isGhost = true;
     }
@@ -88,7 +88,7 @@ public abstract class PlayableEntity extends MobileEntity {
             setState(Vitality.DEAD);
     }
 
-    public void setState(Vitality state) {
+    public void setState(final Vitality state) {
         if (state == Vitality.ALIVE && this.state == Vitality.COMPLETED)
             throw new IllegalArgumentException("Can not set to state to " + Vitality.ALIVE + " when the current state is " + Vitality.COMPLETED);
         if (state == Vitality.DEAD && this.state == Vitality.DEAD)
@@ -125,14 +125,14 @@ public abstract class PlayableEntity extends MobileEntity {
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(final SpriteBatch batch) {
         if (--hurtCounter > 0 && ++counter % 5 == 0 || isDead())
             return;
 
         super.render(batch);
     }
 
-    void setKeysDown(Keystrokes keysDown) {
+    void setKeysDown(final Keystrokes keysDown) {
         this.keysDown = keysDown;
     }
 

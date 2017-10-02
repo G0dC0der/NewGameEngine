@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.BigImage.RenderStrategy;
 import pojahn.game.entities.Bouncer;
@@ -22,7 +23,6 @@ import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.shaders.InvertShader;
 import pojahn.game.essentials.stages.TileBasedLevel;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -38,7 +38,7 @@ public class DontEatShroom extends TileBasedLevel {
     private float vibStrength;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -75,7 +75,7 @@ public class DontEatShroom extends TileBasedLevel {
          */
         play = ResourceUtil.getGravityMan(resources);
         play.move(25 * 24, 66 * 24);
-        play.addEvent(()-> {
+        play.addEvent(() -> {
             if (play.y() - play.height() >= getHeight() - play.height())
                 play.touch(-10);
         });
@@ -85,11 +85,11 @@ public class DontEatShroom extends TileBasedLevel {
          * Background and foreground
          */
         add(getWorldImage());
-        Entity bgTiles = Factory.construct(resources.getTiledMap("bgstuff.tmx"));
+        final Entity bgTiles = Factory.construct(resources.getTiledMap("bgstuff.tmx"));
         bgTiles.zIndex(-1);
         add(bgTiles);
 
-        BigImage bg = new BigImage(RenderStrategy.PARALLAX);
+        final BigImage bg = new BigImage(RenderStrategy.PARALLAX);
         bg.setRatio(.27f);
         bg.setImage(resources.getImage("background0.png"));
         bg.zIndex(-10);
@@ -99,16 +99,16 @@ public class DontEatShroom extends TileBasedLevel {
          * Mouse
          */
         addMouse(81 * 24, 1505,
-                 84 * 24, 1505);
+                84 * 24, 1505);
 
         addMouse(2328, 1219,
-                 2509, 1219);
+                2509, 1219);
 
         addMouse(2880, 1219,
-                 3020, 1219);
+                3020, 1219);
 
         addMouse(4246, 1171,
-                 4576, 1171);
+                4576, 1171);
         /*
          * Shredder
          */
@@ -119,7 +119,7 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Moving Platform
          */
-        SolidPlatform solidP = new SolidPlatform(147 * 24, 57 * 24, play);
+        final SolidPlatform solidP = new SolidPlatform(147 * 24, 57 * 24, play);
         solidP.appendPath();
         solidP.appendPath(169 * 24, solidP.y());
         solidP.setImage(resources.getImage("platform.png"));
@@ -129,7 +129,7 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Bouncer
          */
-        Bouncer bouncer = new Bouncer(4676, 1195, (GravityMan) play);
+        final Bouncer bouncer = new Bouncer(4676, 1195, (GravityMan) play);
         bouncer.setBouncingDirection(Direction.N);
         bouncer.setPower(550);
         bouncer.setImage(resources.getImage("bounce.png"));
@@ -139,8 +139,8 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Gem
          */
-        Entity gem = new EntityBuilder().move(471, 1577).image(resources.getImage("gem.png")).build();
-        gem.ifCollides(play).then(()->{
+        final Entity gem = new EntityBuilder().move(471, 1577).image(resources.getImage("gem.png")).build();
+        gem.ifCollides(play).then(() -> {
             play.win();
             resources.getSound("collect1.wav").play();
             discard(gem);
@@ -150,25 +150,25 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Door
          */
-        Entity door = new EntityBuilder().move(433, 1545).image(resources.getImage("door.png")).build();
+        final Entity door = new EntityBuilder().move(433, 1545).image(resources.getImage("door.png")).build();
         add(door);
         play.addObstacle(door);
 
         /*
          * Key
          */
-        Entity key = new Entity();
+        final Entity key = new Entity();
         key.move(4294, 907);
         key.setImage(resources.getImage("key.png"));
-        key.addEvent(()->{
-            if(key.collidesWith(play)) {
+        key.addEvent(() -> {
+            if (key.collidesWith(play)) {
                 discard(key);
                 resources.getSound("collect3.wav").play();
                 keyTaken = true;
-                runOnceWhen(()-> {
+                runOnceWhen(() -> {
                     door.die();
                     play.removeObstacle(door);
-                }, ()-> eaten && keyTaken);
+                }, () -> eaten && keyTaken);
             }
         });
         add(key);
@@ -176,11 +176,11 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Magic Shroom
          */
-        Entity shroom = new Entity();
+        final Entity shroom = new Entity();
         shroom.move(4583, 904);
         shroom.setImage(resources.getImage("shroom.png"));
-        shroom.addEvent(()->{
-            if(shroom.collidesWith(play)) {
+        shroom.addEvent(() -> {
+            if (shroom.collidesWith(play)) {
                 discard(shroom);
                 resources.getSound("eat.wav").play();
                 eaten = true;
@@ -191,18 +191,19 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Pink Dots
          */
-        Entity dots = new Entity(){
+        final Entity dots = new Entity() {
             int counter = 0;
             final float space = 50f;
+
             @Override
-            public void render(SpriteBatch batch) {
+            public void render(final SpriteBatch batch) {
                 getEngine().hudCamera();
 
-                float val = ++counter % space;
+                final float val = ++counter % space;
 
-                for(int x = 0; x < 20 * space; x += space) {
-                    for(int y = 0; y < 20 * space; y += space) {
-                        Color defColor = batch.getColor();
+                for (int x = 0; x < 20 * space; x += space) {
+                    for (int y = 0; y < 20 * space; y += space) {
+                        final Color defColor = batch.getColor();
                         batch.setColor(tint);
                         basicRender(batch, nextImage(), x + val, y);
                         batch.setColor(defColor);
@@ -220,12 +221,12 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Vibrator
          */
-        Entity vibrator = new Entity(){
+        final Entity vibrator = new Entity() {
             @Override
             public void logistics() {
                 if (++vibCounter % 2 == 0) {
                     vibStrength = Math.min(10, vibStrength + .05f);
-                    int value = vibCounter2++ % 4;
+                    final int value = vibCounter2++ % 4;
                     float tx = getEngine().tx();
                     float ty = getEngine().ty();
 
@@ -256,7 +257,7 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Zoomer
          */
-        Entity zoomer = new Entity() {
+        final Entity zoomer = new Entity() {
 
             float speed, min = .5f, max = 1f;
             float scaleValue;
@@ -290,7 +291,7 @@ public class DontEatShroom extends TileBasedLevel {
         /*
          * Trigger all drug effects
          */
-        runOnceWhen(()->{
+        runOnceWhen(() -> {
             noise.play();
             add(Factory.tuneUp(noise, .001f, .75f));
             add(Factory.tuneDown(music, .001f, .1f));
@@ -300,16 +301,16 @@ public class DontEatShroom extends TileBasedLevel {
             add(dots);
             add(vibrator);
             add(zoomer);
-            add(()->{
+            add(() -> {
                 invertShader.setInvertValue(Math.min(1f, invertShader.getInvertValue() + .004f));
                 invertShader.prepare();
             });
-        }, ()-> eaten);
+        }, () -> eaten);
     }
 
-    void addMouse(float... cords) {
-        PathDrone mouse = new PathDrone(cords[0], cords[1]);
-        for(int i = 0; i < cords.length ; i += 2) {
+    void addMouse(final float... cords) {
+        final PathDrone mouse = new PathDrone(cords[0], cords[1]);
+        for (int i = 0; i < cords.length; i += 2) {
             mouse.appendPath(cords[i], cords[i + 1]);
         }
         mouse.setMoveSpeed(1);
@@ -319,8 +320,8 @@ public class DontEatShroom extends TileBasedLevel {
         add(mouse);
     }
 
-    PathDrone getShredder(float x, float y, float width, float height) {
-        PathDrone shredder = new PathDrone(x, y);
+    PathDrone getShredder(final float x, final float y, final float width, final float height) {
+        final PathDrone shredder = new PathDrone(x, y);
         shredder.setImage(2, resources.getAnimation("shredder"));
         shredder.setHitbox(Hitbox.CIRCLE);
         shredder.setMoveSpeed(2);

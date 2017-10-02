@@ -21,7 +21,7 @@ public class PushableObject extends MobileEntity {
     private Sound landingSound;
     private Music pushingSound;
 
-    public PushableObject(float x, float y, MobileEntity... pushers) {
+    public PushableObject(final float x, final float y, final MobileEntity... pushers) {
         vel = new Vector2();
         move(x, y);
         this.pushers = pushers;
@@ -39,7 +39,7 @@ public class PushableObject extends MobileEntity {
     @Override
     public void init() {
         super.init();
-        for (MobileEntity mobile : pushers) {
+        for (final MobileEntity mobile : pushers) {
             mobile.addObstacle(this);
             addObstacle(mobile);
         }
@@ -52,15 +52,15 @@ public class PushableObject extends MobileEntity {
         if (useGravity) {
             if (!canDown()) {
                 if (vel.y < 0) {
-                    if(landingSound != null)
+                    if (landingSound != null)
                         landingSound.play(sounds.calc());
-                    if(slamEvent != null)
+                    if (slamEvent != null)
                         slamEvent.eventHandling();
                 }
                 vel.y = 0;
             } else {
                 drag();
-                float nextY = bounds.pos.y - vel.y * DELTA;
+                final float nextY = bounds.pos.y - vel.y * DELTA;
 
                 if (!occupiedAt(x(), nextY))
                     move(x(), nextY);
@@ -72,7 +72,7 @@ public class PushableObject extends MobileEntity {
         if (pushStrength > 0.0f) {
             dummy.set(x() - 2, y(), width() + 4, height());
 
-            for (MobileEntity mobile : pushers) {
+            for (final MobileEntity mobile : pushers) {
                 if (!mustStand || !mobile.canDown()) {
 
                     if (rectanglesCollide(mobile.bounds.toRectangle(), dummy)) {
@@ -86,7 +86,7 @@ public class PushableObject extends MobileEntity {
         }
 
         if (vel.x != 0) {
-            float nextX = bounds.pos.x - vel.x * getEngine().delta;
+            final float nextX = bounds.pos.x - vel.x * getEngine().delta;
             if (!occupiedAt(nextX, y())) {
                 move(nextX, y());
 
@@ -119,19 +119,19 @@ public class PushableObject extends MobileEntity {
         }
     }
 
-    public void useGravity(boolean gravity) {
+    public void useGravity(final boolean gravity) {
         useGravity = gravity;
     }
 
-    public void mustStand(boolean mustStand) {
+    public void mustStand(final boolean mustStand) {
         this.mustStand = mustStand;
     }
 
-    public void setSlammingSound(Sound sound) {
+    public void setSlammingSound(final Sound sound) {
         landingSound = sound;
     }
 
-    public void setPushingSound(Music pushingSound) {
+    public void setPushingSound(final Music pushingSound) {
         this.pushingSound = pushingSound;
     }
 
@@ -139,24 +139,24 @@ public class PushableObject extends MobileEntity {
         return vel.y < 0;
     }
 
-    public void setSlamEvent(Event slamEvent) {
+    public void setSlamEvent(final Event slamEvent) {
         this.slamEvent = slamEvent;
     }
 
     @Deprecated
     @Override
-    public void setHitbox(Hitbox hitbox) {
+    public void setHitbox(final Hitbox hitbox) {
         throw new UnsupportedOperationException("PushableObject is limited to rectangular hitbox.");
     }
 
     @Override
     public void dispose() {
-        for (MobileEntity mobile : pushers)
+        for (final MobileEntity mobile : pushers)
             mobile.removeObstacle(this);
     }
 
     private void drag() {
-        float force = mass * gravity;
+        final float force = mass * gravity;
         vel.y *= 1.0 - (damping * getEngine().delta);
 
         if (fallSpeedLimit < vel.y) {

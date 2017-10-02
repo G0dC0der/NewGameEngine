@@ -15,7 +15,7 @@ public class Weapon extends PathDrone {
     private Projectile proj;
     private Particle firingParticle;
 
-    public Weapon(float x, float y, int burst, int burstDelay, int emptyReload, Entity... targets) {
+    public Weapon(final float x, final float y, final int burst, final int burstDelay, final int emptyReload, final Entity... targets) {
         super(x, y);
         this.burst = burst;
         this.reload = emptyReload;
@@ -56,10 +56,10 @@ public class Weapon extends PathDrone {
                 firing = true;
                 burstCounter++;
 
-                Projectile projClone;
+                final Projectile projClone;
                 Particle partClone = null;
                 if (frontFire) {
-                    Vector2 front = getFrontPosition();
+                    final Vector2 front = getFrontPosition();
                     projClone = proj.getClone();
                     projClone.move(front.x - proj.halfWidth() + firingOffsetX, front.y - proj.halfHeight() + firingOffsetY);
                     if (firingParticle != null) {
@@ -88,49 +88,49 @@ public class Weapon extends PathDrone {
         return targeting;
     }
 
-    public void setProjectile(Projectile proj) {
+    public void setProjectile(final Projectile proj) {
         this.proj = proj;
     }
 
-    public void setFiringOffsets(float x, float y) {
+    public void setFiringOffsets(final float x, final float y) {
         firingOffsetX = x;
         firingOffsetY = y;
     }
 
-    public void setFiringParticle(Particle firingParticle) {
+    public void setFiringParticle(final Particle firingParticle) {
         this.firingParticle = firingParticle;
     }
 
-    public void setFrontFire(boolean frontFire) {
+    public void setFrontFire(final boolean frontFire) {
         this.frontFire = frontFire;
     }
 
-    public void setRotationSpeed(float rotationSpeed) {
+    public void setRotationSpeed(final float rotationSpeed) {
         this.rotationSpeed = rotationSpeed;
     }
 
-    public void setAlwaysRotate(boolean alwaysRotate) {
+    public void setAlwaysRotate(final boolean alwaysRotate) {
         this.alwaysRotate = alwaysRotate;
     }
 
-    public void setRotateWhileRecover(boolean rotateWhileRecover) {
+    public void setRotateWhileRecover(final boolean rotateWhileRecover) {
         this.rotateWhileRecover = rotateWhileRecover;
     }
 
-    public void setIgnoreInactive(boolean ignoreInactive) {
+    public void setIgnoreInactive(final boolean ignoreInactive) {
         this.ignoreInactive = ignoreInactive;
     }
 
     private void rotateWeapon() {
         Entity target = null;
 
-        if(currTarget == null && alwaysRotate) {
+        if (currTarget == null && alwaysRotate) {
             target = Collisions.findClosest(this, getTargets());
         } else if (rotationAllowed && rotationSpeed != 0.0f && targets != null && canSee(currTarget)) {
             target = currTarget;
         }
 
-        if(target != null)
+        if (target != null)
             bounds.rotation = Collisions.rotateTowardsPoint(centerX(), centerY(), target.centerX(), target.centerY(), bounds.rotation, rotationSpeed);
     }
 
@@ -154,8 +154,8 @@ public class Weapon extends PathDrone {
             if (rotationSpeed == 0.0f) {
                 return canSee(currTarget);
             } else {
-                Vector2 front = getFrontPosition();
-                Vector2 edge = Collisions.findEdgePoint(centerX(), centerY(), front.x, front.y, getLevel());
+                final Vector2 front = getFrontPosition();
+                final Vector2 edge = Collisions.findEdgePoint(centerX(), centerY(), front.x, front.y, getLevel());
 
                 return Collisions.lineRectangle(front.x, front.y, edge.x, edge.y, currTarget.bounds.toRectangle()) && canSee(currTarget);
             }

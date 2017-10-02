@@ -14,7 +14,7 @@ public class Circle extends MobileEntity {
      * @param radius        The radius, measured in pixels.
      * @param startingAngle The starting angle in radians.
      */
-    public Circle(float centerX, float centerY, float radius, float startingAngle) {
+    public Circle(final float centerX, final float centerY, final float radius, final float startingAngle) {
         this.centerX = centerX;
         this.centerY = centerY;
         this.radius = radius;
@@ -29,15 +29,15 @@ public class Circle extends MobileEntity {
         bounds.pos.y = (float) (radius * Math.sin(counter) + centerY);
     }
 
-    public void setCenterX(float centerX) {
+    public void setCenterX(final float centerX) {
         this.centerX = centerX;
     }
 
-    public void setCenterY(float centerY) {
+    public void setCenterY(final float centerY) {
         this.centerY = centerY;
     }
 
-    public void setRadius(float radius) {
+    public void setRadius(final float radius) {
         this.radius = radius;
     }
 }

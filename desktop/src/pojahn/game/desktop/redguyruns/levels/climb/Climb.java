@@ -10,6 +10,7 @@ import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.BigImage.RenderStrategy;
 import pojahn.game.entities.Bouncer;
@@ -34,7 +35,6 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.OtherMath;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -46,7 +46,7 @@ public class Climb extends TileBasedLevel {
     private Music music;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -64,15 +64,15 @@ public class Climb extends TileBasedLevel {
         music = resources.getMusic("music.ogg");
         Utils.playMusic(music, 0, .5f);
 
-        Pixmap pix = new Pixmap(1,1, Format.RGBA8888);
+        final Pixmap pix = new Pixmap(1, 1, Format.RGBA8888);
         pix.setColor(Color.BLACK);
         pix.fill();
-        Image2D black = new Image2D(pix, false);
+        final Image2D black = new Image2D(pix, false);
         pix.dispose();
         resources.addAsset("black", black);
 
         getCheckpointHandler().appendCheckpoint(1765, 1370, 1688, 1372, 100, 100);
-        getCheckpointHandler().setReachEvent(()-> GFX.renderCheckpoint(resources, this));
+        getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(resources, this));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class Climb extends TileBasedLevel {
         /*
          * Weak Platforms
          */
-        DestroyablePlatform weak1 = new DestroyablePlatform(47 * 24, 168 * 24, play);
+        final DestroyablePlatform weak1 = new DestroyablePlatform(47 * 24, 168 * 24, play);
         weak1.setImage(resources.getImage("weak.png"));
         weak1.setDestroyImage(new Animation<Image2D>(1, resources.getImage("weakdest.png")));
         weak1.setBreakSound(resources.getSound("collapsing.wav"));
@@ -106,13 +106,13 @@ public class Climb extends TileBasedLevel {
         /*
          * Moving Platforms
          */
-        SolidPlatform solp1 = new SolidPlatform(1709, 3336, play);
+        final SolidPlatform solp1 = new SolidPlatform(1709, 3336, play);
         solp1.setImage(resources.getImage("movablep.png"));
         solp1.setMoveSpeed(1.5f);
         solp1.appendPath(1709, 3336, 60, false, null);
-        solp1.appendPath(1709 - (1106 / 2)  + solp1.width() + 50, 3336, 60, false, null);
+        solp1.appendPath(1709 - (1106 / 2) + solp1.width() + 50, 3336, 60, false, null);
 
-        SolidPlatform solp2 = new SolidPlatform(671, 3336, play);
+        final SolidPlatform solp2 = new SolidPlatform(671, 3336, play);
         solp2.setImage(resources.getImage("movablep.png"));
         solp2.setMoveSpeed(1.5f);
         solp2.appendPath(671, 3336, 60, false, null);
@@ -124,15 +124,15 @@ public class Climb extends TileBasedLevel {
         /*
          * Enemies
          */
-        Entity enemy = new Entity();
+        final Entity enemy = new Entity();
         enemy.setImage(resources.getImage("enemy.png"));
         enemy.setHitbox(Hitbox.PIXEL);
         enemy.zIndex(10);
         enemy.setCloneEvent(clonie -> clonie.addEvent(Factory.hitMain(clonie, play, -1)));
 
-        add(enemy.getClone().move(1709 - (1106 / 2)  + solp1.width() + 300, 3300));
-        add(enemy.getClone().move(1709 - (1106 / 2)  + solp1.width() + 350, 3300));
-        add(enemy.getClone().move(1709 - (1106 / 2)  + solp1.width(), 3300));
+        add(enemy.getClone().move(1709 - (1106 / 2) + solp1.width() + 300, 3300));
+        add(enemy.getClone().move(1709 - (1106 / 2) + solp1.width() + 350, 3300));
+        add(enemy.getClone().move(1709 - (1106 / 2) + solp1.width(), 3300));
 
         add(enemy.getClone().move(671 + (1106 / 2) - solp2.width() - 300, 3300));
         add(enemy.getClone().move(671 + (1106 / 2) - solp2.width() - 350, 3300));
@@ -141,25 +141,25 @@ public class Climb extends TileBasedLevel {
         /*
          * Jumpable Thwump
          */
-        RemoteVibration vib = new RemoteVibration(play);
+        final RemoteVibration vib = new RemoteVibration(play);
         vib.setVib(150);
         vib.setDuration(20);
         add(vib);
 
-        JumpingThwump jumpingThwump = new JumpingThwump(495, 2865, play);
+        final JumpingThwump jumpingThwump = new JumpingThwump(495, 2865, play);
         jumpingThwump.setImage(resources.getImage("fatidle.png"));
         jumpingThwump.setJumpImage(new Animation<Image2D>(1, resources.getImage("fatjump.png")));
         jumpingThwump.setSlamSound(resources.getSound("slam.wav"));
         jumpingThwump.setJumpSound(resources.getSound("fatjump.wav"));
         jumpingThwump.sounds.useFalloff = true;
         jumpingThwump.sounds.power = 40;
-        jumpingThwump.setSlamEvent(()-> {
+        jumpingThwump.setSlamEvent(() -> {
             vib.vibrate(jumpingThwump);
         });
 
-        JumpingThwump jumpingThwump2 = jumpingThwump.getClone();
-        jumpingThwump2.move(243, 2456) ;
-        jumpingThwump2.setSlamEvent(()-> {
+        final JumpingThwump jumpingThwump2 = jumpingThwump.getClone();
+        jumpingThwump2.move(243, 2456);
+        jumpingThwump2.setSlamEvent(() -> {
             vib.vibrate(jumpingThwump2);
         });
 
@@ -169,10 +169,10 @@ public class Climb extends TileBasedLevel {
         /*
          * Rock Worm
          */
-        Animation<Image2D> rockwormImg = new Animation<>(6, resources.getAnimation("rockworm"));
+        final Animation<Image2D> rockwormImg = new Animation<>(6, resources.getAnimation("rockworm"));
         rockwormImg.pingPong(true);
 
-        Entity rockworm = new Entity();
+        final Entity rockworm = new Entity();
         rockworm.setImage(rockwormImg);
         rockworm.setHitbox(Hitbox.PIXEL);
         rockworm.zIndex(-1);
@@ -185,17 +185,17 @@ public class Climb extends TileBasedLevel {
         /*
          * Cave Background and shadow
          */
-        Rectangle darkArea = new Rectangle(80 * 24, 650, 809, 785);
+        final Rectangle darkArea = new Rectangle(80 * 24, 650, 809, 785);
 
-        BigImage darkLayer = new BigImage(RenderStrategy.FIXED);
+        final BigImage darkLayer = new BigImage(RenderStrategy.FIXED);
         darkLayer.tint.a = 0;
         darkLayer.setImage(resources.getImage("black"));
         darkLayer.bounds.size.width = 800;
         darkLayer.bounds.size.height = 600;
         darkLayer.zIndex(Integer.MAX_VALUE);
-        darkLayer.addEvent(()->{
-            boolean dark = Collisions.rectanglesCollide(darkArea, play.bounds.toRectangle());
-            float value = dark ? .01f : -.01f;
+        darkLayer.addEvent(() -> {
+            final boolean dark = Collisions.rectanglesCollide(darkArea, play.bounds.toRectangle());
+            final float value = dark ? .01f : -.01f;
             darkLayer.tint.a = OtherMath.keepInBounds(0, .7f, darkLayer.tint.a + value);
         });
         add(darkLayer);
@@ -205,20 +205,20 @@ public class Climb extends TileBasedLevel {
         /*
          * Crushers
          */
-        TransformablePlatform crush1 = new TransformablePlatform(90 * 24, 53 * 24, play);
+        final TransformablePlatform crush1 = new TransformablePlatform(90 * 24, 53 * 24, play);
         crush1.setImage(resources.getImage("crusher.png"));
         crush1.appendPath();
         crush1.appendPath(94 * 24, crush1.y());
         crush1.setMoveSpeed(1.5f);
 
-        TransformablePlatform crush2 = new TransformablePlatform(94 * 24, 46 * 24, play);
+        final TransformablePlatform crush2 = new TransformablePlatform(94 * 24, 46 * 24, play);
         crush2.setImage(resources.getImage("crusher2.png"));
         crush2.appendPath();
         crush2.appendPath(crush2.x(), 51 * 24);
         crush2.setMoveSpeed(1.2f);
         crush2.setFollowMode(FollowMode.STRICT);
 
-        TransformablePlatform crush3 = new TransformablePlatform(90 * 24, 51 * 24, play);
+        final TransformablePlatform crush3 = new TransformablePlatform(90 * 24, 51 * 24, play);
         crush3.setImage(resources.getImage("crusher2.png"));
         crush3.appendPath();
         crush3.appendPath(crush3.x(), 46 * 24);
@@ -232,7 +232,7 @@ public class Climb extends TileBasedLevel {
         /*
          * Spikes
          */
-        Entity spikes = new Entity();
+        final Entity spikes = new Entity();
         spikes.move(90 * 24, 31 * 24);
         spikes.setHitbox(Hitbox.PIXEL);
         spikes.setImage(resources.getImage("spikes.png"));
@@ -242,14 +242,14 @@ public class Climb extends TileBasedLevel {
         /*
          * Fans
          */
-        Entity fan1 = new Entity();
+        final Entity fan1 = new Entity();
         fan1.setImage(1, resources.getAnimation("fan"));
         fan1.flipY = true;
         fan1.move(74, 2116);
         fan1.addEvent(Factory.hitMain(fan1, play, -1));
         fan1.setHitbox(Hitbox.PIXEL);
 
-        Entity fan2 = fan1.getClone().move(765, 1399);
+        final Entity fan2 = fan1.getClone().move(765, 1399);
         fan2.addEvent(Factory.hitMain(fan2, play, -1));
         fan2.flipY = false;
 
@@ -259,11 +259,11 @@ public class Climb extends TileBasedLevel {
         /*
          * Winds
          */
-        Wind wind1 = new Wind(75, 1832, 120, 600, Direction.N, (GravityMan)play);
+        final Wind wind1 = new Wind(75, 1832, 120, 600, Direction.N, (GravityMan) play);
         wind1.setImage(2, resources.getAnimation("wind"));
         wind1.rotate(180);
 
-        Wind wind2 = new Wind(758, 1419, 7, 250, Direction.S, (GravityMan)play);
+        final Wind wind2 = new Wind(758, 1419, 7, 250, Direction.S, (GravityMan) play);
         wind2.setImage(2, resources.getAnimation("wind"));
 
         add(wind1);
@@ -277,16 +277,16 @@ public class Climb extends TileBasedLevel {
         /*
          * Bouncer
          */
-        Rectangle unfreezeArea = new Rectangle(1353, 538, 86, 77);
+        final Rectangle unfreezeArea = new Rectangle(1353, 538, 86, 77);
 
-        PathDrone bouncerMove = new PathDrone(1365, 553);
+        final PathDrone bouncerMove = new PathDrone(1365, 553);
         bouncerMove.appendPath();
         bouncerMove.appendPath(484, bouncerMove.y());
         bouncerMove.setMoveSpeed(1.2f);
         bouncerMove.freeze();
-        runOnceWhen(bouncerMove::unfreeze, ()-> Collisions.rectanglesCollide(play.bounds.toRectangle(), unfreezeArea));
+        runOnceWhen(bouncerMove::unfreeze, () -> Collisions.rectanglesCollide(play.bounds.toRectangle(), unfreezeArea));
 
-        Bouncer bouncer = new Bouncer(0,0,(GravityMan)play);
+        final Bouncer bouncer = new Bouncer(0, 0, (GravityMan) play);
         bouncer.setPower(320);
         bouncer.setBouncingDirection(Direction.N);
         bouncer.setBounceSound(resources.getSound("bumper.wav"));
@@ -299,7 +299,7 @@ public class Climb extends TileBasedLevel {
         /*
          * Gem
          */
-        Collectable gem = new Collectable(445, 535, play);
+        final Collectable gem = new Collectable(445, 535, play);
         gem.setImage(4, resources.getAnimation("gem"));
         gem.setCollectSound(resources.getSound("collect1.wav"));
         gem.setCollectEvent(collector -> play.setState(Vitality.COMPLETED));

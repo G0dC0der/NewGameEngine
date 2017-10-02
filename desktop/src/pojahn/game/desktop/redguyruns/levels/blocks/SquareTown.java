@@ -35,7 +35,7 @@ public class SquareTown extends PixelBasedLevel {
     private int collectedGems, gems, collectedGems2, gems2;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -81,7 +81,7 @@ public class SquareTown extends PixelBasedLevel {
 		/*
          * Spikey
 		 */
-        PathDrone spikey = new PathDrone(240, 1202);
+        final PathDrone spikey = new PathDrone(240, 1202);
         spikey.appendPath();
         spikey.appendPath(1020, spikey.y());
         spikey.appendPath(1020, 1501);
@@ -93,12 +93,12 @@ public class SquareTown extends PixelBasedLevel {
         add(spikey);
 
 		/*
-		 * Platforms and gems
+         * Platforms and gems
 		 */
-        OneWay ow1 = new OneWay(360, 1178, Direction.N, play);
+        final OneWay ow1 = new OneWay(360, 1178, Direction.N, play);
         ow1.setImage(resources.getImage("platformImg.png"));
 
-        OneWay ow2 = new OneWay(854, 1178, Direction.N, play);
+        final OneWay ow2 = new OneWay(854, 1178, Direction.N, play);
         ow2.setImage(resources.getImage("platformImg.png"));
 
         add(ow1);
@@ -113,7 +113,7 @@ public class SquareTown extends PixelBasedLevel {
 		/*
 		 * Crabs
 		 */
-        PathDrone crab1 = new PathDrone(1181, 1302);
+        final PathDrone crab1 = new PathDrone(1181, 1302);
         crab1.appendPath();
         crab1.appendPath(crab1.x(), 792);
         crab1.setImage(getCrabAnimationSpeed(), resources.getAnimation("crabImg"));
@@ -123,7 +123,7 @@ public class SquareTown extends PixelBasedLevel {
         crab1.sounds.useFalloff = true;
         crab1.addEvent(Factory.repeatSound(crab1, resources.getSound("crabMoveLoop.wav"), 25));
 
-        PathDrone crab2 = new PathDrone(1181, 182);
+        final PathDrone crab2 = new PathDrone(1181, 182);
         crab2.appendPath();
         crab2.appendPath(crab2.x(), 432);
         crab2.setImage(getCrabAnimationSpeed(), resources.getAnimation("crabImg"));
@@ -145,7 +145,9 @@ public class SquareTown extends PixelBasedLevel {
 		/*
 		 * Crushing Block Wall
 		 */
-        float xs = 1200, ys = 480, xe = 1620;
+        final float xs = 1200;
+        float ys = 480;
+        final float xe = 1620;
 
         final SolidPlatform w1 = getBlock(xs, ys, Color.YELLOW);
         w1.appendPath(xe, ys);
@@ -200,7 +202,7 @@ public class SquareTown extends PixelBasedLevel {
 		 * Rectangular moving blocks
 		 */
         //Upper right
-        SolidPlatform rec1 = getBlock(1620, 840, Color.RED);
+        final SolidPlatform rec1 = getBlock(1620, 840, Color.RED);
         rec1.appendPath(1620, 840);
         rec1.appendPath(1500, 840);
         rec1.appendPath(1500, 960);
@@ -209,7 +211,7 @@ public class SquareTown extends PixelBasedLevel {
         rec1.unfreeze();
 
         //Upper left
-        SolidPlatform rec2 = getBlock(1260, 840, Color.RED);
+        final SolidPlatform rec2 = getBlock(1260, 840, Color.RED);
         rec2.appendPath(1260, 840);
         rec2.appendPath(1380, 840);
         rec2.appendPath(1380, 960);
@@ -218,7 +220,7 @@ public class SquareTown extends PixelBasedLevel {
         rec2.unfreeze();
 
         //Lower left
-        SolidPlatform rec3 = getBlock(1380, 960, Color.RED);
+        final SolidPlatform rec3 = getBlock(1380, 960, Color.RED);
         rec3.appendPath(1380, 960);
         rec3.appendPath(1260, 960);
         rec3.appendPath(1260, 1080);
@@ -226,7 +228,7 @@ public class SquareTown extends PixelBasedLevel {
         rec3.setMoveSpeed(2);
         rec3.unfreeze();
 
-        SolidPlatform rec4 = getBlock(1500, 960, Color.RED);
+        final SolidPlatform rec4 = getBlock(1500, 960, Color.RED);
         rec4.appendPath(1500, 960);
         rec4.appendPath(1620, 960);
         rec4.appendPath(1620, 1080);
@@ -242,17 +244,17 @@ public class SquareTown extends PixelBasedLevel {
 		/*
 		 * Spikes
 		 */
-        Entity spike1 = new Entity();
+        final Entity spike1 = new Entity();
         spike1.move(1440, 1366);
         spike1.setHitbox(Hitbox.PIXEL);
         spike1.setImage(4, resources.getImage("spikesnImg.png"));
         spike1.addEvent(Factory.hitMain(spike1, play, -1));
 
-        Entity spike2 = spike1.getClone().move(1620, 1261);
+        final Entity spike2 = spike1.getClone().move(1620, 1261);
         spike2.setImage(4, resources.getImage("spikeseImg.png"));
         spike2.addEvent(Factory.hitMain(spike2, play, -1));
 
-        Entity spike3 = spike1.getClone().move(1666, 1381);
+        final Entity spike3 = spike1.getClone().move(1666, 1381);
         spike3.setImage(4, resources.getImage("spikeswImg.png"));
         spike3.addEvent(Factory.hitMain(spike3, play, -1));
 
@@ -263,7 +265,7 @@ public class SquareTown extends PixelBasedLevel {
 		/*
 		 * Block going up and down
 		 */
-        SolidPlatform bl = getBlock(1380, 1560, Color.YELLOW);
+        final SolidPlatform bl = getBlock(1380, 1560, Color.YELLOW);
         bl.appendPath(1380, 1440);
         bl.appendPath(1380, 1560, 0, true, null);
         bl.setMoveSpeed(1.8f);
@@ -274,7 +276,7 @@ public class SquareTown extends PixelBasedLevel {
 		/*
 		 * Two pushing blocks
 		 */
-        SolidPlatform push1 = getBlock(2520, 1860, Color.RED);
+        final SolidPlatform push1 = getBlock(2520, 1860, Color.RED);
         push1.appendPath(2520, 1860);
         push1.appendPath(1921, 1860);
         push1.appendPath(1921, 1980);
@@ -282,7 +284,7 @@ public class SquareTown extends PixelBasedLevel {
         push1.setMoveSpeed(getPushSpeed());
         push1.unfreeze();
 
-        SolidPlatform push2 = getBlock(2520, 1800, Color.YELLOW);
+        final SolidPlatform push2 = getBlock(2520, 1800, Color.YELLOW);
         push2.appendPath(2520, 1800);
         push2.appendPath(1921, 1800);
         push2.appendPath(1921, 1920);
@@ -296,8 +298,8 @@ public class SquareTown extends PixelBasedLevel {
         /*
          * Metal Blocks
          */
-        Image2D steelBlockImg = resources.getImage("steelBlockImg.png");
-        TransformablePlatform met1 = new TransformablePlatform(2760, 1859, play);
+        final Image2D steelBlockImg = resources.getImage("steelBlockImg.png");
+        final TransformablePlatform met1 = new TransformablePlatform(2760, 1859, play);
         met1.setImage(steelBlockImg);
         met1.setMoveSpeed(2);
         met1.appendPath(2760, 1859);
@@ -305,7 +307,7 @@ public class SquareTown extends PixelBasedLevel {
         met1.appendPath(2820, 1680);
         met1.appendPath(2820, 1859, 100, true, null);
 
-        TransformablePlatform met2 = met1.getClone();
+        final TransformablePlatform met2 = met1.getClone();
         met2.move(2760, 1441);
         met2.clearData();
         met2.appendPath(2760, 1441);
@@ -319,10 +321,12 @@ public class SquareTown extends PixelBasedLevel {
         /*
          * Up and down metal blocks
          */
-        float xStart = 2820, yBottom = 1380, yTop = 1380 - steelBlockImg.getHeight();
+        float xStart = 2820;
+        float yBottom = 1380;
+        final float yTop = 1380 - steelBlockImg.getHeight();
 
         for (int i = 0; i < 7; i++) {
-            SolidPlatform solp = new SolidPlatform(0, 0, play);
+            final SolidPlatform solp = new SolidPlatform(0, 0, play);
             solp.setImage(steelBlockImg);
             solp.setMoveSpeed(.5f);
 
@@ -343,20 +347,20 @@ public class SquareTown extends PixelBasedLevel {
 		/*
 		 * Final Steel blocks
 		 */
-        SolidPlatform solp = new SolidPlatform(3000, 1080, play);
+        final SolidPlatform solp = new SolidPlatform(3000, 1080, play);
         solp.setImage(steelBlockImg);
         solp.setMoveSpeed(1.5f);
         solp.setFollowMode(FollowMode.STRICT);
         solp.appendPath(3000, 1080, 80, false, null);
         solp.appendPath(3000, 1080 - (steelBlockImg.getHeight() * 2), 80, false, null);
 
-        SolidPlatform solp2 = solp.getClone();
+        final SolidPlatform solp2 = solp.getClone();
         solp2.move(2880, 900);
         solp2.clearData();
         solp2.appendPath(2880, 900, 80, false, null);
         solp2.appendPath(2880 - (steelBlockImg.getWidth() * 7), 900, 80, false, null);
 
-        SolidPlatform solp3 = solp.getClone();
+        final SolidPlatform solp3 = solp.getClone();
         solp3.move(2280, 780);
         solp3.setMoveSpeed(1);
         solp3.clearData();
@@ -365,7 +369,7 @@ public class SquareTown extends PixelBasedLevel {
         solp3.appendPath(2340, 840);
         solp3.appendPath(2280, 840);
 
-        SolidPlatform solp4 = solp3.getClone();
+        final SolidPlatform solp4 = solp3.getClone();
         solp4.move(2340, 840);
         solp4.clearData();
         solp4.appendPath(2340, 840);
@@ -373,13 +377,13 @@ public class SquareTown extends PixelBasedLevel {
         solp4.appendPath(2280, 780);
         solp4.appendPath(2340, 780);
 
-        SolidPlatform solp5 = solp3.getClone();
+        final SolidPlatform solp5 = solp3.getClone();
         solp5.move(3120, 480);
         solp5.clearData();
         solp5.appendPath(3120, 480);
         solp5.appendPath(3120 + solp5.width(), 480);
 
-        SolidPlatform solp6 = solp3.getClone();
+        final SolidPlatform solp6 = solp3.getClone();
         solp6.move(3120 + solp5.width(), 480 - (solp5.height() * 3));
         solp6.clearData();
         solp6.appendPath(3120, 480 - (solp5.height() * 3));
@@ -396,7 +400,7 @@ public class SquareTown extends PixelBasedLevel {
 		/*
 		 * Mini Spikeies
 		 */
-        PathDrone mspikey = new PathDrone(2489, 688);
+        final PathDrone mspikey = new PathDrone(2489, 688);
         mspikey.setImage(5, resources.getAnimation("spikeyminiImg"));
         mspikey.setMoveSpeed(2);
         mspikey.setHitbox(Hitbox.PIXEL);
@@ -406,7 +410,7 @@ public class SquareTown extends PixelBasedLevel {
         mspikey.appendPath(2580, 780);
         mspikey.appendPath(2489, 780);
 
-        PathDrone smpikey2 = mspikey.getClone();
+        final PathDrone smpikey2 = mspikey.getClone();
         smpikey2.move(2940, 780);
         smpikey2.clearData();
         smpikey2.addEvent(Factory.hitMain(smpikey2, play, -1));
@@ -421,11 +425,11 @@ public class SquareTown extends PixelBasedLevel {
 		/*
 		 * Flag
 		 */
-        Entity flagPole = new Entity();
+        final Entity flagPole = new Entity();
         flagPole.setImage(resources.getImage("flagPoleImg.png"));
         flagPole.move(2836, 139);
 
-        Entity flag = new Entity();
+        final Entity flag = new Entity();
         flag.setImage(4, resources.getAnimation("flag"));
         flag.move(2840, 136);
 
@@ -459,14 +463,14 @@ public class SquareTown extends PixelBasedLevel {
         return "Square Town";
     }
 
-    SolidPlatform getBlock(float x, float y, Color color) {
+    SolidPlatform getBlock(final float x, final float y, final Color color) {
         final Animation<Image2D> eyes = new Animation<>(6, resources.getAnimation("eyeImg"));
         eyes.stop(true);
         eyes.setLoop(false);
 
         final Entity eyeObj = new Entity();
 
-        TransformablePlatform block = new TransformablePlatform(x, y, play) {
+        final TransformablePlatform block = new TransformablePlatform(x, y, play) {
             @Override
             public void unfreeze() {
                 super.unfreeze();
@@ -491,7 +495,7 @@ public class SquareTown extends PixelBasedLevel {
         return block;
     }
 
-    Entity getGem(float x, float y) {
+    Entity getGem(final float x, final float y) {
         gems++;
 
         final Entity gem = new Entity();
@@ -508,10 +512,10 @@ public class SquareTown extends PixelBasedLevel {
         return gem;
     }
 
-    Entity getGem2(float x, float y) {
+    Entity getGem2(final float x, final float y) {
         gems2++;
 
-        Animation<Image2D> gemImage = new Animation<>(4, resources.getAnimation("gem2Img"));
+        final Animation<Image2D> gemImage = new Animation<>(4, resources.getAnimation("gem2Img"));
         gemImage.pingPong(true);
 
         final Entity gem = new Entity();

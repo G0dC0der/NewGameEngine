@@ -14,10 +14,8 @@ import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BackgroundImage;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.Bullet;
-import pojahn.game.entities.Circle;
 import pojahn.game.entities.Collectable;
 import pojahn.game.entities.EvilDog;
-import pojahn.game.entities.LaserDrone;
 import pojahn.game.entities.Missile;
 import pojahn.game.entities.Particle;
 import pojahn.game.entities.PathDrone;
@@ -28,7 +26,6 @@ import pojahn.game.entities.TargetLaser;
 import pojahn.game.entities.TransformablePlatform;
 import pojahn.game.entities.Weapon;
 import pojahn.game.entities.mains.GravityMan;
-import pojahn.game.essentials.CheckPointHandler;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Factory;
@@ -56,7 +53,7 @@ public class OrbitalStation extends TileBasedLevel {
     private Music music, spaceMusic, lavaMusic;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -86,7 +83,7 @@ public class OrbitalStation extends TileBasedLevel {
         final Size mainSize = Size.from(res.getAnimation("main")[0]);
         getCheckpointHandler().appendCheckpoint(center(40, 47, mainSize), getRectangle(34, 46, 2, 2));
         getCheckpointHandler().appendCheckpoint(center(66, 76, mainSize), getRectangle(66, 76, 1, 1));
-        getCheckpointHandler().setReachEvent(()-> GFX.renderCheckpoint(res, this));
+        getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(res, this));
     }
 
     @Override
@@ -100,7 +97,7 @@ public class OrbitalStation extends TileBasedLevel {
         man.face(Direction.W);
         man.move(87 * getTileWidth(), 100 * getTileHeight());
         add(man);
-        runOnceAfter(()-> man.bounds.pos.x--, 1);
+        runOnceAfter(() -> man.bounds.pos.x--, 1);
 
         /*
          * Music
@@ -117,7 +114,7 @@ public class OrbitalStation extends TileBasedLevel {
         final float fadeSpeed = .01f;
         final float maxVolume = .7f;
 
-        add(()-> {
+        add(() -> {
             if (rectanglesCollide(room1, man.bounds.toRectangle())) {
                 lavaMusic.setVolume(Math.min(lavaMusic.getVolume() + fadeSpeed, maxVolume));
                 music.setVolume(Math.max(0, music.getVolume() - fadeSpeed));
@@ -134,13 +131,13 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Background and foreground
          */
-        Entity worldImage = getWorldImage();
+        final Entity worldImage = getWorldImage();
         worldImage.zIndex(1000);
         add(worldImage);
         add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
         add(new EntityBuilder().image(res.getImage("separator.png")).zIndex(-99).move(680, 480).build());
         add(new EntityBuilder().image(res.getImage("separator.png")).zIndex(-99).move(2729, 480).build());
-        Entity space = BackgroundImage.parallaxImage(.2f, 0, false);
+        final Entity space = BackgroundImage.parallaxImage(.2f, 0, false);
         space.zIndex(-50);
         space.setImage(res.getImage("space.png"));
         add(space);
@@ -148,27 +145,27 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Heat Overlay
          */
-        PingPongFloat overlayAlpha = new PingPongFloat(0, 0, .005f);
-        BigImage overlay = new BigImage(BigImage.RenderStrategy.FIXED);
+        final PingPongFloat overlayAlpha = new PingPongFloat(0, 0, .005f);
+        final BigImage overlay = new BigImage(BigImage.RenderStrategy.FIXED);
         overlay.zIndex(5000);
         overlay.setImage(res.getImage("alphaImage.png"));
-        overlay.addEvent(()-> overlay.tint.a = overlayAlpha.get());
+        overlay.addEvent(() -> overlay.tint.a = overlayAlpha.get());
         add(overlay);
-        add(()->{
+        add(() -> {
             if (man.y() > 112 * getTileHeight()) {
-                float diff = man.y() - (112 * getTileHeight());
+                final float diff = man.y() - (112 * getTileHeight());
                 overlayAlpha.setMax(Math.min(diff / 600, .7f));
                 overlayAlpha.setMin(Math.max(diff / 900, 0));
             }
         });
-        Int32 heathExposureCounter = new Int32();
-        Bool suited = new Bool(false);
-        runOnceWhen(man::lose, ()-> !suited.value && man.y() > 121 * getTileHeight() && ++heathExposureCounter.value > 330);
+        final Int32 heathExposureCounter = new Int32();
+        final Bool suited = new Bool(false);
+        runOnceWhen(man::lose, () -> !suited.value && man.y() > 121 * getTileHeight() && ++heathExposureCounter.value > 330);
 
         /*
          * Turrets
          */
-        Particle bulletExp = new Particle();
+        final Particle bulletExp = new Particle();
         bulletExp.setImage(3, res.getAnimation("smallexp"));
         bulletExp.setIntroSound(res.getSound("gmexplode.wav"));
         bulletExp.sounds.maxVolume = .5f;
@@ -176,7 +173,7 @@ public class OrbitalStation extends TileBasedLevel {
         bulletExp.sounds.maxDistance = 580;
         bulletExp.sounds.power = 10;
 
-        Bullet bullet = new Bullet(man);
+        final Bullet bullet = new Bullet(man);
         bullet.setImage(res.getImage("bullet.png"));
         bullet.setImpact(bulletExp);
         bullet.setMoveSpeed(5);
@@ -187,51 +184,51 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Lava
          */
-        for(int i = 0; i < 190; i++) {
+        for (int i = 0; i < 190; i++) {
             add(new EntityBuilder().move(16 * i, 4112).image(5, res.getAnimation("lava")).zIndex(80).build());
         }
-        Entity otherlava = new EntityBuilder().move(0, 4128).image(res.getImage("otherlava.png")).zIndex(80).build();
+        final Entity otherlava = new EntityBuilder().move(0, 4128).image(res.getImage("otherlava.png")).zIndex(80).build();
         otherlava.bounds.size.width = 3040;
         otherlava.zIndex(75);
         add(otherlava);
-        runOnceWhen(man::lose, ()-> rectanglesCollide(man.bounds.toRectangle(), 0, 4128, 3040, 100));
+        runOnceWhen(man::lose, () -> rectanglesCollide(man.bounds.toRectangle(), 0, 4128, 3040, 100));
 
         /*
          * Lava Platform
          */
-        SolidPlatform platform = new SolidPlatform(2644, 4095/* - 6*/, man);
+        final SolidPlatform platform = new SolidPlatform(2644, 4095/* - 6*/, man);
         platform.setImage(res.getImage("platform.png"));
         platform.setMoveSpeed(1.2f);
         platform.appendPath(0, platform.y());
         platform.freeze();
         platform.zIndex(70);
         add(platform);
-        runOnceWhen(platform::unfreeze, ()-> rectanglesCollide(man.bounds.toRectangle(), platform.x(), platform.y() - 5, platform.width(), 5));
+        runOnceWhen(platform::unfreeze, () -> rectanglesCollide(man.bounds.toRectangle(), platform.x(), platform.y() - 5, platform.width(), 5));
 
         /*
          * Lava Mines
          */
-        PathDrone mine1 = getMine(1984, 3872);
+        final PathDrone mine1 = getMine(1984, 3872);
         mine1.appendPath(2104, 3872);
         mine1.appendPath(2104, 4056);
         mine1.appendPath(1984, 4056);
 
-        PathDrone mine2 = getMine(2104, 4056);
+        final PathDrone mine2 = getMine(2104, 4056);
         mine2.appendPath(1984, 4056);
         mine2.appendPath(1984, 3872);
         mine2.appendPath(2104, 3872);
 
-        PathDrone mine3 = getMine(1196, 3992);
+        final PathDrone mine3 = getMine(1196, 3992);
         mine3.appendPath(mine3.x(), 3872);
         mine3.setMoveSpeed(1.65f);
 
-        PathDrone mine4 = getMine(960, 3992);
+        final PathDrone mine4 = getMine(960, 3992);
         mine4.appendPath(1048, mine4.y());
 
-        PathDrone mine5 = getMine(1048, 3912 - 17);
+        final PathDrone mine5 = getMine(1048, 3912 - 17);
         mine5.appendPath(960, mine5.y());
 
-        PathDrone mine6 = getMine(768, 3961);
+        final PathDrone mine6 = getMine(768, 3961);
         mine6.appendPath(mine6.x(), 3872);
         mine6.setMoveSpeed(.4f);
 
@@ -256,7 +253,7 @@ public class OrbitalStation extends TileBasedLevel {
          * Gem
          */
 
-        Collectable gem = new Collectable(0, 4058 - 30, man);
+        final Collectable gem = new Collectable(0, 4058 - 30, man);
         gem.setImage(3, res.getAnimation("gem"));
         gem.setCollectSound(res.getSound("collect1.wav"));
         gem.setCollectEvent(collector -> man.win());
@@ -265,7 +262,7 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Space Gravity
          */
-        add(()->{
+        add(() -> {
             if (480 >= man.y()) {
                 man.gravity = -250;
             } else {
@@ -279,7 +276,7 @@ public class OrbitalStation extends TileBasedLevel {
         final SolidPlatform trap1 = new SolidPlatform(704, 723, man);
         trap1.setImage(res.getImage("elevator.png"));
         trap1.setMoveSpeed(5);
-        trap1.appendPath(trap1.x(), 480, 0, false, ()-> {
+        trap1.appendPath(trap1.x(), 480, 0, false, () -> {
             res.getSound("elevator.wav").stop();
             res.getSound("shut.wav").play();
         });
@@ -290,7 +287,7 @@ public class OrbitalStation extends TileBasedLevel {
         }, () -> rectanglesCollide(man.bounds.toRectangle(), 704, 573, 64, 64));
         add(trap1);
 
-        SolidPlatform trap2 = new SolidPlatform(2656, 480, man);
+        final SolidPlatform trap2 = new SolidPlatform(2656, 480, man);
         trap2.setMoveSpeed(5);
         trap2.setImage(res.getImage("spaceGate.png"));
         trap2.appendPath(2752, trap2.y());
@@ -305,22 +302,22 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Space Guards
          */
-        EvilDog guard1 = getGuard(556, 278);
-        EvilDog guard2 = getGuard(876, 278);
+        final EvilDog guard1 = getGuard(556, 278);
+        final EvilDog guard2 = getGuard(876, 278);
 
         add(guard1);
         add(guard2);
 
-        runOnceWhen(()-> {
+        runOnceWhen(() -> {
             guard1.unfreeze();
             guard2.unfreeze();
-        }, ()-> rectanglesCollide(man.bounds.toRectangle(), 504, 0, 5, 530) || rectanglesCollide(man.bounds.toRectangle(), 944, 0, 5, 530));
+        }, () -> rectanglesCollide(man.bounds.toRectangle(), 504, 0, 5, 530) || rectanglesCollide(man.bounds.toRectangle(), 944, 0, 5, 530));
 
-        runOnceWhen(()-> {
+        runOnceWhen(() -> {
             guard1.freeze();
             guard2.freeze();
             trap2.unfreeze();
-        }, ()-> rectanglesCollide(man.bounds.toRectangle(), 2752, 512, 96, 100));
+        }, () -> rectanglesCollide(man.bounds.toRectangle(), 2752, 512, 96, 100));
 
         /*
          * Crushers
@@ -334,7 +331,7 @@ public class OrbitalStation extends TileBasedLevel {
         add(getCrusher(2496 - (64 * 3), 1890, 2496 - (64 * 3), 1952, Direction.S));
         add(getCrusher(2496 - (64 * 4), 1890, 2496 - (64 * 4), 1952, Direction.S));
         add(getCrusher(2496 - (64 * 5), 1890, 2496 - (64 * 5), 1952, Direction.S));
-        SolidPlatform crusher = getCrusher(2496 - (64 * 2), 1890, 2496 - (64 * 2), 1952, Direction.S);
+        final SolidPlatform crusher = getCrusher(2496 - (64 * 2), 1890, 2496 - (64 * 2), 1952, Direction.S);
         crusher.clearData();
         crusher.setMoveSpeed(.8f);
         crusher.appendPath(crusher.x(), crusher.y() + 30, 120, false, null);
@@ -345,20 +342,20 @@ public class OrbitalStation extends TileBasedLevel {
          * Elevator
          */
         final SolidPlatform elevator;
-        if (reached1)  {
+        if (reached1) {
             elevator = new SolidPlatform(1472, 1536, man);
         } else {
             elevator = new SolidPlatform(1472, 2336, man);
             elevator.setMoveSpeed(5);
-            elevator.appendPath(elevator.x(), 1536, 0, false, ()-> {
+            elevator.appendPath(elevator.x(), 1536, 0, false, () -> {
                 res.getSound("elevator.wav").stop();
                 res.getSound("shut.wav").play();
             });
             elevator.freeze();
-            runOnceWhen(()-> {
+            runOnceWhen(() -> {
                 res.getSound("elevator.wav").loop(.6f);
                 elevator.unfreeze();
-            }, ()-> rectanglesCollide(man.bounds.toRectangle(), 1472, 2157, 64, 112));
+            }, () -> rectanglesCollide(man.bounds.toRectangle(), 1472, 2157, 64, 112));
         }
         elevator.setImage(res.getImage("elevator.png"));
         add(elevator);
@@ -378,7 +375,7 @@ public class OrbitalStation extends TileBasedLevel {
         trap3.setImage(res.getImage("trap2.png"));
         add(trap3);
 
-        SolidPlatform trap4 = new TransformablePlatform(39 * getTileWidth(), 96 * getTileHeight(), man);
+        final SolidPlatform trap4 = new TransformablePlatform(39 * getTileWidth(), 96 * getTileHeight(), man);
         trap4.setImage(res.getImage("trapblock.png"));
         trap4.appendPath(trap4.x(), trap4.y() - trap4.height());
         trap4.freeze();
@@ -392,7 +389,7 @@ public class OrbitalStation extends TileBasedLevel {
             battleElevator.appendPath(battleElevator.x(), 2336);
             battleElevator.setMoveSpeed(.6f);
             battleElevator.freeze();
-            runOnceWhen(()-> {
+            runOnceWhen(() -> {
                 battleElevator.unfreeze();
                 trap3.unfreeze();
             }, () -> rectanglesCollide(man.bounds.toRectangle(), 152, 2682, 352, 198) || rectanglesCollide(man.bounds.toRectangle(), 233, 2616, 352, 196));
@@ -403,24 +400,24 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Turrets in elevator room
          */
-        Particle missileExp = Particle.from(3, res.getAnimation("missileexp"));
+        final Particle missileExp = Particle.from(3, res.getAnimation("missileexp"));
         missileExp.setIntroSound(res.getSound("missileexp.wav"));
 
-        Missile missile = new Missile(0,0,man);
+        final Missile missile = new Missile(0, 0, man);
         missile.setImage(res.getImage("missile.png"));
         missile.fastVeryFloaty();
         missile.setImpact(missileExp);
         missile.setTrailer(Particle.from(2, res.getAnimation("trailer")));
 
-        Particle gunfire = new Particle();
+        final Particle gunfire = new Particle();
         gunfire.scaleX = gunfire.scaleY = .5f;
         gunfire.zIndex(10);
         gunfire.setImage(5, res.getAnimation("gunfire"));
         gunfire.setIntroSound(res.getSound("missile_launch.wav"));
 //        gunfire.sounds.maxVolume = .7f;
 
-        Supplier<Weapon> weaponSupplier = () -> {
-            Weapon weapon = new Weapon(0,0,  1, 100, 200, man);
+        final Supplier<Weapon> weaponSupplier = () -> {
+            final Weapon weapon = new Weapon(0, 0, 1, 100, 200, man);
             weapon.setImage(res.getImage("turret.png"));
             weapon.setProjectile(missile);
             weapon.setAlwaysRotate(false);
@@ -428,7 +425,7 @@ public class OrbitalStation extends TileBasedLevel {
             weapon.setRotationSpeed(.05f);
             weapon.setRotateWhileRecover(false);
             weapon.setFiringParticle(gunfire);
-            runOnceWhen(() -> weapon.activate(false), ()-> rectanglesCollide(battleElevator.bounds.toRectangle(), getRectangle(6, 75, 11, 1)));
+            runOnceWhen(() -> weapon.activate(false), () -> rectanglesCollide(battleElevator.bounds.toRectangle(), getRectangle(6, 75, 11, 1)));
 
             return weapon;
         };
@@ -473,7 +470,7 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Danger Zone
          */
-        HugeCrusher hugeCrusher = new HugeCrusher(2281 + 60, 2784, man);
+        final HugeCrusher hugeCrusher = new HugeCrusher(2281 + 60, 2784, man);
         hugeCrusher.setImage(res.getImage("hugecrusher.png"));
         hugeCrusher.setMoveSpeed(9);
         hugeCrusher.freeze();
@@ -486,7 +483,7 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Heat Item
          */
-        Collectable heatItem = new Collectable(2085, 2468, man);
+        final Collectable heatItem = new Collectable(2085, 2468, man);
         heatItem.setImage(res.getImage("heatitem.png"));
         heatItem.setCollectSound(res.getSound("collect1.wav"));
         heatItem.setCollectEvent(collector -> suited.value = true);
@@ -495,19 +492,19 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Lasers
          */
-        Particle exp = new Particle();
+        final Particle exp = new Particle();
         exp.setIntroSound(res.getSound("gmexplode.wav"));
         exp.setImage(3, res.getAnimation("exp"));
         exp.zIndex(1000);
 
-        TargetLaser laser = new TargetLaser(0,0, man);
+        final TargetLaser laser = new TargetLaser(0, 0, man);
         laser.setImage(res.getImage("laserbeam.png"));
         laser.infiniteBeam(true);
         laser.faceTarget(true);
         laser.frontFire(true);
         laser.setLaserTint(Color.GREEN);
         laser.setCloneEvent(clonie -> {
-            TargetLaser t = (TargetLaser) clonie;
+            final TargetLaser t = (TargetLaser) clonie;
             t.setLaserBeam(ResourceUtil.getFiringLaser(res));
             t.addEvent(() -> {
                 if (t.collidesWith(hugeCrusher)) {
@@ -517,24 +514,24 @@ public class OrbitalStation extends TileBasedLevel {
             });
         });
 
-        Shuttle target1 = new Shuttle(2064, 3500);
+        final Shuttle target1 = new Shuttle(2064, 3500);
         target1.appendPath(2064 + 100, 3500);
         target1.appendPath(2064 - 100, 3500);
         target1.thrust = 100;
 
-        TargetLaser laser1 = laser.getClone();
+        final TargetLaser laser1 = laser.getClone();
         laser1.move(2043, 2918);
         laser1.setLaserTarget(target1);
         add(laser1);
         add(target1);
 
-        Entity target2 = new EntityBuilder().move(1669 + laser.halfWidth(), 2913 + 100).build();
-        Int32 laser2Counter = new Int32();
+        final Entity target2 = new EntityBuilder().move(1669 + laser.halfWidth(), 2913 + 100).build();
+        final Int32 laser2Counter = new Int32();
 
-        TargetLaser laser2 = laser.getClone();
+        final TargetLaser laser2 = laser.getClone();
         laser2.move(1669, 2913);
         laser2.setLaserTarget(target2);
-        laser2.addEvent(()-> {
+        laser2.addEvent(() -> {
             if (++laser2Counter.value % 40 == 0) {
                 laser2.stop(!laser2.stopped());
             }
@@ -542,16 +539,16 @@ public class OrbitalStation extends TileBasedLevel {
         add(laser2);
         add(target2);
 
-        Particle magicTrailer = Particle.from(2, res.getAnimation("magicbullet"));
+        final Particle magicTrailer = Particle.from(2, res.getAnimation("magicbullet"));
         magicTrailer.scaleX = magicTrailer.scaleY = .5f;
 
-        Bullet magicBullet = new Bullet(man);
+        final Bullet magicBullet = new Bullet(man);
         magicBullet.setTrailer(magicTrailer);
         magicBullet.bounds.size.set(10, 10);
         magicBullet.setTrailerDelay(3);
         magicBullet.setGunfire(Particle.fromSound(res.getSound("magicfire.wav")));
 
-        Weapon weapon = new Weapon(1322, 2793, 2, 15, 60, man);
+        final Weapon weapon = new Weapon(1322, 2793, 2, 15, 60, man);
         weapon.setProjectile(magicBullet);
         weapon.setImage(res.getImage("laserbeam.png"));
         weapon.setRotateWhileRecover(true);
@@ -559,7 +556,7 @@ public class OrbitalStation extends TileBasedLevel {
         weapon.setAlwaysRotate(true);
         weapon.setRotationSpeed(.05f);
         weapon.setFrontFire(true);
-        weapon.ifCollides(hugeCrusher).thenRunOnce(()-> {
+        weapon.ifCollides(hugeCrusher).thenRunOnce(() -> {
             discard(weapon);
             add(exp.getClone().center(weapon));
         });
@@ -579,12 +576,12 @@ public class OrbitalStation extends TileBasedLevel {
         });
     }
 
-    private void addSmallGuard(float x) {
-        MobileEntity smallGuard = new MobileEntity();
+    private void addSmallGuard(final float x) {
+        final MobileEntity smallGuard = new MobileEntity();
         smallGuard.move(x, 2337);
         smallGuard.setMoveSpeed(10);
         smallGuard.setImage(res.getAnimation("smallguard"));
-        smallGuard.addEvent(()-> {
+        smallGuard.addEvent(() -> {
             smallGuard.bounds.pos.y = man.y();
             if (smallGuard.y() < 2337)
                 smallGuard.bounds.pos.y = 2337;
@@ -596,22 +593,22 @@ public class OrbitalStation extends TileBasedLevel {
         add(smallGuard);
     }
 
-    private void addZapper(float tileX, float tileY) {
-        int freq = MathUtils.random(80, 130);
-        Int32 c = new Int32();
+    private void addZapper(final float tileX, final float tileY) {
+        final int freq = MathUtils.random(80, 130);
+        final Int32 c = new Int32();
 
-        Particle particle = new Particle();
+        final Particle particle = new Particle();
         particle.setIntroSound(res.getSound("zap.wav"));
         particle.setImage(res.getAnimation("thunder"));
         particle.sounds.useFalloff = true;
         particle.sounds.maxDistance = 500;
         particle.sounds.maxVolume = .6f;
 
-        Entity zapper = new Entity();
+        final Entity zapper = new Entity();
         zapper.move(tileX * getTileWidth() + 8, tileY * getTileHeight() + 8);
         zapper.setImage(4, res.getAnimation("zapper"));
         zapper.addEvent(Factory.hitMain(zapper, man, -1));
-        zapper.addEvent(()-> {
+        zapper.addEvent(() -> {
             if (++c.value % freq == 0) {
                 add(particle.getClone().center(zapper));
             }
@@ -620,22 +617,22 @@ public class OrbitalStation extends TileBasedLevel {
         add(zapper);
     }
 
-    private SolidPlatform getCrusher(float x1, float y1, float x2, float y2, Direction direction) {
+    private SolidPlatform getCrusher(final float x1, final float y1, final float x2, final float y2, final Direction direction) {
         final int freezeTime = 40;
         final float attackSpeed = 7;
         final float fallbackSpeed = 2;
 
-        Vector2 crushV = new Vector2();
-        Vibrator vibrator = new Vibrator(crushV, man.bounds.pos);
+        final Vector2 crushV = new Vector2();
+        final Vibrator vibrator = new Vibrator(crushV, man.bounds.pos);
         vibrator.setLevel(this);
         vibrator.setStrength(10);
         vibrator.setRadius(500);
 
-        SolidPlatform crusher = new SolidPlatform(x1, y1, man);
+        final SolidPlatform crusher = new SolidPlatform(x1, y1, man);
         crusher.setMoveSpeed(attackSpeed);
         crusher.sounds.useFalloff = true;
-        crusher.appendPath(x1, y1, freezeTime, false, ()-> crusher.setMoveSpeed(attackSpeed));
-        crusher.appendPath(x2, y2, freezeTime, false, ()-> {
+        crusher.appendPath(x1, y1, freezeTime, false, () -> crusher.setMoveSpeed(attackSpeed));
+        crusher.appendPath(x2, y2, freezeTime, false, () -> {
             crusher.setMoveSpeed(fallbackSpeed);
 
             if (direction.isEast())
@@ -647,7 +644,7 @@ public class OrbitalStation extends TileBasedLevel {
             else if (direction.isSouth())
                 crushV.set(crusher.centerX(), crusher.y() + crusher.height());
 
-            float vol = calc(crushV);
+            final float vol = calc(crushV);
             if (vol > 0.0f)
                 res.getSound("slam2.wav").play(vol);
             vibrator.vibrate();
@@ -664,30 +661,30 @@ public class OrbitalStation extends TileBasedLevel {
         return crusher;
     }
 
-    private float calc(Vector2 listener) {
-        double distance = Collisions.distance(man.bounds.pos.x, man.bounds.pos.y, listener.x, listener.y);
-        float candidate = (float) (30 * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(700)), 0));
+    private float calc(final Vector2 listener) {
+        final double distance = Collisions.distance(man.bounds.pos.x, man.bounds.pos.y, listener.x, listener.y);
+        final float candidate = (float) (30 * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(700)), 0));
 
         return Math.min(candidate, 1);
     }
 
-    private EvilDog getGuard(float x, float y) { //TODO: These don't talk much
+    private EvilDog getGuard(final float x, final float y) { //TODO: These don't talk much
         final int talkDelay = MathUtils.random(120, 300);
-        Int32 counter = new Int32();
+        final Int32 counter = new Int32();
 
-        EvilDog guard = new EvilDog(x, y, -1, man);
+        final EvilDog guard = new EvilDog(x, y, -1, man);
         guard.setImage(4, res.getAnimation("guard"));
         guard.freeze();
         guard.setHitbox(Hitbox.PIXEL);
         guard.addEvent(Factory.hitMain(guard, man, -1));
         guard.zIndex(2000);
-        runOnceWhen(()-> res.getSound("guarding.wav").play(), ()-> !guard.isFrozen() && ++counter.value % talkDelay == 0);
+        runOnceWhen(() -> res.getSound("guarding.wav").play(), () -> !guard.isFrozen() && ++counter.value % talkDelay == 0);
 
         return guard;
     }
 
-    private Fireball getFireball(float x, float y, float flyPower) {
-        Fireball fireball = new Fireball(x, y, flyPower);
+    private Fireball getFireball(final float x, final float y, final float flyPower) {
+        final Fireball fireball = new Fireball(x, y, flyPower);
         fireball.setImage(5, res.getAnimation("fireball"));
         fireball.setHitbox(Hitbox.PIXEL);
         fireball.addEvent(Factory.hitMain(fireball, man, -1));
@@ -696,18 +693,18 @@ public class OrbitalStation extends TileBasedLevel {
         return fireball;
     }
 
-    private PathDrone getMine(float x, float y) {
-        PathDrone mine = new PathDrone(x, y);
+    private PathDrone getMine(final float x, final float y) {
+        final PathDrone mine = new PathDrone(x, y);
         mine.setImage(3, res.getAnimation("mine"));
         mine.setMoveSpeed(1.2f);
         mine.appendPath();
         mine.setHitbox(Hitbox.PIXEL);
-        mine.addEvent(()-> {
+        mine.addEvent(() -> {
             if (man.isAlive() && mine.collidesWith(man)) {
                 man.lose();
                 discard(mine);
 
-                Particle exp = new Particle();
+                final Particle exp = new Particle();
                 exp.setIntroSound(res.getSound("gmexplode.wav"));
                 exp.setImage(3, res.getAnimation("exp"));
                 add(exp.center(mine));
@@ -717,10 +714,10 @@ public class OrbitalStation extends TileBasedLevel {
         return mine;
     }
 
-    private void addTurret(float x, float y, Bullet bullet) {
-        Entity turret = new EntityBuilder().move(x, y).image(res.getImage("cannonturret.png")).zIndex(20).build();
+    private void addTurret(final float x, final float y, final Bullet bullet) {
+        final Entity turret = new EntityBuilder().move(x, y).image(res.getImage("cannonturret.png")).zIndex(20).build();
 
-        Particle firingAnim = new Particle();
+        final Particle firingAnim = new Particle();
         firingAnim.zIndex(30);
         firingAnim.setImage(3, res.getAnimation("fireanim"));
         firingAnim.setIntroSound(res.getSound("gmfire.wav"));
@@ -729,7 +726,7 @@ public class OrbitalStation extends TileBasedLevel {
         firingAnim.sounds.maxDistance = 580;
         firingAnim.sounds.power = 10;
 
-        RotatingCannon rcannon = new RotatingCannon(x - 7, y + 9, bullet);
+        final RotatingCannon rcannon = new RotatingCannon(x - 7, y + 9, bullet);
         rcannon.setImage(res.getImage("gunmachine.png"));
         rcannon.zIndex(10);
         rcannon.setFireAnimation(firingAnim);

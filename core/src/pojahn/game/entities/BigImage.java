@@ -30,13 +30,13 @@ public class BigImage extends Entity {
         this(RenderStrategy.FULL);
     }
 
-    public BigImage(RenderStrategy strategy) {
+    public BigImage(final RenderStrategy strategy) {
         this.strategy = strategy;
         initCamera = true;
         ratioX = ratioY = .5f;
     }
 
-    public void setRenderStrategy(RenderStrategy strategy) {
+    public void setRenderStrategy(final RenderStrategy strategy) {
         this.strategy = strategy;
         initCamera = true;
     }
@@ -46,13 +46,13 @@ public class BigImage extends Entity {
     }
 
     @Override
-    public void setImage(Animation<Image2D> image) {
+    public void setImage(final Animation<Image2D> image) {
         super.setImage(image);
         initCamera = true;
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(final SpriteBatch batch) {
         if (getRotation() != 0)
             throw new RuntimeException("A big image can not be rotated.");
 
@@ -61,23 +61,23 @@ public class BigImage extends Entity {
             initParallaxCamera();
         }
 
-        Engine e = getLevel().getEngine();
-        Dimension screen = e.getScreenSize();
-        Color defColor = batch.getColor();
+        final Engine e = getLevel().getEngine();
+        final Dimension screen = e.getScreenSize();
+        final Color defColor = batch.getColor();
 
         switch (strategy) {
             case FULL:
                 super.render(batch);
                 break;
             case PORTION:
-                float startX = e.tx() - screen.width / 2;
-                float startY = e.ty() - screen.height / 2;
-                float width = screen.width;
-                float height = screen.height;
-                float u = startX / width();
-                float v = startY / height();
-                float u2 = (startX + width) / width();
-                float v2 = (startY + height) / height();
+                final float startX = e.tx() - screen.width / 2;
+                final float startY = e.ty() - screen.height / 2;
+                final float width = screen.width;
+                final float height = screen.height;
+                final float u = startX / width();
+                final float v = startY / height();
+                final float u2 = (startX + width) / width();
+                final float v2 = (startY + height) / height();
                 batch.setColor(tint);
                 batch.draw(nextImage(), startX, startY, width, height, u, v, u2, v2);
                 batch.setColor(defColor);
@@ -113,7 +113,7 @@ public class BigImage extends Entity {
         return ratioX;
     }
 
-    public void setRatioX(float ratioX) {
+    public void setRatioX(final float ratioX) {
         this.ratioX = ratioX;
     }
 
@@ -121,11 +121,11 @@ public class BigImage extends Entity {
         return ratioY;
     }
 
-    public void setRatioY(float ratioY) {
+    public void setRatioY(final float ratioY) {
         this.ratioY = ratioY;
     }
 
-    public void setRatio(float ratio) {
+    public void setRatio(final float ratio) {
         ratioX = ratioY = ratio;
     }
 
@@ -142,9 +142,9 @@ public class BigImage extends Entity {
     }
 
     private void updateParallaxCamera() {
-        Engine e = getEngine();
-        Dimension screen = e.getScreenSize();
-        float rotation = e.getRotation();
+        final Engine e = getEngine();
+        final Dimension screen = e.getScreenSize();
+        final float rotation = e.getRotation();
 
         parallaxCamera.rotate(-currRotation);
         parallaxCamera.rotate(rotation);
@@ -156,9 +156,9 @@ public class BigImage extends Entity {
         currRotation = rotation;
     }
 
-    private void repeat(SpriteBatch batch) {
-        int stageWidth = getLevel().getWidth();
-        int stageHeight = getLevel().getHeight();
+    private void repeat(final SpriteBatch batch) {
+        final int stageWidth = getLevel().getWidth();
+        final int stageHeight = getLevel().getHeight();
         int repeatX = (int) (stageWidth / width());
         int repeatY = (int) (stageHeight / height());
 

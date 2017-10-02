@@ -1,7 +1,6 @@
 package pojahn.game.desktop.redguyruns.levels.sand;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -26,7 +25,7 @@ import pojahn.game.essentials.stages.TileBasedLevel;
 import java.io.Serializable;
 import java.util.stream.Stream;
 
-import static pojahn.game.essentials.Factory.*;
+import static pojahn.game.essentials.Factory.hitMain;
 
 public class Sandopolis extends TileBasedLevel {
 
@@ -35,7 +34,7 @@ public class Sandopolis extends TileBasedLevel {
     private UglySun uglySun;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -64,16 +63,16 @@ public class Sandopolis extends TileBasedLevel {
         /*
          * Backgrounds & Foreground
          */
-        Entity foreground = getWorldImage();
+        final Entity foreground = getWorldImage();
         foreground.zIndex(100);
         add(foreground);
         add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).move(0, 0).build(BigImage.class, BigImage.RenderStrategy.FIXED));
 
-        TmxEntity bgStuff1 = new TmxEntity(res.getTiledMap("map_bg1.tmx"));
+        final TmxEntity bgStuff1 = new TmxEntity(res.getTiledMap("map_bg1.tmx"));
         bgStuff1.zIndex(-99);
         add(bgStuff1);
 
-        TmxEntity bgStuff2 = new TmxEntity(res.getTiledMap("map_bg2.tmx"));
+        final TmxEntity bgStuff2 = new TmxEntity(res.getTiledMap("map_bg2.tmx"));
         bgStuff2.zIndex(-98);
         add(bgStuff2);
 
@@ -105,23 +104,23 @@ public class Sandopolis extends TileBasedLevel {
         /*
          * Big Crusher
          */
-        float moveSpeed = 1.2f;
-        float offset = 20;
-        int freezeFrames = 45;
+        final float moveSpeed = 1.2f;
+        final float offset = 20;
+        final int freezeFrames = 45;
 
-        SolidPlatform crusher = new SolidPlatform(5328, 1332, play);
+        final SolidPlatform crusher = new SolidPlatform(5328, 1332, play);
         crusher.setImage(res.getImage("slammer.png"));
         crusher.setMoveSpeed(moveSpeed);
         crusher.appendPath(5328, 1332, freezeFrames, false, null);
         crusher.appendPath(5328, 1282 - offset, freezeFrames, false, null);
 
-        SolidPlatform crusher2 = new SolidPlatform(5232, 1282 - offset, play);
+        final SolidPlatform crusher2 = new SolidPlatform(5232, 1282 - offset, play);
         crusher2.setImage(res.getImage("slammer.png"));
         crusher2.setMoveSpeed(moveSpeed);
         crusher2.appendPath(5232, 1282 - offset, freezeFrames, false, null);
         crusher2.appendPath(5232, 1332, freezeFrames, false, null);
 
-        SolidPlatform crusher3 = new SolidPlatform(5424, 1282 - offset, play);
+        final SolidPlatform crusher3 = new SolidPlatform(5424, 1282 - offset, play);
         crusher3.setImage(res.getImage("slammer.png"));
         crusher3.setMoveSpeed(moveSpeed);
         crusher3.appendPath(5424, 1282 - offset, freezeFrames, false, null);
@@ -142,13 +141,13 @@ public class Sandopolis extends TileBasedLevel {
         uglySun.setMoveSpeed(2.2f);
         uglySun.setRes(res);
 
-        Entity eye1 = new EntityBuilder().image(res.getImage("eye.png")).build();
+        final Entity eye1 = new EntityBuilder().image(res.getImage("eye.png")).build();
         eye1.addEvent(Factory.follow(uglySun, eye1, 24, 30));
-        eye1.addEvent(()-> Collisions.rotateTowards(eye1, play, 0.11f));
+        eye1.addEvent(() -> Collisions.rotateTowards(eye1, play, 0.11f));
 
-        Entity eye2 = new EntityBuilder().image(res.getImage("eye.png")).build();
+        final Entity eye2 = new EntityBuilder().image(res.getImage("eye.png")).build();
         eye2.addEvent(Factory.follow(uglySun, eye2, 48, 30));
-        eye2.addEvent(()-> Collisions.rotateTowards(eye2, play, 0.11f));
+        eye2.addEvent(() -> Collisions.rotateTowards(eye2, play, 0.11f));
 
         add(eye1);
         add(eye2);
@@ -162,8 +161,8 @@ public class Sandopolis extends TileBasedLevel {
         /*
          * Hearth
          */
-        Entity health = new EntityBuilder().image(res.getAnimation("health")).move(7933, 1705).build();
-        health.addEvent(()-> {
+        final Entity health = new EntityBuilder().image(res.getAnimation("health")).move(7933, 1705).build();
+        health.addEvent(() -> {
             if (health.collidesWith(play)) {
                 play.touch(1);
                 res.getSound("health.wav").play();
@@ -180,17 +179,17 @@ public class Sandopolis extends TileBasedLevel {
         addBoltItem(2033, 940);
     }
 
-    private void addBoltItem(float x, float y) {
-        Entity item = new Entity();
+    private void addBoltItem(final float x, final float y) {
+        final Entity item = new Entity();
         item.move(x, y);
         item.zIndex(-10);
         item.setImage(4, res.getAnimation("item"));
-        item.addEvent(()-> {
+        item.addEvent(() -> {
             if (item.collidesWith(play)) {
                 discard(item);
                 uglySun.hit();
 
-                Particle bolt = new Particle();
+                final Particle bolt = new Particle();
                 bolt.setImage(4, res.getAnimation("bolt"));
                 bolt.setIntroSound(res.getSound("boltstrike.wav"));
                 bolt.move(uglySun.centerX(), uglySun.centerY() - uglySun.height() - 50);
@@ -202,7 +201,7 @@ public class Sandopolis extends TileBasedLevel {
     }
 
     private RollingStone getStone() {
-        RollingStone rs = new RollingStone();
+        final RollingStone rs = new RollingStone();
         rs.wp1 = new Vector2(2384, 814);
         rs.wp2 = new Vector2(2384, 917);
         rs.setImage(res.getImage("smallspike.png"));
@@ -215,7 +214,7 @@ public class Sandopolis extends TileBasedLevel {
     }
 
     private RollingStone getBigStone() {
-        RollingStone rs = new RollingStone();
+        final RollingStone rs = new RollingStone();
         rs.wp1 = new Vector2(2368, 795);
         rs.wp2 = new Vector2(2368, 886);
         rs.setImage(res.getImage("spikeball.png"));
@@ -228,8 +227,8 @@ public class Sandopolis extends TileBasedLevel {
         return rs;
     }
 
-    private PathDrone getFlamer(float x1, float y1, float x2, float y2) {
-        PathDrone flamer = new PathDrone(x1, y1);
+    private PathDrone getFlamer(final float x1, final float y1, final float x2, final float y2) {
+        final PathDrone flamer = new PathDrone(x1, y1);
         flamer.setImage(7, res.getAnimation("flamer"));
         flamer.appendPath();
         flamer.appendPath(x2, y2);
@@ -242,8 +241,8 @@ public class Sandopolis extends TileBasedLevel {
         return flamer;
     }
 
-    private PathDrone getFlamer2(float x1, float y1, float x2, float y2) {
-        PathDrone flamer = new PathDrone(x1, y1);
+    private PathDrone getFlamer2(final float x1, final float y1, final float x2, final float y2) {
+        final PathDrone flamer = new PathDrone(x1, y1);
         flamer.setImage(4, res.getAnimation("flamer2"));
         flamer.appendPath();
         flamer.appendPath(x2, y2);

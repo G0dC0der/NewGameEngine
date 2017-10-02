@@ -14,7 +14,7 @@ class HugeCrusher extends SolidPlatform {
     private Music collapseSound;
     private int c;
 
-    HugeCrusher(float x, float y, MobileEntity... subjects) {
+    HugeCrusher(final float x, final float y, final MobileEntity... subjects) {
         super(x, y, subjects);
         deacceleration = 3500;
         goal = 1312;
@@ -30,7 +30,7 @@ class HugeCrusher extends SolidPlatform {
                 getLevel().temp(CameraEffects.vibration(2), 5);
 
             moveTowards(goal, y());
-            if (goal > x()){
+            if (goal > x()) {
                 collapseSound.stop();
                 slamSound.play();
                 reached = true;
@@ -38,7 +38,7 @@ class HugeCrusher extends SolidPlatform {
                 getLevel().temp(CameraEffects.vibration(5), 60);
             }
         } else if (vx != 0) {
-            float nextX = bounds.pos.x - vx * getEngine().delta;
+            final float nextX = bounds.pos.x - vx * getEngine().delta;
             move(nextX, y());
 
             if (vx > 0) {
@@ -55,11 +55,11 @@ class HugeCrusher extends SolidPlatform {
         super.logistics();
     }
 
-    public void setSlamSound(Sound slamSound) {
+    public void setSlamSound(final Sound slamSound) {
         this.slamSound = slamSound;
     }
 
-    public void setCollapseSound(Music collapseSound) {
+    public void setCollapseSound(final Music collapseSound) {
         this.collapseSound = collapseSound;
     }
 }

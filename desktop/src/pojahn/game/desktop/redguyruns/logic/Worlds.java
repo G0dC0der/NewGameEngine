@@ -20,7 +20,7 @@ public class Worlds {
     public Worlds() {
     }
 
-    public Worlds(int level, int world) {
+    public Worlds(final int level, final int world) {
         this.level = level;
         this.world = world;
     }

@@ -14,7 +14,7 @@ public class CheckPointHandler {
         float startX, startY, x, y, width, height;
         boolean taken;
 
-        Checkpoint(float startX, float startY, float x, float y, float width, float height) {
+        Checkpoint(final float startX, final float startY, final float x, final float y, final float width, final float height) {
             super();
             this.startX = startX;
             this.startY = startY;
@@ -34,7 +34,7 @@ public class CheckPointHandler {
         users = new ArrayList<>();
     }
 
-    public void addUser(Entity user) {
+    public void addUser(final Entity user) {
         users.add(user);
     }
 
@@ -42,19 +42,19 @@ public class CheckPointHandler {
         users.clear();
     }
 
-    public void appendCheckpoint(Vector2 startPos, Rectangle area) {
+    public void appendCheckpoint(final Vector2 startPos, final Rectangle area) {
         appendCheckpoint(startPos.x, startPos.y, area.x, area.y, area.width, area.height);
     }
 
-    public void appendCheckpoint(float startX, float startY, Rectangle area) {
+    public void appendCheckpoint(final float startX, final float startY, final Rectangle area) {
         appendCheckpoint(startX, startY, area.x, area.y, area.width, area.height);
     }
 
-    public void appendCheckpoint(Vector2 startPos, float x, float y, float width, float height) {
+    public void appendCheckpoint(final Vector2 startPos, final float x, final float y, final float width, final float height) {
         appendCheckpoint(startPos.x, startPos.y, x, y, width, height);
     }
 
-    public void appendCheckpoint(float startX, float startY, float x, float y, float width, float height) {
+    public void appendCheckpoint(final float startX, final float startY, final float x, final float y, final float width, final float height) {
         checkpoints.add(new Checkpoint(startX, startY, x, y, width, height));
     }
 
@@ -68,7 +68,7 @@ public class CheckPointHandler {
 
     public Vector2 getLatestCheckpoint() {
         for (int i = checkpoints.size() - 1; i >= 0; i--) {
-            Checkpoint cp = checkpoints.get(i);
+            final Checkpoint cp = checkpoints.get(i);
 
             if (cp.taken)
                 return new Vector2(cp.startX, cp.startY);
@@ -77,20 +77,20 @@ public class CheckPointHandler {
         return null;
     }
 
-    public boolean reached(int cpIndex) {
+    public boolean reached(final int cpIndex) {
         return checkpoints.get(cpIndex).taken;
     }
 
-    public void setReachEvent(Event reachEvent) {
+    public void setReachEvent(final Event reachEvent) {
         this.reachEvent = reachEvent;
     }
 
     public void placeUsers() {
-        Vector2 latest = getLatestCheckpoint();
+        final Vector2 latest = getLatestCheckpoint();
         float width = 0;
         if (latest != null) {
-            for (int i = 0; i < users.size() ; i++) {
-                if(i > 0)
+            for (int i = 0; i < users.size(); i++) {
+                if (i > 0)
                     width += users.get(i - 1).width();
                 users.get(i).move(latest.x + width, latest.y);
             }
@@ -99,9 +99,9 @@ public class CheckPointHandler {
 
     public void update() {
         Outer:
-        for (Checkpoint cp : checkpoints) {
+        for (final Checkpoint cp : checkpoints) {
             if (!cp.taken) {
-                for (Entity user : users) {
+                for (final Entity user : users) {
                     if (Collisions.rectanglesCollide(user.x(), user.y(), user.width(), user.height(), cp.x, cp.y, cp.width, cp.height)) {
                         cp.taken = true;
                         if (reachEvent != null)

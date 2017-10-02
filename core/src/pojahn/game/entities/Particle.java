@@ -12,15 +12,15 @@ public class Particle extends MobileEntity {
     public Particle() {
     }
 
-    public static Particle fromSound(Sound sound) {
-        Particle particle = new Particle();
+    public static Particle fromSound(final Sound sound) {
+        final Particle particle = new Particle();
         particle.setIntroSound(sound);
 
         return particle;
     }
 
     public Particle getClone() {
-        Particle clone = new Particle();
+        final Particle clone = new Particle();
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -28,7 +28,7 @@ public class Particle extends MobileEntity {
         return clone;
     }
 
-    public void setIntroSound(Sound introSound) {
+    public void setIntroSound(final Sound introSound) {
         this.introSound = introSound;
     }
 
@@ -47,13 +47,13 @@ public class Particle extends MobileEntity {
         return !isVisible() || getImage().hasEnded();
     }
 
-    public static Particle from(int animationSpeed, Image2D[] image) {
-        Particle particle = new Particle();
+    public static Particle from(final int animationSpeed, final Image2D[] image) {
+        final Particle particle = new Particle();
         particle.setImage(animationSpeed, image);
         return particle;
     }
 
-    protected void copyData(Particle clone) {
+    protected void copyData(final Particle clone) {
         super.copyData(clone);
         clone.introSound = introSound;
     }

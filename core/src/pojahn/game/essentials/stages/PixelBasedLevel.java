@@ -82,12 +82,12 @@ public abstract class PixelBasedLevel extends Level {
     protected PixelBasedLevel() {
     }
 
-    public void createMap(Pixmap map) {
+    public void createMap(final Pixmap map) {
         stageData = new byte[map.getWidth()][map.getHeight()];
 
         for (int x = 0; x < map.getWidth(); x++) {
             for (int y = 0; y < map.getHeight(); y++) {
-                int color = map.getPixel(x, y);
+                final int color = map.getPixel(x, y);
 
                 switch (color) {
                     case DARK_GRAY:
@@ -140,7 +140,7 @@ public abstract class PixelBasedLevel extends Level {
     }
 
     @Override
-    protected Tile tileAtInternal(int x, int y) {
+    protected Tile tileAtInternal(final int x, final int y) {
         return mapToTile(stageData[x][y]);
     }
 
@@ -154,7 +154,7 @@ public abstract class PixelBasedLevel extends Level {
         return stageData[0].length;
     }
 
-    static byte mapToByte(Tile tile) {
+    static byte mapToByte(final Tile tile) {
         switch (tile) {
             case HOLLOW:
                 return HOLLOW;
@@ -189,7 +189,7 @@ public abstract class PixelBasedLevel extends Level {
         }
     }
 
-    static Tile mapToTile(byte tile) {
+    static Tile mapToTile(final byte tile) {
         switch (tile) {
             case HOLLOW:
                 return Tile.HOLLOW;

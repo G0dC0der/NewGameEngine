@@ -37,8 +37,8 @@ public class Keystrokes implements Serializable {
     /**
      * Creates a new Keystrokes based on what buttons are currently down.
      */
-    public static Keystrokes from(Controller con) {
-        Keystrokes ks = new Keystrokes();
+    public static Keystrokes from(final Controller con) {
+        final Keystrokes ks = new Keystrokes();
         ks.down = Gdx.input.isKeyPressed(con.down);
         ks.left = Gdx.input.isKeyPressed(con.left);
         ks.right = Gdx.input.isKeyPressed(con.right);
@@ -55,8 +55,8 @@ public class Keystrokes implements Serializable {
         return ks;
     }
 
-    public static Keystrokes merge(Keystrokes ks1, Keystrokes ks2) {
-        Keystrokes pb = new Keystrokes();
+    public static Keystrokes merge(final Keystrokes ks1, final Keystrokes ks2) {
+        final Keystrokes pb = new Keystrokes();
 
         pb.down = ks1.down || ks2.down;
         pb.left = ks1.left || ks2.left;

@@ -21,79 +21,79 @@ public class ResourceManager {
         stuff = new HashMap<>();
     }
 
-    public void addAsset(String key, Object obj) {
+    public void addAsset(final String key, final Object obj) {
         stuff.put(key, obj);
     }
 
-    public void loadFont(FileHandle path) {
+    public void loadFont(final FileHandle path) {
         stuff.put(path.name(), new BitmapFont(path, true));
     }
 
-    public BitmapFont getFont(String key) {
+    public BitmapFont getFont(final String key) {
         return (BitmapFont) stuff.get(key);
     }
 
-    public void loadTiledMap(FileHandle path) {
+    public void loadTiledMap(final FileHandle path) {
         stuff.put(path.name(), Utils.loadTiledMap(path));
     }
 
-    public TiledMap getTiledMap(String key) {
+    public TiledMap getTiledMap(final String key) {
         return (TiledMap) stuff.get(key);
     }
 
-    public void loadObject(FileHandle path) throws ClassNotFoundException, IOException {
+    public void loadObject(final FileHandle path) throws ClassNotFoundException, IOException {
         stuff.put(path.name(), IO.importObject(path));
     }
 
-    public Object getAsset(String key) {
+    public Object getAsset(final String key) {
         return stuff.get(key);
     }
 
-    public void loadImage(FileHandle path) {
+    public void loadImage(final FileHandle path) {
         loadImage(path, false);
     }
 
-    public void loadPixmap(FileHandle path) {
+    public void loadPixmap(final FileHandle path) {
         stuff.put(path.name(), new Pixmap(path));
     }
 
-    public void loadImage(FileHandle path, boolean createPixelData) {
+    public void loadImage(final FileHandle path, final boolean createPixelData) {
         stuff.put(path.name(), new Image2D(path, createPixelData));
     }
 
-    public void loadAnimation(FileHandle path, boolean createPixelData) throws IOException {
+    public void loadAnimation(final FileHandle path, final boolean createPixelData) throws IOException {
         stuff.put(path.name(), Image2D.loadAnimation(path, createPixelData));
     }
 
-    public void loadAnimation(FileHandle path) throws IOException {
+    public void loadAnimation(final FileHandle path) throws IOException {
         loadAnimation(path, false);
     }
 
-    public Image2D getImage(String key) {
+    public Image2D getImage(final String key) {
         return (Image2D) stuff.get(key);
     }
 
-    public Image2D[] getAnimation(String key) {
+    public Image2D[] getAnimation(final String key) {
         return (Image2D[]) stuff.get(key);
     }
 
-    public Pixmap getPixmap(String key) {
+    public Pixmap getPixmap(final String key) {
         return (Pixmap) stuff.get(key);
     }
 
-    public Sound getSound(String key) {
+    public Sound getSound(final String key) {
         return (Sound) stuff.get(key);
     }
 
-    public Music getMusic(String key) {
+    public Music getMusic(final String key) {
         return (Music) stuff.get(key);
     }
 
-    public void loadSound(FileHandle path) {
+    public void loadSound(final FileHandle path) {
         stuff.put(path.name(), Gdx.audio.newSound(path));
     }
 
-    public void loadMusic(FileHandle path) {
+    public void loadMusic(final FileHandle path) {
         stuff.put(path.name(), Gdx.audio.newMusic(path));
     }
 
@@ -107,14 +107,14 @@ public class ResourceManager {
      * - other files whose name contains "non-obj" are ignored. The rest will be deserialized.
      * - subdirectories consist of images only. These are loaded as Image2D.
      */
-    public void loadContentFromDirectory(FileHandle dir) throws IOException {
+    public void loadContentFromDirectory(final FileHandle dir) throws IOException {
         if (!dir.exists())
             throw new NullPointerException("The given directory doesn't exist: " + dir.file().getAbsolutePath());
         if (!dir.isDirectory())
             throw new IllegalArgumentException("Argument must be a directory:" + dir.file().getAbsolutePath());
 
-        for (FileHandle content : dir.list()) {
-            String name = content.path().toLowerCase();
+        for (final FileHandle content : dir.list()) {
+            final String name = content.path().toLowerCase();
             if (name.contains("skip"))
                 continue;
 
@@ -145,32 +145,32 @@ public class ResourceManager {
     }
 
     public void disposeAll() {
-        stuff.forEach((key, value) ->  tryDispose(value) );
+        stuff.forEach((key, value) -> tryDispose(value));
     }
 
-    public void dispose(String key) {
+    public void dispose(final String key) {
         tryDispose(stuff.get(key));
     }
 
-    public void remove(String key) {
+    public void remove(final String key) {
         stuff.remove(key);
     }
 
     @Override
     public String toString() {
-        StringBuilder bu = new StringBuilder();
+        final StringBuilder bu = new StringBuilder();
         stuff.forEach((key, value) -> bu.append(key).append(": ").append(value.getClass().getSimpleName()).append(System.lineSeparator()));
         return bu.toString();
     }
 
-    private void tryDispose(Object obj) {
+    private void tryDispose(final Object obj) {
         if (obj instanceof Disposable)
             ((Disposable) obj).dispose();
         else if (obj.getClass().isArray()) {
-            Object[] arr = (Object[]) obj;
+            final Object[] arr = (Object[]) obj;
 
             if (arr.length > 0 && arr[0] instanceof Disposable) {
-                for (Object disposable : arr)
+                for (final Object disposable : arr)
                     ((Disposable) disposable).dispose();
             }
         }

@@ -12,6 +12,7 @@ import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.SolidPlatform;
@@ -26,7 +27,6 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.PingPongFloat;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -50,7 +50,7 @@ public class CollapsingCave extends TileBasedLevel {
     private float deadX, deadY;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -64,11 +64,11 @@ public class CollapsingCave extends TileBasedLevel {
         resources.addAsset("particle", ps);
         parse(resources.getTiledMap("map.tmx"));
 
-        Dimension screenSize = getEngine().getScreenSize();
-        Pixmap pix = new Pixmap((int)screenSize.getWidth(), (int)screenSize.getHeight(), Pixmap.Format.RGBA8888);
+        final Dimension screenSize = getEngine().getScreenSize();
+        final Pixmap pix = new Pixmap((int) screenSize.getWidth(), (int) screenSize.getHeight(), Pixmap.Format.RGBA8888);
         pix.setColor(Color.BLACK);
         pix.fill();
-        Image2D black = new Image2D(pix);
+        final Image2D black = new Image2D(pix);
         pix.dispose();
         resources.addAsset("darkness", black);
 
@@ -103,13 +103,13 @@ public class CollapsingCave extends TileBasedLevel {
         drilling.play();
         add(this::extra);
 
-        Entity vShake = CameraEffects.verticalMovement(2, 2);
-        Entity hShake = CameraEffects.horizontalMovement(2, 2);
+        final Entity vShake = CameraEffects.verticalMovement(2, 2);
+        final Entity hShake = CameraEffects.horizontalMovement(2, 2);
 
-        runOnceWhen(()-> {
+        runOnceWhen(() -> {
             add(vShake);
             add(hShake);
-        }, ()-> drugEffect);
+        }, () -> drugEffect);
 
         /*
          * Main Character
@@ -128,22 +128,22 @@ public class CollapsingCave extends TileBasedLevel {
         /*
          * Darkness
          */
-        PingPongFloat ppFloat = new PingPongFloat(.1f, .5f, .001f);
-        BigImage darkness = new BigImage(BigImage.RenderStrategy.FIXED);
+        final PingPongFloat ppFloat = new PingPongFloat(.1f, .5f, .001f);
+        final BigImage darkness = new BigImage(BigImage.RenderStrategy.FIXED);
         darkness.setImage(resources.getImage("darkness"));
         darkness.zIndex(1000);
         darkness.tint.a = ppFloat.get();
-        darkness.addEvent(()->{
+        darkness.addEvent(() -> {
             darkness.tint.a = ppFloat.get();
         });
         add(darkness);
 
         /*
-		 * Collapsing roof
+         * Collapsing roof
 		 */
         crusher = new TmxEntity(resources.getTiledMap("crusher.tmx"), play);
         crusher.move(0, -1406);
-        crusher.appendPath(0, -119, Integer.MAX_VALUE, false, () ->{
+        crusher.appendPath(0, -119, Integer.MAX_VALUE, false, () -> {
             drugEffect = false;
             collapsing.stop();
             resources.getSound("slam.wav").play();
@@ -189,11 +189,11 @@ public class CollapsingCave extends TileBasedLevel {
         });
         drill.addEvent(Factory.hitMain(drill, play, -1));
 
-        PathDrone middlePart = new PathDrone(0,0);
+        final PathDrone middlePart = new PathDrone(0, 0);
         middlePart.addEvent(Factory.follow(drill, middlePart, 8, 100));
         middlePart.setImage(resources.getImage("middlepart.png"));
 
-        PathDrone bottomPart = new PathDrone(0,0);
+        final PathDrone bottomPart = new PathDrone(0, 0);
         bottomPart.addEvent(Factory.follow(drill, bottomPart, 17, 160));
         bottomPart.setImage(1, resources.getAnimation("bottompart"));
         bottomPart.setHitbox(Hitbox.PIXEL);
@@ -213,23 +213,23 @@ public class CollapsingCave extends TileBasedLevel {
         item1 = new Entity();
         item1.move(781, 1417);
         item1.setImage(6, resources.getAnimation("collect"));
-        Entity item2 = item1.getClone().move(901, 708);
-        Entity item3 = item1.getClone().move(195, 263);
-        Entity item4 = item1.getClone().move(1130, 229);
+        final Entity item2 = item1.getClone().move(901, 708);
+        final Entity item3 = item1.getClone().move(195, 263);
+        final Entity item4 = item1.getClone().move(1130, 229);
 
-        item2.ifCollides(play).thenRunOnce(()->{
+        item2.ifCollides(play).thenRunOnce(() -> {
             discard(item2);
             coll2 = true;
             resources.getSound("collect3.wav").play();
         });
 
-        item3.ifCollides(play).thenRunOnce(()->{
+        item3.ifCollides(play).thenRunOnce(() -> {
             discard(item3);
             coll3 = true;
             resources.getSound("collect3.wav").play();
         });
 
-        item4.ifCollides(play).thenRunOnce(()->{
+        item4.ifCollides(play).thenRunOnce(() -> {
             discard(item4);
             coll4 = true;
             resources.getSound("collect3.wav").play();
@@ -245,7 +245,7 @@ public class CollapsingCave extends TileBasedLevel {
 		 */
         dust = new Entity() {
             @Override
-            public void render(SpriteBatch batch) {
+            public void render(final SpriteBatch batch) {
                 ps.setPosition(drill.centerX(), drill.centerY());
                 ps.draw(batch, Gdx.graphics.getDeltaTime());
             }
@@ -279,13 +279,13 @@ public class CollapsingCave extends TileBasedLevel {
     }
 
     private void extra() {
-        if(drill.getMoveSpeed() == .1f && crusher.getMoveSpeed() == 0 && ++soundCounter % 15 == 0) {
+        if (drill.getMoveSpeed() == .1f && crusher.getMoveSpeed() == 0 && ++soundCounter % 15 == 0) {
 
-            double distance = Collisions.distance(play.x(), play.y(), drill.centerX(), drill.y());
-            double candidate = 10 * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(1200)), 0);
-            float volume = (float) Math.min(candidate, 1);
+            final double distance = Collisions.distance(play.x(), play.y(), drill.centerX(), drill.y());
+            final double candidate = 10 * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(1200)), 0);
+            final float volume = (float) Math.min(candidate, 1);
 
-            switch(r.nextInt(4)) {
+            switch (r.nextInt(4)) {
                 case 0:
                     exp1.play(volume);
                 case 1:
@@ -297,18 +297,18 @@ public class CollapsingCave extends TileBasedLevel {
             }
         }
 
-        if(!coll1 && item1.collidesWith(play)) {
+        if (!coll1 && item1.collidesWith(play)) {
             discard(item1);
             coll1 = true;
             resources.getSound("collect3.wav").play();
         }
 
-        if(coll1 && coll2 && coll3 && coll4 && flag.collidesWith(play))
+        if (coll1 && coll2 && coll3 && coll4 && flag.collidesWith(play))
             play.setState(Vitality.COMPLETED);
 
-        if(!done) {
+        if (!done) {
             camera.moveTowards(play.x(), play.y());
-            if(Collisions.distance(camera, play) < 200) {
+            if (Collisions.distance(camera, play) < 200) {
                 done = true;
                 removeFocusObject(camera);
                 removeSoundListener(camera);

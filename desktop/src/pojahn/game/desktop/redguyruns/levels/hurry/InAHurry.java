@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import pojahn.game.core.Entity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.BigImage.RenderStrategy;
 import pojahn.game.entities.Particle;
@@ -16,7 +17,6 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.Int32;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -29,7 +29,7 @@ public class InAHurry extends TileBasedLevel {
     private int timeLeft;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/hurry"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
@@ -57,13 +57,13 @@ public class InAHurry extends TileBasedLevel {
         /*
          * Coin
          */
-        Particle coinTake = Particle.from(4, resources.getAnimation("cointake"));
+        final Particle coinTake = Particle.from(4, resources.getAnimation("cointake"));
 
-        Entity coin = new Entity();
+        final Entity coin = new Entity();
         coin.setImage(5, resources.getAnimation("coin"));
         coin.move(3192, 472);
         coin.zIndex(Integer.MAX_VALUE);
-        coin.addEvent(()-> {
+        coin.addEvent(() -> {
             if (coin.collidesWith(main)) {
                 main.setState(Vitality.COMPLETED);
                 discard(coin);
@@ -76,29 +76,29 @@ public class InAHurry extends TileBasedLevel {
         /*
          * Time
          */
-        BitmapFont font = resources.getFont("sansserif32.fnt");
-        Dimension screen = getEngine().getScreenSize();
-        Sound drain = resources.getSound("drain.ogg");
-        Int32 counter = new Int32();
+        final BitmapFont font = resources.getFont("sansserif32.fnt");
+        final Dimension screen = getEngine().getScreenSize();
+        final Sound drain = resources.getSound("drain.ogg");
+        final Int32 counter = new Int32();
         timeLeft = -1400;
-        add(Utils.wrap(batch-> {
-            if(timeLeft == 0) {
+        add(Utils.wrap(batch -> {
+            if (timeLeft == 0) {
                 if (main.getState() == Vitality.ALIVE)
                     main.setState(Vitality.DEAD);
             } else if (main.getState() == Vitality.ALIVE) {
                 timeLeft += 1;
-                if(counter.value++ % 6 == 0)
+                if (counter.value++ % 6 == 0)
                     drain.play(.2f);
             }
 
             getEngine().hudCamera();
             font.setColor(Color.YELLOW);
-            font.draw(batch, Integer.toString(timeLeft), screen.width - 100,  20);
+            font.draw(batch, Integer.toString(timeLeft), screen.width - 100, 20);
             getEngine().gameCamera();
 
         }, Integer.MAX_VALUE));
-        Int32 counter2 = new Int32();
-        add(()-> {
+        final Int32 counter2 = new Int32();
+        add(() -> {
             if (main.isAlive() && ++counter2.value % 7 == 0) {
                 add(coinTake.getClone().center(main));
             }

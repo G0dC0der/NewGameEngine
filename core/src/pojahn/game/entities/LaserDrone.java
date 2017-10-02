@@ -23,7 +23,7 @@ public class LaserDrone extends PathDrone {
     private LaserBeam firingBeam, chargeBeam;
     private Sound startupSound, firingSound;
 
-    public LaserDrone(float x, float y, int laserStartup, int laserDuration, int reload, Entity... targets) {
+    public LaserDrone(final float x, final float y, final int laserStartup, final int laserDuration, final int reload, final Entity... targets) {
         super(x, y);
         this.laserStartup = laserStartup;
         this.laserDuration = laserDuration;
@@ -37,15 +37,15 @@ public class LaserDrone extends PathDrone {
         ignoreInactive = true;
     }
 
-    public void setStartupSound(Sound startupSound) {
+    public void setStartupSound(final Sound startupSound) {
         this.startupSound = startupSound;
     }
 
-    public void setFiringSound(Sound firingSound) {
+    public void setFiringSound(final Sound firingSound) {
         this.firingSound = firingSound;
     }
 
-    public void setExplosion(Particle exp) {
+    public void setExplosion(final Particle exp) {
         this.exp = exp;
     }
 
@@ -53,15 +53,15 @@ public class LaserDrone extends PathDrone {
         return targetX != -1;
     }
 
-    public void setStopTile(Tile stopTile) {
+    public void setStopTile(final Tile stopTile) {
         this.stopTile = stopTile;
     }
 
-    public void fireAtVisible(boolean fireAtVisible) {
+    public void fireAtVisible(final boolean fireAtVisible) {
         this.fireAtVisible = fireAtVisible;
     }
 
-    public void setLaserTint(Color tint) {
+    public void setLaserTint(final Color tint) {
         this.laserTint = tint;
     }
 
@@ -69,7 +69,7 @@ public class LaserDrone extends PathDrone {
         return firingBeam;
     }
 
-    public void setFiringBeam(LaserBeam firingBeam) {
+    public void setFiringBeam(final LaserBeam firingBeam) {
         this.firingBeam = firingBeam;
     }
 
@@ -77,11 +77,11 @@ public class LaserDrone extends PathDrone {
         return chargeBeam;
     }
 
-    public void setChargeBeam(LaserBeam chargeBeam) {
+    public void setChargeBeam(final LaserBeam chargeBeam) {
         this.chargeBeam = chargeBeam;
     }
 
-    public void setIgnoreInactive(boolean ignoreInactive) {
+    public void setIgnoreInactive(final boolean ignoreInactive) {
         this.ignoreInactive = ignoreInactive;
     }
 
@@ -102,8 +102,10 @@ public class LaserDrone extends PathDrone {
                 target = Collisions.findClosest(this, getTargets());
 
             if (target != null) {
-                int x1 = (int) (x() + width() / 2), y1 = (int) (y() + height() / 2);
-                int x2 = (int) (target.x() + target.width() / 2), y2 = (int) (target.y() + target.height() / 2);
+                final int x1 = (int) (x() + width() / 2);
+                final int y1 = (int) (y() + height() / 2);
+                final int x2 = (int) (target.x() + target.width() / 2);
+                final int y2 = (int) (target.y() + target.height() / 2);
 
                 Vector2 wallPoint = Collisions.searchTile(x1, y1, x2, y2, true, stopTile, getLevel());
                 if (wallPoint == null)
@@ -138,7 +140,7 @@ public class LaserDrone extends PathDrone {
                     allowFiringSound = false;
                 }
 
-                for (Entity entity : targets)
+                for (final Entity entity : targets)
                     if (entity.hasActionEvent() && Collisions.lineRectangle((int) x(), (int) y(), (int) targetX, (int) targetY, entity.bounds.toRectangle()))
                         entity.runActionEvent(this);
 
@@ -147,9 +149,8 @@ public class LaserDrone extends PathDrone {
                     reloadCounter = reload;
                     firing = false;
                 }
-            } else
-                if(chargeBeam != null)
-                    chargeBeam.fireAt(x() + width() / 2, y() + height() / 2, targetX, targetY, 1);
+            } else if (chargeBeam != null)
+                chargeBeam.fireAt(x() + width() / 2, y() + height() / 2, targetX, targetY, 1);
         }
     }
 
@@ -160,15 +161,15 @@ public class LaserDrone extends PathDrone {
     }
 
     @Override
-    public void render(SpriteBatch b) {
+    public void render(final SpriteBatch b) {
         super.render(b);
 
-        Color defaultColor = b.getColor();
+        final Color defaultColor = b.getColor();
 
         if (laserTint != null)
             b.setColor(laserTint);
 
-        if(chargeBeam != null)
+        if (chargeBeam != null)
             chargeBeam.drawLasers(b);
         firingBeam.drawLasers(b);
 

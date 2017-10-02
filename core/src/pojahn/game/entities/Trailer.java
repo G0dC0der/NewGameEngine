@@ -8,11 +8,11 @@ public class Trailer extends PathDrone {
     private int freq, counter, counter2, spitCounter, limit;
     private boolean stop;
 
-    public Trailer(float x, float y) {
+    public Trailer(final float x, final float y) {
         this(x, y, 10, new Entity[0]);
     }
 
-    public Trailer(float x, float y, int freq, Entity... trailers) {
+    public Trailer(final float x, final float y, final int freq, final Entity... trailers) {
         super(x, y);
         this.freq = freq;
         this.trailers = trailers;
@@ -35,12 +35,12 @@ public class Trailer extends PathDrone {
         super.logistics();
     }
 
-    public void setSpawners(Entity... trailers) {
+    public void setSpawners(final Entity... trailers) {
         this.trailers = trailers;
         counter2 = 0;
     }
 
-    public void setFrequency(int freq) {
+    public void setFrequency(final int freq) {
         this.freq = freq;
         counter = 0;
     }
@@ -49,7 +49,7 @@ public class Trailer extends PathDrone {
         return !stop && spitCounter < limit;
     }
 
-    public void spitLimit(int limit) {
+    public void spitLimit(final int limit) {
         this.limit = limit;
     }
 
@@ -57,7 +57,7 @@ public class Trailer extends PathDrone {
         return spitCounter;
     }
 
-    public void stop(boolean stop) {
+    public void stop(final boolean stop) {
         this.stop = stop;
     }
 }

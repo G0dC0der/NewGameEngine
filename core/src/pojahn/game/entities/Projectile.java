@@ -23,7 +23,7 @@ public abstract class Projectile extends MobileEntity {
     private int trailerCounter;
     private boolean follow, once, ignoreInactive;
 
-    public Projectile(float x, float y, Entity... targets) {
+    public Projectile(final float x, final float y, final Entity... targets) {
         move(x, y);
         rotate = true;
         this.targets = targets;
@@ -36,23 +36,23 @@ public abstract class Projectile extends MobileEntity {
         throw new NullPointerException("Can not get a clone of an abstract class.");
     }
 
-    public void setImpact(Particle impact) {
+    public void setImpact(final Particle impact) {
         this.impact = impact;
     }
 
-    public void setGunfire(Particle gunfire) {
+    public void setGunfire(final Particle gunfire) {
         this.gunfire = gunfire;
     }
 
-    public void setTrailer(Particle trailer) {
+    public void setTrailer(final Particle trailer) {
         this.trailer = trailer;
     }
 
-    public void setTrailerDelay(int trailerDelay) {
+    public void setTrailerDelay(final int trailerDelay) {
         this.trailerDelay = trailerDelay;
     }
 
-    public void rotate(boolean rotate) {
+    public void rotate(final boolean rotate) {
         this.rotate = rotate;
     }
 
@@ -60,23 +60,23 @@ public abstract class Projectile extends MobileEntity {
         return rotate;
     }
 
-    public void setTarget(Vector2 target) {
+    public void setTarget(final Vector2 target) {
         setTarget(target.x, target.y);
     }
 
-    public void setTarget(float x, float y) {
+    public void setTarget(final float x, final float y) {
         setTarget(new EntityBuilder().move(x, y).build());
     }
 
-    public void setTarget(Entity target) {
+    public void setTarget(final Entity target) {
         this.target = target;
     }
 
-    public void follow(boolean lockTarget) {
+    public void follow(final boolean lockTarget) {
         this.follow = lockTarget;
     }
 
-    public void setIgnoreInactive(boolean ignoreInactive) {
+    public void setIgnoreInactive(final boolean ignoreInactive) {
         this.ignoreInactive = ignoreInactive;
     }
 
@@ -95,7 +95,7 @@ public abstract class Projectile extends MobileEntity {
                 rotate();
 
             if (trailer != null && ++trailerCounter % trailerDelay == 0) {
-                Vector2 rare = getRarePosition();
+                final Vector2 rare = getRarePosition();
                 getLevel().add(trailer.getClone().move(rare.x - trailer.halfWidth(), rare.y - trailer.halfHeight()));
             }
 
@@ -109,7 +109,7 @@ public abstract class Projectile extends MobileEntity {
     protected abstract void moveProjectile(Vector2 target);
 
     protected void rotate() {
-        Vector2 target = getTarget();
+        final Vector2 target = getTarget();
         bounds.rotation = (float) Collisions.getAngle(centerX(), centerY(), target.x, target.y);
     }
 
@@ -136,12 +136,12 @@ public abstract class Projectile extends MobileEntity {
         }
     }
 
-    private void impact(Entity victim) {
+    private void impact(final Entity victim) {
         if (victim != null && victim.hasActionEvent())
             victim.runActionEvent(this);
 
-        Vector2 front = getFrontPosition();
-        Level l = getLevel();
+        final Vector2 front = getFrontPosition();
+        final Level l = getLevel();
 
         if (impact != null)
             l.add(impact.getClone().move(front.x - impact.halfWidth(), front.y - impact.halfHeight()));
@@ -149,7 +149,7 @@ public abstract class Projectile extends MobileEntity {
         l.discard(this);
     }
 
-    protected void copyData(Projectile clone) {
+    protected void copyData(final Projectile clone) {
         super.copyData(clone);
         clone.impact = impact;
         clone.gunfire = gunfire;

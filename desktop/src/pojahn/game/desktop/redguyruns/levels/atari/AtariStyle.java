@@ -32,7 +32,7 @@ public class AtariStyle extends PixelBasedLevel {
     private boolean taken1, taken2, taken3;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -94,7 +94,7 @@ public class AtariStyle extends PixelBasedLevel {
         addLava(61, 10, 1, 7);
 
 		/*
-		 * Weak
+         * Weak
 		 */
         addWeak(63, 45);
         addWeak(64, 45);
@@ -141,7 +141,7 @@ public class AtariStyle extends PixelBasedLevel {
 		/*
 		 * Door & Keys
 		 */
-        Entity key1 = new Entity();
+        final Entity key1 = new Entity();
         key1.setImage(resources.getImage("key.png"));
         key1.move(7 * 30, 27 * 30);
         key1.addEvent(() -> {
@@ -151,7 +151,7 @@ public class AtariStyle extends PixelBasedLevel {
             }
         });
 
-        Entity key2 = new Entity();
+        final Entity key2 = new Entity();
         key2.setImage(resources.getImage("key.png"));
         key2.move(19 * 30, 27 * 30);
         key2.addEvent(() -> {
@@ -161,7 +161,7 @@ public class AtariStyle extends PixelBasedLevel {
             }
         });
 
-        Entity key3 = new Entity();
+        final Entity key3 = new Entity();
         key3.setImage(resources.getImage("key.png"));
         key3.move(13 * 30, 21 * 30);
         key3.addEvent(() -> {
@@ -171,7 +171,7 @@ public class AtariStyle extends PixelBasedLevel {
             }
         });
 
-        Entity theDoor = new Entity();
+        final Entity theDoor = new Entity();
         theDoor.move(20 * 30, 27 * 30);
         theDoor.setImage(resources.getImage("door.png"));
         play.addObstacle(theDoor);
@@ -190,7 +190,7 @@ public class AtariStyle extends PixelBasedLevel {
 		/*
 		 * Goal
 		 */
-        Entity g = new Entity();
+        final Entity g = new Entity();
         g.move(59 * 30, 13 * 30);
         g.setImage(resources.getImage("goal.png"));
         g.addEvent(() -> {
@@ -225,15 +225,15 @@ public class AtariStyle extends PixelBasedLevel {
         return "Atari Style";
     }
 
-    SimpleWeapon getTurret(int x, int y, Direction dir) {
-        SimpleWeapon sw = new SimpleWeapon(x * 30, y * 30, p, dir, 250);
+    SimpleWeapon getTurret(final int x, final int y, final Direction dir) {
+        final SimpleWeapon sw = new SimpleWeapon(x * 30, y * 30, p, dir, 250);
         sw.setImage(5, resources.getAnimation("turret"));
         sw.setFiringSound(resources.getSound("gunfire.wav"));
         sw.sounds.useFalloff = true;
         sw.zIndex(101);
 
-        float spawnX = (dir == Direction.S || dir == Direction.N) ? 5 : 0,
-                spawnY = (dir == Direction.E || dir == Direction.W) ? 5 : 0;
+        final float spawnX = (dir == Direction.S || dir == Direction.N) ? 5 : 0;
+        final float spawnY = (dir == Direction.E || dir == Direction.W) ? 5 : 0;
 
         sw.spawnOffset(spawnX, spawnY);
         play.addObstacle(sw);
@@ -241,8 +241,8 @@ public class AtariStyle extends PixelBasedLevel {
         return sw;
     }
 
-    void addLava(float x, float y, float width, float height) {
-        Entity lava = new Entity();
+    void addLava(final float x, final float y, final float width, final float height) {
+        final Entity lava = new Entity();
         lava.move(x * 30.0f, y * 30.0f);
         lava.setImage(2, resources.getAnimation("lethal"));
         lava.bounds.size.width = width * 30.0f;
@@ -252,8 +252,8 @@ public class AtariStyle extends PixelBasedLevel {
         add(lava);
     }
 
-    void addWeak(int x, int y) {
-        DestroyablePlatform weak = new DestroyablePlatform(x * 30, y * 30, play);
+    void addWeak(final int x, final int y) {
+        final DestroyablePlatform weak = new DestroyablePlatform(x * 30, y * 30, play);
         weak.setImage(resources.getAnimation("weak")[0]);
         weak.setDestroyImage(new Animation<>(2, resources.getAnimation("weak")));
         add(weak);

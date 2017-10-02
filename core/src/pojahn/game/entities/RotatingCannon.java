@@ -8,7 +8,7 @@ import pojahn.game.core.Level;
 import pojahn.game.essentials.Direction;
 
 public class RotatingCannon extends Entity {
-    
+
     private float rotationSpeed, targetRotation;
     private int reload, reloadCounter;
     private boolean disabled, diagonalFire, rotating, fireAll;
@@ -16,34 +16,34 @@ public class RotatingCannon extends Entity {
     private Particle firingAnim;
     private Sound firingSound;
 
-    public RotatingCannon(float x, float y, Projectile proj) {
+    public RotatingCannon(final float x, final float y, final Projectile proj) {
         move(x, y);
         this.proj = proj;
         rotationSpeed = 3;
         reload = 50;
     }
-    
-    public void setReloadTime(int reload) {
+
+    public void setReloadTime(final int reload) {
         this.reload = reload;
     }
 
-    public void setRotationSpeed(float rotationSpeed) {
+    public void setRotationSpeed(final float rotationSpeed) {
         this.rotationSpeed = rotationSpeed;
     }
 
-    public void setFireAnimation(Particle firingAnim) {
+    public void setFireAnimation(final Particle firingAnim) {
         this.firingAnim = firingAnim;
     }
 
-    public void setFiringSound(Sound sound) {
+    public void setFiringSound(final Sound sound) {
         firingSound = sound;
     }
-    
-    public void disable(boolean disable) {
+
+    public void disable(final boolean disable) {
         this.disabled = disable;
     }
 
-    public void fireAll(boolean fireAll) {
+    public void fireAll(final boolean fireAll) {
         this.fireAll = fireAll;
     }
 
@@ -53,13 +53,13 @@ public class RotatingCannon extends Entity {
 
         if (!disabled && --reloadCounter < 0) {
             if (!rotating) {
-                Level l = getLevel();
+                final Level l = getLevel();
 
                 if (diagonalFire || fireAll) {
                     Vector2 spawn;
 
                     spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 45);
-                    Projectile proj1 = proj.getClone();
+                    final Projectile proj1 = proj.getClone();
                     proj1.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
                     proj1.setTarget(getTarget(Direction.SE));
                     proj1.setRotation(45);
@@ -67,7 +67,7 @@ public class RotatingCannon extends Entity {
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
 
                     spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 135);
-                    Projectile proj2 = proj.getClone();
+                    final Projectile proj2 = proj.getClone();
                     proj2.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
                     proj2.setTarget(getTarget(Direction.SW));
                     proj2.setRotation(135);
@@ -75,7 +75,7 @@ public class RotatingCannon extends Entity {
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
 
                     spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 225);
-                    Projectile proj3 = proj.getClone();
+                    final Projectile proj3 = proj.getClone();
                     proj3.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
                     proj3.setTarget(getTarget(Direction.NW));
                     proj3.setRotation(225);
@@ -83,7 +83,7 @@ public class RotatingCannon extends Entity {
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
 
                     spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 315);
-                    Projectile proj4 = proj.getClone();
+                    final Projectile proj4 = proj.getClone();
                     proj4.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
                     proj4.setTarget(getTarget(Direction.NE));
                     proj4.setRotation(315);
@@ -97,28 +97,28 @@ public class RotatingCannon extends Entity {
                 }
 
                 if (!diagonalFire || fireAll) {
-                    Projectile proj1 = proj.getClone();
+                    final Projectile proj1 = proj.getClone();
                     proj1.move(centerX() - (proj.width() / 2), y() - (proj.height() / 2));
                     proj1.setTarget(centerX() - (proj.width() / 2), 0);
                     proj1.setRotation(270);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(centerX() - firingAnim.width() / 2, y() - firingAnim.height() / 2));
 
-                    Projectile proj2 = proj.getClone();
+                    final Projectile proj2 = proj.getClone();
                     proj2.move(x() + width() - (proj.width() / 2), centerY() - (proj.height() / 2));
                     proj2.setTarget(l.getWidth(), centerY() - (proj.height() / 2));
                     proj2.setRotation(0);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(x() + width() - (firingAnim.width() / 2), centerY() - firingAnim.height() / 2));
 
-                    Projectile proj3 = proj.getClone();
+                    final Projectile proj3 = proj.getClone();
                     proj3.move(centerX() - (proj.width() / 2), y() + height() - (proj.height() / 2));
                     proj3.setTarget(centerX() - (proj.width() / 2), l.getWidth());
                     proj3.setRotation(90);
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(centerX() - firingAnim.width() / 2, y() + height() - firingAnim.height() / 2));
 
-                    Projectile proj4 = proj.getClone();
+                    final Projectile proj4 = proj.getClone();
                     proj4.move(x() - (proj.width() / 2), centerY() - (proj.height() / 2));
                     proj4.setTarget(0, centerY() - (proj.height() / 2));
                     proj4.setRotation(180);
@@ -131,9 +131,9 @@ public class RotatingCannon extends Entity {
                     l.add(proj4);
                 }
 
-                if(firingSound != null)
+                if (firingSound != null)
                     firingSound.play(sounds.calc());
-                    
+
                 reloadCounter = reload;
                 rotating = true;
                 targetRotation = bounds.rotation + 45;
@@ -157,11 +157,12 @@ public class RotatingCannon extends Entity {
         }
     }
 
-    private Vector2 getTarget(Direction dir) {
+    private Vector2 getTarget(final Direction dir) {
         final Level l = getLevel();
-        float middleX = centerX();
-        float middleY = centerY();
-        float x, y;
+        final float middleX = centerX();
+        final float middleY = centerY();
+        final float x;
+        final float y;
 
         switch (dir) {
             case NW:

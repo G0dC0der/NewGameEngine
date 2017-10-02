@@ -10,15 +10,15 @@ public class PlaybackRecord {
     public final List<KeySession> replayData;
     public final Serializable meta;
 
-    public PlaybackRecord(List<KeySession> replayData, Serializable meta) {
+    public PlaybackRecord(final List<KeySession> replayData, final Serializable meta) {
         this.replayData = replayData;
         this.meta = meta;
     }
 
-    public List<Keystrokes> getByBadge(long badge) {
+    public List<Keystrokes> getByBadge(final long badge) {
         return replayData.stream()
-                         .filter(keySession -> keySession.badge == badge)
-                         .findFirst()
-                         .get().keystrokes;
+                .filter(keySession -> keySession.badge == badge)
+                .findFirst()
+                .get().keystrokes;
     }
 }

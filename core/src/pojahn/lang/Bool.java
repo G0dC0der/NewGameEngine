@@ -6,7 +6,7 @@ public class Bool {
     public Bool() {
     }
 
-    public Bool(boolean value) {
+    public Bool(final boolean value) {
         this.value = value;
     }
 }

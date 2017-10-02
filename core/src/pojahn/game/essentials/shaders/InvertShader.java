@@ -46,13 +46,13 @@ public class InvertShader extends Shader {
         return invertValue;
     }
 
-    public void setInvertValue(float invertValue) {
+    public void setInvertValue(final float invertValue) {
         this.invertValue = invertValue;
     }
 
     @Override
     public void prepare() {
-        ShaderProgram shader = get();
+        final ShaderProgram shader = get();
         shader.begin();
         shader.setUniformf("invertValue", invertValue);
         shader.end();

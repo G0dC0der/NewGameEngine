@@ -12,7 +12,7 @@ public class DestroyablePlatform extends SolidPlatform {
     private Sound breakSound, destroySound;
     private MobileEntity[] subjects;
 
-    public DestroyablePlatform(float x, float y, MobileEntity... subjects) {
+    public DestroyablePlatform(final float x, final float y, final MobileEntity... subjects) {
         super(x, y, subjects);
         destroyFrames = 100;
         aliveCounter = -1;
@@ -20,7 +20,7 @@ public class DestroyablePlatform extends SolidPlatform {
     }
 
     public DestroyablePlatform getClone() {
-        DestroyablePlatform clone = new DestroyablePlatform(x(), y(), subjects);
+        final DestroyablePlatform clone = new DestroyablePlatform(x(), y(), subjects);
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -50,23 +50,23 @@ public class DestroyablePlatform extends SolidPlatform {
             setImage(destroyImage);
     }
 
-    public void setBreakSound(Sound sound) {
+    public void setBreakSound(final Sound sound) {
         this.breakSound = sound;
     }
 
-    public void setDestroySound(Sound sound) {
+    public void setDestroySound(final Sound sound) {
         this.destroySound = sound;
     }
 
-    public void setDestroyImage(Animation<Image2D> destroyImage) {
+    public void setDestroyImage(final Animation<Image2D> destroyImage) {
         this.destroyImage = destroyImage;
     }
 
-    public void setDestroyFrames(int destroyFrames) {
+    public void setDestroyFrames(final int destroyFrames) {
         this.destroyFrames = destroyFrames;
     }
 
-    protected void copyData(DestroyablePlatform clone) {
+    protected void copyData(final DestroyablePlatform clone) {
         super.copyData(clone);
         if (destroyImage != null)
             clone.destroyImage = destroyImage.getClone();

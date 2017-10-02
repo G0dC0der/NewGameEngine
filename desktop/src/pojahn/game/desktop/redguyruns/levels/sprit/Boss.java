@@ -34,35 +34,35 @@ public class Boss extends MobileEntity {
         setMoveSpeed(0);
     }
 
-    public void setFullHealth(Animation<Image2D> fullHealth) {
+    public void setFullHealth(final Animation<Image2D> fullHealth) {
         this.fullHealth = fullHealth;
     }
 
-    public void setOnceHit(Animation<Image2D> onceHit) {
+    public void setOnceHit(final Animation<Image2D> onceHit) {
         this.onceHit = onceHit;
     }
 
-    public void setFinalLife(Animation<Image2D> finalLife) {
+    public void setFinalLife(final Animation<Image2D> finalLife) {
         this.finalLife = finalLife;
     }
 
-    public void setProj(Projectile proj) {
+    public void setProj(final Projectile proj) {
         this.proj = proj;
     }
 
-    public void setSpinnerImage(Image2D spinnerImage) {
+    public void setSpinnerImage(final Image2D spinnerImage) {
         spinner.setImage(spinnerImage);
     }
 
-    public void setResource(ResourceManager resource) {
+    public void setResource(final ResourceManager resource) {
         this.resource = resource;
     }
 
-    public void setDeathAnim(Particle deathAnim) {
+    public void setDeathAnim(final Particle deathAnim) {
         this.deathAnim = deathAnim;
     }
 
-    public void setHero(PlayableEntity hero) {
+    public void setHero(final PlayableEntity hero) {
         this.hero = hero;
     }
 
@@ -84,10 +84,10 @@ public class Boss extends MobileEntity {
             getLevel().discard(this);
 
             if (getLevel().getEngine().getGameState() == GameState.ACTIVE) {
-                getLevel().addAfter(()-> {
+                getLevel().addAfter(() -> {
                     hero.setState(Vitality.COMPLETED);
-                    Music music = resource.getMusic("music.ogg");
-                    Music bossMusic = resource.getMusic("boss_music.mp3");
+                    final Music music = resource.getMusic("music.ogg");
+                    final Music bossMusic = resource.getMusic("boss_music.mp3");
                     bossMusic.pause();
                     music.setVolume(1);
                     music.play();
@@ -105,24 +105,24 @@ public class Boss extends MobileEntity {
     public void init() {
         super.init();
         getLevel().add(spinner);
-        spinner.addEvent(()-> spinner.rotate(2.5f));
+        spinner.addEvent(() -> spinner.rotate(2.5f));
         setImage(fullHealth);
         move(4519, 3295);
 
-        getLevel().runOnceWhen(()-> {
+        getLevel().runOnceWhen(() -> {
             setMoveSpeed(3.5f);
-        }, ()-> Collisions.rectanglesCollide(x(), y(), 500, 1000, hero.x(), hero.y(), hero.width(), hero.height()));
+        }, () -> Collisions.rectanglesCollide(x(), y(), 500, 1000, hero.x(), hero.y(), hero.width(), hero.height()));
     }
 
     @Override
     public void logistics() {
-        if(getMoveSpeed() > 0 && hero.isAlive()) {
+        if (getMoveSpeed() > 0 && hero.isAlive()) {
 
-            if(getMoveSpeed() < Math.abs(hero.x() - x()))
-               moveTowards(Math.min(hero.x(), 5544), y());
+            if (getMoveSpeed() < Math.abs(hero.x() - x()))
+                moveTowards(Math.min(hero.x(), 5544), y());
 
-            if(++projFireCounter % reload == 0) {
-                Projectile proj = this.proj.getClone();
+            if (++projFireCounter % reload == 0) {
+                final Projectile proj = this.proj.getClone();
                 proj.move(centerX(), centerY());
                 proj.setTarget(hero);
                 getLevel().add(proj);

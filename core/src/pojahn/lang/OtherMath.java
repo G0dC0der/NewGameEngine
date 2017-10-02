@@ -2,7 +2,7 @@ package pojahn.lang;
 
 public class OtherMath {
 
-    public static boolean between(int value, int min, int max) {
+    public static boolean between(final int value, final int min, final int max) {
         return (value >= min) && (value <= max);
     }
 
@@ -13,8 +13,8 @@ public class OtherMath {
      * @param precision The amount of decimals to keep.
      * @return The rounded values.
      */
-    public static double round(double value, int precision) {
-        double prec = Math.pow(10, precision);
+    public static double round(final double value, final int precision) {
+        final double prec = Math.pow(10, precision);
         return Math.round(value * prec) / prec;
     }
 
@@ -29,9 +29,9 @@ public class OtherMath {
     private static final double TB_MIN = 0x10000000000L;
     private static final double TB_MAX = 0x4000000000000L;
 
-    public static String getSizeInfo(long size) { //Arg in bytes
+    public static String getSizeInfo(final long size) { //Arg in bytes
         String info = null;
-        double temp;
+        final double temp;
 
         if (size >= B_MIN && size <= B_MAX)
             info = size + " b";
@@ -53,7 +53,7 @@ public class OtherMath {
         return info;
     }
 
-    public static float keepInBounds(float min, float max, float value) {
+    public static float keepInBounds(final float min, final float max, final float value) {
         return Math.max(min, Math.min(value, max));
     }
 }

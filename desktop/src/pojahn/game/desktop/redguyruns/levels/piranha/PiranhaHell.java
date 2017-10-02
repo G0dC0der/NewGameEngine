@@ -3,6 +3,7 @@ package pojahn.game.desktop.redguyruns.levels.piranha;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Entity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.Bullet;
 import pojahn.game.entities.Particle;
@@ -16,7 +17,6 @@ import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.stages.PixelBasedLevel;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -28,7 +28,7 @@ public class PiranhaHell extends PixelBasedLevel {
     private GravityMan play;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -61,7 +61,7 @@ public class PiranhaHell extends PixelBasedLevel {
         add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.FULL));
 
         //Goal
-        Entity theFlag = new Entity();
+        final Entity theFlag = new Entity();
         theFlag.move(1612, 785);
         theFlag.setImage(4, res.getAnimation("flag"));
         add(theFlag);
@@ -183,7 +183,7 @@ public class PiranhaHell extends PixelBasedLevel {
         addWhitey(55, 25, false);
 
         //Bigger plants(dull)
-        PathDrone dull = new PathDrone(2096, 384);
+        final PathDrone dull = new PathDrone(2096, 384);
         dull.setImage(8, res.getAnimation("dullplant"));
         dull.setMoveSpeed(2);
         dull.appendPath(dull.x(), dull.y(), 100, false, null);
@@ -193,21 +193,21 @@ public class PiranhaHell extends PixelBasedLevel {
         add(dull);
 
         //Firing plant
-        PathDrone plantBody = new PathDrone(1840, 384);
+        final PathDrone plantBody = new PathDrone(1840, 384);
         plantBody.setImage(res.getImage("body.png"));
         plantBody.setMoveSpeed(1.5f);
         plantBody.appendPath(1840, 384, 100, false, null);
         plantBody.appendPath(1840, 384 - plantBody.height() - 40, 100, false, null);
         add(plantBody);
 
-        Projectile fireBall = new Bullet(0, 0, play);
+        final Projectile fireBall = new Bullet(0, 0, play);
         fireBall.setImage(res.getImage("fireball.png"));
         fireBall.setQuickCollision(true);
         fireBall.addEvent(() -> fireBall.rotate(5));
         fireBall.setMoveSpeed(3);
         fireBall.setGunfire(Particle.fromSound(res.getSound("fire.wav")));
 
-        Weapon plantHead = new Weapon(1840, 384, 1, 1, 90, play);
+        final Weapon plantHead = new Weapon(1840, 384, 1, 1, 90, play);
         plantHead.setProjectile(fireBall);
         plantHead.setRotateWhileRecover(true);
         plantHead.setRotationSpeed(.1f);
@@ -223,8 +223,8 @@ public class PiranhaHell extends PixelBasedLevel {
         });
     }
 
-    private void addReddie(int x, int y) {
-        Entity redPlant = new Entity();
+    private void addReddie(final int x, final int y) {
+        final Entity redPlant = new Entity();
         redPlant.move(x * 32 + 9, y * 32 + 16);
         redPlant.setImage(6, res.getAnimation("pih1"));
         redPlant.addEvent(Factory.hitMain(redPlant, play, -1));
@@ -232,22 +232,22 @@ public class PiranhaHell extends PixelBasedLevel {
         add(redPlant);
     }
 
-    private void addWhitey(int x, int y, boolean startHidden) {
-        PathDrone whitePlant = new PathDrone(0, 0);
+    private void addWhitey(final int x, final int y, final boolean startHidden) {
+        final PathDrone whitePlant = new PathDrone(0, 0);
         whitePlant.setImage(7, res.getAnimation("pih2"));
         whitePlant.addEvent(Factory.hitMain(whitePlant, play, -1));
         whitePlant.setMoveSpeed(.7f);
 
         if (!startHidden) {
-            int myX = x * 32 + 9;
-            int myY = y * 32 + 16;
+            final int myX = x * 32 + 9;
+            final int myY = y * 32 + 16;
 
             whitePlant.move(myX, myY);
             whitePlant.appendPath(myX, myY, 70, false, null);
             whitePlant.appendPath(myX, myY + 20, 70, false, null);
         } else {
-            int myX = x * 32 + 9;
-            int myY = y * 32 + 16 + 20;
+            final int myX = x * 32 + 9;
+            final int myY = y * 32 + 16 + 20;
 
             whitePlant.move(myX, myY);
             whitePlant.appendPath(myX, myY, 70, false, null);

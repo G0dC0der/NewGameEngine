@@ -13,7 +13,7 @@ public class KeySession implements Serializable {
     final long badge;
     private transient int index;
 
-    KeySession(List<Keystrokes> keystrokes, long badge) {
+    KeySession(final List<Keystrokes> keystrokes, final long badge) {
         this.keystrokes = keystrokes;
         this.badge = badge;
     }

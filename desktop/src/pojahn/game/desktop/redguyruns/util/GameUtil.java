@@ -13,8 +13,8 @@ import java.util.List;
 public class GameUtil {
 
     public static Lwjgl3ApplicationConfiguration getBasicConfig() {
-        Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
-        cfg.useOpenGL3(true, 3 ,2);
+        final Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
+        cfg.useOpenGL3(true, 3, 2);
         cfg.setWindowedMode(800, 600);
         cfg.setTitle("Red Guy Runs");
         cfg.setResizable(false);
@@ -22,14 +22,14 @@ public class GameUtil {
         return cfg;
     }
 
-    public static Event exportReplays(Engine engine) {
+    public static Event exportReplays(final Engine engine) {
         return () -> {
-            List<Replay> replays = engine.getRecordings();
+            final List<Replay> replays = engine.getRecordings();
             if (replays != null) {
-                for (Replay replay : replays) {
+                for (final Replay replay : replays) {
                     try {
                         IO.exportObjectCompressed(replay, Gdx.files.internal("replays/" + String.format("%s %s %s.rlp", replay.levelName, replay.time, replay.outcome)));
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         e.printStackTrace();
                     }
                 }
@@ -37,14 +37,14 @@ public class GameUtil {
         };
     }
 
-    public static Event exportForGhostData(Engine engine) {
+    public static Event exportForGhostData(final Engine engine) {
         return () -> {
-            List<Replay> replays = engine.getRecordings();
+            final List<Replay> replays = engine.getRecordings();
             if (replays != null && !replays.isEmpty()) {
-                Replay r = replays.get(0);
+                final Replay r = replays.get(0);
                 try {
                     IO.exportObject(r.keystrokes.get(0), Gdx.files.internal("replays/ghost-" + r.levelName + ".rlp"));
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
                 }
             }

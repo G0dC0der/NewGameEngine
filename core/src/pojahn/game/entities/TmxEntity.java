@@ -26,19 +26,19 @@ public class TmxEntity extends SolidPlatform {
     private OrthographicCamera camera;
     private float rotation;
 
-    public TmxEntity(TiledMap tiledMap, MobileEntity... subjects) {
-        super(0,0, subjects);
+    public TmxEntity(final TiledMap tiledMap, final MobileEntity... subjects) {
+        super(0, 0, subjects);
         this.tiledMap = tiledMap;
 
         layers = new ArrayList<>(tiledMap.getLayers().getCount());
-        tiledMap.getLayers().forEach(mapLayer -> layers.add((TiledMapTileLayer)mapLayer));
+        tiledMap.getLayers().forEach(mapLayer -> layers.add((TiledMapTileLayer) mapLayer));
         Collections.reverse(layers);
 
-        MapProperties props = tiledMap.getProperties();
-        int tilesX = props.get("width", Integer.class);
-        int tilesY = props.get("height", Integer.class);
-        int tileWidth = props.get("tilewidth", Integer.class);
-        int tileHeight = props.get("tileheight", Integer.class);
+        final MapProperties props = tiledMap.getProperties();
+        final int tilesX = props.get("width", Integer.class);
+        final int tilesY = props.get("height", Integer.class);
+        final int tileWidth = props.get("tilewidth", Integer.class);
+        final int tileHeight = props.get("tileheight", Integer.class);
 
         width = tilesX * tileWidth;
         height = tilesY * tileHeight;
@@ -46,23 +46,23 @@ public class TmxEntity extends SolidPlatform {
 
     @Override
     public void init() {
-        Dimension screenSize = getEngine().getScreenSize();
+        final Dimension screenSize = getEngine().getScreenSize();
         camera = new OrthographicCamera();
         camera.setToOrtho(!getEngine().flippedY(), screenSize.width, screenSize.height);
     }
 
     @Override
-    public void setImage(Animation<Image2D> image) {
+    public void setImage(final Animation<Image2D> image) {
         throw new UnsupportedOperationException("");
     }
 
     @Override
-    public void setHitbox(Hitbox hitbox) {
+    public void setHitbox(final Hitbox hitbox) {
         throw new UnsupportedOperationException("");
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(final SpriteBatch batch) {
         if (tiledMapRenderer == null)
             tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, batch);
 
@@ -76,7 +76,7 @@ public class TmxEntity extends SolidPlatform {
         //Should support rotation and flip
         camera.update();
 
-        com.badlogic.gdx.graphics.Color color = batch.getColor();
+        final com.badlogic.gdx.graphics.Color color = batch.getColor();
         batch.setColor(tint);
 
         tiledMapRenderer.setView(camera);

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.EvilDog;
 import pojahn.game.entities.PathDrone;
@@ -25,7 +26,6 @@ import pojahn.game.essentials.Vibrator;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.Bool;
 import pojahn.lang.Int32;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -38,7 +38,7 @@ public class GuardedKey extends TileBasedLevel {
     private Music music;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -53,7 +53,7 @@ public class GuardedKey extends TileBasedLevel {
         music = res.getMusic("music.ogg");
         Utils.playMusic(music, 0, .6f);
 
-        getCheckpointHandler().setReachEvent(()-> GFX.renderCheckpoint(res, this));
+        getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(res, this));
         getCheckpointHandler().appendCheckpoint(new Vector2(1222, 480 - 21), new Rectangle(1195, 356, 200, 200));
     }
 
@@ -64,13 +64,13 @@ public class GuardedKey extends TileBasedLevel {
          */
         play = ResourceUtil.getGravityMan(res);
         play.zIndex(2);
-        play.move(40 *32, 133 * 32 + (32 - play.height() - 1));
+        play.move(40 * 32, 133 * 32 + (32 - play.height() - 1));
         add(play);
 
         /*
          * Backgrounds & Foreground
          */
-        Entity foreground = getWorldImage();
+        final Entity foreground = getWorldImage();
         foreground.zIndex(100);
         add(foreground);
         add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
@@ -80,7 +80,7 @@ public class GuardedKey extends TileBasedLevel {
          */
         rectangleZapper(15, 123, 8, 6).setMoveSpeed(4);
         rectangleZapper(24, 123, 5, 6);
-        PathDrone zapper = rectangleZapper(24, 123, 5, 6);
+        final PathDrone zapper = rectangleZapper(24, 123, 5, 6);
         zapper.reverse();
         zapper.setMoveSpeed(1);
         rectangleZapper(58, 46, 6, 6);
@@ -135,7 +135,7 @@ public class GuardedKey extends TileBasedLevel {
         /*
          * Platform
          */
-        SolidPlatform platform = new SolidPlatform(992, 4123 + 20, play);
+        final SolidPlatform platform = new SolidPlatform(992, 4123 + 20, play);
         platform.setImage(res.getImage("platform.png"));
         platform.setMoveSpeed(.7f);
         platform.appendPath(platform.x(), platform.y(), 60, false, null);
@@ -146,8 +146,8 @@ public class GuardedKey extends TileBasedLevel {
          * Lava
          */
         final int lavaX = 1024;
-        for(int i = 0; i < 4; i++) {
-            Entity lava = new Entity();
+        for (int i = 0; i < 4; i++) {
+            final Entity lava = new Entity();
             lava.move(lavaX + (16 * i), 3424 + 6);
             lava.setImage(7, res.getAnimation("lava"));
             lava.getImage().pingPong(true);
@@ -160,14 +160,14 @@ public class GuardedKey extends TileBasedLevel {
         /*
          * Vase
          */
-        interval(()-> addShyGuy(14 * 32, 106 * 32, true), 450);
-        interval(()-> addShyGuy(39 * 32, 99 * 32, false), 400);
-        interval(()-> addShyGuy(14 * 32, 92 * 32, true), 350);
+        interval(() -> addShyGuy(14 * 32, 106 * 32, true), 450);
+        interval(() -> addShyGuy(39 * 32, 99 * 32, false), 400);
+        interval(() -> addShyGuy(14 * 32, 92 * 32, true), 350);
 
         /*
          * Big Roller
          */
-        BigRoller roller = new BigRoller(1048, 2080);
+        final BigRoller roller = new BigRoller(1048, 2080);
         roller.setImage(res.getImage("roller.png"));
         roller.setHitbox(Hitbox.CIRCLE);
         roller.sounds.useFalloff = true;
@@ -176,7 +176,7 @@ public class GuardedKey extends TileBasedLevel {
         roller.setCrashSound(res.getSound("crash.wav"));
         roller.setRollSound(res.getSound("slam.wav"));
 
-        Vibrator smallVib = new Vibrator(roller, play);
+        final Vibrator smallVib = new Vibrator(roller, play);
         smallVib.setLevel(this);
         smallVib.setDuration(10);
         smallVib.setStrength(1);
@@ -184,7 +184,7 @@ public class GuardedKey extends TileBasedLevel {
         smallVib.setStaticStrength(true);
         roller.setRollingVib(smallVib);
 
-        Vibrator bigVib = new Vibrator(roller, play);
+        final Vibrator bigVib = new Vibrator(roller, play);
         bigVib.setLevel(this);
         bigVib.setDuration(40);
         bigVib.setStrength(2.5f);
@@ -197,31 +197,31 @@ public class GuardedKey extends TileBasedLevel {
         /*
          * Spikes
          */
-        int width = res.getAnimation("spike")[0].getWidth();
-        int startX = 1827;
-        int startY = 2057;
-        for (int i = 0; i < 90; i+= 2) {
-            Entity spike = new Entity();
+        final int width = res.getAnimation("spike")[0].getWidth();
+        final int startX = 1827;
+        final int startY = 2057;
+        for (int i = 0; i < 90; i += 2) {
+            final Entity spike = new Entity();
             spike.move(startX + (width * i), startY);
             spike.setImage(4, res.getAnimation("spike"));
             spike.getImage().pingPong(true);
             spike.getImage().setIndex(i % res.getAnimation("spike").length);
             add(spike);
         }
-        Rectangle rec = new Rectangle(startX, startY, 1000, 10);
-        runWhile(()-> play.touch(-1), ()-> Collisions.rectanglesCollide(rec, play.bounds.toRectangle()));
+        final Rectangle rec = new Rectangle(startX, startY, 1000, 10);
+        runWhile(() -> play.touch(-1), () -> Collisions.rectanglesCollide(rec, play.bounds.toRectangle()));
 
         /*
          * More Platforms
          */
-        SolidPlatform s1 = new SolidPlatform(58 * 32, 63 * 32, play);
+        final SolidPlatform s1 = new SolidPlatform(58 * 32, 63 * 32, play);
         s1.setMoveSpeed(1f);
         s1.setImage(res.getImage("platform.png"));
         s1.appendPath(s1.x(), s1.y(), 60, false, null);
         s1.appendPath(65 * 32, s1.y(), 60, false, null);
         add(s1);
 
-        SolidPlatform s2 = new SolidPlatform(75 * 32, 63 * 32, play);
+        final SolidPlatform s2 = new SolidPlatform(75 * 32, 63 * 32, play);
         s2.setMoveSpeed(1f);
         s2.setImage(res.getImage("platform.png"));
         s2.appendPath(s2.x(), s2.y(), 60, false, null);
@@ -231,29 +231,29 @@ public class GuardedKey extends TileBasedLevel {
         /*
          * Phanto
          */
-        EvilDog phanto1 = addPhanto(22, 11);
-        EvilDog phanto2 = addPhanto(26, 10);
-        EvilDog phanto3 = addPhanto(30, 11);
+        final EvilDog phanto1 = addPhanto(22, 11);
+        final EvilDog phanto2 = addPhanto(26, 10);
+        final EvilDog phanto3 = addPhanto(30, 11);
 
         /*
          * Key & Door
          */
-        Bool keyTaken = new Bool();
+        final Bool keyTaken = new Bool();
 
-        Entity key = new Entity();
+        final Entity key = new Entity();
         key.move(840, 430);
         key.setImage(res.getImage("key.png"));
-        key.ifCollides(play).then(()->{
+        key.ifCollides(play).then(() -> {
             res.getSound("collect3.wav").play();
             discard(key);
             keyTaken.value = true;
             unfreeze(phanto1);
         });
 
-        Entity door = new Entity();
+        final Entity door = new Entity();
         door.move(1414, 4226);
         door.setImage(res.getImage("door.png"));
-        door.addEvent(()->{
+        door.addEvent(() -> {
             if (keyTaken.value && door.collidesWith(play)) {
                 phanto1.freeze();
                 phanto2.freeze();
@@ -266,16 +266,16 @@ public class GuardedKey extends TileBasedLevel {
         add(door);
     }
 
-    void unfreeze(EvilDog phanto) {
+    void unfreeze(final EvilDog phanto) {
         temp(Factory.spazz(phanto, 2, 2), 120);
-        runOnceAfter(()->{
+        runOnceAfter(() -> {
             phanto.offsetX = phanto.offsetY = 0;
             phanto.unfreeze();
         }, 121);
     }
 
-    ShyGuy getShyGuy(float x, float  y, boolean flip) {
-        ShyGuy shyGuy = new ShyGuy();
+    ShyGuy getShyGuy(final float x, final float y, final boolean flip) {
+        final ShyGuy shyGuy = new ShyGuy();
         shyGuy.move(x, y);
         shyGuy.setImage(6, res.getAnimation("shyguy"));
         shyGuy.setMoveSpeed(1.5f);
@@ -283,7 +283,7 @@ public class GuardedKey extends TileBasedLevel {
         shyGuy.addEvent(shyGuy::face);
         shyGuy.setHitbox(Hitbox.PIXEL);
         shyGuy.addEvent(Factory.hitMain(shyGuy, play, -1));
-        shyGuy.addEvent(()-> {
+        shyGuy.addEvent(() -> {
             if (Collisions.rectanglesCollide(shyGuy.bounds.toRectangle(), deathRectangle))
                 discard(shyGuy);
         });
@@ -294,13 +294,13 @@ public class GuardedKey extends TileBasedLevel {
         return shyGuy;
     }
 
-    void addShyGuy(float x, float y, boolean flip) {
-        PathDrone entr = new PathDrone(x, y);
+    void addShyGuy(final float x, final float y, final boolean flip) {
+        final PathDrone entr = new PathDrone(x, y);
 
-        Animation<Image2D> entrImage = new Animation<Image2D>(5, res.getAnimation("shyspawn"));
+        final Animation<Image2D> entrImage = new Animation<Image2D>(5, res.getAnimation("shyspawn"));
         entrImage.stop(true);
         entrImage.setLoop(false);
-        entrImage.addEvent(()-> {
+        entrImage.addEvent(() -> {
             discard(entr);
             add(getShyGuy(x, y - 32 - 2, flip));
         }, entrImage.getArray().length - 1);
@@ -308,14 +308,14 @@ public class GuardedKey extends TileBasedLevel {
         entr.setImage(entrImage);
         entr.move(x, y);
         entr.setMoveSpeed(1.5f);
-        entr.appendPath(x, y - 32 - 2, 0, false, ()-> entrImage.stop(false));
+        entr.appendPath(x, y - 32 - 2, 0, false, () -> entrImage.stop(false));
         entr.flipX = !flip;
         add(entr);
     }
 
-    void sharpBlock(float x, float y) {
-        Entity sb = new Entity();
-        sb.move(x * 32 + 4, y * 32  + 4);
+    void sharpBlock(final float x, final float y) {
+        final Entity sb = new Entity();
+        sb.move(x * 32 + 4, y * 32 + 4);
         sb.setImage(7, res.getAnimation("spikeball"));
         sb.addEvent(Factory.hitMain(sb, play, -1));
         sb.tint.a = .85f;
@@ -323,11 +323,11 @@ public class GuardedKey extends TileBasedLevel {
         add(sb);
     }
 
-    EvilDog addPhanto(float x, float y) {
-        EvilDog phanto = new EvilDog(x * 32 - 2.5f, y * 32, -1, play);
+    EvilDog addPhanto(final float x, final float y) {
+        final EvilDog phanto = new EvilDog(x * 32 - 2.5f, y * 32, -1, play);
         phanto.setImage(res.getImage("phanto.png"));
         phanto.setHitbox(Hitbox.PIXEL);
-        phanto.addEvent(()->{
+        phanto.addEvent(() -> {
             if (play.isAlive() && play.collidesWith(phanto)) {
                 play.touch(-1);
             }
@@ -341,14 +341,14 @@ public class GuardedKey extends TileBasedLevel {
         return phanto;
     }
 
-    PathDrone rectangleZapper(int x, int y, int tilesX, int tilesY) {
+    PathDrone rectangleZapper(final int x, final int y, final int tilesX, final int tilesY) {
         final int padding = 4;
         final int left = x * 32 + padding;
         final int right = (x + tilesX) * 32 - 32;
         final int top = y * 32 + padding;
         final int bottom = (y + tilesY) * 32 - 32;
 
-        PathDrone z = new PathDrone(left, top);
+        final PathDrone z = new PathDrone(left, top);
         z.appendPath();
         z.appendPath(right, top);
         z.appendPath(right, bottom);
@@ -356,13 +356,13 @@ public class GuardedKey extends TileBasedLevel {
         z.setImage(3, res.getImage("zapper.png"));
         z.setHitbox(Hitbox.CIRCLE);
         z.addEvent(Factory.hitMain(z, play, -1));
-        Int32 c = new Int32();
-        z.addEvent(()->{
+        final Int32 c = new Int32();
+        z.addEvent(() -> {
             if (++c.value % 6 == 0) {
-                ShrinkingParticle part = new ShrinkingParticle(.045f);
+                final ShrinkingParticle part = new ShrinkingParticle(.045f);
                 part.setImage(res.getImage("spark.png"));
                 part.move(MathUtils.random(z.x(), z.x() + z.width()),
-                          MathUtils.random(z.y(), z.y() + z.height()));
+                        MathUtils.random(z.y(), z.y() + z.height()));
 
                 add(part);
             }

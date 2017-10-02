@@ -11,22 +11,22 @@ public class Collectable extends Entity {
     public interface CollectEvent {
         void eventHandling(Entity collector);
 
-        static CollectEvent wrap(Event event) {
+        static CollectEvent wrap(final Event event) {
             return collector -> event.eventHandling();
         }
 
-        static CollectEvent freeze(int frames) {
+        static CollectEvent freeze(final int frames) {
             return collector -> {
-                MobileEntity mobile = (MobileEntity) collector;
+                final MobileEntity mobile = (MobileEntity) collector;
                 mobile.freeze();
                 mobile.getLevel().runOnceAfter(mobile::unfreeze, frames);
             };
         }
 
-        static CollectEvent speed(int frames, float multiplier) {
+        static CollectEvent speed(final int frames, final float multiplier) {
             return collector -> {
-                MobileEntity mobile = (MobileEntity) collector;
-                float orgSpeed = mobile.getMoveSpeed();
+                final MobileEntity mobile = (MobileEntity) collector;
+                final float orgSpeed = mobile.getMoveSpeed();
                 mobile.setMoveSpeed(orgSpeed * multiplier);
                 mobile.getLevel().runOnceAfter(() -> mobile.setMoveSpeed(orgSpeed), frames);
             };
@@ -40,25 +40,25 @@ public class Collectable extends Entity {
     private Sound collectSound;
     private boolean collected, disposeCollected;
 
-    public Collectable(float x, float y, Entity... collectors) {
+    public Collectable(final float x, final float y, final Entity... collectors) {
         this.collectors = collectors;
         disposeCollected = true;
         move(x, y);
     }
 
-    public void setCollectSound(Sound collectSound) {
+    public void setCollectSound(final Sound collectSound) {
         this.collectSound = collectSound;
     }
 
-    public void setCollectEvent(CollectEvent collectEvent) {
+    public void setCollectEvent(final CollectEvent collectEvent) {
         this.collectEvent = collectEvent;
     }
 
-    public void disposeCollected(boolean disposeCollected) {
+    public void disposeCollected(final boolean disposeCollected) {
         this.disposeCollected = disposeCollected;
     }
 
-    public void setCollectImage(Particle collectImage) {
+    public void setCollectImage(final Particle collectImage) {
         this.collectImage = collectImage;
     }
 
@@ -69,7 +69,7 @@ public class Collectable extends Entity {
     @Override
     public void logistics() {
         if (!collected) {
-            for (Entity collector : collectors) {
+            for (final Entity collector : collectors) {
                 if (collidesWith(collector)) {
                     collected = true;
                     subject = collector;

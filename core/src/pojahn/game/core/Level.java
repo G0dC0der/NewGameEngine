@@ -46,7 +46,7 @@ public abstract class Level {
         private int x, y;
         private Tile[][] layer;
 
-        public TileLayer(int width, int height) {
+        public TileLayer(final int width, final int height) {
             setSize(width, height);
         }
 
@@ -58,27 +58,27 @@ public abstract class Level {
             return layer[0].length;
         }
 
-        public void setPosition(int x, int y) {
+        public void setPosition(final int x, final int y) {
             this.x = x;
             this.y = y;
         }
 
-        public void setSize(int width, int height) {
+        public void setSize(final int width, final int height) {
             layer = new Tile[width][height];
         }
 
-        public void setTile(int x, int y, Tile tile) {
+        public void setTile(final int x, final int y, final Tile tile) {
             layer[x][y] = tile;
         }
 
-        public void fill(Tile tile) {
-            for (Tile[] layerRow : layer) {
+        public void fill(final Tile tile) {
+            for (final Tile[] layerRow : layer) {
                 Arrays.fill(layerRow, tile);
             }
         }
 
         public TileLayer copy() {
-            TileLayer tileLayer = new TileLayer(0, 0);
+            final TileLayer tileLayer = new TileLayer(0, 0);
             tileLayer.x = x;
             tileLayer.y = y;
             tileLayer.layer = layer;
@@ -122,26 +122,26 @@ public abstract class Level {
 
     protected abstract Tile tileAtInternal(int x, int y);
 
-    public boolean isSolid(int x, int y) {
+    public boolean isSolid(final int x, final int y) {
         return tileAt(x, y) == Tile.SOLID;
     }
 
-    public boolean isHollow(int x, int y) {
+    public boolean isHollow(final int x, final int y) {
         return tileAt(x, y) == Tile.HOLLOW;
     }
 
-    public final Tile tileAt(int x, int y) {
+    public final Tile tileAt(final int x, final int y) {
         if (outOfBounds(x, y))
             return Tile.HOLLOW;
 
-        Tile tile = onLayer(x, y);
-        if(tile != null)
+        final Tile tile = onLayer(x, y);
+        if (tile != null)
             return tile;
 
         return tileAtInternal(x, y);
     }
 
-    public Tile tileAt(Vector2 cord) {
+    public Tile tileAt(final Vector2 cord) {
         return tileAt((int) cord.x, (int) cord.y);
     }
 
@@ -173,36 +173,36 @@ public abstract class Level {
         return cph;
     }
 
-    public void addTileLayer(TileLayer tileLayer) {
+    public void addTileLayer(final TileLayer tileLayer) {
         tileLayers.add(tileLayer);
     }
 
-    public void removeTileLayer(TileLayer tileLayer) {
-        for(int i = 0; i < tileLayers.size(); i++) {
-            if(tileLayers.get(i) == tileLayer) {
+    public void removeTileLayer(final TileLayer tileLayer) {
+        for (int i = 0; i < tileLayers.size(); i++) {
+            if (tileLayers.get(i) == tileLayer) {
                 tileLayers.remove(i);
                 return;
             }
         }
     }
 
-    public boolean outOfBounds(float targetX, float targetY) {
-        return  targetX >= getWidth() ||
+    public boolean outOfBounds(final float targetX, final float targetY) {
+        return targetX >= getWidth() ||
                 targetY >= getHeight() ||
                 targetX < 0 ||
                 targetY < 0;
     }
 
-    public void add(Entity entity) {
+    public void add(final Entity entity) {
         awaitingObjects.add(new Entry<>(0, entity));
     }
 
-    public void addAfter(Entity entity, int framesDelay) {
+    public void addAfter(final Entity entity, final int framesDelay) {
         awaitingObjects.add(new Entry<>(framesDelay, entity));
     }
 
-    public void addWhen(Entity entity, TaskEvent addEvent) {
-        Entity wrapper = new Entity();
+    public void addWhen(final Entity entity, final TaskEvent addEvent) {
+        final Entity wrapper = new Entity();
         wrapper.addEvent(() -> {
             if (addEvent.eventHandling()) {
                 wrapper.getLevel().add(entity);
@@ -213,55 +213,55 @@ public abstract class Level {
         add(wrapper);
     }
 
-    public void temp(Entity entity, int lifeFrames) {
+    public void temp(final Entity entity, final int lifeFrames) {
         add(entity);
         discardAfter(entity, lifeFrames);
     }
 
-    public void temp(Entity entity, TaskEvent discardCondition) {
+    public void temp(final Entity entity, final TaskEvent discardCondition) {
         add(entity);
         discardWhen(entity, discardCondition);
     }
 
-    public Entity add(Event event) {
-        Entity wrapper = Utils.wrap(event);
+    public Entity add(final Event event) {
+        final Entity wrapper = Utils.wrap(event);
         addAfter(wrapper, 0);
 
         return wrapper;
     }
 
-    public Entity addAfter(Event event, int framesDelay) {
-        Entity wrapper = Utils.wrap(event);
+    public Entity addAfter(final Event event, final int framesDelay) {
+        final Entity wrapper = Utils.wrap(event);
         addAfter(wrapper, framesDelay);
 
         return wrapper;
     }
 
-    public Entity addWhen(Event event, TaskEvent addEvent) {
-        Entity wrapper = Utils.wrap(event);
+    public Entity addWhen(final Event event, final TaskEvent addEvent) {
+        final Entity wrapper = Utils.wrap(event);
         addWhen(wrapper, addEvent);
 
         return wrapper;
     }
 
-    public Entity temp(Event event, int lifeFrames) {
-        Entity wrapper = Utils.wrap(event);
+    public Entity temp(final Event event, final int lifeFrames) {
+        final Entity wrapper = Utils.wrap(event);
         add(wrapper);
         discardAfter(wrapper, lifeFrames);
 
         return wrapper;
     }
 
-    public Entity temp(Event event, TaskEvent discardCondition) {
-        Entity wrapper = Utils.wrap(event);
+    public Entity temp(final Event event, final TaskEvent discardCondition) {
+        final Entity wrapper = Utils.wrap(event);
         add(wrapper);
         discardWhen(wrapper, discardCondition);
 
         return wrapper;
     }
 
-    public Entity temp(Event event, int lifeFrames, Event endEvent) {
-        Entity wrapper = Utils.wrap(event);
+    public Entity temp(final Event event, final int lifeFrames, final Event endEvent) {
+        final Entity wrapper = Utils.wrap(event);
         add(wrapper);
         discardAfter(wrapper, lifeFrames);
         runOnceAfter(endEvent, lifeFrames);
@@ -269,8 +269,8 @@ public abstract class Level {
         return wrapper;
     }
 
-    public Entity temp(Event event, TaskEvent discardCondition, Event endEvent) {
-        Entity wrapper = Utils.wrap(event);
+    public Entity temp(final Event event, final TaskEvent discardCondition, final Event endEvent) {
+        final Entity wrapper = Utils.wrap(event);
         add(wrapper);
         discardWhen(wrapper, discardCondition);
         runOnceWhen(endEvent, discardCondition);
@@ -278,8 +278,8 @@ public abstract class Level {
         return wrapper;
     }
 
-    public Entity runOnceWhen(Event event, TaskEvent whenToRun) {
-        Entity wrapper = new Entity();
+    public Entity runOnceWhen(final Event event, final TaskEvent whenToRun) {
+        final Entity wrapper = new Entity();
         wrapper.addEvent(() -> {
             if (whenToRun.eventHandling()) {
                 event.eventHandling();
@@ -291,10 +291,10 @@ public abstract class Level {
         return wrapper;
     }
 
-    public Entity runOnceAfter(Event event, int framesDelay) {
-        int[] counter = {0};
+    public Entity runOnceAfter(final Event event, final int framesDelay) {
+        final int[] counter = {0};
 
-        Entity wrapper = new Entity();
+        final Entity wrapper = new Entity();
         wrapper.addEvent(() -> {
             if (counter[0]++ == framesDelay) {
                 event.eventHandling();
@@ -306,9 +306,9 @@ public abstract class Level {
         return wrapper;
     }
 
-    public Entity runWhile(Event event, TaskEvent condition) {
-        Entity wrapper = new Entity();
-        wrapper.addEvent(()->{
+    public Entity runWhile(final Event event, final TaskEvent condition) {
+        final Entity wrapper = new Entity();
+        wrapper.addEvent(() -> {
             if (condition.eventHandling())
                 event.eventHandling();
         });
@@ -317,9 +317,9 @@ public abstract class Level {
         return wrapper;
     }
 
-    public Entity interval(Event event, int freq) {
-        Entity wrapped = new Entity();
-        Int32 counter = new Int32();
+    public Entity interval(final Event event, final int freq) {
+        final Entity wrapped = new Entity();
+        final Int32 counter = new Int32();
         wrapped.addEvent(() -> {
             if (++counter.value % freq == 0) {
                 event.eventHandling();
@@ -330,11 +330,11 @@ public abstract class Level {
         return wrapped;
     }
 
-    public Entity interval(Event event, int freq, TaskEvent discardCondition) {
-        Entity wrapped = new Entity();
-        Int32 counter = new Int32();
+    public Entity interval(final Event event, final int freq, final TaskEvent discardCondition) {
+        final Entity wrapped = new Entity();
+        final Int32 counter = new Int32();
         wrapped.addEvent(() -> {
-            if(discardCondition.eventHandling()) {
+            if (discardCondition.eventHandling()) {
                 discard(wrapped);
             } else {
                 if (++counter.value % freq == 0) {
@@ -347,16 +347,16 @@ public abstract class Level {
         return wrapped;
     }
 
-    public void discard(Entity entity) {
+    public void discard(final Entity entity) {
         discardAfter(entity, 0);
     }
 
-    public void discardAfter(Entity entity, int framesDelay) {
+    public void discardAfter(final Entity entity, final int framesDelay) {
         deleteObjects.add(new Entry<>(framesDelay, entity));
     }
 
-    public void discardWhen(Entity entity, TaskEvent discardEvent) {
-        Entity wrapper = new Entity();
+    public void discardWhen(final Entity entity, final TaskEvent discardEvent) {
+        final Entity wrapper = new Entity();
         wrapper.addEvent(() -> {
             if (discardEvent.eventHandling()) {
                 discard(entity);
@@ -387,33 +387,33 @@ public abstract class Level {
         return soundListeners.isEmpty() ? getNonDeadMainCharacters() : soundListeners;
     }
 
-    public void addSoundListener(Entity listener) {
+    public void addSoundListener(final Entity listener) {
         soundListeners.add(listener);
     }
 
-    public void removeSoundListener(Entity listener) {
+    public void removeSoundListener(final Entity listener) {
         soundListeners.remove(listener);
     }
 
-    public void addFocusObject(Entity entity) {
+    public void addFocusObject(final Entity entity) {
         focusObjects.add(entity);
     }
 
-    public void removeFocusObject(Entity entity) {
+    public void removeFocusObject(final Entity entity) {
         focusObjects.remove(entity);
     }
 
-    public void focusOnPassive(boolean focusOnPassive) {
+    public void focusOnPassive(final boolean focusOnPassive) {
         this.focusOnPassive = focusOnPassive;
     }
 
-    protected Tile onLayer(int x, int y) {
-        for(TileLayer tileLayer : tileLayers) {
-            if(Collisions.pointRectangleOverlap(tileLayer.x, tileLayer.y, tileLayer.layer.length - 1, tileLayer.layer[0].length - 1, x, y)) {
-                int relX = x - tileLayer.x;
-                int relY = y - tileLayer.y;
+    protected Tile onLayer(final int x, final int y) {
+        for (final TileLayer tileLayer : tileLayers) {
+            if (Collisions.pointRectangleOverlap(tileLayer.x, tileLayer.y, tileLayer.layer.length - 1, tileLayer.layer[0].length - 1, x, y)) {
+                final int relX = x - tileLayer.x;
+                final int relY = y - tileLayer.y;
 
-                if(tileLayer.layer[relX][relY] != null)
+                if (tileLayer.layer[relX][relY] != null)
                     return tileLayer.layer[relX][relY];
             }
         }
@@ -445,11 +445,11 @@ public abstract class Level {
     }
 
     private void updateEntities() {
-        for (Entity entity : gameObjects) {
+        for (final Entity entity : gameObjects) {
             if (entity.isActive()) {
                 if (entity instanceof PlayableEntity) {
-                    PlayableEntity play = (PlayableEntity) entity;
-                    Keystrokes buttonsDown;
+                    final PlayableEntity play = (PlayableEntity) entity;
+                    final Keystrokes buttonsDown;
 
                     if (play.isGhost())
                         buttonsDown = play.nextInput();
@@ -475,7 +475,7 @@ public abstract class Level {
                         play.setPrevs();
                     }
                 } else if (entity instanceof MobileEntity) {
-                    MobileEntity mobile = (MobileEntity) entity;
+                    final MobileEntity mobile = (MobileEntity) entity;
 
                     mobile.logistics();
                     mobile.runEvents();
@@ -493,8 +493,8 @@ public abstract class Level {
         }
     }
 
-    private void tileIntersection(MobileEntity mobile, Set<Tile> tiles) {
-        for (Tile tile : tiles) {
+    private void tileIntersection(final MobileEntity mobile, final Set<Tile> tiles) {
+        for (final Tile tile : tiles) {
             switch (tile) {
                 case HOLLOW:
                     /*/ Do nothing /*/
@@ -523,7 +523,7 @@ public abstract class Level {
                 entry.value.init();
 
                 if (entry.value instanceof PlayableEntity) {
-                    PlayableEntity play = (PlayableEntity) entry.value;
+                    final PlayableEntity play = (PlayableEntity) entry.value;
                     if (!play.isGhost()) {
                         mainCharacters.add(play);
                         cph.addUser(play);
@@ -534,7 +534,7 @@ public abstract class Level {
         }
 
         for (int i = 0; i < deleteObjects.size(); i++) {
-            Entry<Integer, Entity> entry = deleteObjects.get(i);
+            final Entry<Integer, Entity> entry = deleteObjects.get(i);
             if (entry.key-- <= 0) {
                 deleteObjects.remove(i);
                 i--;
@@ -543,7 +543,7 @@ public abstract class Level {
                 entry.value.dispose();
 
                 if (entry.value instanceof PlayableEntity) {
-                    PlayableEntity play = (PlayableEntity) entry.value;
+                    final PlayableEntity play = (PlayableEntity) entry.value;
                     if (!play.isGhost()) {
                         mainCharacters.remove(play);
                     }
@@ -566,20 +566,20 @@ public abstract class Level {
         float ty = 0;
         float zoom = getEngine().getZoom();
 
-        if (list.size() == 1 ) {
-            Entity entity = list.get(0);
+        if (list.size() == 1) {
+            final Entity entity = list.get(0);
             if (getEngine().getZoom() == 1.0f) {
-                float marginX = windowWidth  / 2;
-                float marginY = windowHeight  / 2;
+                final float marginX = windowWidth / 2;
+                final float marginY = windowHeight / 2;
 
-                tx = Math.min(stageWidth  - windowWidth,   Math.max(0, entity.centerX() - marginX)) + marginX;
-                ty = Math.min(stageHeight - windowHeight,  Math.max(0, entity.centerY() - marginY)) + marginY;
+                tx = Math.min(stageWidth - windowWidth, Math.max(0, entity.centerX() - marginX)) + marginX;
+                ty = Math.min(stageHeight - windowHeight, Math.max(0, entity.centerY() - marginY)) + marginY;
             } else {
                 tx = entity.centerX();
                 ty = entity.centerY();
             }
         } else if (list.size() > 1) {
-            Entity first = list.get(0);
+            final Entity first = list.get(0);
 
             final float marginX = windowWidth / 2;
             final float marginY = windowHeight / 2;
@@ -591,7 +591,7 @@ public abstract class Level {
             float boxHeight = boxY + first.height();
 
             for (int i = 1; i < list.size(); i++) {
-                Entity focus = list.get(i);
+                final Entity focus = list.get(i);
 
                 boxX = Math.min(boxX, focus.x());
                 boxY = Math.min(boxY, focus.y());
@@ -618,7 +618,7 @@ public abstract class Level {
             else
                 zoom = boxHeight / windowHeight;
 
-            zoom = Math.max( zoom, 1.0f );
+            zoom = Math.max(zoom, 1.0f);
 
             tx = boxX + (boxWidth / 2.0f);
             ty = boxY + (boxHeight / 2.0f);

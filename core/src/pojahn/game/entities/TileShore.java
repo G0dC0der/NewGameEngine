@@ -1,6 +1,7 @@
 package pojahn.game.entities;
 
 //import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+
 import pojahn.game.core.Entity;
 
 //import pojahn.game.essentials.stages.TileBasedLevel;

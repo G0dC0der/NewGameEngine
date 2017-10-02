@@ -5,7 +5,7 @@ public class Entry<K, V> {
     public K key;
     public V value;
 
-    public Entry(K key, V value) {
+    public Entry(final K key, final V value) {
         this.key = key;
         this.value = value;
     }

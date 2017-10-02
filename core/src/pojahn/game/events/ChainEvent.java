@@ -6,17 +6,17 @@ public class ChainEvent {
 
     private Event event;
 
-    public void then(Event event) {
+    public void then(final Event event) {
         this.event = event;
     }
 
-    public void thenRunOnce(Event event) {
-        Bool bool = new Bool();
-        this.event = ()-> {
-           if (!bool.value) {
-               event.eventHandling();
-               bool.value = true;
-           }
+    public void thenRunOnce(final Event event) {
+        final Bool bool = new Bool();
+        this.event = () -> {
+            if (!bool.value) {
+                event.eventHandling();
+                bool.value = true;
+            }
         };
     }
 

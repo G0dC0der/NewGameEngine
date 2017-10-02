@@ -9,6 +9,7 @@ import pojahn.game.core.Engine;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.Bullet;
 import pojahn.game.entities.Circle;
@@ -27,7 +28,6 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.stages.PixelBasedLevel;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -48,7 +48,7 @@ public class DiamondCave extends PixelBasedLevel {
     private int counter, crystals, crystalsTaken;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -101,16 +101,16 @@ public class DiamondCave extends PixelBasedLevel {
         /*
          * Top Spikes
          */
-        Entity topSpikes = new Entity();
+        final Entity topSpikes = new Entity();
         topSpikes.move(3266, 305);
         topSpikes.setImage(res.getImage("topSpikes.png"));
-        topSpikes.ifCollides(play).then(()-> play.touch(-1));
+        topSpikes.ifCollides(play).then(() -> play.touch(-1));
         add(topSpikes);
 
         /*
          * Bear
 		 */
-        Bear b = new Bear(1544 - 3, 227, play);
+        final Bear b = new Bear(1544 - 3, 227, play);
         b.setImage(7, res.getAnimation("bear"));
         b.setAttackImage(new Animation<>(6, res.getAnimation("bearAttack")));
         b.zIndex(200);
@@ -121,16 +121,16 @@ public class DiamondCave extends PixelBasedLevel {
         add(b);
 
 		/*
-		 * Bouncing Random Enemies
+         * Bouncing Random Enemies
 		 */
-        PathDrone ram1 = new PathDrone(2303, 297);
+        final PathDrone ram1 = new PathDrone(2303, 297);
         ram1.setImage(res.getImage("sharp.png"));
         ram1.setMoveSpeed(1.1f);
         ram1.setRock(true, true);
         ram1.setHitbox(Hitbox.CIRCLE);
-        PathDrone ram2 = ram1.getClone();
+        final PathDrone ram2 = ram1.getClone();
         ram2.move(ram1.x() + ram1.width() + 100, ram1.y());
-        PathDrone ram3 = ram1.getClone();
+        final PathDrone ram3 = ram1.getClone();
         ram3.move(ram1.x(), ram1.y() + ram1.halfHeight() + 100);
         final int rotationSpeed = 15;
 
@@ -159,9 +159,9 @@ public class DiamondCave extends PixelBasedLevel {
 		/*
 		 * Weak Platforms
 		 */
-        int weakWidth = res.getImage("weak.png").getWidth();
+        final int weakWidth = res.getImage("weak.png").getWidth();
         for (int i = 0, x = 2303, y = 1026; i < 10; i++, x += weakWidth) {
-            DestroyablePlatform w = new DestroyablePlatform(x, y, play);
+            final DestroyablePlatform w = new DestroyablePlatform(x, y, play);
             w.move(x, y);
             w.setImage(res.getImage("weak.png"));
             w.setDestroyImage(new Animation<>(10, weakDie));
@@ -177,7 +177,7 @@ public class DiamondCave extends PixelBasedLevel {
 		/*
 		 * One-Way Platforms
 		 */
-        OneWay oneway = new OneWay(2684, 992, Direction.N, play);
+        final OneWay oneway = new OneWay(2684, 992, Direction.N, play);
         oneway.setImage(res.getImage("ow.png"));
 
         add(oneway);
@@ -191,7 +191,7 @@ public class DiamondCave extends PixelBasedLevel {
 		/*
 		 * Cannons
 		 */
-        Particle explosion = new Particle();
+        final Particle explosion = new Particle();
         explosion.setImage(5, res.getAnimation("iceexp"));
         explosion.zIndex(200);
         explosion.setIntroSound(res.getSound("bum.wav"));
@@ -199,13 +199,13 @@ public class DiamondCave extends PixelBasedLevel {
         explosion.sounds.maxVolume = .7f;
         explosion.sounds.power = 15;
 
-        Particle fireAnim = new Particle();
+        final Particle fireAnim = new Particle();
         fireAnim.setImage(2, res.getAnimation("gunfire"));
         fireAnim.zIndex(200);
         fireAnim.offsetX = -fireAnim.halfWidth();
         fireAnim.offsetY = -13;
 
-        Bullet proj = new Bullet(0, 0, play);
+        final Bullet proj = new Bullet(0, 0, play);
         proj.setImage(res.getImage("iceproj.png"));
         proj.setMoveSpeed(2.5f);
         proj.setQuickCollision(true);
@@ -214,9 +214,9 @@ public class DiamondCave extends PixelBasedLevel {
         proj.rotate(false);
         proj.setCloneEvent(cloned -> cloned.addEvent(() -> cloned.bounds.rotation += -10));
 
-        int cannonHeight = res.getImage("cannon.png").getHeight();
+        final int cannonHeight = res.getImage("cannon.png").getHeight();
         for (int i = 0, reloadTime = 250, x = 3032, y = 480; i < 9; i++, y += cannonHeight + 15) {
-            SimpleWeapon w = new SimpleWeapon(x, y, proj, Direction.W, reloadTime);
+            final SimpleWeapon w = new SimpleWeapon(x, y, proj, Direction.W, reloadTime);
             w.spawnOffset(0, 1);
             w.setImage(res.getImage("cannon.png"));
             w.zIndex(10);
@@ -234,7 +234,7 @@ public class DiamondCave extends PixelBasedLevel {
 		/*
 		 * Insects
 		 */
-        PathDrone ins1 = new PathDrone(3725, 508);
+        final PathDrone ins1 = new PathDrone(3725, 508);
         ins1.setImage(6, res.getAnimation("bug1"));
         ins1.setFacings(2);
         ins1.addEvent(ins1::face);
@@ -244,7 +244,7 @@ public class DiamondCave extends PixelBasedLevel {
         ins1.appendPath(3725, 508);
         ins1.appendPath(3265, 508);
 
-        PathDrone ins2 = ins1.getClone();
+        final PathDrone ins2 = ins1.getClone();
         ins2.move(3725, 447);
         ins2.addEvent(ins2::face);
         ins2.setImage(6, res.getAnimation("bug2"));
@@ -253,7 +253,7 @@ public class DiamondCave extends PixelBasedLevel {
         ins2.appendPath(3725, 447);
         ins2.appendPath(3265, 447);
 
-        PathDrone ins3 = ins1.getClone();
+        final PathDrone ins3 = ins1.getClone();
         ins3.move(3819, 556);
         ins3.setImage(6, res.getAnimation("bug3"));
         ins3.setFacings(8);
@@ -265,7 +265,7 @@ public class DiamondCave extends PixelBasedLevel {
             ins3.flipY = ins3.getFacing() == Direction.N;
         });
 
-        PathDrone ins4 = ins3.getClone();
+        final PathDrone ins4 = ins3.getClone();
         ins4.move(3767, 919);
         ins4.setImage(6, res.getAnimation("bug4"));
         ins4.clearData();
@@ -276,7 +276,7 @@ public class DiamondCave extends PixelBasedLevel {
             ins4.flipY = ins4.getFacing() == Direction.N;
         });
 
-        PathDrone ins5 = ins4.getClone();
+        final PathDrone ins5 = ins4.getClone();
         ins5.move(4017, 919);
         ins5.clearData();
         ins5.appendPath(4017, 919);
@@ -286,7 +286,7 @@ public class DiamondCave extends PixelBasedLevel {
             ins5.flipY = ins5.getFacing() == Direction.N;
         });
 
-        PathDrone ins6 = ins3.getClone();
+        final PathDrone ins6 = ins3.getClone();
         ins6.move(4119, 759);
         ins6.clearData();
         ins6.appendPath(4119, 759);
@@ -296,7 +296,7 @@ public class DiamondCave extends PixelBasedLevel {
             ins6.flipY = ins6.getFacing() == Direction.N;
         });
 
-        PathDrone ins7 = ins4.getClone();
+        final PathDrone ins7 = ins4.getClone();
         ins7.move(4017, 716);
         ins7.clearData();
         ins7.appendPath(4017, 716);
@@ -306,7 +306,7 @@ public class DiamondCave extends PixelBasedLevel {
             ins7.flipY = ins7.getFacing() == Direction.N;
         });
 
-        PathDrone ins8 = ins3.getClone();
+        final PathDrone ins8 = ins3.getClone();
         ins8.move(4119, 556);
         ins8.clearData();
         ins8.appendPath(4119, 556);
@@ -328,7 +328,7 @@ public class DiamondCave extends PixelBasedLevel {
 		/*
 		 * Solid Platform
 		 */
-        SolidPlatform solp = new SolidPlatform(4973, 807, play);
+        final SolidPlatform solp = new SolidPlatform(4973, 807, play);
         solp.setImage(res.getImage("movingp.png"));
         solp.setMoveSpeed(1);
         solp.freeze();
@@ -340,10 +340,10 @@ public class DiamondCave extends PixelBasedLevel {
 		/*
 		 * Bacterias
 		 */
-        Circle c = new Circle(5279, 152, 50, 0);
+        final Circle c = new Circle(5279, 152, 50, 0);
         c.setMoveSpeed(.04f);
 
-        PathDrone backt = getBacteria(0, 0);
+        final PathDrone backt = getBacteria(0, 0);
         backt.clearData();
         backt.addEvent(Factory.follow(c, backt, 0, 0));
 
@@ -410,10 +410,10 @@ public class DiamondCave extends PixelBasedLevel {
         });
     }
 
-    void addCrystal(float x, float y) {
+    void addCrystal(final float x, final float y) {
         crystals++;
 
-        Entity crystal = new Entity();
+        final Entity crystal = new Entity();
         crystal.setImage(6, res.getAnimation("crystal"));
         crystal.move(x, y);
         crystal.addEvent(() -> {
@@ -426,18 +426,18 @@ public class DiamondCave extends PixelBasedLevel {
         add(crystal);
     }
 
-    PathDrone getBacteria(float x, float y) {
+    PathDrone getBacteria(final float x, final float y) {
         return getBacteria(new PathDrone.Waypoint(x, y, 0, false, null));
     }
 
-    PathDrone getBacteria(PathDrone.Waypoint... waypoints) {
+    PathDrone getBacteria(final PathDrone.Waypoint... waypoints) {
         class Int32 {
             int i;
         }
-        Int32 value = new Int32();
+        final Int32 value = new Int32();
         value.i = 0;
 
-        PathDrone b = new PathDrone(waypoints[0].targetX, waypoints[0].targetY);
+        final PathDrone b = new PathDrone(waypoints[0].targetX, waypoints[0].targetY);
         b.setImage(ThreadLocalRandom.current().nextInt(3, 8), res.getAnimation("bacteria"));
         b.setMoveSpeed(1.2f);
         b.setHitbox(Hitbox.PIXEL);
@@ -455,16 +455,16 @@ public class DiamondCave extends PixelBasedLevel {
 
     PathDrone.Waypoint[] randomWallPoints() {
         int last = -1;
-        int quantity = new Random().nextInt(100) + 100;
-        List<PathDrone.Waypoint> pdlist = new ArrayList<>(quantity);
-        Random r = new Random();
+        final int quantity = new Random().nextInt(100) + 100;
+        final List<PathDrone.Waypoint> pdlist = new ArrayList<>(quantity);
+        final Random r = new Random();
 
         for (int i = 0; i < quantity; i++) {
-            int dir = r.nextInt(4);
+            final int dir = r.nextInt(4);
             if (dir != last) {
                 last = dir;
 
-                Point2D.Float point = getDirection(dir);
+                final Point2D.Float point = getDirection(dir);
                 pdlist.add(new PathDrone.Waypoint(point.x, point.y, 0, false, null));
             } else
                 i--;
@@ -473,15 +473,15 @@ public class DiamondCave extends PixelBasedLevel {
         return pdlist.toArray(new PathDrone.Waypoint[pdlist.size()]);
     }
 
-    Point2D.Float getDirection(int dir) {
-        Point2D.Float point = new Point2D.Float();
+    Point2D.Float getDirection(final int dir) {
+        final Point2D.Float point = new Point2D.Float();
         final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
         final int minX = 2303;
         final int maxX = 2553 - 32;
         final int minY = 297;
         final int maxY = 667;
 
-        Random r = new Random();
+        final Random r = new Random();
 
         switch (dir) {
             case UP:

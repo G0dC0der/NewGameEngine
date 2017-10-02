@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.Particle;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.SolidPlatform;
@@ -14,7 +15,6 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.stages.PixelBasedLevel;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -27,7 +27,7 @@ public class GreenHill extends PixelBasedLevel {
     private int ringCounter, rings;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -68,27 +68,27 @@ public class GreenHill extends PixelBasedLevel {
          * Platforms
 		 */
 
-        SolidPlatform sp = new SolidPlatform(451, 740, play);
+        final SolidPlatform sp = new SolidPlatform(451, 740, play);
         sp.setImage(res.getImage("platform.png"));
         sp.setMoveSpeed(2);
         sp.setFollowMode(SolidPlatform.FollowMode.STRICT);
         sp.appendPath(451, 740, 20, false, null);
         sp.appendPath(752, 740, 20, false, null);
 
-        SolidPlatform sp2 = sp.getClone();
+        final SolidPlatform sp2 = sp.getClone();
         sp2.move(1940, 413);
         sp2.setMoveSpeed(1);
         sp2.clearData();
         sp2.appendPath(1940, 413, 30, false, null);
         sp2.appendPath(2100, 413, 30, false, null);
 
-        SolidPlatform sp3 = sp2.getClone();
+        final SolidPlatform sp3 = sp2.getClone();
         sp3.move(2100, 300);
         sp3.clearData();
         sp3.appendPath(2100, 300, 30, false, null);
         sp3.appendPath(1940, 300, 30, false, null);
 
-        SolidPlatform sp4 = sp2.getClone();
+        final SolidPlatform sp4 = sp2.getClone();
         sp4.move(1940, 187);
         sp4.clearData();
         sp4.appendPath(1940, 187, 30, false, null);
@@ -103,7 +103,7 @@ public class GreenHill extends PixelBasedLevel {
          * Kirby Enemies
          */
 
-        PathDrone enemy1 = new PathDrone(1367, 755);
+        final PathDrone enemy1 = new PathDrone(1367, 755);
         enemy1.setImage(7, res.getAnimation("enemy"));
         enemy1.setMoveSpeed(0.8f);
         enemy1.setFacings(2);
@@ -113,7 +113,7 @@ public class GreenHill extends PixelBasedLevel {
         enemy1.appendPath(1367, 755, 0, false, null);
         enemy1.appendPath(1014, 755, 0, false, null);
 
-        PathDrone enemy2 = enemy1.getClone();
+        final PathDrone enemy2 = enemy1.getClone();
         enemy2.move(1525, 723);
         enemy2.clearData();
         enemy2.addEvent(enemy2::face);
@@ -128,7 +128,7 @@ public class GreenHill extends PixelBasedLevel {
          * Bird
          */
 
-        Trailer bird = new Trailer(910, 10);
+        final Trailer bird = new Trailer(910, 10);
         bird.setImage(5, res.getAnimation("enemy2"));
         bird.setFacings(2);
         bird.addEvent(bird::face);
@@ -137,12 +137,12 @@ public class GreenHill extends PixelBasedLevel {
         bird.appendPath(910, 100, 2, false, null);
         bird.appendPath(1375, 100, 2, false, null);
 
-        Particle pooImpact = new Particle();
+        final Particle pooImpact = new Particle();
         pooImpact.setImage(res.getAnimation("poosplash"));
         pooImpact.setIntroSound(res.getSound("splash.wav"));
         pooImpact.sounds.useFalloff = true;
 
-        FallingProjectile sproj = new FallingProjectile(0, 0, bird, this, play);
+        final FallingProjectile sproj = new FallingProjectile(0, 0, bird, this, play);
         sproj.setImage(res.getImage("poo.png"));
         sproj.setImpact(pooImpact);
         sproj.rotate(false);
@@ -207,10 +207,10 @@ public class GreenHill extends PixelBasedLevel {
         addRing(1839, 380);
     }
 
-    void addRing(float x, float y) {
+    void addRing(final float x, final float y) {
         rings++;
 
-        Entity ring = new Entity();
+        final Entity ring = new Entity();
         ring.move(x, y);
         ring.setImage(5, res.getAnimation("ring"));
         ring.ifCollides(play).then(() -> {

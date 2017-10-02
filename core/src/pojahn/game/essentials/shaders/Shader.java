@@ -10,16 +10,17 @@ public abstract class Shader {
     private final String fragmentShader;
     private ShaderProgram shader;
 
-    protected Shader(String vertexShader, String fragmentShader) {
+    protected Shader(final String vertexShader, final String fragmentShader) {
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
     }
 
-    public void use(SpriteBatch batch) {
+    public void use(final SpriteBatch batch) {
         batch.setShader(get());
     }
 
-    public void prepare() {}
+    public void prepare() {
+    }
 
     public void dispose() {
         get().dispose();
@@ -31,14 +32,14 @@ public abstract class Shader {
 
         shader = new ShaderProgram(vertexShader, fragmentShader);
 
-        if(!shader.isCompiled()) {
+        if (!shader.isCompiled()) {
             throw new RuntimeException("Failed to compile the shader DrugShader:\n" + shader.getLog());
         }
 
         return shader;
     }
 
-    public static String read(String path) {
+    public static String read(final String path) {
         return Gdx.files.internal(path).readString();
     }
 }

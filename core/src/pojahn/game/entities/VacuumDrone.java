@@ -11,7 +11,7 @@ public class VacuumDrone extends PathDrone {
     private Sound vacuumSound;
     private GravityMan[] targets;
 
-    public VacuumDrone(float x, float y, GravityMan... targets) {
+    public VacuumDrone(final float x, final float y, final GravityMan... targets) {
         super(x, y);
         this.targets = targets;
         detectRadius = 300;
@@ -22,31 +22,31 @@ public class VacuumDrone extends PathDrone {
         burstDelayCounter = -1;
     }
 
-    public void setDetectRadius(float detectRadius) {
+    public void setDetectRadius(final float detectRadius) {
         this.detectRadius = detectRadius;
     }
 
-    public void setVacuumPower(float vacuumPower) {
+    public void setVacuumPower(final float vacuumPower) {
         this.vacuumPower = vacuumPower;
     }
 
-    public void setVacuumShots(int vacuumShots) {
+    public void setVacuumShots(final int vacuumShots) {
         this.vacuumShots = vacuumShots;
     }
 
-    public void setVacuumDelay(int vacuumDelay) {
+    public void setVacuumDelay(final int vacuumDelay) {
         this.vacuumDelay = vacuumDelay;
     }
 
-    public void setReload(int reload) {
+    public void setReload(final int reload) {
         this.reload = reload;
     }
 
-    public void setVacuumParticle(Particle vacuumParticle) {
+    public void setVacuumParticle(final Particle vacuumParticle) {
         this.vacuumParticle = vacuumParticle;
     }
 
-    public void setVacuumSound(Sound vacuumSound) {
+    public void setVacuumSound(final Sound vacuumSound) {
         this.vacuumSound = vacuumSound;
     }
 
@@ -55,7 +55,7 @@ public class VacuumDrone extends PathDrone {
         super.logistics();
 
         if (--reloadCounter < 0) {
-            for (GravityMan target : targets) {
+            for (final GravityMan target : targets) {
                 if (near(target, detectRadius)) {
                     if (burstCounter >= vacuumShots) {
                         reloadTime();
@@ -79,7 +79,7 @@ public class VacuumDrone extends PathDrone {
         burstCounter = 0;
     }
 
-    private void vacuum(GravityMan man) {
+    private void vacuum(final GravityMan man) {
         if (centerX() > man.centerX())
             man.vel.x = -vacuumPower;
         else

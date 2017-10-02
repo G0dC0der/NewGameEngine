@@ -9,8 +9,8 @@ import pojahn.game.events.Event;
 
 public class Development {
 
-    public static Event adjustColor(Color color) {
-        return ()-> {
+    public static Event adjustColor(final Color color) {
+        return () -> {
             if (Gdx.input.isKeyPressed(Keys.NUM_5))
                 color.r += .01f;
             else if (Gdx.input.isKeyPressed(Keys.T))
@@ -22,9 +22,9 @@ public class Development {
         };
     }
 
-    public static Event debugMovement(PlayableEntity play) {
+    public static Event debugMovement(final PlayableEntity play) {
         return () -> {
-            Keystrokes strokes = play.getKeysDown();
+            final Keystrokes strokes = play.getKeysDown();
             if (strokes.up || strokes.jump)
                 System.out.println("Can go up: " + !play.occupiedAt(play.x(), play.y() - 1));
             else if (strokes.down)
@@ -37,21 +37,21 @@ public class Development {
         };
     }
 
-    public static Event debugPosition(Entity entity) {
+    public static Event debugPosition(final Entity entity) {
         return () -> {
             System.out.println(entity.x() + " " + entity.y());
         };
     }
 
-    public static Event debugCollision(Entity e1, Entity e2) {
+    public static Event debugCollision(final Entity e1, final Entity e2) {
         return () -> {
-            if(e1.collidesWith(e2))
+            if (e1.collidesWith(e2))
                 System.out.println(Math.random());
         };
     }
 
-    public static void print2DArray(Object[][] arr) {
-        StringBuilder builder = new StringBuilder(arr.length * arr[0].length);
+    public static void print2DArray(final Object[][] arr) {
+        final StringBuilder builder = new StringBuilder(arr.length * arr[0].length);
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr[i].length; j++) {
                 builder.append(arr[i][j].toString());

@@ -12,14 +12,14 @@ import java.util.List;
 
 public class PathDrone extends MobileEntity {
 
-    public static class Waypoint implements java.io.Serializable{
+    public static class Waypoint implements java.io.Serializable {
 
         public float targetX, targetY;
         public int frames;
         public boolean jump;
         public Event event;
 
-        public Waypoint(float targetX, float targetY, int frames, boolean jump, Event event) {
+        public Waypoint(final float targetX, final float targetY, final int frames, final boolean jump, final Event event) {
             this.targetX = targetX;
             this.targetY = targetY;
             this.frames = frames;
@@ -27,7 +27,7 @@ public class PathDrone extends MobileEntity {
             this.event = event;
         }
 
-        public Waypoint(float targetX, float targetY) {
+        public Waypoint(final float targetX, final float targetY) {
             this(targetX, targetY, 0, false, null);
         }
 
@@ -42,14 +42,14 @@ public class PathDrone extends MobileEntity {
     private int dataCounter, stillCounter;
     private boolean playEvent;
 
-    public PathDrone(float x, float y) {
+    public PathDrone(final float x, final float y) {
         move(x, y);
         waypoints = new ArrayList<>();
         dataCounter = stillCounter = 0;
     }
 
     public PathDrone getClone() {
-        PathDrone clone = new PathDrone(x(), y());
+        final PathDrone clone = new PathDrone(x(), y());
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -57,34 +57,34 @@ public class PathDrone extends MobileEntity {
         return clone;
     }
 
-    protected void copyData(PathDrone clone) {
+    protected void copyData(final PathDrone clone) {
         super.copyData(clone);
         clone.waypoints.addAll(waypoints);
         clone.skip = skip;
         clone.rock = rock;
     }
 
-    public void appendPath(float x, float y, int frames, boolean jump, Event event) {
+    public void appendPath(final float x, final float y, final int frames, final boolean jump, final Event event) {
         waypoints.add(new Waypoint(x, y, frames, jump, event));
     }
 
-    public void appendPath(Vector2 loc, int frames, boolean jump, Event event) {
+    public void appendPath(final Vector2 loc, final int frames, final boolean jump, final Event event) {
         waypoints.add(new Waypoint(loc.x, loc.y, frames, jump, event));
     }
 
-    public void appendPath(Waypoint pd) {
+    public void appendPath(final Waypoint pd) {
         waypoints.add(pd);
     }
 
-    public void appendPath(Waypoint[] list) {
+    public void appendPath(final Waypoint[] list) {
         waypoints.addAll(Arrays.asList(list));
     }
 
-    public void appendPath(float x, float y) {
+    public void appendPath(final float x, final float y) {
         appendPath(x, y, 0, false, null);
     }
 
-    public void appendPath(float x, float y, Event event) {
+    public void appendPath(final float x, final float y, final Event event) {
         waypoints.add(new Waypoint(x, y, 0, false, event));
     }
 
@@ -93,12 +93,12 @@ public class PathDrone extends MobileEntity {
     }
 
     public Vector2 getCurrentTarget() {
-        Waypoint wp = waypoints.get(dataCounter >= waypoints.size() ? 0 : dataCounter);
+        final Waypoint wp = waypoints.get(dataCounter >= waypoints.size() ? 0 : dataCounter);
         return new Vector2(wp.targetX, wp.targetY);
     }
 
     public void appendReversed() {
-        List<Waypoint> reversed = new ArrayList<>(waypoints);
+        final List<Waypoint> reversed = new ArrayList<>(waypoints);
         reversed.remove(reversed.size() - 1);
         Collections.reverse(reversed);
 
@@ -118,10 +118,10 @@ public class PathDrone extends MobileEntity {
         dataCounter = stillCounter = 0;
     }
 
-    public void skipTo(int index) {
+    public void skipTo(final int index) {
         dataCounter = index;
         stillCounter = 0;
-        Waypoint wp = waypoints.get(index);
+        final Waypoint wp = waypoints.get(index);
         move(wp.targetX, wp.targetY);
     }
 
@@ -131,7 +131,7 @@ public class PathDrone extends MobileEntity {
             if (dataCounter >= waypoints.size())
                 dataCounter = 0;
 
-            Waypoint wp = waypoints.get(dataCounter);
+            final Waypoint wp = waypoints.get(dataCounter);
 
             if (reached(wp)) {
                 if (++stillCounter > wp.frames)
@@ -159,14 +159,14 @@ public class PathDrone extends MobileEntity {
     }
 
     @Override
-    public void dumbMoveTowards(float targetX, float targetY, float steps) {
+    public void dumbMoveTowards(final float targetX, final float targetY, final float steps) {
         if (isFrozen())
             return;
 
-        Vector2 next = attemptTowards(targetX, targetY, steps);
+        final Vector2 next = attemptTowards(targetX, targetY, steps);
 
         if (rock) {
-            boolean canNext = !occupiedAt(next.x, next.y);
+            final boolean canNext = !occupiedAt(next.x, next.y);
             if (canNext)
                 move(next.x, next.y);
             else if (skip)
@@ -178,11 +178,11 @@ public class PathDrone extends MobileEntity {
     }
 
     @Override
-    protected void smartMoveTowards(float targetX, float targetY, float steps) {
+    protected void smartMoveTowards(final float targetX, final float targetY, final float steps) {
         if (isFrozen())
             return;
 
-        Vector2 next = attemptTowards(targetX, targetY, steps);
+        final Vector2 next = attemptTowards(targetX, targetY, steps);
 
         if (rock) {
             if (smartMove(next.x, next.y)) {
@@ -200,12 +200,12 @@ public class PathDrone extends MobileEntity {
      * @param rock True if this PathDrone respect walls.
      * @param skip Whether or not to skip the current waypoint and go for the next one when blocked.
      */
-    public void setRock(boolean rock, boolean skip) {
+    public void setRock(final boolean rock, final boolean skip) {
         this.rock = rock;
         this.skip = skip;
     }
 
-    private boolean reached(Waypoint pd) {
+    private boolean reached(final Waypoint pd) {
         return getMoveSpeed() > Collisions.distance(pd.targetX, pd.targetY, x(), y());
     }
 }

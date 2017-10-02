@@ -23,7 +23,7 @@ public class SolidPlatform extends PathDrone {
     private float scanSize;
     private boolean ignoreInactive;
 
-    public SolidPlatform(float x, float y, MobileEntity... subjects) {
+    public SolidPlatform(final float x, final float y, final MobileEntity... subjects) {
         super(x, y);
         intersectors = new ArrayList<>(subjects.length);
         this.subjects = subjects;
@@ -33,7 +33,7 @@ public class SolidPlatform extends PathDrone {
 
     @Override
     public SolidPlatform getClone() {
-        SolidPlatform clone = new SolidPlatform(x(), y(), subjects);
+        final SolidPlatform clone = new SolidPlatform(x(), y(), subjects);
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -52,17 +52,17 @@ public class SolidPlatform extends PathDrone {
         super.logistics();
         intersectors.clear();
 
-        float x = x() - scanSize;
-        float y = y() - scanSize;
-        float w = width() + scanSize * 2;
-        float h = height() + scanSize * 2;
+        final float x = x() - scanSize;
+        final float y = y() - scanSize;
+        final float w = width() + scanSize * 2;
+        final float h = height() + scanSize * 2;
 
         Arrays.stream(subjects).filter(sub -> !ignoreInactive || sub.isActive()).forEach(sub -> {
             if (Collisions.rectanglesCollide(x, y, w, h, sub.x(), sub.y(), sub.width(), sub.height())) {
                 intersectors.add(sub);
 
-                float nextX = sub.x() + (x() - prevX());
-                float nextY = sub.y() + (y() - prevY());
+                final float nextX = sub.x() + (x() - prevX());
+                final float nextY = sub.y() + (y() - prevY());
 
                 if (!sub.occupiedAt(nextX, nextY))
                     sub.move(nextX, nextY);
@@ -73,7 +73,7 @@ public class SolidPlatform extends PathDrone {
         });
     }
 
-    public void setFollowMode(FollowMode followMode) {
+    public void setFollowMode(final FollowMode followMode) {
         this.followMode = followMode;
         switch (followMode) {
             case NONE:
@@ -92,19 +92,19 @@ public class SolidPlatform extends PathDrone {
         return new ArrayList<>(intersectors);
     }
 
-    public void setIgnoreInactive(boolean ignoreInactive) {
+    public void setIgnoreInactive(final boolean ignoreInactive) {
         this.ignoreInactive = ignoreInactive;
     }
 
     @Override
-    public void setMoveSpeed(float moveSpeed) {
+    public void setMoveSpeed(final float moveSpeed) {
         super.setMoveSpeed(moveSpeed);
         setFollowMode(this.followMode);
     }
 
     @Override
     @Deprecated
-    public void setHitbox(Hitbox hitbox) {
+    public void setHitbox(final Hitbox hitbox) {
         throw new UnsupportedOperationException("SolidPlatforms are restricted to rectangular hitbox.");
     }
 
@@ -115,7 +115,7 @@ public class SolidPlatform extends PathDrone {
         }
     }
 
-    protected void copyData(SolidPlatform clone) {
+    protected void copyData(final SolidPlatform clone) {
         super.copyData(clone);
         clone.followMode = followMode;
         clone.scanSize = scanSize;

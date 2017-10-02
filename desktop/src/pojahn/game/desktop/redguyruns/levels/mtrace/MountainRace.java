@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.PlayableEntity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.BigImage.RenderStrategy;
 import pojahn.game.entities.mains.GravityMan;
@@ -19,7 +20,6 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.recording.KeySession;
 import pojahn.game.essentials.stages.TileBasedLevel;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -28,11 +28,11 @@ public class MountainRace extends TileBasedLevel {
 
     private ResourceManager resources;
     private PlayableEntity play;
-    private Rectangle winArea = new Rectangle(3868,160,44,42);
+    private Rectangle winArea = new Rectangle(3868, 160, 44, 42);
     private Music music;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -70,7 +70,7 @@ public class MountainRace extends TileBasedLevel {
         add(new EntityBuilder().image(resources.getImage("flagpole.png")).zIndex(-1).move(3877, 161).build());
         add(new EntityBuilder().image(resources.getAnimation("flag")).zIndex(-1).move(3881, 161).build());
 
-        add(()-> {
+        add(() -> {
             if (Collisions.rectanglesCollide(winArea, play.bounds.toRectangle())) {
                 play.setState(Vitality.COMPLETED);
             }
@@ -107,8 +107,8 @@ public class MountainRace extends TileBasedLevel {
         resources.disposeAll();
     }
 
-    private void addContestant(KeySession data, Image2D[] img, String name) {
-        GravityMan cont = new GravityMan();
+    private void addContestant(final KeySession data, final Image2D[] img, final String name) {
+        final GravityMan cont = new GravityMan();
         cont.setImage(4, img);
         cont.setController(Controller.DEFAULT_CONTROLLER);
         cont.setJumpSound(resources.getSound("jump.wav"));
@@ -118,9 +118,9 @@ public class MountainRace extends TileBasedLevel {
         cont.sounds.useFalloff = true;
         cont.setGhostData(data.keystrokes);
         add(cont);
-        runOnceWhen(()-> {
-            HUDMessage winText = HUDMessage.centeredMessage(name + " completed!", getEngine().getScreenSize(), Color.BLACK);
+        runOnceWhen(() -> {
+            final HUDMessage winText = HUDMessage.centeredMessage(name + " completed!", getEngine().getScreenSize(), Color.BLACK);
             temp(Factory.drawCenteredText(winText, getEngine().timeFont), 120);
-        }, ()-> Collisions.rectanglesCollide(winArea, cont.bounds.toRectangle()));
+        }, () -> Collisions.rectanglesCollide(winArea, cont.bounds.toRectangle()));
     }
 }

@@ -21,7 +21,7 @@ class RollingStone extends MobileEntity {
 
     @Override
     public void logistics() {
-        int step = moveCounter % 4;
+        final int step = moveCounter % 4;
 
         if (step == 0) {
             move(wp1);
@@ -34,7 +34,7 @@ class RollingStone extends MobileEntity {
             }
         } else if (step == 2) {
             drag();
-            float nextY = bounds.pos.y - vy * getEngine().delta;
+            final float nextY = bounds.pos.y - vy * getEngine().delta;
 
             if (!occupiedAt(x(), nextY)) {
                 move(x(), nextY);
@@ -53,7 +53,7 @@ class RollingStone extends MobileEntity {
             }
 
             drag();
-            float nextY = bounds.pos.y - vy * getEngine().delta;
+            final float nextY = bounds.pos.y - vy * getEngine().delta;
 
             if (!occupiedAt(x(), nextY)) {
                 move(x(), nextY);
@@ -69,9 +69,9 @@ class RollingStone extends MobileEntity {
             }
         }
     }
-    
+
     private void drag() {
-        float force = mass * gravity;
+        final float force = mass * gravity;
         vy *= 1.0 - (damping * getEngine().delta);
 
         if (fallSpeedLimit < vy) {
@@ -80,7 +80,7 @@ class RollingStone extends MobileEntity {
             vy -= (force / mass) * getEngine().delta;
     }
 
-    private boolean reached(Vector2 vec) {
+    private boolean reached(final Vector2 vec) {
         return oldStyleSpeed + 2 > Collisions.distance(vec.x, vec.y, x(), y());
     }
 }

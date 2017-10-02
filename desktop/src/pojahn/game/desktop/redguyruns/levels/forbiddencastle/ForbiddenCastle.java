@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.DestroyablePlatform;
 import pojahn.game.essentials.Animation;
@@ -12,7 +13,6 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.stages.PixelBasedLevel;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
@@ -24,7 +24,7 @@ public class ForbiddenCastle extends PixelBasedLevel {
     private PlayableEntity play;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -61,15 +61,15 @@ public class ForbiddenCastle extends PixelBasedLevel {
         /*
          * Weak Platforms
          */
-        addWeak(18,28);
+        addWeak(18, 28);
 
-        for(int i = 24; i <= 32; i++)
+        for (int i = 24; i <= 32; i++)
             addWeak(i, 26);
 
-        for(int i = 24; i <= 31; i++)
+        for (int i = 24; i <= 31; i++)
             addWeak(i, 23);
 
-        for(int i = 26; i <= 32; i++)
+        for (int i = 26; i <= 32; i++)
             addWeak(i, 20);
 
         addWeak(37, 21);
@@ -100,31 +100,31 @@ public class ForbiddenCastle extends PixelBasedLevel {
         addWeak(56, 4);
         addWeak(57, 4);
 
-        for(int i = 75; i <= 83; i++)
+        for (int i = 75; i <= 83; i++)
             addWeak(i, 17);
 
-        for(int i = 76; i <= 82; i++)
+        for (int i = 76; i <= 82; i++)
             addWeak(i, 14);
 
-        for(int i = 77; i <= 81; i++)
+        for (int i = 77; i <= 81; i++)
             addWeak(i, 11);
 
-        for(int i = 78; i <= 80; i++)
+        for (int i = 78; i <= 80; i++)
             addWeak(i, 8);
 
         addWeak(79, 5);
         addWeak(44, 16);
 
 		/*
-		 * Goal
+         * Goal
 		 */
-        Entity goal = new Entity();
+        final Entity goal = new Entity();
         goal.setImage(5, res.getAnimation("coin"));
         goal.move(79 * 30, 3 * 30);
         goal.bounds.pos.x += 10;
         goal.bounds.pos.y += 15;
-        goal.addEvent(()->{
-            if(goal.collidesWith(play)) {
+        goal.addEvent(() -> {
+            if (goal.collidesWith(play)) {
                 discard(goal);
                 play.win();
                 res.getSound("collect2.wav").play();
@@ -133,11 +133,11 @@ public class ForbiddenCastle extends PixelBasedLevel {
         add(goal);
     }
 
-    void addWeak(int x, int y) {
-        Animation<Image2D> destroyImg = new Animation<>(6, res.getAnimation("weak"));
+    void addWeak(final int x, final int y) {
+        final Animation<Image2D> destroyImg = new Animation<>(6, res.getAnimation("weak"));
         destroyImg.setLoop(false);
 
-        DestroyablePlatform dp = new DestroyablePlatform(x * 30, y * 30, play);
+        final DestroyablePlatform dp = new DestroyablePlatform(x * 30, y * 30, play);
         dp.setImage(res.getAnimation("weak")[0]);
         dp.setDestroyFrames(60);
         dp.setDestroyImage(destroyImg);

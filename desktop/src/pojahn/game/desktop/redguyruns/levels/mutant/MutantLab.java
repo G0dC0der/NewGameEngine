@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Collisions;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
+import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.Bullet;
 import pojahn.game.entities.EvilDog;
@@ -35,7 +36,6 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.stages.PixelBasedLevel;
 import pojahn.game.events.Event;
-import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
@@ -58,7 +58,7 @@ public class MutantLab extends PixelBasedLevel {
     private int smashCounter;
 
     @Override
-    public void init(Serializable meta) throws Exception {
+    public void init(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -125,13 +125,13 @@ public class MutantLab extends PixelBasedLevel {
         /*
          * Room Background
 		 */
-        Entity room = new Entity();
+        final Entity room = new Entity();
         room.setImage(res.getImage("roombg.png"));
         room.zIndex(-50);
         room.move(1836, 1248);
         add(room);
 
-        Entity musicHandle = Utils.wrap(Factory.roomMusic(
+        final Entity musicHandle = Utils.wrap(Factory.roomMusic(
                 new Rectangle(room.x() - 200, room.y(), room.width() + 200, room.height()),
                 labMusic,
                 standardMusic,
@@ -141,13 +141,13 @@ public class MutantLab extends PixelBasedLevel {
         add(musicHandle);
 
 		/*
-		 * Doors
+         * Doors
 		 */
-        SolidPlatform goalDoor = getDoor(1160, 1540, true);
-        SolidPlatform locked1 = getDoor(3176, 1540, true);
-        SolidPlatform locked2 = getDoor(5864, 1348, true);
-        SolidPlatform trapdoor1 = getDoor(5832, 1256 - res.getImage("door1.png").getHeight(), false);
-        SolidPlatform trapdoor2 = getDoor(3264, 1360, false);
+        final SolidPlatform goalDoor = getDoor(1160, 1540, true);
+        final SolidPlatform locked1 = getDoor(3176, 1540, true);
+        final SolidPlatform locked2 = getDoor(5864, 1348, true);
+        final SolidPlatform trapdoor1 = getDoor(5832, 1256 - res.getImage("door1.png").getHeight(), false);
+        final SolidPlatform trapdoor2 = getDoor(3264, 1360, false);
 
         add(goalDoor);
         add(locked1);
@@ -158,22 +158,22 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * Room stuff
 		 */
-        Entity glass1 = new Entity();
+        final Entity glass1 = new Entity();
         glass1.setImage(res.getImage("glass.png"));
         glass1.zIndex(-5);
         glass1.tint.a = .8f;
         glass1.move(1967, 1328);
 
-        Entity glass2 = glass1.getClone().move(2210, 1328);
-        Entity glass3 = glass1.getClone().move(2452, 1328);
+        final Entity glass2 = glass1.getClone().move(2210, 1328);
+        final Entity glass3 = glass1.getClone().move(2452, 1328);
 
-        Entity bubble1 = new Entity();
+        final Entity bubble1 = new Entity();
         bubble1.zIndex(-4);
         bubble1.setImage(3, res.getAnimation("bubbles"));
         bubble1.move(1967, 1344);
 
-        Entity bubble2 = bubble1.getClone().move(2210, 1344);
-        Entity bubble3 = bubble1.getClone().move(2452, 1344);
+        final Entity bubble2 = bubble1.getClone().move(2210, 1344);
+        final Entity bubble3 = bubble1.getClone().move(2452, 1344);
 
         add(glass1);
         add(glass2);
@@ -195,9 +195,9 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * Metroids
 		 */
-        EvilDog met1 = getMetroid(1976, 1368);
-        EvilDog met2 = getMetroid(2219, 1368);
-        EvilDog met3 = getMetroid(2461, 1368);
+        final EvilDog met1 = getMetroid(1976, 1368);
+        final EvilDog met2 = getMetroid(2219, 1368);
+        final EvilDog met3 = getMetroid(2461, 1368);
         met1.drag = .4f;
         met2.drag = .3f;
         add(met1);
@@ -207,7 +207,7 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * Goal Button
 		 */
-        SolidPlatform gbutton = new SolidPlatform(6574, 1328, play);
+        final SolidPlatform gbutton = new SolidPlatform(6574, 1328, play);
         gbutton.setImage(res.getImage("goalbutton.png"));
         gbutton.freeze();
         gbutton.setMoveSpeed(1.5f);
@@ -216,7 +216,7 @@ public class MutantLab extends PixelBasedLevel {
             play.freeze();
             removeFocusObject(play);
 
-            PathDrone camera = new PathDrone(play.x(), play.y());
+            final PathDrone camera = new PathDrone(play.x(), play.y());
             camera.appendPath(camera.x(), camera.y(), 60, true, null);
             camera.appendPath(1160, 1540, 60, true, () -> {
                 camera.freeze();
@@ -233,7 +233,7 @@ public class MutantLab extends PixelBasedLevel {
             add(camera);
             addFocusObject(camera);
         });
-        Entity dummy = new Entity();
+        final Entity dummy = new Entity();
         dummy.move(gbutton.x(), gbutton.y() - 1);
         dummy.bounds.size.width = gbutton.width();
         dummy.addEvent(() -> {
@@ -261,7 +261,7 @@ public class MutantLab extends PixelBasedLevel {
             discard(bubble3);
             discard(musicHandle);
 
-            Image2D glassDestroyed = res.getImage("glassdestroyed.png");
+            final Image2D glassDestroyed = res.getImage("glassdestroyed.png");
             glass1.setImage(glassDestroyed);
             glass2.setImage(glassDestroyed);
             glass3.setImage(glassDestroyed);
@@ -278,10 +278,10 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * Alien
 		 */
-        Animation<Image2D> smash = new Animation<>(4, res.getAnimation("alienattack"));
+        final Animation<Image2D> smash = new Animation<>(4, res.getAnimation("alienattack"));
         smash.setLoop(false);
 
-        PathDrone monster = new PathDrone(1536, 2273);
+        final PathDrone monster = new PathDrone(1536, 2273);
         monster.setFacings(2);
         monster.addEvent(monster::face);
         monster.setImage(8, res.getAnimation("alien"));
@@ -300,7 +300,7 @@ public class MutantLab extends PixelBasedLevel {
                 monster.setImage(smash);
                 monster.setMoveSpeed(0);
 
-                double volume = monster.sounds.calc(play);
+                final double volume = monster.sounds.calc(play);
                 if (volume > 0.0)
                     getRandomMonster().play((float) volume);
             }
@@ -336,7 +336,7 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * One Ways
 		 */
-        OneWay ow1 = new OneWay(1618, 2187, Direction.N, play);
+        final OneWay ow1 = new OneWay(1618, 2187, Direction.N, play);
         ow1.setImage(res.getImage("ow.png"));
         add(ow1);
         add(ow1.getClone().move(1751, ow1.y()));
@@ -345,7 +345,7 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * Health
 		 */
-        Entity hp = new Entity();
+        final Entity hp = new Entity();
         hp.move(3431, 1896);
         hp.setImage(4, res.getAnimation("health"));
         hp.addEvent(() -> {
@@ -360,7 +360,7 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * Bugs
 		 */
-        Entity b = new Entity();
+        final Entity b = new Entity();
         b.setImage(6, res.getAnimation("bug"));
         b.setHitbox(Hitbox.PIXEL);
         b.setCloneEvent((clone) -> {
@@ -406,49 +406,49 @@ public class MutantLab extends PixelBasedLevel {
         proj.setTrailer(p);
         proj.setImpact(imp);
 
-        int padY = 150;
-        int padX = 100;
+        final int padY = 150;
+        final int padX = 100;
 
-        Weapon wep1 = getWeapon();
+        final Weapon wep1 = getWeapon();
         wep1.move(3552, 1253);
         wep1.appendPath(3552 + 32, 1213 - 32 - padY, 0, false, wep1::freeze);
         wep1.appendPath(3976 + padX, 768, 0, false, wep1::freeze);
 
-        Weapon wep2 = getWeapon();
+        final Weapon wep2 = getWeapon();
         wep2.move(3552 + 32, 1253);
         wep2.appendPath(3552 + 32, 1213 - padY, 0, false, wep2::freeze);
         wep2.appendPath(3976 - 32 + padX, 768, 0, false, wep2::freeze);
 
-        Weapon wep3 = getWeapon();
+        final Weapon wep3 = getWeapon();
         wep3.move(3552 + (32 * 2), 1253);
         wep3.appendPath(3552 + 32, 1213 + 32 - padY, 0, false, wep3::freeze);
         wep3.appendPath(3976 - (32 * 2) + padX, 768, 0, false, wep3::freeze);
 
-        Weapon wep4 = getWeapon();
+        final Weapon wep4 = getWeapon();
         wep4.move(3552, 1253 + 32);
         wep4.appendPath(3584, 1325 - 32 - padY, 0, false, wep4::freeze);
         wep4.appendPath(3976 - (32 * 3) + padX, 768, 0, false, wep4::freeze);
 
-        Weapon wep5 = getWeapon();
+        final Weapon wep5 = getWeapon();
         wep5.move(3552 + 32, 1253 + 32);
         wep5.appendPath(3584, 1325 - padY, 0, false, wep5::freeze);
         wep5.appendPath(3976 - (32 * 4) + padX, 768, 0, false, wep5::freeze);
 
-        Weapon wep6 = getWeapon();
+        final Weapon wep6 = getWeapon();
         wep6.move(3552 + (32 * 2), 1253 + 32);
         wep6.appendPath(3584, 1325 + 32 - padY, 0, false, wep6::freeze);
         wep6.appendPath(3976 - (32 * 5) + padX, 768, 0, false, wep6::freeze);
 
-        Rectangle area1 = new Rectangle(3450, 1182, 300, 220);
-        Rectangle area2 = new Rectangle(3441, 779, 362, 300);
+        final Rectangle area1 = new Rectangle(3450, 1182, 300, 220);
+        final Rectangle area2 = new Rectangle(3441, 779, 362, 300);
 
-        runOnceWhen(()->{
+        runOnceWhen(() -> {
             Stream.of(wep1, wep2, wep3, wep4, wep5, wep6).forEach(PathDrone::unfreeze);
-        }, ()-> Collisions.rectanglesCollide(play.bounds.toRectangle(), area1));
+        }, () -> Collisions.rectanglesCollide(play.bounds.toRectangle(), area1));
 
-        runOnceWhen(()->{
+        runOnceWhen(() -> {
             Stream.of(wep1, wep2, wep3, wep4, wep5, wep6).forEach(PathDrone::unfreeze);
-        }, ()-> Collisions.rectanglesCollide(play.bounds.toRectangle(), area2));
+        }, () -> Collisions.rectanglesCollide(play.bounds.toRectangle(), area2));
 
         add(wep1);
         add(wep2);
@@ -461,14 +461,14 @@ public class MutantLab extends PixelBasedLevel {
          * Doors in Weapon area
          */
         if (!getCheckpointHandler().available()) {
-            SolidPlatform door = new SolidPlatform(4290, 1013, play);
+            final SolidPlatform door = new SolidPlatform(4290, 1013, play);
             door.setImage(res.getImage("door3.png"));
             door.appendPath(door.x(), door.y() + door.height() + 1);
             door.freeze();
 
-            Entity key = new EntityBuilder()
+            final Entity key = new EntityBuilder()
                     .move(4272, 776).image(res.getImage("key.png")).build();
-            key.ifCollides(play).thenRunOnce(()->{
+            key.ifCollides(play).thenRunOnce(() -> {
                 door.unfreeze();
                 key.die();
             });
@@ -485,21 +485,21 @@ public class MutantLab extends PixelBasedLevel {
             wp2 = getLaserMonsterWP();
             wp3 = getLaserMonsterWP();
         }
-		List<Entity> monsters = new ArrayList<>();
+        final List<Entity> monsters = new ArrayList<>();
 
         for (int i = 0; i < 3; i++) {
-            Vector2[] waypoints;
+            final Vector2[] waypoints;
             if (i == 0) waypoints = wp1;
             else if (i == 1) waypoints = wp2;
             else waypoints = wp3;
 
-            Shuttle sh = new Shuttle(4687, 772);
+            final Shuttle sh = new Shuttle(4687, 772);
             sh.setImage(4, res.getAnimation("laseralien"));
             sh.appendPath(waypoints);
             sh.zIndex(200);
             sh.thrust = 100;
 
-            LaserDrone ld = new LaserDrone(4687, 772, 50, 10, 60, play);
+            final LaserDrone ld = new LaserDrone(4687, 772, 50, 10, 60, play);
             ld.addEvent(Factory.follow(sh, ld, sh.halfWidth(), sh.halfHeight()));
             ld.setLaserTint(Color.valueOf("00f428FF"));
             ld.setFiringSound(res.getSound("laserfire.wav"));
@@ -530,7 +530,7 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * Goal
 		 */
-        Entity goal = new Entity();
+        final Entity goal = new Entity();
         goal.setImage(res.getImage("door.png"));
         goal.move(1929, 3006);
         goal.zIndex(-1);
@@ -560,10 +560,10 @@ public class MutantLab extends PixelBasedLevel {
     }
 
     private Weapon getWeapon() {
-        Animation<Image2D> firingImage = new Animation<>(4, res.getAnimation("weapon"));
+        final Animation<Image2D> firingImage = new Animation<>(4, res.getAnimation("weapon"));
         firingImage.setLoop(false);
 
-        Weapon turr = new Weapon(3456, 768, 1, 1, 90, play);
+        final Weapon turr = new Weapon(3456, 768, 1, 1, 90, play);
         turr.zIndex(1);
         turr.setProjectile(proj);
         turr.setImage(res.getAnimation("weapon")[6]);
@@ -576,13 +576,13 @@ public class MutantLab extends PixelBasedLevel {
         return turr;
     }
 
-    private EvilDog getMetroid(float x, float y) {
-        Entity dummy = new Entity();
+    private EvilDog getMetroid(final float x, final float y) {
+        final Entity dummy = new Entity();
         dummy.bounds.size.width = play.width();
         dummy.bounds.size.height = play.height();
         dummy.bounds.pos.set(play.bounds.pos);
 
-        EvilDog m = new EvilDog(x, y, -1, dummy) {
+        final EvilDog m = new EvilDog(x, y, -1, dummy) {
             boolean attacking, recover;
             int attackingCounter, recoveryCounter;
 
@@ -591,8 +591,8 @@ public class MutantLab extends PixelBasedLevel {
                 if (isFrozen() || getEngine().getGameState() != GameState.ACTIVE)
                     return;
 
-                float targetX = play.x() - 28;
-                float targetY = play.y() - 63;
+                final float targetX = play.x() - 28;
+                final float targetY = play.y() - 63;
 
                 if (!recover && !metAttacking && (attacking || distance(x(), y(), targetX, targetY) < 25)) {
                     attacking = metAttacking = true;
@@ -637,12 +637,12 @@ public class MutantLab extends PixelBasedLevel {
         return m;
     }
 
-    SolidPlatform getDoor(float x, float y, boolean horizontal) {
-        SolidPlatform solp;
-        Image2D lamp1 = res.getImage("lamp1.png");
-        Image2D lamp2 = res.getImage("lamp2.png");
-        Image2D lamp3 = res.getImage("lamp3.png");
-        Image2D lamp4 = res.getImage("lamp4.png");
+    SolidPlatform getDoor(final float x, final float y, final boolean horizontal) {
+        final SolidPlatform solp;
+        final Image2D lamp1 = res.getImage("lamp1.png");
+        final Image2D lamp2 = res.getImage("lamp2.png");
+        final Image2D lamp3 = res.getImage("lamp3.png");
+        final Image2D lamp4 = res.getImage("lamp4.png");
 
         if (horizontal) {
             solp = new SolidPlatform(0, 0, play) {
@@ -652,7 +652,7 @@ public class MutantLab extends PixelBasedLevel {
                 boolean goingBack;
 
                 @Override
-                public void render(SpriteBatch batch) {
+                public void render(final SpriteBatch batch) {
                     if (++counter % 5 == 0) {
                         if (goingBack) {
                             posX -= 8;
@@ -679,7 +679,7 @@ public class MutantLab extends PixelBasedLevel {
                 boolean goingBack;
 
                 @Override
-                public void render(SpriteBatch batch) {
+                public void render(final SpriteBatch batch) {
                     if (++counter % 5 == 0) {
                         if (goingBack) {
                             posY -= 8;
@@ -714,7 +714,7 @@ public class MutantLab extends PixelBasedLevel {
     }
 
     private void playRandomMetroid() {
-        int value = MathUtils.random(1, 4);
+        final int value = MathUtils.random(1, 4);
 
         switch (value) {
             case 1:
@@ -733,7 +733,7 @@ public class MutantLab extends PixelBasedLevel {
     }
 
     private Sound getRandomMonster() {
-        int value = MathUtils.random(1, 3);
+        final int value = MathUtils.random(1, 3);
 
         switch (value) {
             case 1:
@@ -748,7 +748,7 @@ public class MutantLab extends PixelBasedLevel {
     }
 
     private Sound getRandomAlienLaser() {
-        int value = MathUtils.random(1, 3);
+        final int value = MathUtils.random(1, 3);
 
         switch (value) {
             case 1:
@@ -763,9 +763,9 @@ public class MutantLab extends PixelBasedLevel {
     }
 
     private Vector2[] getLaserMonsterWP() {
-        int padding = 100;
-        PathDrone.Waypoint[] pd = randomWallPoints(4704 + padding, 5597 - padding, 768 + padding, 1152 - padding);
-        Vector2[] wps = new Vector2[pd.length];
+        final int padding = 100;
+        final PathDrone.Waypoint[] pd = randomWallPoints(4704 + padding, 5597 - padding, 768 + padding, 1152 - padding);
+        final Vector2[] wps = new Vector2[pd.length];
         for (int j = 0; j < wps.length; j++)
             wps[j] = new Vector2(pd[j].targetX, pd[j].targetY);
 
@@ -787,18 +787,18 @@ public class MutantLab extends PixelBasedLevel {
         return "Mutant Lab";
     }
 
-    private PathDrone.Waypoint[] randomWallPoints(int minX, int maxX, int minY, int maxY) {
+    private PathDrone.Waypoint[] randomWallPoints(final int minX, final int maxX, final int minY, final int maxY) {
         int last = -1;
-        int quantity = new Random().nextInt(100) + 100;
-        List<PathDrone.Waypoint> pdlist = new ArrayList<>(quantity);
-        Random r = new Random();
+        final int quantity = new Random().nextInt(100) + 100;
+        final List<PathDrone.Waypoint> pdlist = new ArrayList<>(quantity);
+        final Random r = new Random();
 
         for (int i = 0; i < quantity; i++) {
-            int dir = r.nextInt(4);
+            final int dir = r.nextInt(4);
             if (dir != last) {
                 last = dir;
 
-                Point2D.Float point = getDirection(dir, minX, maxX, minY, maxY);
+                final Point2D.Float point = getDirection(dir, minX, maxX, minY, maxY);
                 pdlist.add(new PathDrone.Waypoint(point.x, point.y, 0, false, null));
             } else
                 i--;
@@ -807,11 +807,11 @@ public class MutantLab extends PixelBasedLevel {
         return pdlist.toArray(new PathDrone.Waypoint[pdlist.size()]);
     }
 
-    private Point2D.Float getDirection(int dir, int minX, int maxX, int minY, int maxY) {
-        Point2D.Float point = new Point2D.Float();
+    private Point2D.Float getDirection(final int dir, final int minX, final int maxX, final int minY, final int maxY) {
+        final Point2D.Float point = new Point2D.Float();
         final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
 
-        Random r = new Random();
+        final Random r = new Random();
 
         switch (dir) {
             case UP:

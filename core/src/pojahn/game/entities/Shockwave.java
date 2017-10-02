@@ -8,8 +8,8 @@ public class Shockwave extends Particle {
     private TileBasedLevel level;
     private boolean first;
 
-    public Shockwave(int size, int freq) {
-        if(size <= 1)
+    public Shockwave(final int size, final int freq) {
+        if (size <= 1)
             throw new IllegalStateException("Size must exceed 1.");
 
         this.size = size;
@@ -22,7 +22,7 @@ public class Shockwave extends Particle {
 
     @Override
     public Particle getClone() {
-        Shockwave shockwave = new Shockwave(size, freq);
+        final Shockwave shockwave = new Shockwave(size, freq);
         copyData(shockwave);
 
         return shockwave;
@@ -42,22 +42,22 @@ public class Shockwave extends Particle {
     public void logistics() {
         super.logistics();
 
-        if(first) {
+        if (first) {
             first = false;
 
-            if(freq <= 0) {
-                int tileX = (int) (x() / tileWidth);
-                int tileY = (int) (y() / tileHeight);
+            if (freq <= 0) {
+                final int tileX = (int) (x() / tileWidth);
+                final int tileY = (int) (y() / tileHeight);
                 level.transformTiles(tileX, tileY, size, null);
             } else {
-                getLevel().temp(()->{
+                getLevel().temp(() -> {
                     if (++counter == 0 || counter % freq == 0) {
-                        int tileX = (int) (x() / tileWidth);
-                        int tileY = (int) (y() / tileHeight);
+                        final int tileX = (int) (x() / tileWidth);
+                        final int tileY = (int) (y() / tileHeight);
 
                         level.transformTiles(tileX, tileY, ++radius, null);
                     }
-                }, ()-> radius > size);
+                }, () -> radius > size);
             }
         }
     }

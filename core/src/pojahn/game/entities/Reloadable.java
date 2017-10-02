@@ -11,46 +11,46 @@ public class Reloadable extends Entity {
     private User[] users;
     private Event loadedEvent, grabEvent;
 
-    public Reloadable(float x, float y){
+    public Reloadable(final float x, final float y) {
         move(x, y);
     }
 
-    public void setUsers(Entity... users) {
+    public void setUsers(final Entity... users) {
         this.users = Stream.of(users).map(User::new).toArray(User[]::new);
     }
 
-    public void setItems(Entity... items) {
+    public void setItems(final Entity... items) {
         this.items = Stream.of(items).map(Item::new).toArray(Item[]::new);
     }
 
-    public void setLoadedEvent(Event loadedEvent) {
+    public void setLoadedEvent(final Event loadedEvent) {
         this.loadedEvent = loadedEvent;
     }
 
-    public void setGrabEvent(Event grabEvent) {
+    public void setGrabEvent(final Event grabEvent) {
         this.grabEvent = grabEvent;
     }
 
     @Override
     public void logistics() {
-        for (User user : users) {
+        for (final User user : users) {
             if (!user.haveItem()) {
                 for (int i = 0; i < items.length; i++) {
                     if (items[i] != null && user.entity.collidesWith(items[i].entity)) {
                         user.item = items[i];
                         items[i] = null;
-                        if(grabEvent != null)
-                           grabEvent.eventHandling();
+                        if (grabEvent != null)
+                            grabEvent.eventHandling();
                         break;
                     }
                 }
             } else {
-                user.item.entity.center(user.entity).bounds.pos.y -=  user.item.entity.halfHeight() - 8;
+                user.item.entity.center(user.entity).bounds.pos.y -= user.item.entity.halfHeight() - 8;
 
                 if (collidesWith(user.entity)) {
                     getLevel().discard(user.item.entity);
                     user.item = null;
-                    if(loadedEvent != null)
+                    if (loadedEvent != null)
                         loadedEvent.eventHandling();
                 }
             }
@@ -60,7 +60,7 @@ public class Reloadable extends Entity {
     private static class Item {
         private Entity entity;
 
-        Item(Entity entity) {
+        Item(final Entity entity) {
             this.entity = entity;
         }
     }
@@ -69,7 +69,7 @@ public class Reloadable extends Entity {
         Entity entity;
         Item item;
 
-        User(Entity entity) {
+        User(final Entity entity) {
             this.entity = entity;
         }
 

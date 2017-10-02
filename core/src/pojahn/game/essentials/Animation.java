@@ -25,7 +25,7 @@ public class Animation<T> {
      * @param objs  The objects array to use.
      */
     @SafeVarargs
-    public Animation(int speed, T... objs) {
+    public Animation(final int speed, final T... objs) {
         this.speed = speed;
         this.objs = objs;
         loop = true;
@@ -51,7 +51,7 @@ public class Animation<T> {
         if (objs == null)
             return null;
 
-        T obj = objs[index];
+        final T obj = objs[index];
 
         if (stop)
             return obj;
@@ -85,8 +85,8 @@ public class Animation<T> {
         return obj;
     }
 
-    private void tryEvent(int index) {
-        Event event = events.get(index);
+    private void tryEvent(final int index) {
+        final Event event = events.get(index);
         if (event == null || !allowEvent)
             return;
 
@@ -101,7 +101,7 @@ public class Animation<T> {
      * @param event The event.
      * @param index The index of the event.
      */
-    public void addEvent(Event event, int index) {
+    public void addEvent(final Event event, final int index) {
         events.put(index, event);
     }
 
@@ -117,7 +117,7 @@ public class Animation<T> {
      *
      * @param limit The limit.
      */
-    public void setLimit(int limit) {
+    public void setLimit(final int limit) {
         this.limit = limit;
     }
 
@@ -127,7 +127,7 @@ public class Animation<T> {
      *
      * @param multi True if this is a multi faced unit.
      */
-    public void setMultiFaced(boolean multi) {
+    public void setMultiFaced(final boolean multi) {
         if (multi)
             setLimit(objs.length / 8);
         this.multiFaced = multi;
@@ -156,7 +156,7 @@ public class Animation<T> {
      *
      * @param index The index to use.
      */
-    public void setIndex(int index) {
+    public void setIndex(final int index) {
         this.index = index;
     }
 
@@ -174,7 +174,7 @@ public class Animation<T> {
      *
      * @param loop True if this instance should loop.
      */
-    public void setLoop(boolean loop) {
+    public void setLoop(final boolean loop) {
         this.loop = loop;
     }
 
@@ -183,7 +183,7 @@ public class Animation<T> {
      *
      * @param pingpong True if this object should have "pingpong" behavior.
      */
-    public void pingPong(boolean pingpong) {
+    public void pingPong(final boolean pingpong) {
         this.pingpong = pingpong;
     }
 
@@ -201,7 +201,7 @@ public class Animation<T> {
      *
      * @param objs The array to use.
      */
-    public void setObjs(T[] objs) {
+    public void setObjs(final T[] objs) {
         if (objs != null) {
             this.objs = objs;
             if (limit <= 0)
@@ -215,7 +215,7 @@ public class Animation<T> {
      *
      * @param speed The speed to use.
      */
-    public void setSpeed(int speed) {
+    public void setSpeed(final int speed) {
         this.speed = speed;
         index = counter = 0;
     }
@@ -232,7 +232,7 @@ public class Animation<T> {
      *
      * @param stop True to stop the counter from updating.
      */
-    public void stop(boolean stop) {
+    public void stop(final boolean stop) {
         this.stop = stop;
     }
 
@@ -267,7 +267,7 @@ public class Animation<T> {
      * @return The instance.
      */
     public Animation<T> getClone() {
-        Animation<T> freq = new Animation<T>(speed, objs);
+        final Animation<T> freq = new Animation<T>(speed, objs);
         freq.limit = limit;
         freq.loop = loop;
         freq.stop = stop;
@@ -282,20 +282,19 @@ public class Animation<T> {
      * @param clazz The class of the object array.
      * @return The instance.
      */
-    public Animation<T> getReversed(Class<T> clazz) {
-        @SuppressWarnings("unchecked")
-        T[] reversed = (T[]) Array.newInstance(clazz, objs.length);
+    public Animation<T> getReversed(final Class<T> clazz) {
+        @SuppressWarnings("unchecked") final T[] reversed = (T[]) Array.newInstance(clazz, objs.length);
 
         for (int i = 0; i < objs.length; i++)
             reversed[i] = objs[i];
 
         for (int left = 0, right = reversed.length - 1; left < right; left++, right--) {
-            T temp = reversed[left];
+            final T temp = reversed[left];
             reversed[left] = reversed[right];
             reversed[right] = temp;
         }
 
-        Animation<T> freq = getClone();
+        final Animation<T> freq = getClone();
         freq.setObjs(reversed);
 
         return freq;
