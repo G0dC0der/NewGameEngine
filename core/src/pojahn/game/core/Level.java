@@ -562,9 +562,9 @@ public abstract class Level {
         final float stageHeight = getHeight();
         final float windowWidth = size.width;
         final float windowHeight = size.height;
+        float zoom = getEngine().getZoom();
         float tx = 0;
         float ty = 0;
-        float zoom = getEngine().getZoom();
 
         if (list.size() == 1) {
             final Entity entity = list.get(0);
