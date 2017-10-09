@@ -1,13 +1,14 @@
 package pojahn.game.entities;
 
-import pojahn.game.core.Collisions;
+import com.google.common.collect.ImmutableList;
+import pojahn.game.core.BaseLogic;
+import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Hitbox;
+import pojahn.lang.Obj;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class SolidPlatform extends PathDrone {
 
@@ -17,23 +18,20 @@ public class SolidPlatform extends PathDrone {
         STRICT
     }
 
-    private MobileEntity[] subjects;
-    private List<MobileEntity> intersectors;
+    private final List<MobileEntity> intersectors, subjects;
     private FollowMode followMode;
     private float scanSize;
-    private boolean ignoreInactive;
 
     public SolidPlatform(final float x, final float y, final MobileEntity... subjects) {
         super(x, y);
+        this.subjects = Obj.requireNotEmpty(subjects);
         intersectors = new ArrayList<>(subjects.length);
-        this.subjects = subjects;
         setFollowMode(FollowMode.NORMAL);
-        ignoreInactive = true;
     }
 
     @Override
     public SolidPlatform getClone() {
-        final SolidPlatform clone = new SolidPlatform(x(), y(), subjects);
+        final SolidPlatform clone = new SolidPlatform(x(), y(), subjects.toArray(new MobileEntity[0]));
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -44,7 +42,7 @@ public class SolidPlatform extends PathDrone {
     @Override
     public void init() {
         super.init();
-        Stream.of(subjects).forEach(mobileEntity -> mobileEntity.addObstacle(this));
+        subjects.forEach(mobileEntity -> mobileEntity.addObstacle(this));
     }
 
     @Override
@@ -57,20 +55,22 @@ public class SolidPlatform extends PathDrone {
         final float w = width() + scanSize * 2;
         final float h = height() + scanSize * 2;
 
-        Arrays.stream(subjects).filter(sub -> !ignoreInactive || sub.isActive()).forEach(sub -> {
-            if (Collisions.rectanglesCollide(x, y, w, h, sub.x(), sub.y(), sub.width(), sub.height())) {
-                intersectors.add(sub);
+        subjects.stream()
+            .filter(Entity::isActive)
+            .forEach(sub -> {
+                if (BaseLogic.rectanglesCollide(x, y, w, h, sub.x(), sub.y(), sub.width(), sub.height())) {
+                    intersectors.add(sub);
 
-                final float nextX = sub.x() + (x() - prevX());
-                final float nextY = sub.y() + (y() - prevY());
+                    final float nextX = sub.x() + (x() - prevX());
+                    final float nextY = sub.y() + (y() - prevY());
 
-                if (!sub.occupiedAt(nextX, nextY))
-                    sub.move(nextX, nextY);
+                    if (!sub.occupiedAt(nextX, nextY))
+                        sub.move(nextX, nextY);
 
-                if (Collisions.rectanglesCollide(bounds.toRectangle(), sub.bounds.toRectangle()))
-                    collisionResponse(sub);
-            }
-        });
+                    if (BaseLogic.rectanglesCollide(bounds.toRectangle(), sub.bounds.toRectangle()))
+                        collisionResponse(sub);
+                }
+            });
     }
 
     public void setFollowMode(final FollowMode followMode) {
@@ -89,11 +89,7 @@ public class SolidPlatform extends PathDrone {
     }
 
     public List<MobileEntity> getActiveSubjects() {
-        return new ArrayList<>(intersectors);
-    }
-
-    public void setIgnoreInactive(final boolean ignoreInactive) {
-        this.ignoreInactive = ignoreInactive;
+        return ImmutableList.copyOf(intersectors);
     }
 
     @Override
@@ -110,15 +106,12 @@ public class SolidPlatform extends PathDrone {
 
     @Override
     public void dispose() {
-        if (subjects != null) {
-            Stream.of(subjects).forEach(sub -> sub.removeObstacle(this));
-        }
+        subjects.forEach(sub -> sub.removeObstacle(this));
     }
 
     protected void copyData(final SolidPlatform clone) {
         super.copyData(clone);
         clone.followMode = followMode;
         clone.scanSize = scanSize;
-        clone.ignoreInactive = ignoreInactive;
     }
 }

@@ -1,21 +1,23 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
+import pojahn.lang.Obj;
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Guard extends PathDrone {
 
-    private Entity[] targets;
+    private final List<Entity> targets;
     private Sound detectSound;
     private boolean allowSound, ignoreInactive;
 
     public Guard(final float x, final float y, final Entity... targets) {
         super(x, y);
-        this.targets = targets;
-        allowSound = ignoreInactive = true;
+        this.targets = Obj.requireNotEmpty(targets);
+        this.allowSound = ignoreInactive = true;
     }
 
     public boolean isHunting() {
@@ -32,12 +34,16 @@ public class Guard extends PathDrone {
 
     @Override
     public void logistics() {
-        final Entity target = Collisions.findClosestSeeable(this, Stream.of(targets).filter(entity -> !ignoreInactive || entity.isActive()).toArray(Entity[]::new));
+        final Entity target = BaseLogic.findClosestSeeable(
+                this,
+                targets.stream()
+                    .filter(entity -> !ignoreInactive || entity.isActive())
+                    .collect(Collectors.toList()));
 
         if (target != null) {
             moveTowards(target.x(), target.y());
             if (allowSound && detectSound != null)
-                detectSound.play(sounds.calc());
+                sounds.play(detectSound);
             allowSound = false;
         } else {
             super.logistics();

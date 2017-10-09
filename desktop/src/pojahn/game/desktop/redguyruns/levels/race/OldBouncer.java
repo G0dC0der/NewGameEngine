@@ -1,7 +1,7 @@
 package pojahn.game.desktop.redguyruns.levels.race;
 
 import com.badlogic.gdx.audio.Sound;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.mains.GravityMan;
@@ -88,12 +88,12 @@ class OldBouncer extends PathDrone {
                 continue;
 
             if (!collidesWith(mo))
-                victimDirrections[i] = Collisions.getDirection(Collisions.normalize(middleX, middleY, mo.prevX() + mo.halfWidth(), mo.prevY() + mo.halfHeight()));
+                victimDirrections[i] = BaseLogic.getDirection(BaseLogic.normalize(middleX, middleY, mo.prevX() + mo.halfWidth(), mo.prevY() + mo.halfHeight()));
             else {
                 pushCounter[i] = times;
                 if (shakeSound != null && shakeSoundCounter > shakeSoundDelay) {
                     shakeSoundCounter = 0;
-                    shakeSound.play(sounds.calc());
+                    sounds.play(shakeSound);
                 }
             }
         }

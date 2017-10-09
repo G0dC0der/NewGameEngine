@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.math.Rectangle;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
@@ -18,7 +18,6 @@ import pojahn.game.entities.Collectable;
 import pojahn.game.entities.DestroyablePlatform;
 import pojahn.game.entities.JumpingThwump;
 import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.RemoteVibration;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.SolidPlatform.FollowMode;
 import pojahn.game.entities.TransformablePlatform;
@@ -32,6 +31,7 @@ import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
+import pojahn.game.essentials.Vibrator;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.OtherMath;
@@ -141,27 +141,24 @@ public class Climb extends TileBasedLevel {
         /*
          * Jumpable Thwump
          */
-        final RemoteVibration vib = new RemoteVibration(play);
-        vib.setVib(150);
-        vib.setDuration(20);
-        add(vib);
-
         final JumpingThwump jumpingThwump = new JumpingThwump(495, 2865, play);
+        final Vibrator vib = new Vibrator(this, jumpingThwump, Vibrator.VibDirection.CENTER, play);
+        vib.setStrength(150);
+        vib.setDuration(20);
         jumpingThwump.setImage(resources.getImage("fatidle.png"));
         jumpingThwump.setJumpImage(new Animation<Image2D>(1, resources.getImage("fatjump.png")));
         jumpingThwump.setSlamSound(resources.getSound("slam.wav"));
         jumpingThwump.setJumpSound(resources.getSound("fatjump.wav"));
         jumpingThwump.sounds.useFalloff = true;
         jumpingThwump.sounds.power = 40;
-        jumpingThwump.setSlamEvent(() -> {
-            vib.vibrate(jumpingThwump);
-        });
+        jumpingThwump.setSlamEvent(vib::vibrate);
 
         final JumpingThwump jumpingThwump2 = jumpingThwump.getClone();
+        final Vibrator vib2 = new Vibrator(this, jumpingThwump2, Vibrator.VibDirection.CENTER, play);
+        vib2.setStrength(150);
+        vib2.setDuration(20);
         jumpingThwump2.move(243, 2456);
-        jumpingThwump2.setSlamEvent(() -> {
-            vib.vibrate(jumpingThwump2);
-        });
+        jumpingThwump2.setSlamEvent(vib2::vibrate);
 
         add(jumpingThwump);
         addAfter(jumpingThwump2, 40);
@@ -194,7 +191,7 @@ public class Climb extends TileBasedLevel {
         darkLayer.bounds.size.height = 600;
         darkLayer.zIndex(Integer.MAX_VALUE);
         darkLayer.addEvent(() -> {
-            final boolean dark = Collisions.rectanglesCollide(darkArea, play.bounds.toRectangle());
+            final boolean dark = BaseLogic.rectanglesCollide(darkArea, play.bounds.toRectangle());
             final float value = dark ? .01f : -.01f;
             darkLayer.tint.a = OtherMath.keepInBounds(0, .7f, darkLayer.tint.a + value);
         });
@@ -284,7 +281,7 @@ public class Climb extends TileBasedLevel {
         bouncerMove.appendPath(484, bouncerMove.y());
         bouncerMove.setMoveSpeed(1.2f);
         bouncerMove.freeze();
-        runOnceWhen(bouncerMove::unfreeze, () -> Collisions.rectanglesCollide(play.bounds.toRectangle(), unfreezeArea));
+        runOnceWhen(bouncerMove::unfreeze, () -> BaseLogic.rectanglesCollide(play.bounds.toRectangle(), unfreezeArea));
 
         final Bouncer bouncer = new Bouncer(0, 0, (GravityMan) play);
         bouncer.setPower(320);

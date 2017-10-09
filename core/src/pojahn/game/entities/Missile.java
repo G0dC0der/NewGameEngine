@@ -2,24 +2,27 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Entity;
+import pojahn.lang.Obj;
+
+import java.util.List;
 
 public class Missile extends Projectile {
 
     public float thrust, drag, delta;
     private Vector2 velocity;
-    private Entity[] scanTargets;
+    private final List<Entity> scanTargets;
 
     public Missile(final float x, final float y, final Entity... scanTargets) {
         super(x, y, scanTargets);
         velocity = new Vector2();
-        this.scanTargets = scanTargets;
+        this.scanTargets = Obj.requireNotEmpty(scanTargets);
         mediumFloaty();
         follow(true);
     }
 
     @Override
     public Missile getClone() {
-        final Missile clone = new Missile(x(), y(), scanTargets);
+        final Missile clone = new Missile(x(), y(), scanTargets.toArray(new Entity[0]));
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);

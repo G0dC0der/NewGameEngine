@@ -3,24 +3,27 @@ package pojahn.game.entities;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Direction;
+import pojahn.lang.Obj;
+
+import java.util.List;
 
 public class Wind extends MobileEntity {
 
-    private float power, maxPower;
-    private Direction direction;
-    private GravityMan[] targets;
+    private final float power, maxPower;
+    private final Direction direction;
+    private final List<GravityMan> targets;
 
     public Wind(final float x, final float y, final float power, final float maxPower, final Direction direction, final GravityMan... targets) {
         move(x, y);
         this.power = power;
         this.maxPower = maxPower;
-        this.targets = targets;
-        this.direction = direction;
+        this.targets = Obj.requireNotEmpty(targets);
+        this.direction = Obj.nonNull(direction);
     }
 
     @Override
     public MobileEntity getClone() {
-        final Wind clone = new Wind(x(), y(), power, maxPower, direction, targets);
+        final Wind clone = new Wind(x(), y(), power, maxPower, direction, targets.toArray(new GravityMan[0]));
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);

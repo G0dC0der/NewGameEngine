@@ -1,18 +1,19 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Level;
 
 public class Shrapnel extends Particle {
-    private Projectile split;
+    private final Projectile split;
     private boolean once;
 
     public Shrapnel(final Projectile shrapnel) {
         this.split = shrapnel;
     }
 
-    public Shrapnel getClone(final float x, final float y) {
+    @Override
+    public Shrapnel getClone() {
         final Shrapnel s = new Shrapnel(split);
         copyData(s);
         if (cloneEvent != null)
@@ -41,7 +42,7 @@ public class Shrapnel extends Particle {
         super.logistics();
     }
 
-    Vector2[] getEightDirection() {
+    private Vector2[] getEightDirection() {
         final float middleX = centerX();
         final float middleY = centerY();
         float x;
@@ -50,42 +51,42 @@ public class Shrapnel extends Particle {
         //NW Point
         x = middleX - 1;
         y = middleY - 1;
-        final Vector2 p1 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+        final Vector2 p1 = BaseLogic.findEdgePoint(middleX, middleY, x, y, getLevel());
 
         //N Point
         x = middleX;
         y = middleY - 1;
-        final Vector2 p2 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+        final Vector2 p2 = BaseLogic.findEdgePoint(middleX, middleY, x, y, getLevel());
 
         //NE Point
         x = middleX + 1;
         y = middleY - 1;
-        final Vector2 p3 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+        final Vector2 p3 = BaseLogic.findEdgePoint(middleX, middleY, x, y, getLevel());
 
         //E Point
         x = middleX + 1;
         y = middleY;
-        final Vector2 p4 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+        final Vector2 p4 = BaseLogic.findEdgePoint(middleX, middleY, x, y, getLevel());
 
         //SE Point
         x = middleX + 1;
         y = middleY + 1;
-        final Vector2 p5 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+        final Vector2 p5 = BaseLogic.findEdgePoint(middleX, middleY, x, y, getLevel());
 
         //S Point
         x = middleX;
         y = middleY + 1;
-        final Vector2 p6 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+        final Vector2 p6 = BaseLogic.findEdgePoint(middleX, middleY, x, y, getLevel());
 
         //SW Point
         x = middleX - 1;
         y = middleY + 1;
-        final Vector2 p7 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+        final Vector2 p7 = BaseLogic.findEdgePoint(middleX, middleY, x, y, getLevel());
 
         //W Point
         x = middleX - 1;
         y = middleY;
-        final Vector2 p8 = Collisions.findEdgePoint(middleX, middleY, x, y, getLevel());
+        final Vector2 p8 = BaseLogic.findEdgePoint(middleX, middleY, x, y, getLevel());
 
         return new Vector2[]{p1, p2, p3, p4, p5, p6, p7, p8};
     }

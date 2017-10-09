@@ -16,7 +16,7 @@ public class AcceleratingBullet extends Projectile {
 
     @Override
     public AcceleratingBullet getClone() {
-        final AcceleratingBullet clone = new AcceleratingBullet(getTargets());
+        final AcceleratingBullet clone = new AcceleratingBullet(getTargets().toArray(new Entity[0]));
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);

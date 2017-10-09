@@ -2,7 +2,7 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.essentials.Direction;
@@ -12,7 +12,7 @@ public class RotatingCannon extends Entity {
     private float rotationSpeed, targetRotation;
     private int reload, reloadCounter;
     private boolean disabled, diagonalFire, rotating, fireAll;
-    private Projectile proj;
+    private final Projectile proj;
     private Particle firingAnim;
     private Sound firingSound;
 
@@ -58,7 +58,7 @@ public class RotatingCannon extends Entity {
                 if (diagonalFire || fireAll) {
                     Vector2 spawn;
 
-                    spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 45);
+                    spawn = BaseLogic.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 45);
                     final Projectile proj1 = proj.getClone();
                     proj1.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
                     proj1.setTarget(getTarget(Direction.SE));
@@ -66,7 +66,7 @@ public class RotatingCannon extends Entity {
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
 
-                    spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 135);
+                    spawn = BaseLogic.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 135);
                     final Projectile proj2 = proj.getClone();
                     proj2.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
                     proj2.setTarget(getTarget(Direction.SW));
@@ -74,7 +74,7 @@ public class RotatingCannon extends Entity {
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
 
-                    spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 225);
+                    spawn = BaseLogic.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 225);
                     final Projectile proj3 = proj.getClone();
                     proj3.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
                     proj3.setTarget(getTarget(Direction.NW));
@@ -82,7 +82,7 @@ public class RotatingCannon extends Entity {
                     if (firingAnim != null)
                         l.add(firingAnim.getClone().move(spawn.x - firingAnim.halfWidth(), spawn.y - firingAnim.halfHeight()));
 
-                    spawn = Collisions.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 315);
+                    spawn = BaseLogic.rotatePoint(x() + width(), centerY(), centerX(), centerY(), 315);
                     final Projectile proj4 = proj.getClone();
                     proj4.move(spawn.x - proj.halfWidth(), spawn.y - proj.halfHeight());
                     proj4.setTarget(getTarget(Direction.NE));
@@ -132,7 +132,7 @@ public class RotatingCannon extends Entity {
                 }
 
                 if (firingSound != null)
-                    firingSound.play(sounds.calc());
+                    sounds.play(firingSound);
 
                 reloadCounter = reload;
                 rotating = true;
@@ -168,42 +168,42 @@ public class RotatingCannon extends Entity {
             case NW:
                 x = middleX - 1;
                 y = middleY - 1;
-                return Collisions.findEdgePoint(middleX, middleY, x, y, l);
+                return BaseLogic.findEdgePoint(middleX, middleY, x, y, l);
 
             case N:
                 x = middleX;
                 y = middleY - 1;
-                return Collisions.findEdgePoint(middleX, middleY, x, y, l);
+                return BaseLogic.findEdgePoint(middleX, middleY, x, y, l);
 
             case NE:
                 x = middleX + 1;
                 y = middleY - 1;
-                return Collisions.findEdgePoint(middleX, middleY, x, y, l);
+                return BaseLogic.findEdgePoint(middleX, middleY, x, y, l);
 
             case E:
                 x = middleX + 1;
                 y = middleY;
-                return Collisions.findEdgePoint(middleX, middleY, x, y, l);
+                return BaseLogic.findEdgePoint(middleX, middleY, x, y, l);
 
             case SE:
                 x = middleX + 1;
                 y = middleY + 1;
-                return Collisions.findEdgePoint(middleX, middleY, x, y, l);
+                return BaseLogic.findEdgePoint(middleX, middleY, x, y, l);
 
             case S:
                 x = middleX;
                 y = middleY + 1;
-                return Collisions.findEdgePoint(middleX, middleY, x, y, l);
+                return BaseLogic.findEdgePoint(middleX, middleY, x, y, l);
 
             case SW:
                 x = middleX - 1;
                 y = middleY + 1;
-                return Collisions.findEdgePoint(middleX, middleY, x, y, l);
+                return BaseLogic.findEdgePoint(middleX, middleY, x, y, l);
 
             case W:
                 x = middleX - 1;
                 y = middleY;
-                return Collisions.findEdgePoint(middleX, middleY, x, y, l);
+                return BaseLogic.findEdgePoint(middleX, middleY, x, y, l);
 
             default:
                 return null;

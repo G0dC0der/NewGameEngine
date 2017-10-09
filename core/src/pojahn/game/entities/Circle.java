@@ -4,7 +4,10 @@ import pojahn.game.core.MobileEntity;
 
 public class Circle extends MobileEntity {
 
-    private float centerX, centerY, radius, counter;
+    private final float centerX;
+    private final float centerY;
+    private final float radius;
+    private float counter;
 
     /**
      * Creates an entity which circles the given point.
@@ -27,17 +30,5 @@ public class Circle extends MobileEntity {
 
         bounds.pos.x = (float) (radius * Math.cos(counter) + centerX);
         bounds.pos.y = (float) (radius * Math.sin(counter) + centerY);
-    }
-
-    public void setCenterX(final float centerX) {
-        this.centerX = centerX;
-    }
-
-    public void setCenterY(final float centerY) {
-        this.centerY = centerY;
-    }
-
-    public void setRadius(final float radius) {
-        this.radius = radius;
     }
 }

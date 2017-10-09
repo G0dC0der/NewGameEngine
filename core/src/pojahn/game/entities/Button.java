@@ -2,32 +2,34 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Direction;
 import pojahn.game.events.Event;
+import pojahn.lang.Obj;
+
+import java.util.List;
+import java.util.Objects;
 
 public class Button extends SolidPlatform {
 
-    private Direction pushingDirection;
+    private final Direction pushingDirection;
+    private final List<MobileEntity> subjects;
     private Event pushEvent;
     private Rectangle reuse;
-    private MobileEntity[] subjects;
     private Sound pushSound;
     private boolean pushed;
 
-    public Button(final float x, final float y, final MobileEntity... subjects) {
+    public Button(final float x, final float y, final Direction pushingDirection, final MobileEntity... subjects) {
         super(x, y, subjects);
-        pushingDirection = Direction.S;
-        reuse = new Rectangle();
-        this.subjects = subjects;
-    }
 
-    public void setPushingDirection(final Direction pushingDirection) {
-        if (pushingDirection.isDiagonal())
+        this.subjects = Obj.requireNotEmpty(subjects);
+        this.reuse = new Rectangle();
+        this.pushingDirection = Objects.requireNonNull(pushingDirection);
+
+        if (pushingDirection.isDiagonal()) {
             throw new IllegalArgumentException("The pushing direction must be non diagonal: " + pushingDirection);
-
-        this.pushingDirection = pushingDirection;
+        }
     }
 
     public void setPushEvent(final Event pushEvent) {
@@ -44,10 +46,10 @@ public class Button extends SolidPlatform {
 
         if (!pushed) {
             for (final MobileEntity subject : subjects) {
-                if (Collisions.rectanglesCollide(subject.bounds.toRectangle(), getDummy())) {
+                if (BaseLogic.rectanglesCollide(subject.bounds.toRectangle(), getDummy())) {
                     pushed = true;
                     if (pushSound != null)
-                        pushSound.play(sounds.calc());
+                        sounds.play(pushSound);
                     if (pushEvent != null)
                         pushEvent.eventHandling();
                     setWaypoint();

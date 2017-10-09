@@ -1,31 +1,30 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Direction;
 import pojahn.lang.Entry;
+import pojahn.lang.Obj;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Bouncer extends MobileEntity {
 
-    private GravityMan[] targets;
+    private final List<GravityMan> targets;
+    private final List<Entry<Integer, Entity>> soundControl;
     private Sound bounceSound;
     private Direction dir;
-    private List<Entry<Integer, Entity>> soundControl;
     private float power;
 
     public Bouncer(final float x, final float y, final GravityMan... targets) {
         move(x, y);
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         power = 150;
-        soundControl = Stream
-                .of(targets)
+        soundControl = this.targets.stream()
                 .map(entity -> new Entry<Integer, Entity>(0, entity))
                 .collect(Collectors.toList());
     }
@@ -50,7 +49,7 @@ public class Bouncer extends MobileEntity {
                 if (this.dir != null) {
                     dir = this.dir;
                 } else {
-                    dir = Collisions.getDirection(Collisions.normalize(centerX(), centerY(), man.prevX() - man.halfWidth(), man.prevY() - man.halfHeight()));
+                    dir = BaseLogic.getDirection(BaseLogic.normalize(centerX(), centerY(), man.prevX() - man.halfWidth(), man.prevY() - man.halfHeight()));
 //                    dir = Direction.invert(dir);
                 }
 
@@ -85,7 +84,7 @@ public class Bouncer extends MobileEntity {
                         break;
                 }
                 if (bounceSound != null && soundAllowed(man)) {
-                    bounceSound.play(sounds.calc());
+                    sounds.play(bounceSound);
                     addDelay(man, 40);
                 }
             }

@@ -16,7 +16,7 @@ public class Bullet extends Projectile {
 
     @Override
     public Bullet getClone() {
-        final Bullet clone = new Bullet(x(), y(), getTargets());
+        final Bullet clone = new Bullet(x(), y(), getTargets().toArray(new Entity[0]));
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);

@@ -1,7 +1,7 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.events.Event;
 
@@ -23,7 +23,7 @@ public class Shuttle extends MobileEntity {
     public float thrust, drag, delta, vx, vy;
     private int counter;
     private Vector2 waypointDirection;
-    private List<Waypoint> waypoints;
+    private final List<Waypoint> waypoints;
 
     public Shuttle(final float x, final float y) {
         move(x, y);
@@ -88,7 +88,7 @@ public class Shuttle extends MobileEntity {
             if (x() == wp.target.x && y() == wp.target.y)    //Make sure we don't get NaN when normalizing.
                 bounds.pos.x--;
 
-            final Vector2 currentDirection = Collisions.normalize(bounds.pos.x, bounds.pos.y, wp.target.x, wp.target.y);
+            final Vector2 currentDirection = BaseLogic.normalize(bounds.pos.x, bounds.pos.y, wp.target.x, wp.target.y);
 
             if (waypointDirection == null)
                 waypointDirection = currentDirection.cpy();

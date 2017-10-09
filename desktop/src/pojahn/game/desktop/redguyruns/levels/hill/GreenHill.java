@@ -128,12 +128,11 @@ public class GreenHill extends PixelBasedLevel {
          * Bird
          */
 
-        final Trailer bird = new Trailer(910, 10);
+        final Trailer bird = new Trailer(910, 10, 60);
         bird.setImage(5, res.getAnimation("enemy2"));
         bird.setFacings(2);
         bird.addEvent(bird::face);
         bird.setMoveSpeed(2);
-        bird.setFrequency(60);
         bird.appendPath(910, 100, 2, false, null);
         bird.appendPath(1375, 100, 2, false, null);
 

@@ -1,17 +1,21 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
+import pojahn.lang.Obj;
 
-import java.util.stream.Stream;
+import java.util.List;
+
+import static com.google.common.collect.ImmutableList.toImmutableList;
 
 public class Weapon extends PathDrone {
 
     private float firingOffsetX, firingOffsetY, rotationSpeed;
     private int burst, burstDelay, reload, burstCounter, delayCounter, reloadCounter;
-    private boolean rotationAllowed, alwaysRotate, frontFire, firing, rotateWhileRecover, targeting, ignoreInactive;
-    private Entity targets[], currTarget;
+    private boolean rotationAllowed, alwaysRotate, frontFire, firing, rotateWhileRecover, targeting;
+    private final List<Entity> targets;
+    private Entity currTarget;
     private Projectile proj;
     private Particle firingParticle;
 
@@ -19,13 +23,12 @@ public class Weapon extends PathDrone {
         super(x, y);
         this.burst = burst;
         this.reload = emptyReload;
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         this.burstDelay = burstDelay;
         alwaysRotate = firing = false;
         rotationAllowed = rotateWhileRecover = true;
         burstCounter = reloadCounter = 0;
         delayCounter = burstDelay - 1;
-        ignoreInactive = true;
     }
 
     @Override
@@ -39,7 +42,7 @@ public class Weapon extends PathDrone {
     public void logistics() {
         super.logistics();
 
-        currTarget = Collisions.findClosestSeeable(this, getTargets());
+        currTarget = BaseLogic.findClosestSeeable(this, getTargets());
         targeting = targeting();
         rotateWeapon();
 
@@ -117,27 +120,23 @@ public class Weapon extends PathDrone {
         this.rotateWhileRecover = rotateWhileRecover;
     }
 
-    public void setIgnoreInactive(final boolean ignoreInactive) {
-        this.ignoreInactive = ignoreInactive;
-    }
-
     private void rotateWeapon() {
         Entity target = null;
 
         if (currTarget == null && alwaysRotate) {
-            target = Collisions.findClosest(this, getTargets());
+            target = BaseLogic.findClosest(this, getTargets());
         } else if (rotationAllowed && rotationSpeed != 0.0f && targets != null && canSee(currTarget)) {
             target = currTarget;
         }
 
         if (target != null)
-            bounds.rotation = Collisions.rotateTowardsPoint(centerX(), centerY(), target.centerX(), target.centerY(), bounds.rotation, rotationSpeed);
+            bounds.rotation = BaseLogic.rotateTowardsPoint(centerX(), centerY(), target.centerX(), target.centerY(), bounds.rotation, rotationSpeed);
     }
 
-    private Entity[] getTargets() {
-        return Stream.of(targets)
-                .filter(entity -> !ignoreInactive || entity.isActive())
-                .toArray(Entity[]::new);
+    private List<Entity> getTargets() {
+        return targets.stream()
+            .filter(Entity::isActive)
+            .collect(toImmutableList());
     }
 
     private void reset() {
@@ -155,9 +154,9 @@ public class Weapon extends PathDrone {
                 return canSee(currTarget);
             } else {
                 final Vector2 front = getFrontPosition();
-                final Vector2 edge = Collisions.findEdgePoint(centerX(), centerY(), front.x, front.y, getLevel());
+                final Vector2 edge = BaseLogic.findEdgePoint(centerX(), centerY(), front.x, front.y, getLevel());
 
-                return Collisions.lineRectangle(front.x, front.y, edge.x, edge.y, currTarget.bounds.toRectangle()) && canSee(currTarget);
+                return BaseLogic.lineRectangle(front.x, front.y, edge.x, edge.y, currTarget.bounds.toRectangle()) && canSee(currTarget);
             }
         } else
             return false;

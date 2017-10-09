@@ -1,7 +1,7 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.events.Event;
 
@@ -37,7 +37,7 @@ public class PathDrone extends MobileEntity {
         }
     }
 
-    private List<Waypoint> waypoints;
+    private final List<Waypoint> waypoints;
     private boolean rock, skip;
     private int dataCounter, stillCounter;
     private boolean playEvent;
@@ -92,11 +92,6 @@ public class PathDrone extends MobileEntity {
         waypoints.add(new Waypoint(x(), y(), 0, false, null));
     }
 
-    public Vector2 getCurrentTarget() {
-        final Waypoint wp = waypoints.get(dataCounter >= waypoints.size() ? 0 : dataCounter);
-        return new Vector2(wp.targetX, wp.targetY);
-    }
-
     public void appendReversed() {
         final List<Waypoint> reversed = new ArrayList<>(waypoints);
         reversed.remove(reversed.size() - 1);
@@ -114,7 +109,7 @@ public class PathDrone extends MobileEntity {
         rollback();
     }
 
-    public void rollback() {
+    private void rollback() {
         dataCounter = stillCounter = 0;
     }
 
@@ -186,6 +181,7 @@ public class PathDrone extends MobileEntity {
 
         if (rock) {
             if (smartMove(next.x, next.y)) {
+
             } else if (skip)
                 dataCounter++;
             else
@@ -206,6 +202,6 @@ public class PathDrone extends MobileEntity {
     }
 
     private boolean reached(final Waypoint pd) {
-        return getMoveSpeed() > Collisions.distance(pd.targetX, pd.targetY, x(), y());
+        return getMoveSpeed() > BaseLogic.distance(pd.targetX, pd.targetY, x(), y());
     }
 }

@@ -2,7 +2,7 @@ package pojahn.game.desktop.redguyruns.levels.ghostbridge;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
@@ -166,7 +166,7 @@ public class GhostBridge extends TileBasedLevel {
                 add(getSpikes(Direction.N, x, y));
                 resources.getSound("spikesintro.wav").play();
             }, 40);
-        }, () -> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x, y - 1, 64, 1));
+        }, () -> BaseLogic.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x, y - 1, 64, 1));
 
         runOnceWhen(() -> {
 //            add(getGlow(solp));
@@ -174,7 +174,7 @@ public class GhostBridge extends TileBasedLevel {
                 add(getSpikes(Direction.E, x, y));
                 resources.getSound("spikesintro.wav").play();
             }, 40);
-        }, () -> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x + 64, y, 1, 64));
+        }, () -> BaseLogic.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x + 64, y, 1, 64));
 
         runOnceWhen(() -> {
 //            add(getGlow(solp));
@@ -182,7 +182,7 @@ public class GhostBridge extends TileBasedLevel {
                 add(getSpikes(Direction.W, x, y));
                 resources.getSound("spikesintro.wav").play();
             }, 40);
-        }, () -> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x - 1, y, 1, 64));
+        }, () -> BaseLogic.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), x - 1, y, 1, 64));
 
         return solp;
     }

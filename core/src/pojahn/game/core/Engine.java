@@ -84,7 +84,7 @@ public class Engine {
             meta = null;
         }
 
-        eventExecutor = Executors.newCachedThreadPool();
+        eventExecutor = Executors.newSingleThreadExecutor();
         stateEvents = new HashMap<>();
         renderText = true;
         timeColor = Color.WHITE;
@@ -202,7 +202,7 @@ public class Engine {
     }
 
     public boolean onScreen(final Entity entity) {
-        final Rectangle bbox = Collisions.getBoundingBox(entity.bounds);
+        final Rectangle bbox = BaseLogic.getBoundingBox(entity.bounds);
         return gameCamera.frustum.boundsInFrustum(bbox.x, bbox.y, 0, bbox.width / 2, bbox.height / 2, 0);
     }
 

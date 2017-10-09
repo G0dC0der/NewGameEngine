@@ -97,7 +97,7 @@ public class GravityMan extends PlayableEntity {
 
             if (jumpKeyDownCounter <= shortJumpFrames && currStrokes.jump) {
                 if (++jumpKeyDownCounter == 1 && jumpSound != null)
-                    jumpSound.play(sounds.calc());
+                    sounds.play(jumpSound);
 
                 vel.y += jumpStrength / jumpKeyDownCounter;
             }
@@ -116,7 +116,7 @@ public class GravityMan extends PlayableEntity {
             if (landed()) {
                 land();
                 if (landingSound != null)
-                    landingSound.play(sounds.calc());
+                    sounds.play(landingSound);
             }
 
             vel.y = 0;

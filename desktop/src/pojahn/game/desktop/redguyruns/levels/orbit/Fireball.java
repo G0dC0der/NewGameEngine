@@ -1,6 +1,6 @@
 package pojahn.game.desktop.redguyruns.levels.orbit;
 
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 
 class Fireball extends Entity {
@@ -24,7 +24,7 @@ class Fireball extends Entity {
 
     @Override
     public void logistics() {
-        if (Collisions.distance(initialX, initialY, x(), y()) < 30)
+        if (BaseLogic.distance(initialX, initialY, x(), y()) < 30)
             vy = flyPower;
 
         vy *= 1.0 - (damping * getEngine().delta);

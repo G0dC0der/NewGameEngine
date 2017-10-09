@@ -5,7 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -176,16 +176,14 @@ public class GuardedKey extends TileBasedLevel {
         roller.setCrashSound(res.getSound("crash.wav"));
         roller.setRollSound(res.getSound("slam.wav"));
 
-        final Vibrator smallVib = new Vibrator(roller, play);
-        smallVib.setLevel(this);
+        final Vibrator smallVib = new Vibrator(this, roller, Vibrator.VibDirection.CENTER, play);
         smallVib.setDuration(10);
         smallVib.setStrength(1);
         smallVib.setRadius(700);
         smallVib.setStaticStrength(true);
         roller.setRollingVib(smallVib);
 
-        final Vibrator bigVib = new Vibrator(roller, play);
-        bigVib.setLevel(this);
+        final Vibrator bigVib = new Vibrator(this, roller, Vibrator.VibDirection.CENTER, play);
         bigVib.setDuration(40);
         bigVib.setStrength(2.5f);
         bigVib.setRadius(700);
@@ -209,7 +207,7 @@ public class GuardedKey extends TileBasedLevel {
             add(spike);
         }
         final Rectangle rec = new Rectangle(startX, startY, 1000, 10);
-        runWhile(() -> play.touch(-1), () -> Collisions.rectanglesCollide(rec, play.bounds.toRectangle()));
+        runWhile(() -> play.touch(-1), () -> BaseLogic.rectanglesCollide(rec, play.bounds.toRectangle()));
 
         /*
          * More Platforms
@@ -284,7 +282,7 @@ public class GuardedKey extends TileBasedLevel {
         shyGuy.setHitbox(Hitbox.PIXEL);
         shyGuy.addEvent(Factory.hitMain(shyGuy, play, -1));
         shyGuy.addEvent(() -> {
-            if (Collisions.rectanglesCollide(shyGuy.bounds.toRectangle(), deathRectangle))
+            if (BaseLogic.rectanglesCollide(shyGuy.bounds.toRectangle(), deathRectangle))
                 discard(shyGuy);
         });
         if (!flip) {

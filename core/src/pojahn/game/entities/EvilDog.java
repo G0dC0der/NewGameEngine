@@ -2,30 +2,32 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
+import pojahn.lang.Obj;
 
+import java.util.List;
 import java.util.stream.Stream;
 
-import static pojahn.game.core.Collisions.normalize;
+import static pojahn.game.core.BaseLogic.normalize;
 
 public class EvilDog extends MobileEntity {
 
     public float thrust, drag, delta, vx, vy;
+    private final List<Entity> targets;
     private float maxDistance;
     private boolean hunting;
     private int soundDelay, soundCounter;
-    private Entity[] targets;
     private Animation<Image2D> idleImg, huntImg;
     private Sound hitSound;
 
     public EvilDog(final float x, final float y, final float maxDistance, final Entity... targets) {
         move(x, y);
         this.maxDistance = maxDistance;
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         thrust = 500f;
         drag = .5f;
         delta = 1f / 60f;
@@ -63,9 +65,9 @@ public class EvilDog extends MobileEntity {
         ++soundCounter;
 
         if (!isFrozen()) {
-            final Entity closest = Collisions.findClosest(this, targets);
+            final Entity closest = BaseLogic.findClosest(this, targets);
 
-            if (maxDistance < 0 || maxDistance > Collisions.distance(this, closest)) {
+            if (maxDistance < 0 || maxDistance > BaseLogic.distance(this, closest)) {
 
                 final Vector2 norP = normalize(closest, this);
 
@@ -92,11 +94,13 @@ public class EvilDog extends MobileEntity {
                 hunting = false;
             }
 
-            Stream.of(targets).filter(this::collidesWith).forEach(entity -> {
-                if (entity.hasActionEvent())
-                    entity.runActionEvent(this);
-                if (hitSound != null && soundCounter % soundDelay == 0)
-                    hitSound.play(sounds.calc());
+            targets.stream()
+                .filter(this::collidesWith)
+                .forEach(entity -> {
+                    if (entity.hasActionEvent())
+                        entity.runActionEvent(this);
+                    if (hitSound != null && soundCounter % soundDelay == 0)
+                        sounds.play(hitSound);
             });
         }
     }

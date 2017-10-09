@@ -21,6 +21,7 @@ import pojahn.game.events.Event;
 import pojahn.game.events.RenderEvent;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Utils {
@@ -69,6 +70,13 @@ public class Utils {
 
     public static Entity wrap(final Event event) {
         return new EntityBuilder().events(event).build();
+    }
+
+    public static <T> T getRandomElement(final List<T> list) {
+        if (list.isEmpty())
+            return null;
+
+        return list.get(MathUtils.random(0, list.size() - 1));
     }
 
     public static <T> T getRandomElement(final T[] array) {

@@ -1,7 +1,7 @@
 package pojahn.game.desktop.redguyruns.levels.sand;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 
 class RollingStone extends MobileEntity {
@@ -81,6 +81,6 @@ class RollingStone extends MobileEntity {
     }
 
     private boolean reached(final Vector2 vec) {
-        return oldStyleSpeed + 2 > Collisions.distance(vec.x, vec.y, x(), y());
+        return oldStyleSpeed + 2 > BaseLogic.distance(vec.x, vec.y, x(), y());
     }
 }

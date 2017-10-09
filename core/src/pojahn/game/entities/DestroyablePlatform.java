@@ -4,23 +4,26 @@ import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
+import pojahn.lang.Obj;
+
+import java.util.List;
 
 public class DestroyablePlatform extends SolidPlatform {
 
+    private List<MobileEntity> subjects;
     private Animation<Image2D> destroyImage;
     private int destroyFrames, aliveCounter;
     private Sound breakSound, destroySound;
-    private MobileEntity[] subjects;
 
     public DestroyablePlatform(final float x, final float y, final MobileEntity... subjects) {
         super(x, y, subjects);
         destroyFrames = 100;
         aliveCounter = -1;
-        this.subjects = subjects;
+        this.subjects = Obj.requireNotEmpty(subjects);
     }
 
     public DestroyablePlatform getClone() {
-        final DestroyablePlatform clone = new DestroyablePlatform(x(), y(), subjects);
+        final DestroyablePlatform clone = new DestroyablePlatform(x(), y(), subjects.toArray(new MobileEntity[subjects.size()]));
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -34,7 +37,7 @@ public class DestroyablePlatform extends SolidPlatform {
 
         if (aliveCounter-- == 0) {
             if (destroySound != null)
-                destroySound.play(sounds.calc());
+                sounds.play(destroySound);
             getLevel().discard(this);
         } else if (aliveCounter < 0) {
             if (!getActiveSubjects().isEmpty())
@@ -44,8 +47,7 @@ public class DestroyablePlatform extends SolidPlatform {
 
     public void collapse() {
         aliveCounter = destroyFrames;
-        if (breakSound != null)
-            breakSound.play(sounds.calc());
+        sounds.play(breakSound);
         if (destroyImage != null)
             setImage(destroyImage);
     }

@@ -70,21 +70,21 @@ public class BigRoller extends MobileEntity {
 
         if (++counter % 10 == 0) {
             rollingVib.vibrate();
-            rollSound.play(sounds.calc());
+            sounds.play(rollSound);
         }
 
         bounds.rotation += -(vel / rollSpeed);
     }
 
-    void reached() {
+    private void reached() {
         freeze();
         vel = 0;
         crashingVib.vibrate();
         getLevel().runOnceAfter(this::unfreeze, 120);
-        crashSound.play(sounds.calc());
+        sounds.play(crashSound);
     }
 
-    float getFutureX() {
+    private float getFutureX() {
         return bounds.pos.x - vel * getEngine().delta;
     }
 }

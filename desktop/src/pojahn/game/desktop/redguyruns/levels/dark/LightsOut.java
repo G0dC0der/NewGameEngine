@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
@@ -120,7 +120,7 @@ public class LightsOut extends PixelBasedLevel {
         thor.sounds.useFalloff = true;
         thor.sounds.maxDistance = 800;
         thor.addEvent(() -> {
-            if (Collisions.rectanglesCollide(rec, play.bounds.toRectangle())) {
+            if (BaseLogic.rectanglesCollide(rec, play.bounds.toRectangle())) {
                 play.lose();
             }
         });
@@ -243,8 +243,8 @@ public class LightsOut extends PixelBasedLevel {
 
             final PathDrone spik = new PathDrone(xStart, y);
             spik.sounds.useFalloff = true;
-            spik.appendPath(spik.x(), spik.y(), 0, true, () -> spikesspawn.play(spik.sounds.calc()));
-            spik.appendPath(xEnd, y, 0, false, () -> spikesend.play(spik.sounds.calc()));
+            spik.appendPath(spik.x(), spik.y(), 0, true, () -> spik.sounds.play(spikesspawn));
+            spik.appendPath(xEnd, y, 0, false, () -> spik.sounds.play(spikesend));
             spik.setImage(res.getImage("spikes.png"));
             spik.setMoveSpeed(4);
             spik.addEvent(Factory.hitMain(spik, play, -1));

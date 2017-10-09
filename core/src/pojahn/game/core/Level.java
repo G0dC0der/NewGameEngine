@@ -409,7 +409,7 @@ public abstract class Level {
 
     protected Tile onLayer(final int x, final int y) {
         for (final TileLayer tileLayer : tileLayers) {
-            if (Collisions.pointRectangleOverlap(tileLayer.x, tileLayer.y, tileLayer.layer.length - 1, tileLayer.layer[0].length - 1, x, y)) {
+            if (BaseLogic.pointRectangleOverlap(tileLayer.x, tileLayer.y, tileLayer.layer.length - 1, tileLayer.layer[0].length - 1, x, y)) {
                 final int relX = x - tileLayer.x;
                 final int relY = y - tileLayer.y;
 

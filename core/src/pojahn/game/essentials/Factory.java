@@ -13,7 +13,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
@@ -60,7 +60,7 @@ public class Factory {
         final Int32 c = new Int32();
         return () -> {
             if (++c.value % delay == 0) {
-                sound.play(emitter.sounds.calc());
+                emitter.sounds.play(sound);
             }
         };
     }
@@ -256,7 +256,7 @@ public class Factory {
             boolean oneColliding = false;
 
             for (final Entity listener : listeners) {
-                if (Collisions.rectanglesCollide(listener.x(), listener.y(), listener.width(), listener.height(), room.x, room.y, room.width, room.height)) {
+                if (BaseLogic.rectanglesCollide(listener.x(), listener.y(), listener.width(), listener.height(), room.x, room.y, room.width, room.height)) {
                     roomMusic.setVolume((float) Math.min(roomMusic.getVolume() + fadeSpeed, maxVolume));
 
                     if (outsideMusic != null) {
@@ -305,7 +305,7 @@ public class Factory {
                     final Image2D img = dotImage.getObject();
                     final Vector2 start = new Vector2(t.srcX, t.srcY);
                     final Vector2 end = new Vector2(t.destX, t.destY);
-                    final float dist = (float) Collisions.distance(t.srcX, t.srcY, t.destX, t.destY);
+                    final float dist = (float) BaseLogic.distance(t.srcX, t.srcY, t.destX, t.destY);
                     final float links = dist / size;
 
                     for (int j = 0; j < links; j++) {
@@ -338,13 +338,13 @@ public class Factory {
                         continue;
                     }
 
-                    final float angle = (float) Collisions.getAngle(t.srcX, t.srcY, t.destX, t.destY);
+                    final float angle = (float) BaseLogic.getAngle(t.srcX, t.srcY, t.destX, t.destY);
 
                     if (laserBeam != null) {
                         final Image2D beam = laserBeam.getObject();
                         final float dx = (float) (beam.getHeight() / 2 * Math.cos(Math.toRadians(angle - 90)));
                         final float dy = (float) (beam.getHeight() / 2 * Math.sin(Math.toRadians(angle - 90)));
-                        final float width = (float) Collisions.distance(t.srcX + dx, t.srcY + dy, t.destX, t.destY);
+                        final float width = (float) BaseLogic.distance(t.srcX + dx, t.srcY + dy, t.destX, t.destY);
 
                         b.draw(beam, t.srcX + dx, t.srcY + dy, 0, 0, width, beam.getHeight(), 1, 1, angle, 0, 0,
                                 (int) width, (int) beam.getHeight(), false, true);

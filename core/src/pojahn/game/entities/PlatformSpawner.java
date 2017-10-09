@@ -5,12 +5,15 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
+import pojahn.lang.Obj;
+
+import java.util.List;
 
 public class PlatformSpawner extends Entity {
 
     private boolean solid, permanent, resetBlockImage, trigger;
     private int spawnDelay, removeDelay;
-    private MobileEntity[] users;
+    private final List<MobileEntity> users;
     private Entity[] blocks;
     private Animation<Image2D> actionImage, orgImage;
     private Particle removePart;
@@ -20,16 +23,17 @@ public class PlatformSpawner extends Entity {
 
     public PlatformSpawner(final float x, final float y, final MobileEntity... users) {
         move(x, y);
-        this.users = users;
+        this.users = Obj.requireNotEmpty(users);
         cleared = true;
         spawnDelay = removeDelay = 10;
     }
 
     public void setBlocks(final Entity... blocks) {
+        Obj.requireNotEmpty(blocks);
+
         final Entity[] bls = new Entity[blocks.length + 1];
         bls[0] = null;
-        for (int i = 1; i < bls.length; i++)
-            bls[i] = blocks[i - 1];
+        System.arraycopy(blocks, 0, bls, 1, bls.length - 1);
 
         this.blocks = bls;
     }
@@ -96,7 +100,7 @@ public class PlatformSpawner extends Entity {
                 if (resetBlockImage)
                     blocks[index].getImage().reset();
                 if (spawnSound != null)
-                    spawnSound.play(sounds.calc());
+                    sounds.play(spawnSound);
                 if (solid)
                     for (final MobileEntity mobile : users)
                         mobile.addObstacle(blocks[index]);
@@ -115,7 +119,7 @@ public class PlatformSpawner extends Entity {
                     return;
 
                 if (removeSound != null)
-                    removeSound.play(sounds.calc());
+                    sounds.play(removeSound);
                 if (solid)
                     for (final MobileEntity mobile : users)
                         mobile.removeObstacle(blocks[index]);

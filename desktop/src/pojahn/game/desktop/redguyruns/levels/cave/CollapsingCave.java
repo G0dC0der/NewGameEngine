@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
@@ -152,7 +152,6 @@ public class CollapsingCave extends TileBasedLevel {
         });
         crusher.zIndex(99);
         crusher.setMoveSpeed(0);
-        crusher.setIgnoreInactive(true);
 
         /*
 		 * Camera
@@ -281,7 +280,7 @@ public class CollapsingCave extends TileBasedLevel {
     private void extra() {
         if (drill.getMoveSpeed() == .1f && crusher.getMoveSpeed() == 0 && ++soundCounter % 15 == 0) {
 
-            final double distance = Collisions.distance(play.x(), play.y(), drill.centerX(), drill.y());
+            final double distance = BaseLogic.distance(play.x(), play.y(), drill.centerX(), drill.y());
             final double candidate = 10 * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(1200)), 0);
             final float volume = (float) Math.min(candidate, 1);
 
@@ -308,7 +307,7 @@ public class CollapsingCave extends TileBasedLevel {
 
         if (!done) {
             camera.moveTowards(play.x(), play.y());
-            if (Collisions.distance(camera, play) < 200) {
+            if (BaseLogic.distance(camera, play) < 200) {
                 done = true;
                 removeFocusObject(camera);
                 removeSoundListener(camera);

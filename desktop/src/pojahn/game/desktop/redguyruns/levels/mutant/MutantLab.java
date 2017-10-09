@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import static pojahn.game.core.Collisions.distance;
+import static pojahn.game.core.BaseLogic.distance;
 
 public class MutantLab extends PixelBasedLevel {
 
@@ -323,7 +323,7 @@ public class MutantLab extends PixelBasedLevel {
             }
 
             if (dist < 600) {
-                res.getSound("slam.wav").play(monster.sounds.calc(play));
+                monster.sounds.play(res.getSound("slam.wav"));
                 temp(CameraEffects.vibration(2.5f), 40);
             }
 
@@ -444,11 +444,11 @@ public class MutantLab extends PixelBasedLevel {
 
         runOnceWhen(() -> {
             Stream.of(wep1, wep2, wep3, wep4, wep5, wep6).forEach(PathDrone::unfreeze);
-        }, () -> Collisions.rectanglesCollide(play.bounds.toRectangle(), area1));
+        }, () -> BaseLogic.rectanglesCollide(play.bounds.toRectangle(), area1));
 
         runOnceWhen(() -> {
             Stream.of(wep1, wep2, wep3, wep4, wep5, wep6).forEach(PathDrone::unfreeze);
-        }, () -> Collisions.rectanglesCollide(play.bounds.toRectangle(), area2));
+        }, () -> BaseLogic.rectanglesCollide(play.bounds.toRectangle(), area2));
 
         add(wep1);
         add(wep2);

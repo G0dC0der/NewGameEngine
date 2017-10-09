@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
@@ -44,12 +44,14 @@ import java.io.Serializable;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static pojahn.game.core.Collisions.rectanglesCollide;
+import static pojahn.game.core.BaseLogic.rectanglesCollide;
 
 public class OrbitalStation extends TileBasedLevel {
 
     private ResourceManager res;
     private GravityMan man;
+    private Particle exp;
+    private HugeCrusher hugeCrusher;
     private Music music, spaceMusic, lavaMusic;
 
     @Override
@@ -470,7 +472,7 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Danger Zone
          */
-        final HugeCrusher hugeCrusher = new HugeCrusher(2281 + 60, 2784, man);
+        hugeCrusher = new HugeCrusher(2281 + 60, 2784, man);
         hugeCrusher.setImage(res.getImage("hugecrusher.png"));
         hugeCrusher.setMoveSpeed(9);
         hugeCrusher.freeze();
@@ -492,45 +494,26 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Lasers
          */
-        final Particle exp = new Particle();
+        exp = new Particle();
         exp.setIntroSound(res.getSound("gmexplode.wav"));
         exp.setImage(3, res.getAnimation("exp"));
         exp.zIndex(1000);
-
-        final TargetLaser laser = new TargetLaser(0, 0, man);
-        laser.setImage(res.getImage("laserbeam.png"));
-        laser.infiniteBeam(true);
-        laser.faceTarget(true);
-        laser.frontFire(true);
-        laser.setLaserTint(Color.GREEN);
-        laser.setCloneEvent(clonie -> {
-            final TargetLaser t = (TargetLaser) clonie;
-            t.setLaserBeam(ResourceUtil.getFiringLaser(res));
-            t.addEvent(() -> {
-                if (t.collidesWith(hugeCrusher)) {
-                    discard(t);
-                    add(exp.getClone().center(t));
-                }
-            });
-        });
 
         final Shuttle target1 = new Shuttle(2064, 3500);
         target1.appendPath(2064 + 100, 3500);
         target1.appendPath(2064 - 100, 3500);
         target1.thrust = 100;
 
-        final TargetLaser laser1 = laser.getClone();
+        final TargetLaser laser1 = getTargetLaser(2043, 2918, target1);
         laser1.move(2043, 2918);
-        laser1.setLaserTarget(target1);
         add(laser1);
         add(target1);
 
-        final Entity target2 = new EntityBuilder().move(1669 + laser.halfWidth(), 2913 + 100).build();
+        final Entity target2 = new EntityBuilder().move(1669 + laser1.halfWidth(), 2913 + 100).build();
         final Int32 laser2Counter = new Int32();
 
-        final TargetLaser laser2 = laser.getClone();
+        final TargetLaser laser2 = getTargetLaser(1669, 2913, target2);
         laser2.move(1669, 2913);
-        laser2.setLaserTarget(target2);
         laser2.addEvent(() -> {
             if (++laser2Counter.value % 40 == 0) {
                 laser2.stop(!laser2.stopped());
@@ -568,12 +551,30 @@ public class OrbitalStation extends TileBasedLevel {
         man.setActionEvent(hitter -> {
             if (hitter.isCloneOf(missile) || hitter.isCloneOf(bullet)) {
                 man.touch(-1);
-            } else if (hitter.isCloneOf(laser) || hitter.isCloneOf(magicBullet)) {
+            } else if (hitter == laser1 || hitter == laser2 || hitter.isCloneOf(magicBullet)) {
                 trap4.unfreeze();
                 hugeCrusher.unfreeze();
                 res.getMusic("collapsing_music.wav").play();
             }
         });
+    }
+
+    private TargetLaser getTargetLaser(final float x, final float y, final Entity target) {
+        final TargetLaser laser = new TargetLaser(x, y, target, man);
+        laser.setImage(res.getImage("laserbeam.png"));
+        laser.infiniteBeam(true);
+        laser.faceTarget(true);
+        laser.frontFire(true);
+        laser.setLaserTint(Color.GREEN);
+        laser.setLaserBeam(ResourceUtil.getFiringLaser(res));
+        laser.addEvent(() -> {
+            if (laser.collidesWith(hugeCrusher)) {
+                discard(laser);
+                add(exp.getClone().center(laser));
+            }
+        });
+
+        return laser;
     }
 
     private void addSmallGuard(final float x) {
@@ -618,54 +619,41 @@ public class OrbitalStation extends TileBasedLevel {
     }
 
     private SolidPlatform getCrusher(final float x1, final float y1, final float x2, final float y2, final Direction direction) {
+        final SolidPlatform crusher = new SolidPlatform(x1, y1, man);
+
+        Vibrator.VibDirection vibDir = null;
+        if (direction.isEast()) {
+            vibDir = Vibrator.VibDirection.RIGHT;
+            crusher.setImage(res.getImage("crusher-left.png"));
+        } else if (direction.isWest()) {
+            vibDir = Vibrator.VibDirection.LEFT;
+            crusher.setImage(res.getImage("crusher-right.png"));
+        } else if (direction.isNorth()) {
+            vibDir = Vibrator.VibDirection.TOP;
+            crusher.setImage(res.getImage("crusher-up.png"));
+        } else if (direction.isSouth()) {
+            vibDir = Vibrator.VibDirection.BOTTOM;
+            crusher.setImage(res.getImage("crusher-down.png"));
+        }
+
+        final Vibrator vibrator = new Vibrator(this, crusher, vibDir, man);
+        vibrator.setStrength(10);
+        vibrator.setRadius(500);
+        vibrator.setVibrateSound(res.getSound("slam2.wav"));
+
         final int freezeTime = 40;
         final float attackSpeed = 7;
         final float fallbackSpeed = 2;
 
-        final Vector2 crushV = new Vector2();
-        final Vibrator vibrator = new Vibrator(crushV, man.bounds.pos);
-        vibrator.setLevel(this);
-        vibrator.setStrength(10);
-        vibrator.setRadius(500);
-
-        final SolidPlatform crusher = new SolidPlatform(x1, y1, man);
         crusher.setMoveSpeed(attackSpeed);
         crusher.sounds.useFalloff = true;
         crusher.appendPath(x1, y1, freezeTime, false, () -> crusher.setMoveSpeed(attackSpeed));
         crusher.appendPath(x2, y2, freezeTime, false, () -> {
             crusher.setMoveSpeed(fallbackSpeed);
-
-            if (direction.isEast())
-                crushV.set(crusher.x() + crusher.width(), crusher.centerY());
-            else if (direction.isWest())
-                crushV.set(crusher.x(), crusher.centerY());
-            else if (direction.isNorth())
-                crushV.set(crusher.centerX(), crusher.y());
-            else if (direction.isSouth())
-                crushV.set(crusher.centerX(), crusher.y() + crusher.height());
-
-            final float vol = calc(crushV);
-            if (vol > 0.0f)
-                res.getSound("slam2.wav").play(vol);
             vibrator.vibrate();
         });
-        if (direction.isEast())
-            crusher.setImage(res.getImage("crusher-left.png"));
-        else if (direction.isWest())
-            crusher.setImage(res.getImage("crusher-right.png"));
-        else if (direction.isNorth())
-            crusher.setImage(res.getImage("crusher-up.png"));
-        else if (direction.isSouth())
-            crusher.setImage(res.getImage("crusher-down.png"));
 
         return crusher;
-    }
-
-    private float calc(final Vector2 listener) {
-        final double distance = Collisions.distance(man.bounds.pos.x, man.bounds.pos.y, listener.x, listener.y);
-        final float candidate = (float) (30 * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(700)), 0));
-
-        return Math.min(candidate, 1);
     }
 
     private EvilDog getGuard(final float x, final float y) { //TODO: These don't talk much

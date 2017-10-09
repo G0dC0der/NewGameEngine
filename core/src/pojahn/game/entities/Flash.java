@@ -8,16 +8,14 @@ import java.awt.*;
 
 public class Flash extends Particle {
 
-    private float duration, framesAlive;
-    private Texture flashImage;
-
-    {
-        zIndex(Integer.MAX_VALUE);
-    }
+    private final float duration;
+    private final Texture flashImage;
+    private float framesAlive;
 
     public Flash(final Texture flashImage, final float duration) {
         this.duration = duration;
         this.flashImage = flashImage;
+        zIndex(Integer.MAX_VALUE);
     }
 
     @Override

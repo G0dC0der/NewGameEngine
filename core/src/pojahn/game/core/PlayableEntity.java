@@ -43,7 +43,7 @@ public abstract class PlayableEntity extends MobileEntity {
             hp += strength;
             hurtCounter = 100;
             if (hurtSound != null && hp > 0)
-                hurtSound.play(sounds.calc());
+                sounds.play(hurtSound);
         }
 
         if (0 >= hp && !isDead())
@@ -143,7 +143,7 @@ public abstract class PlayableEntity extends MobileEntity {
         if (deathImage != null)
             getLevel().add(deathImage.getClone().center(this));
         if (dieSound != null)
-            dieSound.play(sounds.calc());
+            sounds.play(dieSound);
     }
 
     private void revive() {

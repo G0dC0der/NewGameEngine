@@ -1,28 +1,28 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.Image2D;
+import pojahn.lang.Obj;
 
-import java.util.stream.Stream;
+import java.util.List;
+
+import static com.google.common.collect.ImmutableList.toImmutableList;
 
 public class Boo extends MobileEntity {
 
-    private MobileEntity[] victims;
+    private final List<MobileEntity> victims;
     private Animation<Image2D> hideImage, huntImage;
     private Sound detectSound, hideSound;
-    private boolean resetHideImage, resetHuntImage;
-    private boolean hunting, ignoreInactive;
-    private float velocity;
-    public float acc, maxSpeed;
+    private boolean resetHideImage, resetHuntImage, hunting, ignoreInactive;
+    private float velocity, acc, maxSpeed;
 
     public Boo(final float x, final float y, final MobileEntity... victims) {
-        super();
         move(x, y);
-        this.victims = victims;
+        this.victims = Obj.requireNotEmpty(victims);
         maxSpeed = 3;
         acc = 0.03f;
         ignoreInactive = true;
@@ -30,8 +30,8 @@ public class Boo extends MobileEntity {
 
     @Override
     public void logistics() {
-        final MobileEntity[] targets = getTargets();
-        final MobileEntity victim = targets.length > 0 ? (MobileEntity) Collisions.findClosest(this, targets) : null;
+        final List<MobileEntity> targets = getTargets();
+        final MobileEntity victim = !targets.isEmpty() ? (MobileEntity) BaseLogic.findClosest(this, targets) : null;
 
         if (victim != null && canSneak(victim)) {
             if (maxSpeed > velocity + acc)
@@ -41,8 +41,7 @@ public class Boo extends MobileEntity {
             moveTowards(victim.centerX() - halfWidth(), victim.centerY() - halfHeight());
 
             if (!hunting) {
-                if (detectSound != null)
-                    detectSound.play(sounds.calc());
+                sounds.play(detectSound);
                 if (resetHuntImage)
                     huntImage.reset();
 
@@ -52,8 +51,7 @@ public class Boo extends MobileEntity {
             hunting = true;
         } else {
             if (hunting) {
-                if (hideSound != null)
-                    hideSound.play(sounds.calc());
+                sounds.play(hideSound);
                 if (hideImage != null) {
                     if (resetHideImage)
                         hideImage.reset();
@@ -68,17 +66,18 @@ public class Boo extends MobileEntity {
 
         for (final MobileEntity mobile : targets) {
             if (collidesWith(mobile)) {
-                if (mobile.hasActionEvent())
-                    mobile.runActionEvent(this);
                 velocity = 0;
+                if (mobile.hasActionEvent()) {
+                    mobile.runActionEvent(this);
+                }
             }
         }
     }
 
-    private MobileEntity[] getTargets() {
-        return Stream.of(victims)
+    private List<MobileEntity> getTargets() {
+        return victims.stream()
                 .filter(mobileEntity -> !ignoreInactive || mobileEntity.isActive())
-                .toArray(MobileEntity[]::new);
+                .collect(toImmutableList());
     }
 
     @Override
@@ -119,10 +118,18 @@ public class Boo extends MobileEntity {
         return hunting;
     }
 
+    public void setAcc(final float acc) {
+        this.acc = acc;
+    }
+
+    public void setMaxSpeed(final float maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
+
     private boolean canSneak(final MobileEntity victim) {
         final Direction victimFacing = victim.getFacing();
 
-        final boolean toTheLeft = x() + width() / 2 > victim.x();
+        final boolean toTheLeft = x() + halfWidth() > victim.x();
         if (toTheLeft && (victimFacing == Direction.NW || victimFacing == Direction.W || victimFacing == Direction.SW))
             return true;
         if (!toTheLeft && (victimFacing == Direction.NE || victimFacing == Direction.E || victimFacing == Direction.SE))

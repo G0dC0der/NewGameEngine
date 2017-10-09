@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
@@ -71,7 +71,7 @@ public class MountainRace extends TileBasedLevel {
         add(new EntityBuilder().image(resources.getAnimation("flag")).zIndex(-1).move(3881, 161).build());
 
         add(() -> {
-            if (Collisions.rectanglesCollide(winArea, play.bounds.toRectangle())) {
+            if (BaseLogic.rectanglesCollide(winArea, play.bounds.toRectangle())) {
                 play.setState(Vitality.COMPLETED);
             }
         });
@@ -121,6 +121,6 @@ public class MountainRace extends TileBasedLevel {
         runOnceWhen(() -> {
             final HUDMessage winText = HUDMessage.centeredMessage(name + " completed!", getEngine().getScreenSize(), Color.BLACK);
             temp(Factory.drawCenteredText(winText, getEngine().timeFont), 120);
-        }, () -> Collisions.rectanglesCollide(winArea, cont.bounds.toRectangle()));
+        }, () -> BaseLogic.rectanglesCollide(winArea, cont.bounds.toRectangle()));
     }
 }

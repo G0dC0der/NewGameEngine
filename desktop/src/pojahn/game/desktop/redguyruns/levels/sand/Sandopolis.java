@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -143,11 +143,11 @@ public class Sandopolis extends TileBasedLevel {
 
         final Entity eye1 = new EntityBuilder().image(res.getImage("eye.png")).build();
         eye1.addEvent(Factory.follow(uglySun, eye1, 24, 30));
-        eye1.addEvent(() -> Collisions.rotateTowards(eye1, play, 0.11f));
+        eye1.addEvent(() -> BaseLogic.rotateTowards(eye1, play, 0.11f));
 
         final Entity eye2 = new EntityBuilder().image(res.getImage("eye.png")).build();
         eye2.addEvent(Factory.follow(uglySun, eye2, 48, 30));
-        eye2.addEvent(() -> Collisions.rotateTowards(eye2, play, 0.11f));
+        eye2.addEvent(() -> BaseLogic.rotateTowards(eye2, play, 0.11f));
 
         add(eye1);
         add(eye2);

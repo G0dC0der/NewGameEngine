@@ -3,7 +3,7 @@ package pojahn.game.desktop.redguyruns.levels.sprit;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.essentials.Factory;
@@ -33,7 +33,7 @@ class Ghost extends PathDrone {
     public void logistics() {
         super.logistics();
 
-        if (!stop && Collisions.distance(this, follower) < distanceCheck) {
+        if (!stop && BaseLogic.distance(this, follower) < distanceCheck) {
             if (firstEncounter) {
                 firstEncounter = false;
                 talkSound.play();
@@ -54,7 +54,7 @@ class Ghost extends PathDrone {
             stop = true;
         }
 
-        if (stop && !firstEncounter && !used && reachedDest && Collisions.distance(this, follower) < 150) {
+        if (stop && !firstEncounter && !used && reachedDest && BaseLogic.distance(this, follower) < 150) {
             used = true;
             talkSound.play();
             getLevel().temp(Factory.drawText(HUDMessage.getMessage("You didn't stay close enough...", x() - 100, y() - 20, Color.PURPLE), font), 200);

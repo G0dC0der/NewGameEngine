@@ -4,12 +4,18 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.LaserBeam;
+import pojahn.lang.Obj;
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
+
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static pojahn.game.core.BaseLogic.findClosest;
+import static pojahn.game.core.BaseLogic.findClosestSeeable;
 
 public class LaserDrone extends PathDrone {
 
@@ -19,7 +25,7 @@ public class LaserDrone extends PathDrone {
     private boolean fireAtVisible, firing, allowFiringSound, ignoreInactive;
     private Particle exp;
     private Color laserTint;
-    private final Entity[] targets;
+    private final List<Entity> targets;
     private LaserBeam firingBeam, chargeBeam;
     private Sound startupSound, firingSound;
 
@@ -27,7 +33,7 @@ public class LaserDrone extends PathDrone {
         super(x, y);
         this.laserStartup = laserStartup;
         this.laserDuration = laserDuration;
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         this.reload = reload;
         this.fireAtVisible = true;
         targetX = targetY = -1;
@@ -95,27 +101,21 @@ public class LaserDrone extends PathDrone {
 
         if (!haveTarget()) {
             allowFiringSound = true;
-            Entity target = null;
-            if (fireAtVisible)
-                target = Collisions.findClosestSeeable(this, getTargets());
-            else
-                target = Collisions.findClosest(this, getTargets());
 
+            final Entity target = fireAtVisible ? findClosestSeeable(this, getTargets()) : findClosest(this, getTargets());
             if (target != null) {
                 final int x1 = (int) (x() + width() / 2);
                 final int y1 = (int) (y() + height() / 2);
                 final int x2 = (int) (target.x() + target.width() / 2);
                 final int y2 = (int) (target.y() + target.height() / 2);
 
-                Vector2 wallPoint = Collisions.searchTile(x1, y1, x2, y2, true, stopTile, getLevel());
-                if (wallPoint == null)
-                    wallPoint = Collisions.findEdgePoint(x1, y1, x2, y2, getLevel());
+                final Vector2 wallPoint = Optional.ofNullable(BaseLogic.searchTile(x1, y1, x2, y2, true, stopTile, getLevel()))
+                    .orElseGet(()-> BaseLogic.findEdgePoint(x1, y1, x2, y2, getLevel()));
 
                 targetX = wallPoint.x;
                 targetY = wallPoint.y;
 
-                if (startupSound != null)
-                    startupSound.play(sounds.calc());
+                sounds.play(startupSound);
             } else
                 super.logistics();
         }
@@ -136,12 +136,12 @@ public class LaserDrone extends PathDrone {
                     startupSound.stop();
 
                 if (firingSound != null && allowFiringSound) {
-                    firingSound.play(sounds.calc());
+                    sounds.play(firingSound);
                     allowFiringSound = false;
                 }
 
                 for (final Entity entity : targets)
-                    if (entity.hasActionEvent() && Collisions.lineRectangle((int) x(), (int) y(), (int) targetX, (int) targetY, entity.bounds.toRectangle()))
+                    if (entity.hasActionEvent() && BaseLogic.lineRectangle((int) x(), (int) y(), (int) targetX, (int) targetY, entity.bounds.toRectangle()))
                         entity.runActionEvent(this);
 
                 if (++ducounter % laserDuration == 0) {
@@ -154,10 +154,10 @@ public class LaserDrone extends PathDrone {
         }
     }
 
-    private Entity[] getTargets() {
-        return Stream.of(targets)
-                .filter(entity -> !ignoreInactive || entity.isActive())
-                .toArray(Entity[]::new);
+    private List<Entity> getTargets() {
+        return targets.stream()
+            .filter(entity -> !ignoreInactive || entity.isActive())
+            .collect(toImmutableList());
     }
 
     @Override

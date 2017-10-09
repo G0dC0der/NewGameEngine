@@ -4,7 +4,8 @@ import pojahn.game.essentials.stages.TileBasedLevel;
 
 public class Shockwave extends Particle {
 
-    private int tileWidth, tileHeight, size, freq, counter, radius;
+    private final int size, freq;
+    private int tileWidth, tileHeight, counter, radius;
     private TileBasedLevel level;
     private boolean first;
 

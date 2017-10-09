@@ -18,6 +18,10 @@ public class EntityBuilder {
     private float x, y, width, height, offsetX, offsetY, alpha, rotation;
     private List<Event> events;
 
+    public static EntityBuilder fromVector(final Vector2 vector2) {
+        return new EntityBuilder().move(vector2);
+    }
+
     public EntityBuilder() {
         events = new ArrayList<>();
         alpha = 1;

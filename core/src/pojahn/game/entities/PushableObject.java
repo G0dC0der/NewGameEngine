@@ -7,15 +7,18 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Hitbox;
 import pojahn.game.events.Event;
+import pojahn.lang.Obj;
 
-import static pojahn.game.core.Collisions.rectanglesCollide;
+import java.util.List;
+
+import static pojahn.game.core.BaseLogic.rectanglesCollide;
 
 public class PushableObject extends MobileEntity {
 
     public float mass, gravity, damping, fallSpeedLimit, deacceleration, pushStrength;
     private Vector2 vel;
     private boolean useGravity, mustStand;
-    private MobileEntity[] pushers;
+    private final List<MobileEntity> pushers;
     private Event slamEvent;
     private Rectangle dummy;
     private Sound landingSound;
@@ -24,7 +27,7 @@ public class PushableObject extends MobileEntity {
     public PushableObject(final float x, final float y, final MobileEntity... pushers) {
         vel = new Vector2();
         move(x, y);
-        this.pushers = pushers;
+        this.pushers = Obj.requireNotEmpty(pushers);
         dummy = new Rectangle();
         useGravity = mustStand = true;
         mass = 1.0f;
@@ -52,8 +55,7 @@ public class PushableObject extends MobileEntity {
         if (useGravity) {
             if (!canDown()) {
                 if (vel.y < 0) {
-                    if (landingSound != null)
-                        landingSound.play(sounds.calc());
+                    sounds.play(landingSound);
                     if (slamEvent != null)
                         slamEvent.eventHandling();
                 }
@@ -151,8 +153,7 @@ public class PushableObject extends MobileEntity {
 
     @Override
     public void dispose() {
-        for (final MobileEntity mobile : pushers)
-            mobile.removeObstacle(this);
+        pushers.forEach(mobile -> mobile.removeObstacle(this));
     }
 
     private void drag() {

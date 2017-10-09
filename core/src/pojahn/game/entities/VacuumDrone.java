@@ -2,6 +2,9 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
 import pojahn.game.entities.mains.GravityMan;
+import pojahn.lang.Obj;
+
+import java.util.List;
 
 public class VacuumDrone extends PathDrone {
 
@@ -9,11 +12,11 @@ public class VacuumDrone extends PathDrone {
     private int vacuumShots, vacuumDelay, reload, reloadCounter, burstCounter, burstDelayCounter;
     private Particle vacuumParticle;
     private Sound vacuumSound;
-    private GravityMan[] targets;
+    private List<GravityMan> targets;
 
     public VacuumDrone(final float x, final float y, final GravityMan... targets) {
         super(x, y);
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         detectRadius = 300;
         vacuumPower = 500;
         vacuumShots = 3;
@@ -67,7 +70,7 @@ public class VacuumDrone extends PathDrone {
                         if (vacuumParticle != null)
                             getLevel().add(vacuumParticle.getClone().center(this));
                         if (vacuumSound != null)
-                            vacuumSound.play(sounds.calc());
+                            sounds.play(vacuumSound);
                     }
                 }
             }

@@ -16,14 +16,14 @@ import pojahn.game.events.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pojahn.game.core.Collisions.buildMatrix;
-import static pojahn.game.core.Collisions.circleRectangleCollide;
-import static pojahn.game.core.Collisions.circleVsCircle;
-import static pojahn.game.core.Collisions.getBoundingBox;
-import static pojahn.game.core.Collisions.pixelPerfect;
-import static pojahn.game.core.Collisions.pixelPerfectRotation;
-import static pojahn.game.core.Collisions.rectanglesCollide;
-import static pojahn.game.core.Collisions.rotatedRectanglesCollide;
+import static pojahn.game.core.BaseLogic.buildMatrix;
+import static pojahn.game.core.BaseLogic.circleRectangleCollide;
+import static pojahn.game.core.BaseLogic.circleVsCircle;
+import static pojahn.game.core.BaseLogic.getBoundingBox;
+import static pojahn.game.core.BaseLogic.pixelPerfect;
+import static pojahn.game.core.BaseLogic.pixelPerfectRotation;
+import static pojahn.game.core.BaseLogic.rectanglesCollide;
+import static pojahn.game.core.BaseLogic.rotatedRectanglesCollide;
 
 public class Entity {
 
@@ -273,7 +273,7 @@ public class Entity {
     }
 
     public float dist(final Entity entity) {
-        return (float) Collisions.distance(x(), y(), entity.x(), entity.y());
+        return (float) BaseLogic.distance(x(), y(), entity.x(), entity.y());
     }
 
     public boolean near(final Entity entity, final float epsilon) {
@@ -315,7 +315,7 @@ public class Entity {
     }
 
     public boolean canSee(final Entity target) {
-        return target != null && !Collisions.solidSpace(centerX(), centerY(), target.centerX(), target.centerY(), getLevel());
+        return target != null && !BaseLogic.solidSpace(centerX(), centerY(), target.centerX(), target.centerY(), getLevel());
     }
 
     public Vector2 getFrontPosition() {

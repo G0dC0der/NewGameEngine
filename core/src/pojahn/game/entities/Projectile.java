@@ -1,11 +1,14 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.EntityBuilder;
+import pojahn.lang.Obj;
+
+import java.util.List;
 
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
@@ -16,19 +19,19 @@ import static java.util.stream.Stream.of;
 public abstract class Projectile extends MobileEntity {
 
     private Particle impact, gunfire, trailer;
-    private Entity targets[], target;
+    private final List<Entity> targets;
+    private Entity target;
     private Vector2 cachedTarget;
     private boolean rotate;
     private int trailerDelay;
     private int trailerCounter;
-    private boolean follow, once, ignoreInactive;
+    private boolean follow, once;
 
     public Projectile(final float x, final float y, final Entity... targets) {
         move(x, y);
         rotate = true;
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         trailerDelay = 3;
-        ignoreInactive = true;
     }
 
     @Override
@@ -76,11 +79,7 @@ public abstract class Projectile extends MobileEntity {
         this.follow = lockTarget;
     }
 
-    public void setIgnoreInactive(final boolean ignoreInactive) {
-        this.ignoreInactive = ignoreInactive;
-    }
-
-    public Entity[] getTargets() {
+    public List<Entity> getTargets() {
         return targets;
     }
 
@@ -110,7 +109,7 @@ public abstract class Projectile extends MobileEntity {
 
     protected void rotate() {
         final Vector2 target = getTarget();
-        bounds.rotation = (float) Collisions.getAngle(centerX(), centerY(), target.x, target.y);
+        bounds.rotation = (float) BaseLogic.getAngle(centerX(), centerY(), target.x, target.y);
     }
 
     private Vector2 getTarget() {
@@ -118,7 +117,7 @@ public abstract class Projectile extends MobileEntity {
             return target.getPos();
         } else {
             if (cachedTarget == null)
-                cachedTarget = Collisions.findEdgePoint(x(), y(), target.x(), target.y(), getLevel());
+                cachedTarget = BaseLogic.findEdgePoint(x(), y(), target.x(), target.y(), getLevel());
 
             return cachedTarget;
         }
@@ -128,11 +127,12 @@ public abstract class Projectile extends MobileEntity {
         if (outOfBounds() || getOccupyingCells().contains(Level.Tile.SOLID)) {
             impact(null);
         } else {
-            concat(of(targets), of(target))
-                    .filter(entity -> !ignoreInactive || entity.isActive())
-                    .filter(this::collidesWith)
-                    .findFirst()
-                    .ifPresent(this::impact);
+            concat(targets.stream(), of(target))
+                .distinct()
+                .filter(Entity::isActive)
+                .filter(this::collidesWith)
+                .findFirst()
+                .ifPresent(this::impact);
         }
     }
 
@@ -156,8 +156,6 @@ public abstract class Projectile extends MobileEntity {
         clone.trailer = trailer;
         clone.trailerDelay = trailerDelay;
         clone.rotate = rotate;
-        clone.targets = targets;
         clone.follow = follow;
-        clone.ignoreInactive = ignoreInactive;
     }
 }

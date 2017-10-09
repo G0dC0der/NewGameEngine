@@ -1,13 +1,14 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.events.Event;
+import pojahn.lang.Obj;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public class JumpingThwump extends MobileEntity {
 
@@ -15,14 +16,14 @@ public class JumpingThwump extends MobileEntity {
 
     private int chillFrames, chillCounter;
     private float jumpStrength, vy, tvy, delta;
-    private MobileEntity[] targets;
+    private final List<MobileEntity> targets;
     private Animation<Image2D> chillImage, jumpImage;
     private Event slamEvent;
     private Sound slamSound, jumpSound;
 
     public JumpingThwump(final float x, final float y, final MobileEntity... targets) {
         move(x, y);
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         chillFrames = 260;
         jumpStrength = 900;
 
@@ -35,7 +36,7 @@ public class JumpingThwump extends MobileEntity {
 
     @Override
     public JumpingThwump getClone() {
-        final JumpingThwump clone = new JumpingThwump(x(), y(), targets);
+        final JumpingThwump clone = new JumpingThwump(x(), y(), targets.toArray(new MobileEntity[targets.size()]));
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
 
@@ -46,7 +47,7 @@ public class JumpingThwump extends MobileEntity {
     @Override
     public void init() {
         delta = getEngine().delta;
-        Stream.of(targets).forEach(mobileEntity -> mobileEntity.addObstacle(this));
+        targets.forEach(mobileEntity -> mobileEntity.addObstacle(this));
     }
 
     @Override
@@ -54,8 +55,7 @@ public class JumpingThwump extends MobileEntity {
         if (++chillCounter % chillFrames == 0) {
             vy = jumpStrength;
 
-            if (jumpSound != null)
-                jumpSound.play(sounds.calc());
+            sounds.play(jumpSound);
             if (jumpImage != null)
                 super.setImage(jumpImage);
         }
@@ -69,8 +69,9 @@ public class JumpingThwump extends MobileEntity {
         else {
             if (vy < 0) {
                 tryDown(10);
-                if (slamSound != null)
-                    slamSound.play(sounds.calc());
+
+                sounds.play(slamSound);
+
                 if (slamEvent != null)
                     slamEvent.eventHandling();
 
@@ -87,7 +88,7 @@ public class JumpingThwump extends MobileEntity {
         final float h = height() + scanSize * 2;
 
         for (final MobileEntity sub : targets) {
-            if (Collisions.rectanglesCollide(x, y, w, h, sub.x(), sub.y(), sub.width(), sub.height())) {
+            if (BaseLogic.rectanglesCollide(x, y, w, h, sub.x(), sub.y(), sub.width(), sub.height())) {
 
                 final float nextX = sub.x() + (x() - prevX());
                 final float nextY = sub.y() + (y() - prevY());
@@ -95,7 +96,7 @@ public class JumpingThwump extends MobileEntity {
                 if (!sub.occupiedAt(nextX, nextY))
                     sub.move(nextX, nextY);
 
-                if (Collisions.rectanglesCollide(bounds.toRectangle(), sub.bounds.toRectangle()))
+                if (BaseLogic.rectanglesCollide(bounds.toRectangle(), sub.bounds.toRectangle()))
                     collisionResponse(sub);
             }
         }
@@ -133,9 +134,7 @@ public class JumpingThwump extends MobileEntity {
 
     @Override
     public void dispose() {
-        if (targets != null) {
-            Stream.of(targets).forEach(sub -> sub.removeObstacle(this));
-        }
+        targets.forEach(sub -> sub.removeObstacle(this));
     }
 
     private void drag() {

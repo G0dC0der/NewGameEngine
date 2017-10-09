@@ -2,7 +2,7 @@ package pojahn.game.essentials;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
 
@@ -102,7 +102,7 @@ public class CheckPointHandler {
         for (final Checkpoint cp : checkpoints) {
             if (!cp.taken) {
                 for (final Entity user : users) {
-                    if (Collisions.rectanglesCollide(user.x(), user.y(), user.width(), user.height(), cp.x, cp.y, cp.width, cp.height)) {
+                    if (BaseLogic.rectanglesCollide(user.x(), user.y(), user.width(), user.height(), cp.x, cp.y, cp.width, cp.height)) {
                         cp.taken = true;
                         if (reachEvent != null)
                             reachEvent.eventHandling();

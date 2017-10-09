@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
@@ -22,7 +22,6 @@ import pojahn.game.entities.Particle;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.PushableObject;
 import pojahn.game.entities.Reloadable;
-import pojahn.game.entities.RemoteVibration;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.SolidPlatform.FollowMode;
 import pojahn.game.entities.TransformablePlatform;
@@ -35,6 +34,7 @@ import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
+import pojahn.game.essentials.Vibrator;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.game.events.Event;
 
@@ -228,10 +228,9 @@ public class SpiritTemple extends TileBasedLevel {
          * Puncher
          */
         final Sound punchSound = resources.getSound("fistslam.wav");
-        final RemoteVibration rv = new RemoteVibration(main);
-        rv.setVib(150);
+        final Vibrator rv = new Vibrator(this);
+        rv.setStrength(150);
         rv.setDuration(20);
-        add(rv);
         final float speed = 4;
 
         final TransformablePlatform puncher1 = new TransformablePlatform(2593, 2617, main);
@@ -240,8 +239,9 @@ public class SpiritTemple extends TileBasedLevel {
         puncher1.sounds.useFalloff = true;
         puncher1.appendPath(2593, 2617, 30, false, null);
         puncher1.appendPath(2770, 2617, 30, false, () -> {
-            rv.vibrate(puncher1);
-            punchSound.play(puncher1.sounds.calc());
+            rv.vibrate(puncher1, Vibrator.VibDirection.CENTER, main);
+            puncher1.sounds.play(punchSound);
+            puncher1.sounds.play(punchSound);
         });
         add(puncher1);
 
@@ -251,8 +251,8 @@ public class SpiritTemple extends TileBasedLevel {
         puncher2.sounds.useFalloff = true;
         puncher2.appendPath(2593, 2695, 30, false, null);
         puncher2.appendPath(2770, 2695, 30, false, () -> {
-            rv.vibrate(puncher2);
-            punchSound.play(puncher2.sounds.calc());
+            rv.vibrate(puncher2, Vibrator.VibDirection.CENTER, main);
+            puncher2.sounds.play(punchSound);
         });
         puncher2.skipTo(1);
         add(puncher2);
@@ -263,8 +263,8 @@ public class SpiritTemple extends TileBasedLevel {
         puncher3.sounds.useFalloff = true;
         puncher3.appendPath(2593, 2773, 30, false, null);
         puncher3.appendPath(2770, 2773, 30, false, () -> {
-            rv.vibrate(puncher3);
-            punchSound.play(puncher3.sounds.calc());
+            rv.vibrate(puncher3, Vibrator.VibDirection.CENTER, main);
+            puncher3.sounds.play(punchSound);
         });
         add(puncher3);
 
@@ -273,8 +273,8 @@ public class SpiritTemple extends TileBasedLevel {
         puncher4.sounds.useFalloff = true;
         puncher4.setMoveSpeed(speed + 2);
         puncher4.appendPath(2266, 2946, 30, false, () -> {
-            rv.vibrate(puncher4);
-            punchSound.play(puncher4.sounds.calc());
+            rv.vibrate(puncher4, Vibrator.VibDirection.CENTER, main);
+            puncher4.sounds.play(punchSound);
             puncher4.setMoveSpeed(2);
         });
         puncher4.appendPath(1920, 2946, 30, false, () -> puncher4.setMoveSpeed(speed + 2));
@@ -286,8 +286,8 @@ public class SpiritTemple extends TileBasedLevel {
         puncher5.setMoveSpeed(speed);
         puncher5.appendPath(1680, 2640, 40, false, null);
         puncher5.appendPath(1680, 2698, 40, false, () -> {
-            rv.vibrate(puncher5);
-            punchSound.play(puncher5.sounds.calc());
+            rv.vibrate(puncher5, Vibrator.VibDirection.CENTER, main);
+            puncher5.sounds.play(punchSound);
         });
 
         add(puncher5);
@@ -366,7 +366,7 @@ public class SpiritTemple extends TileBasedLevel {
             });
             bossMusic.play();
             temp(() -> bossMusic.setVolume(bossMusic.getVolume() + .01f), () -> bossMusic.getVolume() >= 1);
-        }, () -> Collisions.rectanglesCollide(5251, 3087, 96, 615, main.x(), main.y(), main.width(), main.height()));
+        }, () -> BaseLogic.rectanglesCollide(5251, 3087, 96, 615, main.x(), main.y(), main.width(), main.height()));
 
         /*
          * Boss

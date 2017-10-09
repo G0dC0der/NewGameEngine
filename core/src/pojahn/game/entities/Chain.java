@@ -2,7 +2,7 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.essentials.Image2D;
 
@@ -56,7 +56,7 @@ public class Chain extends Entity {
         final Image2D img = nextImage();
 
         if (rotate)
-            bounds.rotation = (float) Collisions.getAngle(endPoint1.x, endPoint1.y, endPoint2.x, endPoint2.y);
+            bounds.rotation = (float) BaseLogic.getAngle(endPoint1.x, endPoint1.y, endPoint2.x, endPoint2.y);
 
         for (int i = start; i < cond; i++) {
             final Vector2 linkPos = new Vector2(endPoint1).lerp(endPoint2, (float) i / (float) (end - 1));

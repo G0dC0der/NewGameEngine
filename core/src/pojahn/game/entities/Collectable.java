@@ -4,6 +4,9 @@ import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.events.Event;
+import pojahn.lang.Obj;
+
+import java.util.List;
 
 public class Collectable extends Entity {
 
@@ -33,17 +36,16 @@ public class Collectable extends Entity {
         }
     }
 
-    private Entity[] collectors;
-    private Entity subject;
+    private final List<Entity> collectors;
     private Particle collectImage;
     private CollectEvent collectEvent;
     private Sound collectSound;
     private boolean collected, disposeCollected;
 
     public Collectable(final float x, final float y, final Entity... collectors) {
-        this.collectors = collectors;
-        disposeCollected = true;
         move(x, y);
+        this.collectors = Obj.requireNotEmpty(collectors);
+        this.disposeCollected = true;
     }
 
     public void setCollectSound(final Sound collectSound) {
@@ -62,21 +64,17 @@ public class Collectable extends Entity {
         this.collectImage = collectImage;
     }
 
-    public Entity getSubject() {
-        return subject;
-    }
-
     @Override
     public void logistics() {
         if (!collected) {
             for (final Entity collector : collectors) {
                 if (collidesWith(collector)) {
                     collected = true;
-                    subject = collector;
+
                     if (collectEvent != null)
                         collectEvent.eventHandling(collector);
                     if (collectSound != null)
-                        collectSound.play(sounds.calc());
+                        sounds.play(collectSound);
                     if (collectImage != null)
                         getLevel().add(collectImage.getClone().center(this));
                     if (disposeCollected)

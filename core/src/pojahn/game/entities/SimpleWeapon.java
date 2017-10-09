@@ -2,24 +2,27 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Level;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Direction;
 
+import java.util.Objects;
+
 public class SimpleWeapon extends MobileEntity {
 
-    private Direction projDir;
-    private Projectile proj;
-    private Particle fireAnim;
-    private int reloadTime, reloadCounter;
+    private final Direction projDir;
+    private final Projectile proj;
+    private final int reloadTime;
+    private int reloadCounter;
     private float offsetX, offsetY;
+    private Particle fireAnim;
     private Sound firingSound;
 
     public SimpleWeapon(final float x, final float y, final Projectile proj, final Direction projDir, final int reloadTime) {
         move(x, y);
-        this.proj = proj;
-        this.projDir = projDir;
+        this.proj = Objects.requireNonNull(proj);
+        this.projDir = Objects.requireNonNull(projDir);
         this.reloadTime = reloadTime;
     }
 
@@ -54,10 +57,6 @@ public class SimpleWeapon extends MobileEntity {
         return reloadCounter > 0;
     }
 
-    public void setFiringDirection(final Direction projDir) {
-        this.projDir = projDir;
-    }
-
     public void setFiringSound(final Sound sound) {
         firingSound = sound;
     }
@@ -70,7 +69,7 @@ public class SimpleWeapon extends MobileEntity {
             final float startY = bounds.pos.y + offsetY;
 
             final Projectile projClone = proj.getClone();
-            final Vector2 target = Collisions.getEdgePoint((int) startX, (int) startY, projDir, l);
+            final Vector2 target = BaseLogic.getEdgePoint((int) startX, (int) startY, projDir, l);
 
             projClone.move(startX, startY);
             projClone.setTarget(target.x, target.y);
@@ -81,8 +80,7 @@ public class SimpleWeapon extends MobileEntity {
             l.add(projClone);
             reloadCounter = reloadTime;
 
-            if (firingSound != null)
-                firingSound.play(sounds.calc());
+            sounds.play(firingSound);
         }
     }
 }

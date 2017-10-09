@@ -1,7 +1,7 @@
 package pojahn.game.desktop.redguyruns.levels.sprit;
 
 import com.badlogic.gdx.audio.Music;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
@@ -111,7 +111,7 @@ public class Boss extends MobileEntity {
 
         getLevel().runOnceWhen(() -> {
             setMoveSpeed(3.5f);
-        }, () -> Collisions.rectanglesCollide(x(), y(), 500, 1000, hero.x(), hero.y(), hero.width(), hero.height()));
+        }, () -> BaseLogic.rectanglesCollide(x(), y(), 500, 1000, hero.x(), hero.y(), hero.width(), hero.height()));
     }
 
     @Override

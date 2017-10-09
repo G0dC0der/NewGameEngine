@@ -14,36 +14,35 @@ import pojahn.game.essentials.geom.Bounds;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class Collisions {
+public class BaseLogic {
 
     public static boolean pointRectangleOverlap(final float x, final float y, final float w, final float h, final int px, final float py) {
         return px >= x && px <= x + w && py >= y && py <= y + h;
     }
 
     public static boolean rectanglesCollide(final Rectangle rec, final float x, final float y, final float width, final float height) {
-        return !((rec.y + rec.height < y) ||
-                (rec.y > y + height) ||
-                (rec.x + width < x) ||
-                (rec.x > x + width));
+        return !((rec.y + rec.height < y)
+            || (rec.y > y + height)
+            || (rec.x + width < x)
+            || (rec.x > x + width));
     }
 
     public static boolean rectanglesCollide(final Rectangle rec1, final Rectangle rec2) {
-        return !((rec1.y + rec1.height < rec2.y) ||
-                (rec1.y > rec2.y + rec2.height) ||
-                (rec1.x + rec1.width < rec2.x) ||
-                (rec1.x > rec2.x + rec2.width));
+        return !((rec1.y + rec1.height < rec2.y)
+            || (rec1.y > rec2.y + rec2.height)
+            || (rec1.x + rec1.width < rec2.x)
+            || (rec1.x > rec2.x + rec2.width));
     }
 
     public static boolean rectanglesCollide(final float x1, final float y1, final float width1, final float height1,
                                             final float x2, final float y2, final float width2, final float height2) {
-        return !((y1 + height1 < y2) ||
-                (y1 > y2 + height2) ||
-                (x1 + width1 < x2) ||
-                (x1 > x2 + width2));
+        return !((y1 + height1 < y2)
+            || (y1 > y2 + height2)
+            || (x1 + width1 < x2)
+            || (x1 > x2 + width2));
     }
 
     public static boolean rotatedRectanglesCollide(final Bounds bounds1, final Bounds bounds2) {
@@ -190,8 +189,10 @@ public class Collisions {
      *
      * @return True if the two entities are colliding.
      */
-    public static boolean pixelPerfect(final Rectangle rec1, final Image2D image1, final boolean flipX1, final boolean flipY1,
-                                       final Rectangle rec2, final Image2D image2, final boolean flipX2, final boolean flipY2) {
+    public static boolean pixelPerfect(
+        final Rectangle rec1, final Image2D image1, final boolean flipX1, final boolean flipY1,
+        final Rectangle rec2, final Image2D image2, final boolean flipX2, final boolean flipY2) {
+
         final int width1 = image1.getWidth();
         final int width2 = image2.getWidth();
         final int height1 = image1.getHeight();
@@ -203,7 +204,7 @@ public class Collisions {
 
         for (int y = top; y < bottom; y++) {
             for (int x = left; x < right; x++) {
-                final int x1 = (int) (flipX1 ? width1 - (x - rec1.x) - 1 : x - rec1.x); //TODO: Why are there -1 on these?
+                final int x1 = (int) (flipX1 ? width1 - (x - rec1.x) - 1 : x - rec1.x);
                 final int y1 = (int) (flipY1 ? height1 - (y - rec1.y) - 1 : y - rec1.y);
                 final int x2 = (int) (flipX2 ? width2 - (x - rec2.x) - 1 : x - rec2.x);
                 final int y2 = (int) (flipY2 ? height2 - (y - rec2.y) - 1 : y - rec2.y);
@@ -279,51 +280,32 @@ public class Collisions {
     }
 
     public static double distance(final Entity e1, final Entity e2) {
-        return distance(e1.centerX(), e1.centerY(), e2.centerX(), e2.centerY());
-    }
-
-    public static Entity findClosest(final Entity watcher, final Entity... targets) {
-        return findClosest(watcher, Arrays.asList(targets));
-    }
-
-    public static Vector2 findClosest(final Vector2 watcher, final Vector2... targets) {
-        if (targets == null || targets.length == 0)
-            return null;
-        else if (targets.length == 1)
-            return targets[0];
-
-        float shortestDist = 0;
-        Vector2 closestVector = null;
-        for (final Vector2 point : targets) {
-
-            final float dst2 = watcher.dst2(point);
-            if (closestVector == null || dst2 < shortestDist) {
-                shortestDist = dst2;
-                closestVector = point;
-            }
-        }
-        return closestVector;
+        return distance(e1.x(), e1.y(), e2.x(), e2.y());
     }
 
     public static Entity findClosest(final Entity watcher, final List<? extends Entity> targets) {
         return targets.stream()
-                .min((e1, e2) -> (int) Math.min(watcher.dist(e1), watcher.dist(e2)))
-                .orElse(null);
+            .min(Comparator.comparing(watcher::dist))
+            .orElse(null);
     }
 
-    public static Entity findClosestSeeable(final Entity watcher, final Entity... targets) {
-        final List<Entity> seeable = Stream.of(targets)
-                .filter(watcher::canSee)
-                .collect(Collectors.toList());
-
-        return seeable.isEmpty() ? null : findClosest(watcher, seeable);
+    public static Entity findClosestSeeable(final Entity watcher, final List<? extends Entity> targets) {
+        return targets.stream()
+            .filter(watcher::canSee)
+            .min(Comparator.comparing(watcher::dist))
+            .orElse(null);
     }
 
     public static boolean lineIntersects(final Vector2 p1, final Vector2 p2, final Vector2 p3, final Vector2 p4) {
         return lineIntersect(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y);
     }
 
-    public static boolean lineIntersect(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3, final float x4, final float y4) {
+    public static boolean lineIntersect(
+        final float x1, final float y1,
+        final float x2, final float y2,
+        final float x3, final float y3,
+        final float x4, final float y4) {
+
         final float bx = x2 - x1;
         final float by = y2 - y1;
         final float dx = x4 - x3;
@@ -471,9 +453,9 @@ public class Collisions {
      */
     public static boolean lineRectangle(final float x1, final float y1, final float x2, final float y2, final Rectangle rec) {
         return lineIntersect(x1, y1, x2, y2, rec.x, rec.y, rec.x + rec.width, rec.y)
-                || lineIntersect(x1, y1, x2, y2, rec.x, rec.y, rec.x, rec.y + rec.height)
-                || lineIntersect(x1, y1, x2, y2, rec.x + rec.width, rec.y, rec.x + rec.width, rec.y + rec.height)
-                || lineIntersect(x1, y1, x2, y2, rec.x, rec.y + rec.height, rec.x + rec.width, rec.y + rec.height);
+            || lineIntersect(x1, y1, x2, y2, rec.x, rec.y, rec.x, rec.y + rec.height)
+            || lineIntersect(x1, y1, x2, y2, rec.x + rec.width, rec.y, rec.x + rec.width, rec.y + rec.height)
+            || lineIntersect(x1, y1, x2, y2, rec.x, rec.y + rec.height, rec.x + rec.width, rec.y + rec.height);
     }
 
     public static Vector2 findEdgePoint(final float obsX, final float obsY, final float tarX, final float tarY, final Level level) {
@@ -644,7 +626,7 @@ public class Collisions {
     }
 
     public static Direction getDirection(final MobileEntity mobile) {
-        return Collisions.getDirection(mobile.x(), mobile.y(), mobile.prevX(), mobile.prevY());
+        return getDirection(mobile.x(), mobile.y(), mobile.prevX(), mobile.prevY());
     }
 
     private static void addVectors2D(final Vector2 v1, final Vector2 v2) {

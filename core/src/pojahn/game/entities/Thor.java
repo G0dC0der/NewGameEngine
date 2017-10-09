@@ -6,22 +6,27 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import pojahn.game.core.Collisions;
+import com.google.common.collect.ImmutableList;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
-import pojahn.game.essentials.Utils;
+import pojahn.lang.Obj;
+
+import java.util.List;
+
+import static pojahn.game.essentials.Utils.getRandomElement;
 
 public class Thor extends PathDrone {
 
     private float displace, detail, precision, thickness, offsetX, offsetY;
     private int bolts;
     private boolean blend, fire;
-    private Entity[] targets;
-    private Color[] boltColors;
+    private final List<Entity> targets;
+    private List<Color> boltColors;
     private Music thunderSound;
 
     public Thor(final float x, final float y, final Entity... targets) {
         super(x, y);
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         displace = 100;
         detail = 2;
         thickness = 2.5f;
@@ -29,7 +34,7 @@ public class Thor extends PathDrone {
         bolts = 1;
         blend = true;
         fire = true;
-        boltColors = new Color[]{Color.BLUE};
+        boltColors = ImmutableList.of(Color.BLUE);
     }
 
     /**
@@ -107,7 +112,7 @@ public class Thor extends PathDrone {
      * The colors of the bolts.
      */
     public void setBoltColors(final Color... boltColors) {
-        this.boltColors = boltColors;
+        this.boltColors = Obj.requireNotEmpty(boltColors);
     }
 
     @Override
@@ -145,7 +150,7 @@ public class Thor extends PathDrone {
         if (!fire)
             return;
 
-        final Entity target = Collisions.findClosest(this, targets);
+        final Entity target = BaseLogic.findClosest(this, targets);
 
         drawLightning(
                 batch,
@@ -163,13 +168,27 @@ public class Thor extends PathDrone {
                 boltColors);
     }
 
-    private static void drawLightning(final SpriteBatch batch, final float x1, final float y1, final float x2, final float y2, final float displace, final float detail, final float thickness, final float noise, final int numberOfBolts, final boolean blend, final Texture dot, final Color... colors) {
+    private static void drawLightning(
+        final SpriteBatch batch,
+        final float x1,
+        final float y1,
+        final float x2,
+        final float y2,
+        final float displace,
+        final float detail,
+        final float thickness,
+        final float noise,
+        final int numberOfBolts,
+        final boolean blend,
+        final Texture dot,
+        final List<Color> colors) {
+
         final Color orgColor = batch.getColor();
         if (blend)
             batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
         for (int i = 0; i < numberOfBolts; i++) {
-            batch.setColor(Utils.getRandomElement(colors));
+            batch.setColor(getRandomElement(colors));
             drawSingleP2PLightning(batch, x1, y1, x2 + MathUtils.random(-noise, noise), y2 + MathUtils.random(-noise, noise), displace, detail, thickness, dot);
         }
 
@@ -179,7 +198,7 @@ public class Thor extends PathDrone {
     }
 
     private static void drawLine(final SpriteBatch batch, final float _x1, final float _y1, final float _x2, final float _y2, final float thickness, final Texture dot) {
-        final float length = (float) Collisions.distance(_x1, _y1, _x2, _y2);
+        final float length = (float) BaseLogic.distance(_x1, _y1, _x2, _y2);
         float dx = _x1;
         float dy = _y1;
         dx = dx - _x2;

@@ -10,7 +10,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.essentials.Factory;
@@ -153,7 +153,7 @@ public abstract class TileBasedLevel extends Level {
     public void runOnceWhenMainCollides(final Event event, final int tileX, final int tileY, final int tilesX, final int tilesY) {
         runOnceWhen(event, () -> getAliveMainCharacters()
                 .stream()
-                .map(main -> Collisions.rectanglesCollide(main.bounds.toRectangle(), getRectangle(tileX, tileY, tilesX, tilesY)))
+                .map(main -> BaseLogic.rectanglesCollide(main.bounds.toRectangle(), getRectangle(tileX, tileY, tilesX, tilesY)))
                 .findFirst()
                 .orElse(false));
     }

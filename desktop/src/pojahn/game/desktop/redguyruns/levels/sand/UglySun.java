@@ -1,7 +1,7 @@
 package pojahn.game.desktop.redguyruns.levels.sand;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -113,7 +113,7 @@ public class UglySun extends MobileEntity {
     public void logistics() {
         final Vector2 dest = new Vector2(target.x(), getEngine().ty() - (getEngine().getScreenSize().height / 2) + 20);
 
-        if (10 < Collisions.distance(x(), y(), dest.x, dest.y)) {
+        if (10 < BaseLogic.distance(x(), y(), dest.x, dest.y)) {
             moveTowards(dest.x, dest.y);
         }
     }

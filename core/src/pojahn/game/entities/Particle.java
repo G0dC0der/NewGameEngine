@@ -6,7 +6,7 @@ import pojahn.game.essentials.Image2D;
 
 public class Particle extends MobileEntity {
 
-    protected Sound introSound;
+    Sound introSound;
     private boolean soundPlayed;
 
     public Particle() {

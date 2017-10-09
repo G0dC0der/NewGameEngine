@@ -60,8 +60,7 @@ public class LineMovement extends MobileEntity {
             move(next);
         else {
             leftOrUp = !leftOrUp;
-            if (slamSound != null)
-                slamSound.play(sounds.calc());
+            sounds.play(slamSound);
         }
     }
 }

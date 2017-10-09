@@ -78,7 +78,7 @@ public class MobileEntity extends Entity {
     }
 
     void updateFacing() {
-        final Direction facing = Collisions.getDirection(this);
+        final Direction facing = BaseLogic.getDirection(this);
         if (facing != null) {
             if (facings == 8) {
                 this.facing = facing;

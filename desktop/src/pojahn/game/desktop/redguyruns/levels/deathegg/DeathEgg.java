@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -160,7 +160,7 @@ public class DeathEgg extends TileBasedLevel {
             bandMove.play();
             solpImage.stop(false);
             add(solp.sounds.dynamicVolume(bandMove));
-        }, () -> Collisions.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), solp.x(), solp.y() + solp.height(), solp.width(), 2));
+        }, () -> BaseLogic.rectanglesCollide(play.x(), play.y(), play.width(), play.height(), solp.x(), solp.y() + solp.height(), solp.width(), 2));
 
 
         /*
@@ -351,7 +351,7 @@ public class DeathEgg extends TileBasedLevel {
         pushPlatform.setMoveSpeed(25);
         pushPlatform.freeze();
         pushPlatform.appendPath(pushPlatform.x(), 1994, 0, false, () -> {
-            if (Collisions.rectanglesCollide(play.bounds.toRectangle(), 192, 1989, 128, 16)) {
+            if (BaseLogic.rectanglesCollide(play.bounds.toRectangle(), 192, 1989, 128, 16)) {
                 play.vel.y = 1300;
             }
         });
@@ -364,7 +364,7 @@ public class DeathEgg extends TileBasedLevel {
                 pushPlatform.unfreeze();
                 res.getSound("launch.wav").play();
             }, 120);
-        }, () -> Collisions.rectanglesCollide(play.bounds.toRectangle(), 202, 2056, 108, 16));
+        }, () -> BaseLogic.rectanglesCollide(play.bounds.toRectangle(), 202, 2056, 108, 16));
 
         /*
          * Giant Saws
@@ -404,7 +404,7 @@ public class DeathEgg extends TileBasedLevel {
         final Event calcEvent = soundDummy.sounds.dynamicVolume(sawWork);
         add(soundDummy);
         add(() -> {
-            if (Collisions.rectanglesCollide(play.bounds.toRectangle(), 37, 1064, 3281, 1410)) {
+            if (BaseLogic.rectanglesCollide(play.bounds.toRectangle(), 37, 1064, 3281, 1410)) {
                 calcEvent.eventHandling();
                 if (!sawWork.isPlaying()) {
                     sawWork.setLooping(true);
@@ -543,7 +543,7 @@ public class DeathEgg extends TileBasedLevel {
                 pd.rotate(7);
 
                 if (!detected.value && pd.dist(play) < 300) {
-                    final Vector2 edgePoint = Collisions.findEdgePoint(pd, play, this);
+                    final Vector2 edgePoint = BaseLogic.findEdgePoint(pd, play, this);
                     pd.appendPath(edgePoint.x, edgePoint.y);
                     detected.value = true;
                     res.getSound("detect.wav").play();
@@ -618,9 +618,8 @@ public class DeathEgg extends TileBasedLevel {
         /*
          * Power Off Button
          */
-        final Button btn = new Button(1284, 723, play);
+        final Button btn = new Button(1284, 723, Direction.S, play);
         btn.setImage(res.getImage("btn.png"));
-        btn.setPushingDirection(Direction.S);
         btn.setPushEvent(() -> {
             res.getSound("poweroff.wav").play();
             fieldOffline = true;
@@ -718,10 +717,9 @@ public class DeathEgg extends TileBasedLevel {
     }
 
     private void addSwitch(final float x, final float y, final boolean flipY, final Event event) {
-        final Button button = new Button(x, y, play);
+        final Button button = new Button(x, y, flipY ? Direction.N : Direction.S, play);
         button.setImage(res.getImage("switchButton.png"));
         button.flipY = flipY;
-        button.setPushingDirection(flipY ? Direction.N : Direction.S);
         button.setPushEvent(() -> {
             play.flip();
             res.getSound("flip.wav").play();

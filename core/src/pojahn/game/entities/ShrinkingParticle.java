@@ -2,17 +2,13 @@ package pojahn.game.entities;
 
 public class ShrinkingParticle extends Particle {
 
-    private float shrinkSpeed;
+    private final float shrinkSpeed;
 
     public ShrinkingParticle() {
         this(.05f);
     }
 
     public ShrinkingParticle(final float shrinkSpeed) {
-        this.shrinkSpeed = shrinkSpeed;
-    }
-
-    public void setShrinkSpeed(final float shrinkSpeed) {
         this.shrinkSpeed = shrinkSpeed;
     }
 

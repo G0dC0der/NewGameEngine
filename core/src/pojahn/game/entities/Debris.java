@@ -6,9 +6,10 @@ import pojahn.game.core.Level;
 
 public class Debris extends Particle {
 
+    private final Vector2 vel, tVel;
+    private final float vx, vy, toleranceX, toleranceY;
+    private float gravity, mass, damping, delta;
     private Particle impact, trailer;
-    private Vector2 vel, tVel;
-    private float gravity, mass, damping, delta, vx, toleranceX, vy, toleranceY;
     private int spawns, trailerDelay, counter;
     private boolean first;
 
@@ -17,14 +18,14 @@ public class Debris extends Particle {
         this.vy = vy;
         this.toleranceX = toleranceX;
         this.toleranceY = toleranceY;
-        trailerDelay = 5;
+        this.trailerDelay = 5;
 
-        vel = new Vector2();
-        tVel = new Vector2(1000, -800);
-        mass = 1.0f;
-        gravity = -500;
-        delta = 1.0f / 60.0f;
-        damping = 0.0001f;
+        this.vel = new Vector2();
+        this.tVel = new Vector2(1000, -800);
+        this.mass = 1.0f;
+        this.gravity = -500;
+        this.delta = 1.0f / 60.0f;
+        this.damping = 0.0001f;
 
         setVelocity();
     }
@@ -46,8 +47,7 @@ public class Debris extends Particle {
 
         if (!first) {
             first = true;
-            if (introSound != null)
-                introSound.play(sounds.calc());
+            sounds.play(introSound);
 
             for (int i = 0; i < spawns; i++) {
                 final Debris clone = getClone();
@@ -85,11 +85,11 @@ public class Debris extends Particle {
         this.impact = impact;
     }
 
-    protected void applyXForces() {
+    private void applyXForces() {
         bounds.pos.x -= vel.x * getEngine().delta;
     }
 
-    protected void applyYForces() {
+    private void applyYForces() {
         bounds.pos.y -= vel.y * getEngine().delta;
     }
 

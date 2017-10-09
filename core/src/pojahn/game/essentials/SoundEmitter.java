@@ -2,7 +2,7 @@ package pojahn.game.essentials;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import pojahn.game.core.Collisions;
+import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
 
@@ -45,7 +45,7 @@ public class SoundEmitter {
     }
 
     private float calc(final float listenerX, final float listenerY) {
-        final double distance = Collisions.distance(emitter.x(), emitter.y(), listenerX, listenerY);
+        final double distance = BaseLogic.distance(emitter.x(), emitter.y(), listenerX, listenerY);
         final float candidate = (float) (power * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(maxDistance)), 0));
 
         return Math.min(candidate, maxVolume);
@@ -67,6 +67,6 @@ public class SoundEmitter {
         if (soundListeners == null || soundListeners.isEmpty())
             soundListeners = emitter.getLevel().getMainCharacters();
 
-        return Collisions.findClosest(emitter, soundListeners);
+        return BaseLogic.findClosest(emitter, soundListeners);
     }
 }

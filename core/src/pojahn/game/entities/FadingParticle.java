@@ -2,17 +2,13 @@ package pojahn.game.entities;
 
 public class FadingParticle extends Particle {
 
-    private float fadingSpeed;
+    private final float fadingSpeed;
 
     public FadingParticle() {
         this(.05f);
     }
 
     public FadingParticle(final float fadingSpeed) {
-        this.fadingSpeed = fadingSpeed;
-    }
-
-    public void setFadingSpeed(final float fadingSpeed) {
         this.fadingSpeed = fadingSpeed;
     }
 
@@ -37,11 +33,6 @@ public class FadingParticle extends Particle {
 
     @Override
     protected boolean completed() {
-        return 0.0f > tint.a;
-    }
-
-    protected void copyData(final FadingParticle clone) {
-        super.copyData(clone);
-        clone.fadingSpeed = fadingSpeed;
+        return 0.0f >= tint.a;
     }
 }

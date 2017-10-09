@@ -3,12 +3,15 @@ package pojahn.game.entities;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Direction;
+import pojahn.lang.Obj;
+
+import java.util.List;
 
 public class OneWay extends Entity {
 
-    private MobileEntity targets[];
-    private boolean[] block;
-    private Direction direction;
+    private final List<MobileEntity> targets;
+    private final boolean[] block;
+    private final Direction direction;
 
     public OneWay(final float x, final float y, final Direction direction, final MobileEntity... targets) {
         if (direction.isDiagonal())
@@ -16,14 +19,14 @@ public class OneWay extends Entity {
 
         move(x, y);
         this.direction = direction;
-        this.targets = targets;
+        this.targets = Obj.requireNotEmpty(targets);
         block = new boolean[targets.length];
     }
 
     @Override
     public void logistics() {
-        for (int i = 0; i < targets.length; i++) {
-            final MobileEntity mobile = targets[i];
+        for (int i = 0; i < targets.size(); i++) {
+            final MobileEntity mobile = targets.get(0);
             final boolean bool;
 
             switch (direction) {
@@ -56,7 +59,7 @@ public class OneWay extends Entity {
     }
 
     public OneWay getClone() {
-        final OneWay clone = new OneWay(x(), y(), direction, targets);
+        final OneWay clone = new OneWay(x(), y(), direction, targets.toArray(new MobileEntity[0]));
         copyData(clone);
 
         if (cloneEvent != null)
