@@ -31,20 +31,6 @@ import java.util.List;
 
 public class Factory {
 
-    public static Event preventHorizontalOverlap(final GravityMan man, final Level level) {
-        return () -> {
-            final int x = (int) man.x();
-            final int right = (int) (x + man.width());
-
-            if (x <= 0 && man.getKeysDown().left)
-                man.vel.x = 0;
-            else if (right >= level.getWidth() && man.getKeysDown().right) {
-                man.vel.x = 0;
-                man.bounds.pos.x = level.getWidth() - man.width();
-            }
-        };
-    }
-
     public static Event fadeIn(final Entity target, final float speed) {
         final Bool bool = new Bool();
         return () -> {
@@ -210,13 +196,6 @@ public class Factory {
         return () -> {
             if (enemy.collidesWith(play))
                 play.touch(hp);
-        };
-    }
-
-    public static Event keepInBounds(final Entity entity) {
-        return () -> {
-            entity.bounds.pos.x = Math.max(0, Math.min(entity.x(), entity.getLevel().getWidth()));
-            entity.bounds.pos.y = Math.max(0, Math.min(entity.y(), entity.getLevel().getHeight()));
         };
     }
 

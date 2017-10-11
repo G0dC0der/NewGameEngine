@@ -62,8 +62,7 @@ public class GhostBridge extends TileBasedLevel {
          * Main Character
          */
         play = ResourceUtil.getGravityMan(resources);
-        play.move(1 * 64, 6 * 64);
-        play.addEvent(Factory.preventHorizontalOverlap(play, this));
+        play.move(64, 6 * 64);
         add(play);
 
         /*

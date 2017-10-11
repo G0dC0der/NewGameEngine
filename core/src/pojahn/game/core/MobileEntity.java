@@ -1,6 +1,7 @@
 package pojahn.game.core;
 
 import com.badlogic.gdx.math.Vector2;
+import com.google.common.collect.ImmutableSet;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.Direction;
 import pojahn.game.events.TileEvent;
@@ -10,12 +11,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+
 public class MobileEntity extends Entity {
 
-    float prevX, prevY;
     List<TileEvent> tileEvents;
-    Direction facing;
 
+    private float prevX, prevY;
+    private Direction facing;
     private float moveSpeed;
     private int facings;
     private boolean smart, frozen, moving;
@@ -72,7 +75,7 @@ public class MobileEntity extends Entity {
 
     public void setFacings(final int facings) {
         if (facings != 8 && facings != 6 && facings != 4 && facings != 2)
-            throw new IllegalArgumentException("The number of facings must be eiter 8, 6, 4 or 2.");
+            throw new IllegalArgumentException("The number of facings must be either 8, 6, 4 or 2.");
 
         this.facings = facings;
     }
@@ -357,17 +360,23 @@ public class MobileEntity extends Entity {
     }
 
     protected boolean obstacleCollision() {
-        for (final Entity obstacle : obstacles)
+        for (final Entity obstacle : getObstacles())
             if (collidesWith(obstacle))
                 return true;
 
         return false;
     }
 
+    protected Set<Entity> getObstacles() {
+        return obstacles.stream()
+            .filter(Entity::isActive)
+            .collect(toImmutableSet());
+    }
+
     protected void copyData(final MobileEntity clone) {
         super.copyData(clone);
         clone.moveSpeed = moveSpeed;
-        clone.obstacles.addAll(obstacles);
+        clone.obstacles = ImmutableSet.copyOf(obstacles);
         clone.smart = smart;
         clone.facings = facings;
     }

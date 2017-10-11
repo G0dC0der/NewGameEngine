@@ -4,8 +4,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
-import java.awt.*;
+import java.awt.Dimension;
 
 public interface HUDMessage {
 
@@ -53,16 +54,16 @@ public interface HUDMessage {
     public static HUDMessage centeredMessage(final String text, final Dimension screenSize, final Color color) {
         return new HUDMessage() {
 
-            float x = -1, y = -1;
+            Vector2 pos;
 
             @Override
             public float getY() {
-                return y;
+                return pos.y;
             }
 
             @Override
             public float getX() {
-                return x;
+                return pos.x;
             }
 
             @Override
@@ -77,7 +78,7 @@ public interface HUDMessage {
 
             @Override
             public void draw(final SpriteBatch batch, final BitmapFont font) {
-                if (x == -1 || y == -1)
+                if (pos == null)
                     calc(font);
 
                 HUDMessage.super.draw(batch, font);
@@ -89,8 +90,7 @@ public interface HUDMessage {
                 final float width = layout.width;
                 final float height = layout.height;
 
-                x = (screenSize.width / 2) - (width / 2);
-                y = (screenSize.height / 2) - (height / 2);
+                pos = new Vector2((screenSize.width / 2) - (width / 2), (screenSize.height / 2) - (height / 2));
             }
         };
     }

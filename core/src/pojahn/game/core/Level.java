@@ -96,9 +96,9 @@ public abstract class Level {
     private List<Entity> focusObjects;
     private List<TileLayer> tileLayers;
     private CheckPointHandler cph;
-    private boolean focusOnPassive;
-    private List<Entity> gameObjects, soundListeners;
+    private List<Entity> soundListeners;
 
+    List<Entity> gameObjects;
     Engine engine;
     boolean sort;
 
@@ -111,7 +111,6 @@ public abstract class Level {
         mainCharacters = new ArrayList<>();
         focusObjects = new ArrayList<>();
         cph = new CheckPointHandler();
-        focusOnPassive = true;
     }
 
     public abstract int getWidth();
@@ -407,11 +406,7 @@ public abstract class Level {
         focusObjects.remove(entity);
     }
 
-    public void focusOnPassive(final boolean focusOnPassive) {
-        this.focusOnPassive = focusOnPassive;
-    }
-
-    protected Tile onLayer(final int x, final int y) {
+    private Tile onLayer(final int x, final int y) {
         for (final TileLayer tileLayer : tileLayers) {
             if (BaseLogic.pointRectangleOverlap(tileLayer.x, tileLayer.y, tileLayer.layer.length - 1, tileLayer.layer[0].length - 1, x, y)) {
                 final int relX = x - tileLayer.x;
@@ -521,7 +516,7 @@ public abstract class Level {
 
         final Map<Boolean, List<AwaitingObject<Entity>>> deleteMap = deleteObjects.stream().collect(partitioningBy(AwaitingObject::tick));
 
-        deleteObjects = awaitingMap.get(Boolean.FALSE);
+        deleteObjects = deleteMap.get(Boolean.FALSE);
         deleteMap.get(Boolean.TRUE)
             .stream()
             .map(AwaitingObject::unwrap)
@@ -564,7 +559,9 @@ public abstract class Level {
     private void focusCamera() {
         List<? extends Entity> list = focusObjects.isEmpty() ? getNonDeadMainCharacters() : focusObjects;
         list = list.isEmpty() ? getMainCharacters() : list;
-        list = focusOnPassive ? list : list.stream().filter(Entity::isActive).collect(Collectors.toList());
+
+        if (list.isEmpty())
+            return;
 
         final Dimension size = getEngine().getScreenSize();
         final float stageWidth = getWidth();

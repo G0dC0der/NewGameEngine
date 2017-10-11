@@ -1,5 +1,7 @@
 package pojahn.game.desktop.redguyruns.util;
 
+import com.badlogic.gdx.audio.Sound;
+import org.lwjgl.openal.AL10;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.entities.Particle;
