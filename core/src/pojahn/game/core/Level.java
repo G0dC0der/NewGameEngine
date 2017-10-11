@@ -2,6 +2,7 @@ package pojahn.game.core;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
+import pojahn.game.essentials.AwaitingObject;
 import pojahn.game.essentials.CheckPointHandler;
 import pojahn.game.essentials.Keystrokes;
 import pojahn.game.essentials.Utils;
@@ -19,8 +20,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.partitioningBy;
 
 public abstract class Level {
 
@@ -87,14 +91,14 @@ public abstract class Level {
         }
     }
 
-    private List<Entry<Integer, Entity>> awaitingObjects, deleteObjects;
+    private List<AwaitingObject<Entity>> awaitingObjects, deleteObjects;
     private List<PlayableEntity> mainCharacters;
     private List<Entity> focusObjects;
     private List<TileLayer> tileLayers;
     private CheckPointHandler cph;
     private boolean focusOnPassive;
+    private List<Entity> gameObjects, soundListeners;
 
-    List<Entity> gameObjects, soundListeners;
     Engine engine;
     boolean sort;
 
@@ -194,11 +198,11 @@ public abstract class Level {
     }
 
     public void add(final Entity entity) {
-        awaitingObjects.add(new Entry<>(0, entity));
+        awaitingObjects.add(new AwaitingObject<>(0, entity));
     }
 
     public void addAfter(final Entity entity, final int framesDelay) {
-        awaitingObjects.add(new Entry<>(framesDelay, entity));
+        awaitingObjects.add(new AwaitingObject<>(framesDelay, entity));
     }
 
     public void addWhen(final Entity entity, final TaskEvent addEvent) {
@@ -352,7 +356,7 @@ public abstract class Level {
     }
 
     public void discardAfter(final Entity entity, final int framesDelay) {
-        deleteObjects.add(new Entry<>(framesDelay, entity));
+        deleteObjects.add(new AwaitingObject<>(framesDelay, entity));
     }
 
     public void discardWhen(final Entity entity, final TaskEvent discardEvent) {
@@ -507,47 +511,52 @@ public abstract class Level {
     }
 
     void place() {
-        final Iterator<Entry<Integer, Entity>> iterator = awaitingObjects.iterator();
-        while (iterator.hasNext()) {
-            final Entry<Integer, Entity> entry = iterator.next();
+        final Map<Boolean, List<AwaitingObject<Entity>>> awaitingMap = awaitingObjects.stream().collect(partitioningBy(AwaitingObject::tick));
 
-            if (entry.key-- <= 0) {
-                iterator.remove();
-                gameObjects.add(entry.value);
-                sort = true;
+        awaitingObjects = awaitingMap.get(Boolean.FALSE);
+        awaitingMap.get(Boolean.TRUE)
+            .stream()
+            .map(AwaitingObject::unwrap)
+            .forEach(this::addEntity);
 
-                entry.value.level = this;
-                entry.value.engine = engine;
-                entry.value.present = true;
-                entry.value.badge = engine.provideBadge();
-                entry.value.init();
+        final Map<Boolean, List<AwaitingObject<Entity>>> deleteMap = deleteObjects.stream().collect(partitioningBy(AwaitingObject::tick));
 
-                if (entry.value instanceof PlayableEntity) {
-                    final PlayableEntity play = (PlayableEntity) entry.value;
-                    if (!play.isGhost()) {
-                        mainCharacters.add(play);
-                        cph.addUser(play);
-                        engine.getDevice().addEntry(play.getBadge());
-                    }
-                }
+        deleteObjects = awaitingMap.get(Boolean.FALSE);
+        deleteMap.get(Boolean.TRUE)
+            .stream()
+            .map(AwaitingObject::unwrap)
+            .forEach(this::removeEntity);
+    }
+
+    private void removeEntity(final Entity entity) {
+        gameObjects.remove(entity);
+        entity.present = false;
+        entity.dispose();
+
+        if (entity instanceof PlayableEntity) {
+            final PlayableEntity play = (PlayableEntity) entity;
+            if (!play.isGhost()) {
+                mainCharacters.remove(play);
             }
         }
+    }
 
-        for (int i = 0; i < deleteObjects.size(); i++) {
-            final Entry<Integer, Entity> entry = deleteObjects.get(i);
-            if (entry.key-- <= 0) {
-                deleteObjects.remove(i);
-                i--;
-                gameObjects.remove(entry.value);
-                entry.value.present = false;
-                entry.value.dispose();
+    private void addEntity(final Entity entity) {
+        gameObjects.add(entity);
+        sort = true;
 
-                if (entry.value instanceof PlayableEntity) {
-                    final PlayableEntity play = (PlayableEntity) entry.value;
-                    if (!play.isGhost()) {
-                        mainCharacters.remove(play);
-                    }
-                }
+        entity.level = this;
+        entity.engine = engine;
+        entity.present = true;
+        entity.badge = engine.provideBadge();
+        entity.init();
+
+        if (entity instanceof PlayableEntity) {
+            final PlayableEntity play = (PlayableEntity) entity;
+            if (!play.isGhost()) {
+                mainCharacters.add(play);
+                cph.addUser(play);
+                engine.getDevice().addEntry(play.getBadge());
             }
         }
     }
