@@ -3,6 +3,8 @@ package pojahn.game.desktop.redguyruns.gui;
 import pojahn.game.core.Engine;
 import pojahn.game.desktop.GameLauncher;
 import pojahn.game.desktop.redguyruns.levels.orbit.OrbitalStation;
+import pojahn.game.desktop.redguyruns.levels.shadow.ShadowSection;
+import pojahn.game.desktop.redguyruns.levels.sprit.SpiritTemple;
 import pojahn.game.desktop.redguyruns.levels.stress.StressLevel;
 import pojahn.game.desktop.redguyruns.levels.training1.TrainingStage1;
 import pojahn.game.desktop.redguyruns.levels.training2.TrainingStage2;
@@ -20,7 +22,7 @@ public class MainClass {
 //        Replay replay = (Replay) IO.importObjectCompressed(new FileHandle(System.getProperty("user.dir") + "\\replays\\In A Hurry 34.8 SUCCESS.rlp"));
 //        record = new PlaybackRecord(replay.keystrokes, replay.meta);
 
-        final Engine engine = new Engine(new TrainingStage3(), record);
+        final Engine engine = new Engine(new ShadowSection(), record);
         engine.setGameStateEvent(GameState.SUCCESS, GameUtil.exportForGhostData(engine));
         GameLauncher.launch(engine, GameUtil.getBasicConfig());
     }

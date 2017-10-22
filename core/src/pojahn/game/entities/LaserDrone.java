@@ -93,6 +93,9 @@ public class LaserDrone extends PathDrone {
 
     @Override
     public void logistics() {
+        if (isFrozen())
+            return;
+
         if (--reloadCounter > 0) {
             if (!fireAtVisible)
                 super.logistics();

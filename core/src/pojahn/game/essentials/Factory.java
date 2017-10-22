@@ -206,7 +206,7 @@ public class Factory {
                 gravityMan.vel.x = 0;
             } else if (gravityMan.x() + gravityMan.width() > gravityMan.getLevel().getWidth()) {
                 gravityMan.bounds.pos.x = gravityMan.getLevel().getWidth() - gravityMan.width();
-                gravityMan.vel.y = 0;
+                gravityMan.vel.x = 0;
             }
 
             if (gravityMan.y() < 0) {

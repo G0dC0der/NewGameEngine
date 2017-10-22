@@ -1,6 +1,7 @@
 package pojahn.game.core;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.essentials.AwaitingObject;
 import pojahn.game.essentials.CheckPointHandler;
@@ -9,7 +10,6 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.events.Event;
 import pojahn.game.events.TaskEvent;
-import pojahn.lang.Entry;
 import pojahn.lang.Int32;
 
 import java.awt.*;
@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -569,17 +568,18 @@ public abstract class Level {
         final float windowWidth = size.width;
         final float windowHeight = size.height;
         float zoom = getEngine().getZoom();
-        float tx = 0;
-        float ty = 0;
+        float tx;
+        float ty;
 
         if (list.size() == 1) {
             final Entity entity = list.get(0);
+
             if (getEngine().getZoom() == 1.0f) {
                 final float marginX = windowWidth / 2;
                 final float marginY = windowHeight / 2;
 
-                tx = Math.min(stageWidth - windowWidth, Math.max(0, entity.centerX() - marginX)) + marginX;
-                ty = Math.min(stageHeight - windowHeight, Math.max(0, entity.centerY() - marginY)) + marginY;
+                tx = MathUtils.clamp(entity.centerX(), marginX, stageWidth - marginX);
+                ty = MathUtils.clamp(entity.centerY(), marginY, stageHeight - marginY);
             } else {
                 tx = entity.centerX();
                 ty = entity.centerY();
@@ -639,6 +639,8 @@ public abstract class Level {
             else if (ty > stageHeight - marginY)
                 ty = stageHeight - marginY;
 
+        } else {
+            return;
         }
         getEngine().setZoom(zoom);
         getEngine().translate(tx, ty);

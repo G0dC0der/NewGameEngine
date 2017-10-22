@@ -120,7 +120,7 @@ public abstract class TileBasedLevel extends Level {
         }
     }
 
-    public void restoreTiles() {
+    private void restoreTiles() {
         orgTiles.values().forEach(holder -> {
             layer.setCell(holder.x, holder.y, holder.cell);
         });

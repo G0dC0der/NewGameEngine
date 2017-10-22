@@ -10,7 +10,6 @@ import pojahn.game.essentials.Image2D;
 import pojahn.lang.Obj;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static pojahn.game.core.BaseLogic.normalize;
 
@@ -101,7 +100,7 @@ public class EvilDog extends MobileEntity {
                         entity.runActionEvent(this);
                     if (hitSound != null && soundCounter % soundDelay == 0)
                         sounds.play(hitSound);
-            });
+                });
         }
     }
 }
