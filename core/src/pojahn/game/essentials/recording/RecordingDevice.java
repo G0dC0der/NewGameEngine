@@ -14,22 +14,22 @@ public class RecordingDevice {
         recordEntries = new ArrayList<>();
     }
 
-    public void addEntry(final long badge) {
-        recordEntries.add(new KeySession(new LinkedList<>(), badge));
+    public void addEntry(final String identifier) {
+        recordEntries.add(new KeySession(new LinkedList<>(), identifier));
     }
 
-    public void addFrame(final long badge, final Keystrokes keystrokes) {
+    public void addFrame(final String identifier, final Keystrokes keystrokes) {
         for (final KeySession recordEntry : recordEntries) {
-            if (recordEntry.badge == badge) {
+            if (recordEntry.identifier.equals(identifier)) {
                 recordEntry.keystrokes.add(keystrokes);
                 return;
             }
         }
     }
 
-    public Keystrokes nextInput(final long badge) {
+    public Keystrokes nextInput(final String identifier) {
         for (final KeySession recordEntry : recordEntries) {
-            if (recordEntry.badge == badge) {
+            if (recordEntry.identifier.equals(identifier)) {
                 return recordEntry.nextInput();
             }
         }

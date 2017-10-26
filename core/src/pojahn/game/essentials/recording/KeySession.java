@@ -7,15 +7,15 @@ import java.util.List;
 
 public class KeySession implements Serializable {
 
-    private static final long serialVersionUID = -1L;
+    private static final long serialVersionUID = 1L;
 
     public final List<Keystrokes> keystrokes;
-    final long badge;
+    final String identifier;
     private transient int index;
 
-    KeySession(final List<Keystrokes> keystrokes, final long badge) {
+    KeySession(final List<Keystrokes> keystrokes, final String identifier) {
         this.keystrokes = keystrokes;
-        this.badge = badge;
+        this.identifier = identifier;
     }
 
     public boolean hasEnded() {

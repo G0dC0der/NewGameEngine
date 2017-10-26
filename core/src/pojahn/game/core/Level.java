@@ -448,12 +448,12 @@ public abstract class Level {
                     if (play.isGhost())
                         buttonsDown = play.nextInput();
                     else if (engine.active() && play.isAlive())
-                        buttonsDown = engine.isReplaying() ? engine.getDevice().nextInput(play.getBadge()) : Keystrokes.from(play.getController());
+                        buttonsDown = engine.isReplaying() ? engine.getDevice().nextInput(play.identifier) : Keystrokes.from(play.getController());
                     else
                         buttonsDown = Keystrokes.AFK;
 
                     if (play.isAlive() && !play.isGhost() && engine.active() && !engine.isReplaying())
-                        engine.getDevice().addFrame(play.getBadge(), buttonsDown);
+                        engine.getDevice().addFrame(play.identifier, buttonsDown);
 
                     if (buttonsDown.suicide) {
                         play.setState(Vitality.DEAD);
@@ -538,15 +538,18 @@ public abstract class Level {
         entity.level = this;
         entity.engine = engine;
         entity.present = true;
-        entity.badge = engine.provideBadge();
         entity.init();
 
         if (entity instanceof PlayableEntity) {
             final PlayableEntity play = (PlayableEntity) entity;
             if (!play.isGhost()) {
+                if (play.identifier == null) {
+                    throw new RuntimeException("A non-ghost main character must have an identifier set!");
+                }
+
                 mainCharacters.add(play);
                 cph.addUser(play);
-                engine.getDevice().addEntry(play.getBadge());
+                engine.getDevice().addEntry(play.identifier);
             }
         }
     }

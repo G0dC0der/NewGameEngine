@@ -61,6 +61,7 @@ public class ResourceUtil {
     }
 
     private static void setMainAttributes(final ResourceManager res, final PlayableEntity play) {
+        play.identifier = "main-char";
         play.setImage(4, res.getAnimation("main"));
         play.healthHud = new Animation<>(3, res.getImage("hearth.png"));
         play.deathImage = new EntityBuilder().image(4, res.getAnimation("maindeath")).build(Particle.class);

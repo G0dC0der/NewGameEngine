@@ -40,7 +40,6 @@ public class Entity {
     Engine engine;
     List<Event> events, deleteEvents;
     boolean present;
-    long badge = -1;
 
     private Animation<Image2D> image;
     private Entity originator;
@@ -91,13 +90,6 @@ public class Entity {
 
     public Animation<Image2D> getImage() {
         return image;
-    }
-
-    public final long getBadge() {
-        if (badge == -1) {
-            throw new RuntimeException("Can not get badge on an entity not added yet.");
-        }
-        return badge;
     }
 
     public Entity move(final float x, final float y) {
