@@ -57,7 +57,7 @@ public class InAHurry extends TileBasedLevel {
         /*
          * Coin
          */
-        final Particle coinTake = Particle.from(4, resources.getAnimation("cointake"));
+        final Particle coinTake = Particle.imageParticle(4, resources.getAnimation("cointake"));
 
         final Entity coin = new Entity();
         coin.setImage(5, resources.getAnimation("coin"));

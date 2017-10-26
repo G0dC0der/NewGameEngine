@@ -557,9 +557,8 @@ public class DeathEgg extends TileBasedLevel {
                 }
 
                 if (collided.value) {
-                    final Particle particle = new Particle();
+                    final Particle particle = Particle.imageParticle(1, res.getAnimation("teslaexp"));
                     particle.setIntroSound(res.getSound("teslaboom.wav"));
-                    particle.setImage(1, res.getAnimation("teslaexp"));
                     particle.center(pd);
                     particle.sounds.useFalloff = true;
                     add(particle);
@@ -649,8 +648,7 @@ public class DeathEgg extends TileBasedLevel {
         mine.setHitbox(Hitbox.PIXEL);
         mine.addEvent(() -> {
             if (play.isAlive() && mine.collidesWith(play)) {
-                final Particle exp = new Particle();
-                exp.setImage(1, res.getAnimation("exp"));
+                final Particle exp = Particle.imageParticle(1, res.getAnimation("exp"));
                 exp.setIntroSound(res.getSound("mineexp.wav"));
                 exp.center(mine);
 
@@ -683,8 +681,7 @@ public class DeathEgg extends TileBasedLevel {
             }
 
             if (!fieldOffline && ++c.value % spawnDelay == 0) {
-                final Particle particle = new Particle();
-                particle.setImage(1, res.getAnimation("tesla"));
+                final Particle particle = Particle.imageParticle(1, res.getAnimation("tesla"));
                 particle.setIntroSound(res.getSound("spark.wav"));
                 particle.move(MathUtils.random(x, x + width - teslaWidth), top ? (y + height - particle.halfHeight()) : (y - particle.halfHeight()));
                 particle.sounds.useFalloff = true;

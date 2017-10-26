@@ -165,8 +165,7 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Turrets
          */
-        final Particle bulletExp = new Particle();
-        bulletExp.setImage(3, res.getAnimation("smallexp"));
+        final Particle bulletExp = Particle.imageParticle(3, res.getAnimation("smallexp"));
         bulletExp.setIntroSound(res.getSound("gmexplode.wav"));
         bulletExp.sounds.maxVolume = .5f;
         bulletExp.sounds.useFalloff = true;
@@ -400,19 +399,18 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Turrets in elevator room
          */
-        final Particle missileExp = Particle.from(3, res.getAnimation("missileexp"));
+        final Particle missileExp = Particle.imageParticle(3, res.getAnimation("missileexp"));
         missileExp.setIntroSound(res.getSound("missileexp.wav"));
 
         final Missile missile = new Missile(0, 0, man);
         missile.setImage(res.getImage("missile.png"));
         missile.fastVeryFloaty();
         missile.setImpact(missileExp);
-        missile.setTrailer(Particle.from(2, res.getAnimation("trailer")));
+        missile.setTrailer(Particle.imageParticle(2, res.getAnimation("trailer")));
 
-        final Particle gunfire = new Particle();
+        final Particle gunfire = Particle.imageParticle(5, res.getAnimation("gunfire"));
         gunfire.scaleX = gunfire.scaleY = .5f;
         gunfire.zIndex(10);
-        gunfire.setImage(5, res.getAnimation("gunfire"));
         gunfire.setIntroSound(res.getSound("missile_launch.wav"));
 //        gunfire.sounds.maxVolume = .7f;
 
@@ -492,9 +490,8 @@ public class OrbitalStation extends TileBasedLevel {
         /*
          * Lasers
          */
-        exp = new Particle();
+        exp = Particle.imageParticle(3, res.getAnimation("exp"));
         exp.setIntroSound(res.getSound("gmexplode.wav"));
-        exp.setImage(3, res.getAnimation("exp"));
         exp.zIndex(1000);
 
         final Shuttle target1 = new Shuttle(2064, 3500);
@@ -520,7 +517,7 @@ public class OrbitalStation extends TileBasedLevel {
         add(laser2);
         add(target2);
 
-        final Particle magicTrailer = Particle.from(2, res.getAnimation("magicbullet"));
+        final Particle magicTrailer = Particle.imageParticle(2, res.getAnimation("magicbullet"));
         magicTrailer.scaleX = magicTrailer.scaleY = .5f;
 
         final Bullet magicBullet = new Bullet(man);
@@ -596,9 +593,8 @@ public class OrbitalStation extends TileBasedLevel {
         final int freq = MathUtils.random(80, 130);
         final Int32 c = new Int32();
 
-        final Particle particle = new Particle();
+        final Particle particle = Particle.imageParticle(3, res.getAnimation("thunder"));
         particle.setIntroSound(res.getSound("zap.wav"));
-        particle.setImage(res.getAnimation("thunder"));
         particle.sounds.useFalloff = true;
         particle.sounds.maxDistance = 500;
         particle.sounds.maxVolume = .6f;
@@ -690,9 +686,8 @@ public class OrbitalStation extends TileBasedLevel {
                 man.lose();
                 discard(mine);
 
-                final Particle exp = new Particle();
+                final Particle exp = Particle.imageParticle(3, res.getAnimation("exp"));
                 exp.setIntroSound(res.getSound("gmexplode.wav"));
-                exp.setImage(3, res.getAnimation("exp"));
                 add(exp.center(mine));
             }
         });
@@ -703,9 +698,8 @@ public class OrbitalStation extends TileBasedLevel {
     private void addTurret(final float x, final float y, final Bullet bullet) {
         final Entity turret = new EntityBuilder().move(x, y).image(res.getImage("cannonturret.png")).zIndex(20).build();
 
-        final Particle firingAnim = new Particle();
+        final Particle firingAnim = Particle.imageParticle(3, res.getAnimation("fireanim"));
         firingAnim.zIndex(30);
-        firingAnim.setImage(3, res.getAnimation("fireanim"));
         firingAnim.setIntroSound(res.getSound("gmfire.wav"));
         firingAnim.sounds.maxVolume = .5f;
         firingAnim.sounds.useFalloff = true;

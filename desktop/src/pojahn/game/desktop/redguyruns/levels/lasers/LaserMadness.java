@@ -102,8 +102,7 @@ public class LaserMadness extends PixelBasedLevel {
         /*
 		 * Lasers
 		 */
-        final Particle impact = new Particle();
-        impact.setImage(3, res.getAnimation("trailer"));
+        final Particle impact = Particle.imageParticle(3, res.getAnimation("trailer"));
         impact.setIntroSound(res.getSound("boom.wav"));
         impact.sounds.useFalloff = true;
         impact.sounds.maxDistance = 550;

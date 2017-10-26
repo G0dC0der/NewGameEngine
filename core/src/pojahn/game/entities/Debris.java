@@ -2,7 +2,6 @@ package pojahn.game.entities;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.Level;
 
 public class Debris extends Particle {
 
@@ -11,7 +10,6 @@ public class Debris extends Particle {
     private float gravity, mass, damping, delta;
     private Particle impact, trailer;
     private int spawns, trailerDelay, counter;
-    private boolean first;
 
     public Debris(final float vx, final float toleranceX, final float vy, final float toleranceY) {
         this.vx = vx;
@@ -42,34 +40,36 @@ public class Debris extends Particle {
     }
 
     @Override
-    public void logistics() {
-        final Level l = getLevel();
+    protected boolean completed() {
+        return occupiedAt(x(), y());
+    }
 
-        if (!first) {
-            first = true;
-            sounds.play(introSound);
+    @Override
+    protected void outro() {
+        if (impact != null)
+            getLevel().add(impact.getClone().center(this));
+    }
 
-            for (int i = 0; i < spawns; i++) {
-                final Debris clone = getClone();
-                clone.spawns = 0;
-                if (spawns > 3)
-                    clone.introSound = null;
-                l.add(clone);
-            }
+    @Override
+    protected void erupt() {
+        for (int i = 0; i < spawns; i++) {
+            final Debris clone = getClone();
+            clone.spawns = 0;
+            if (spawns > 3)
+                clone.setIntroSound(null);
+
+            getLevel().add(clone);
         }
+    }
 
+    @Override
+    protected void frameStep() {
         drag();
         applyYForces();
         applyXForces();
 
         if (trailer != null && ++counter % trailerDelay == 0)
-            l.add(trailer.getClone().center(this));
-
-        if (occupiedAt(x(), y())) {
-            l.discard(this);
-            if (impact != null)
-                l.add(impact.getClone().center(this));
-        }
+            getLevel().add(trailer.getClone().center(this));
     }
 
     public void setTrailer(final Particle trailer, final int trailerDelay) {
@@ -93,7 +93,7 @@ public class Debris extends Particle {
         bounds.pos.y -= vel.y * getEngine().delta;
     }
 
-    protected void drag() {
+    private void drag() {
         final float force = mass * gravity;
         vel.y *= 1.0 - (damping * getEngine().delta);
 

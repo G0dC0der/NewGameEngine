@@ -163,17 +163,14 @@ public class LightsOut extends PixelBasedLevel {
         dummy2.appendPath();
         dummy2.appendPath(dummy2.x(), 868);
 
-        final Particle trailer = new Particle();
-        trailer.setImage(1, res.getAnimation("explosion"));
+        final Particle trailer = Particle.imageParticle(1, res.getAnimation("explosion"));
 
-        final Particle fireExp = new Particle();
-        fireExp.setImage(3, res.getAnimation("explosion"));
+        final Particle fireExp = Particle.imageParticle(3, res.getAnimation("explosion"));
         fireExp.setIntroSound(res.getSound("missileexp.wav"));
         fireExp.sounds.useFalloff = true;
         fireExp.sounds.power = 15;
 
-        final Particle firingAnim = new Particle();
-        firingAnim.setImage(2, res.getAnimation("explosion"));
+        final Particle firingAnim = Particle.imageParticle(2, res.getAnimation("explosion"));
         firingAnim.setIntroSound(res.getSound("missilefire.wav"));
         firingAnim.sounds.useFalloff = true;
         firingAnim.sounds.power = 15;

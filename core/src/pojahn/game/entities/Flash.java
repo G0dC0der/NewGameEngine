@@ -19,24 +19,17 @@ public class Flash extends Particle {
     }
 
     @Override
-    public void logistics() {
-    }
-
-    @Override
     public void render(final SpriteBatch batch) {
-        if (framesAlive++ < duration) {
-            final Dimension viewport = getEngine().getScreenSize();
-            final Color orgColor = batch.getColor();
-            final Color newColor = new Color(orgColor);
-            newColor.a = (duration - framesAlive) * (1.0f / duration);
+        final Dimension viewport = getEngine().getScreenSize();
+        final Color orgColor = batch.getColor();
+        final Color newColor = new Color(orgColor);
+        newColor.a = (duration - framesAlive) * (1.0f / duration);
 
-            batch.setColor(newColor);
-            getEngine().hudCamera();
-            batch.draw(flashImage, 0, 0, viewport.width, viewport.height);
-            getEngine().gameCamera();
-            batch.setColor(orgColor);
-        } else
-            getLevel().discard(this);
+        batch.setColor(newColor);
+        getEngine().hudCamera();
+        batch.draw(flashImage, 0, 0, viewport.width, viewport.height);
+        getEngine().gameCamera();
+        batch.setColor(orgColor);
     }
 
     @Override
@@ -49,4 +42,15 @@ public class Flash extends Particle {
 
         return clone;
     }
+
+    @Override
+    protected boolean completed() {
+        return framesAlive++ > duration;
+    }
+
+    @Override
+    protected void erupt() {}
+
+    @Override
+    protected void frameStep() {}
 }

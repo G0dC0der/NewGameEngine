@@ -1,60 +1,175 @@
 package pojahn.game.entities;
 
 import com.badlogic.gdx.audio.Sound;
+import com.google.common.collect.ImmutableList;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Image2D;
 
-public class Particle extends MobileEntity {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-    Sound introSound;
-    private boolean soundPlayed;
+public abstract class Particle extends MobileEntity {
+
+    private Sound introSound;
+    private boolean erupted;
+    private List<Particle> introBits, outroBits;
 
     public Particle() {
+        introBits = Collections.emptyList();
+        outroBits = Collections.emptyList();
     }
 
-    public static Particle fromSound(final Sound sound) {
-        final Particle particle = new Particle();
-        particle.setIntroSound(sound);
+    @Override
+    public final void logistics() {
+        if (!erupted) {
+            erupted = true;
+            sounds.play(introSound);
+            erupt();
 
-        return particle;
+            introBits.forEach(bit -> getLevel().add(bit.getClone().center(this)));
+        }
+
+        frameStep();
+
+        if (completed()) {
+            outroBits.forEach(bit -> getLevel().add(bit.getClone().center(this)));
+            outro();
+            getLevel().discard(this);
+        }
     }
 
-    public Particle getClone() {
-        final Particle clone = new Particle();
-        copyData(clone);
-        if (cloneEvent != null)
-            cloneEvent.handleClonded(clone);
+    protected abstract boolean completed();
 
-        return clone;
+    protected void erupt() {
     }
+
+    protected void frameStep() {
+    }
+
+    protected void outro() {
+    }
+
+    public abstract Particle getClone();
 
     public void setIntroSound(final Sound introSound) {
         this.introSound = introSound;
     }
 
-    @Override
-    public void logistics() {
-        if (!soundPlayed && introSound != null) {
-            soundPlayed = true;
-            sounds.play(introSound);
-        }
-
-        if (completed())
-            getLevel().discard(this);
+    public void setIntroBits(final Particle... introBits) {
+        this.introBits = ImmutableList.copyOf(introBits);
     }
 
-    protected boolean completed() {
-        return !isVisible() || getImage().hasEnded();
-    }
-
-    public static Particle from(final int animationSpeed, final Image2D[] image) {
-        final Particle particle = new Particle();
-        particle.setImage(animationSpeed, image);
-        return particle;
+    public void setOutroBits(final Particle... outroBits) {
+        this.outroBits = ImmutableList.copyOf(outroBits);
     }
 
     protected void copyData(final Particle clone) {
         super.copyData(clone);
         clone.introSound = introSound;
+        clone.introBits = introBits;
+        clone.outroBits = outroBits;
+    }
+
+    public static Particle fadingParticle(final float fadeSpeed) {
+        return new Particle() {
+            @Override
+            protected boolean completed() {
+                return tint.a <= 0.0f;
+            }
+
+            @Override
+            protected void frameStep() {
+                tint.a -= fadeSpeed;
+            }
+
+            @Override
+            public Particle getClone() {
+                final Particle clone = fadingParticle(fadeSpeed);
+                copyData(clone);
+                if (cloneEvent != null) {
+                    cloneEvent.handleClonded(clone);
+                }
+
+                return clone;
+            }
+        };
+    }
+
+    public static Particle shrinkingParticle(final float shrinkSpeed) {
+        return new Particle() {
+            @Override
+            protected boolean completed() {
+                return scaleX <= 0.0f;
+            }
+
+            @Override
+            protected void frameStep() {
+                scaleX -= shrinkSpeed;
+                scaleY -= shrinkSpeed;
+            }
+
+            @Override
+            public Particle getClone() {
+                final Particle clone = shrinkingParticle(shrinkSpeed);
+                copyData(clone);
+                if (cloneEvent != null) {
+                    cloneEvent.handleClonded(clone);
+                }
+
+                return clone;
+            }
+        };
+    }
+
+    public static Particle fromSound(final Sound sound) {
+        return fromSound(sound, false);
+    }
+
+    public static Particle fromSound(final Sound sound, final boolean soundFalloff) {
+        final Particle particle = new Particle() {
+            @Override
+            protected boolean completed() {
+                return true;
+            }
+
+            @Override
+            public Particle getClone() {
+                final Particle clone = fromSound(sound, soundFalloff);
+                copyData(clone);
+                if (cloneEvent != null) {
+                    cloneEvent.handleClonded(clone);
+                }
+
+                return clone;
+            }
+        };
+        particle.setIntroSound(sound);
+        particle.sounds.useFalloff = soundFalloff;
+
+        return particle;
+    }
+
+    public static Particle imageParticle(final int speed, final Image2D... images) {
+        final Particle particle = new Particle() {
+            @Override
+            protected boolean completed() {
+                return !isVisible() || getImage().hasEnded();
+            }
+
+            @Override
+            public Particle getClone() {
+                final Particle clone = imageParticle(speed, images);
+                copyData(clone);
+                if (cloneEvent != null) {
+                    cloneEvent.handleClonded(clone);
+                }
+
+                return clone;
+            }
+        };
+        particle.setImage(speed, images);
+
+        return particle;
     }
 }

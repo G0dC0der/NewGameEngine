@@ -64,7 +64,7 @@ public class ResourceUtil {
         play.identifier = "main-char";
         play.setImage(4, res.getAnimation("main"));
         play.healthHud = new Animation<>(3, res.getImage("hearth.png"));
-        play.deathImage = new EntityBuilder().image(4, res.getAnimation("maindeath")).build(Particle.class);
+        play.deathImage = Particle.imageParticle(4, res.getAnimation("maindeath"));
         play.setController(Controller.DEFAULT_CONTROLLER);
         play.addTileEvent(Factory.crushable(play));
         play.addTileEvent(Factory.completable(play));

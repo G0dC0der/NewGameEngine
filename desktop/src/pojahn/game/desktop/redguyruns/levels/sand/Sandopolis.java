@@ -189,8 +189,7 @@ public class Sandopolis extends TileBasedLevel {
                 discard(item);
                 uglySun.hit();
 
-                final Particle bolt = new Particle();
-                bolt.setImage(4, res.getAnimation("bolt"));
+                final Particle bolt = Particle.imageParticle(4, res.getAnimation("bolt"));
                 bolt.setIntroSound(res.getSound("boltstrike.wav"));
                 bolt.move(uglySun.centerX(), uglySun.centerY() - uglySun.height() - 50);
                 bolt.zIndex(1000);

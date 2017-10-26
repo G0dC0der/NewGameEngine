@@ -191,16 +191,14 @@ public class DiamondCave extends PixelBasedLevel {
 		/*
 		 * Cannons
 		 */
-        final Particle explosion = new Particle();
-        explosion.setImage(5, res.getAnimation("iceexp"));
+        final Particle explosion = Particle.imageParticle(5, res.getAnimation("iceexp"));
         explosion.zIndex(200);
         explosion.setIntroSound(res.getSound("bum.wav"));
         explosion.sounds.useFalloff = true;
         explosion.sounds.maxVolume = .7f;
         explosion.sounds.power = 15;
 
-        final Particle fireAnim = new Particle();
-        fireAnim.setImage(2, res.getAnimation("gunfire"));
+        final Particle fireAnim = Particle.imageParticle(2, res.getAnimation("gunfire"));
         fireAnim.zIndex(200);
         fireAnim.offsetX = -fireAnim.halfWidth();
         fireAnim.offsetY = -13;
@@ -396,8 +394,7 @@ public class DiamondCave extends PixelBasedLevel {
         /*
          * Bling Bling
          */
-        blingbling = new Particle();
-        blingbling.setImage(9, res.getAnimation("bling"));
+        blingbling = Particle.imageParticle(9, res.getAnimation("bling"));
         blingbling.zIndex(500);
 
         final Dimension screenSize = getEngine().getScreenSize();
@@ -410,7 +407,7 @@ public class DiamondCave extends PixelBasedLevel {
         });
     }
 
-    void addCrystal(final float x, final float y) {
+    private void addCrystal(final float x, final float y) {
         crystals++;
 
         final Entity crystal = new Entity();
@@ -426,11 +423,11 @@ public class DiamondCave extends PixelBasedLevel {
         add(crystal);
     }
 
-    PathDrone getBacteria(final float x, final float y) {
+    private PathDrone getBacteria(final float x, final float y) {
         return getBacteria(new PathDrone.Waypoint(x, y, 0, false, null));
     }
 
-    PathDrone getBacteria(final PathDrone.Waypoint... waypoints) {
+    private PathDrone getBacteria(final PathDrone.Waypoint... waypoints) {
         class Int32 {
             int i;
         }
@@ -453,27 +450,7 @@ public class DiamondCave extends PixelBasedLevel {
         return b;
     }
 
-    PathDrone.Waypoint[] randomWallPoints() {
-        int last = -1;
-        final int quantity = new Random().nextInt(100) + 100;
-        final List<PathDrone.Waypoint> pdlist = new ArrayList<>(quantity);
-        final Random r = new Random();
-
-        for (int i = 0; i < quantity; i++) {
-            final int dir = r.nextInt(4);
-            if (dir != last) {
-                last = dir;
-
-                final Point2D.Float point = getDirection(dir);
-                pdlist.add(new PathDrone.Waypoint(point.x, point.y, 0, false, null));
-            } else
-                i--;
-        }
-
-        return pdlist.toArray(new PathDrone.Waypoint[pdlist.size()]);
-    }
-
-    Point2D.Float getDirection(final int dir) {
+    private Point2D.Float getDirection(final int dir) {
         final Point2D.Float point = new Point2D.Float();
         final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
         final int minX = 2303;

@@ -1,7 +1,6 @@
 package pojahn.game.desktop.redguyruns.levels.mutant;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -9,8 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -22,7 +19,6 @@ import pojahn.game.entities.OneWay;
 import pojahn.game.entities.Particle;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.Projectile;
-import pojahn.game.entities.ShrinkingParticle;
 import pojahn.game.entities.Shuttle;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.Weapon;
@@ -486,7 +482,7 @@ public class MutantLab extends PixelBasedLevel {
         final Particle soundParticle = Particle.fromSound(res.getSound("plasma.wav"));
         soundParticle.sounds.useFalloff = true;
 
-        final ShrinkingParticle trailer = new ShrinkingParticle(.01f);
+        final Particle trailer = Particle.shrinkingParticle(.01f);
         trailer.setImage(3, res.getAnimation("ring"));
         trailer.scaleX = trailer.scaleY = .6f;
 

@@ -7,7 +7,6 @@ public class Shockwave extends Particle {
     private final int size, freq;
     private int tileWidth, tileHeight, counter, radius;
     private TileBasedLevel level;
-    private boolean first;
 
     public Shockwave(final int size, final int freq) {
         if (size <= 1)
@@ -18,7 +17,6 @@ public class Shockwave extends Particle {
 
         radius = 1;
         counter = -1;
-        first = true;
     }
 
     @Override
@@ -40,26 +38,28 @@ public class Shockwave extends Particle {
     }
 
     @Override
-    public void logistics() {
-        super.logistics();
+    protected boolean completed() {
+        return !isVisible() || getImage().hasEnded();
+    }
 
-        if (first) {
-            first = false;
+    @Override
+    protected void erupt() {
+        if (freq <= 0) {
+            final int tileX = (int) (x() / tileWidth);
+            final int tileY = (int) (y() / tileHeight);
+            level.transformTiles(tileX, tileY, size, null);
+        } else {
+            getLevel().temp(() -> {
+                if (++counter == 0 || counter % freq == 0) {
+                    final int tileX = (int) (x() / tileWidth);
+                    final int tileY = (int) (y() / tileHeight);
 
-            if (freq <= 0) {
-                final int tileX = (int) (x() / tileWidth);
-                final int tileY = (int) (y() / tileHeight);
-                level.transformTiles(tileX, tileY, size, null);
-            } else {
-                getLevel().temp(() -> {
-                    if (++counter == 0 || counter % freq == 0) {
-                        final int tileX = (int) (x() / tileWidth);
-                        final int tileY = (int) (y() / tileHeight);
-
-                        level.transformTiles(tileX, tileY, ++radius, null);
-                    }
-                }, () -> radius > size);
-            }
+                    level.transformTiles(tileX, tileY, ++radius, null);
+                }
+            }, () -> radius > size);
         }
     }
+
+    @Override
+    protected void frameStep() {}
 }

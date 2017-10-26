@@ -187,9 +187,8 @@ public class GhostBridge extends TileBasedLevel {
     }
 
     private Particle getGlow(final Entity parent) {
-        final Particle glow = new Particle();
+        final Particle glow = Particle.imageParticle(7, resources.getAnimation("glow"));
         glow.zIndex(10);
-        glow.setImage(7, resources.getAnimation("glow"));
         glow.center(parent);
 
         return glow;

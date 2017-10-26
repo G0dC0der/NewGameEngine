@@ -371,11 +371,10 @@ public class SpiritTemple extends TileBasedLevel {
         /*
          * Boss
          */
-        final Particle fakeGunfire = new Particle();
+        final Particle fakeGunfire = Particle.fromSound(resources.getSound("gearfire.wav"));
         fakeGunfire.setVisible(false);
-        fakeGunfire.setIntroSound(resources.getSound("gearfire.wav"));
 
-        final Particle gearExp = Particle.from(4, resources.getAnimation("puff"));
+        final Particle gearExp = Particle.imageParticle(4, resources.getAnimation("puff"));
         gearExp.zIndex(Integer.MAX_VALUE);
         gearExp.setIntroSound(resources.getSound("gearboom.wav"));
         gearExp.sounds.useFalloff = true;
@@ -391,8 +390,7 @@ public class SpiritTemple extends TileBasedLevel {
         gear.rotate(false);
         gear.follow(true);
 
-        final Particle dieAnimation = new Particle();
-        dieAnimation.setImage(5, resources.getAnimation("bossdeath"));
+        final Particle dieAnimation = Particle.imageParticle(5, resources.getAnimation("bossdeath"));
         dieAnimation.zIndex(Integer.MAX_VALUE);
 
         final Boss boss = new Boss();
@@ -459,8 +457,7 @@ public class SpiritTemple extends TileBasedLevel {
             }
         });
 
-        final Particle smashEffect = new Particle();
-        smashEffect.setImage(4, resources.getAnimation("bosshit"));
+        final Particle smashEffect = Particle.imageParticle(4, resources.getAnimation("bosshit"));
         smashEffect.setIntroSound(resources.getSound("bosshurt.wav"));
 
         final PathDrone fist = new PathDrone(3799, 3323);

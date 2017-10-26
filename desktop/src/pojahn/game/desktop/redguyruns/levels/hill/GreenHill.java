@@ -136,8 +136,7 @@ public class GreenHill extends PixelBasedLevel {
         bird.appendPath(910, 100, 2, false, null);
         bird.appendPath(1375, 100, 2, false, null);
 
-        final Particle pooImpact = new Particle();
-        pooImpact.setImage(res.getAnimation("poosplash"));
+        final Particle pooImpact = Particle.imageParticle(3, res.getAnimation("poosplash"));
         pooImpact.setIntroSound(res.getSound("splash.wav"));
         pooImpact.sounds.useFalloff = true;
 

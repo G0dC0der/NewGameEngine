@@ -11,8 +11,8 @@ import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.EvilDog;
+import pojahn.game.entities.Particle;
 import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.ShrinkingParticle;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Animation;
@@ -357,7 +357,7 @@ public class GuardedKey extends TileBasedLevel {
         final Int32 c = new Int32();
         z.addEvent(() -> {
             if (++c.value % 6 == 0) {
-                final ShrinkingParticle part = new ShrinkingParticle(.045f);
+                final Particle part = Particle.shrinkingParticle(.045f);
                 part.setImage(res.getImage("spark.png"));
                 part.move(MathUtils.random(z.x(), z.x() + z.width()),
                         MathUtils.random(z.y(), z.y() + z.height()));

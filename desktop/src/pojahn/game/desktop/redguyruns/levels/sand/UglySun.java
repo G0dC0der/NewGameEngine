@@ -9,7 +9,6 @@ import pojahn.game.entities.AcceleratingBullet;
 import pojahn.game.entities.LaserDrone;
 import pojahn.game.entities.Particle;
 import pojahn.game.entities.Projectile;
-import pojahn.game.entities.ShrinkingParticle;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.Image2D;
@@ -39,7 +38,7 @@ public class UglySun extends MobileEntity {
         laserDrone.setStartupSound(res.getSound("lasercharge.wav"));
         laserDrone.setFiringSound(res.getSound("laserattack.wav"));
 
-        final ShrinkingParticle trailer = new ShrinkingParticle();
+        final Particle trailer = Particle.shrinkingParticle(.05f);
         trailer.setImage(res.getAnimation("fireball"));
         trailer.scaleX = trailer.scaleY = .85f;
 
@@ -101,9 +100,8 @@ public class UglySun extends MobileEntity {
         } else if (damageTaken == 3) {
             getLevel().discard(this);
 
-            final Particle deathImg = new Particle();
+            final Particle deathImg = Particle.imageParticle(2, res.getAnimation("bossexp"));
             deathImg.setIntroSound(res.getSound("bossdie.wav"));
-            deathImg.setImage(2, res.getAnimation("bossexp"));
             getLevel().add(deathImg);
             getLevel().runOnceAfter(() -> target.setState(Vitality.COMPLETED), 120);
         }

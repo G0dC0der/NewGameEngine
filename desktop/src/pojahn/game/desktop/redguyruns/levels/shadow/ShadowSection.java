@@ -7,15 +7,14 @@ import com.badlogic.gdx.math.MathUtils;
 import com.google.common.collect.ImmutableMap;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
-import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.BigImage;
 import pojahn.game.entities.Button;
 import pojahn.game.entities.Collectable;
 import pojahn.game.entities.EvilDog;
-import pojahn.game.entities.FadingParticle;
 import pojahn.game.entities.LaserDrone;
+import pojahn.game.entities.Particle;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.PushableObject;
 import pojahn.game.entities.SolidPlatform;
@@ -117,7 +116,7 @@ public class ShadowSection extends TileBasedLevel {
         /*
          * Moving head
          */
-        final FadingParticle headGone = new FadingParticle(.009f);
+        final Particle headGone = Particle.fadingParticle(.009f);
         headGone.setImage(res.getAnimation("head")[0]);
 
         final int freezeFrames = 70;
