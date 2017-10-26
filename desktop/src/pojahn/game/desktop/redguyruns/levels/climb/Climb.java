@@ -20,7 +20,7 @@ import pojahn.game.entities.JumpingThwump;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.SolidPlatform.FollowMode;
-import pojahn.game.entities.TransformablePlatform;
+import pojahn.game.entities.TilePlatform;
 import pojahn.game.entities.Wind;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Animation;
@@ -202,20 +202,20 @@ public class Climb extends TileBasedLevel {
         /*
          * Crushers
          */
-        final TransformablePlatform crush1 = new TransformablePlatform(90 * 24, 53 * 24, play);
+        final TilePlatform crush1 = new TilePlatform(90 * 24, 53 * 24, play);
         crush1.setImage(resources.getImage("crusher.png"));
         crush1.appendPath();
         crush1.appendPath(94 * 24, crush1.y());
         crush1.setMoveSpeed(1.5f);
 
-        final TransformablePlatform crush2 = new TransformablePlatform(94 * 24, 46 * 24, play);
+        final TilePlatform crush2 = new TilePlatform(94 * 24, 46 * 24, play);
         crush2.setImage(resources.getImage("crusher2.png"));
         crush2.appendPath();
         crush2.appendPath(crush2.x(), 51 * 24);
         crush2.setMoveSpeed(1.2f);
         crush2.setFollowMode(FollowMode.STRICT);
 
-        final TransformablePlatform crush3 = new TransformablePlatform(90 * 24, 51 * 24, play);
+        final TilePlatform crush3 = new TilePlatform(90 * 24, 51 * 24, play);
         crush3.setImage(resources.getImage("crusher2.png"));
         crush3.appendPath();
         crush3.appendPath(crush3.x(), 46 * 24);

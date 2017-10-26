@@ -12,7 +12,7 @@ import pojahn.game.entities.OneWay;
 import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.SolidPlatform.FollowMode;
-import pojahn.game.entities.TransformablePlatform;
+import pojahn.game.entities.TilePlatform;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
@@ -299,7 +299,7 @@ public class SquareTown extends PixelBasedLevel {
          * Metal Blocks
          */
         final Image2D steelBlockImg = resources.getImage("steelBlockImg.png");
-        final TransformablePlatform met1 = new TransformablePlatform(2760, 1859, play);
+        final TilePlatform met1 = new TilePlatform(2760, 1859, play);
         met1.setImage(steelBlockImg);
         met1.setMoveSpeed(2);
         met1.appendPath(2760, 1859);
@@ -307,7 +307,7 @@ public class SquareTown extends PixelBasedLevel {
         met1.appendPath(2820, 1680);
         met1.appendPath(2820, 1859, 100, true, null);
 
-        final TransformablePlatform met2 = met1.getClone();
+        final TilePlatform met2 = met1.getClone();
         met2.move(2760, 1441);
         met2.clearData();
         met2.appendPath(2760, 1441);
@@ -470,7 +470,7 @@ public class SquareTown extends PixelBasedLevel {
 
         final Entity eyeObj = new Entity();
 
-        final TransformablePlatform block = new TransformablePlatform(x, y, play) {
+        final TilePlatform block = new TilePlatform(x, y, play) {
             @Override
             public void unfreeze() {
                 super.unfreeze();

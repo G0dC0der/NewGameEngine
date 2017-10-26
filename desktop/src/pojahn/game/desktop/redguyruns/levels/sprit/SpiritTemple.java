@@ -24,7 +24,7 @@ import pojahn.game.entities.PushableObject;
 import pojahn.game.entities.Reloadable;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.SolidPlatform.FollowMode;
-import pojahn.game.entities.TransformablePlatform;
+import pojahn.game.entities.TilePlatform;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.CameraEffects;
 import pojahn.game.essentials.Direction;
@@ -233,7 +233,7 @@ public class SpiritTemple extends TileBasedLevel {
         rv.setDuration(20);
         final float speed = 4;
 
-        final TransformablePlatform puncher1 = new TransformablePlatform(2593, 2617, main);
+        final TilePlatform puncher1 = new TilePlatform(2593, 2617, main);
         puncher1.setImage(resources.getImage("puncher1.png"));
         puncher1.setMoveSpeed(speed);
         puncher1.sounds.useFalloff = true;
@@ -245,7 +245,7 @@ public class SpiritTemple extends TileBasedLevel {
         });
         add(puncher1);
 
-        final TransformablePlatform puncher2 = new TransformablePlatform(2593, 2695, main);
+        final TilePlatform puncher2 = new TilePlatform(2593, 2695, main);
         puncher2.setImage(resources.getImage("puncher1.png"));
         puncher2.setMoveSpeed(speed);
         puncher2.sounds.useFalloff = true;
@@ -257,7 +257,7 @@ public class SpiritTemple extends TileBasedLevel {
         puncher2.skipTo(1);
         add(puncher2);
 
-        final TransformablePlatform puncher3 = new TransformablePlatform(2593, 2773, main);
+        final TilePlatform puncher3 = new TilePlatform(2593, 2773, main);
         puncher3.setImage(resources.getImage("puncher1.png"));
         puncher3.setMoveSpeed(speed);
         puncher3.sounds.useFalloff = true;
@@ -268,7 +268,7 @@ public class SpiritTemple extends TileBasedLevel {
         });
         add(puncher3);
 
-        final TransformablePlatform puncher4 = new TransformablePlatform(1920, 2946, main);
+        final TilePlatform puncher4 = new TilePlatform(1920, 2946, main);
         puncher4.setImage(resources.getImage("puncher1.png"));
         puncher4.sounds.useFalloff = true;
         puncher4.setMoveSpeed(speed + 2);
@@ -280,7 +280,7 @@ public class SpiritTemple extends TileBasedLevel {
         puncher4.appendPath(1920, 2946, 30, false, () -> puncher4.setMoveSpeed(speed + 2));
         add(puncher4);
 
-        final TransformablePlatform puncher5 = new TransformablePlatform(1680, 2640, main);
+        final TilePlatform puncher5 = new TilePlatform(1680, 2640, main);
         puncher5.setImage(resources.getImage("puncher2.png"));
         puncher5.sounds.useFalloff = true;
         puncher5.setMoveSpeed(speed);

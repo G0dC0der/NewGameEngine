@@ -5,8 +5,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
@@ -23,7 +21,7 @@ import pojahn.game.entities.RotatingCannon;
 import pojahn.game.entities.Shuttle;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.TargetLaser;
-import pojahn.game.entities.TransformablePlatform;
+import pojahn.game.entities.TilePlatform;
 import pojahn.game.entities.Weapon;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Direction;
@@ -377,17 +375,17 @@ public class OrbitalStation extends TileBasedLevel {
         trap3.setImage(res.getImage("trap2.png"));
         add(trap3);
 
-        final SolidPlatform trap4 = new TransformablePlatform(39 * getTileWidth(), 96 * getTileHeight(), man);
+        final SolidPlatform trap4 = new TilePlatform(39 * getTileWidth(), 96 * getTileHeight(), man);
         trap4.setImage(res.getImage("trapblock.png"));
         trap4.appendPath(trap4.x(), trap4.y() - trap4.height());
         trap4.freeze();
         add(trap4);
 
-        final TransformablePlatform battleElevator;
+        final TilePlatform battleElevator;
         if (reached1) {
-            battleElevator = new TransformablePlatform(192, 2336, man);
+            battleElevator = new TilePlatform(192, 2336, man);
         } else {
-            battleElevator = new TransformablePlatform(192, 2880, man);
+            battleElevator = new TilePlatform(192, 2880, man);
             battleElevator.appendPath(battleElevator.x(), 2336);
             battleElevator.setMoveSpeed(.6f);
             battleElevator.freeze();

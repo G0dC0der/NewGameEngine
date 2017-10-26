@@ -20,6 +20,7 @@ import pojahn.game.core.Level.TileLayer;
 import pojahn.game.events.Event;
 import pojahn.game.events.RenderEvent;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,16 +87,30 @@ public class Utils {
         return array[MathUtils.random(0, array.length - 1)];
     }
 
-    public static TileLayer from(final Image2D image) {
-        final TileLayer tileLayer = new TileLayer(image.getWidth(), image.getHeight());
-        for (int x = 0; x < tileLayer.width(); x++) {
-            for (int y = 0; y < tileLayer.height(); y++) {
-                if (!image.isInvisible(x, y)) {
-                    tileLayer.setTile(x, y, Tile.SOLID);
-                }
+    public static TileLayer fromImage(final Image2D image) {
+        final Tile[][] tileLayer = new Tile[image.getWidth()][image.getHeight()];
+        for (int x = 0; x < tileLayer.length; x++) {
+            for (int y = 0; y < tileLayer[x].length; y++) {
+                tileLayer[x][y] = image.isInvisible(x, y) ? Tile.HOLLOW : Tile.SOLID;
             }
         }
-        return tileLayer;
+        return new TileLayer(tileLayer);
+    }
+
+    public static TileLayer rectangularLayer(final int width, final int height, final Tile tile) {
+        final Tile[][] tileLayer = new Tile[width][height];
+
+//        for (final Tile[] layerRow : tileLayer) {
+//            Arrays.fill(layerRow, tile);
+//        }
+
+        for (int x = 0; x < tileLayer.length; x++) {
+            for (int y = 0; y < tileLayer[x].length; y++) {
+                tileLayer[x][y] = tile;
+            }
+        }
+
+        return new TileLayer(tileLayer);
     }
 
     public static TiledMap loadTiledMap(final FileHandle path) {

@@ -3,22 +3,23 @@ package pojahn.game.entities;
 import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.MobileEntity;
+import pojahn.game.essentials.Utils;
 
-public class TransformablePlatform extends SolidPlatform {
+public class TilePlatform extends SolidPlatform {
 
     private Tile tile;
     private Level.TileLayer tileLayer;
     private MobileEntity[] subjects;
 
-    public TransformablePlatform(final float x, final float y, final MobileEntity... subjects) {
+    public TilePlatform(final float x, final float y, final MobileEntity... subjects) {
         super(x, y, subjects);
         tile = Tile.SOLID;
         this.subjects = subjects;
     }
 
     @Override
-    public TransformablePlatform getClone() {
-        final TransformablePlatform clone = new TransformablePlatform(x(), y(), subjects);
+    public TilePlatform getClone() {
+        final TilePlatform clone = new TilePlatform(x(), y(), subjects);
         copyData(clone);
         if (cloneEvent != null)
             cloneEvent.handleClonded(clone);
@@ -54,11 +55,10 @@ public class TransformablePlatform extends SolidPlatform {
     }
 
     private void initTileLayer() {
-        tileLayer = new Level.TileLayer((int) width() - 4, (int) height() - 4);
-        tileLayer.fill(tile);
+        tileLayer = Utils.rectangularLayer((int) width() - 4, (int) height() - 4, tile);
     }
 
-    protected void copyData(final TransformablePlatform clone) {
+    protected void copyData(final TilePlatform clone) {
         super.copyData(clone);
         clone.tile = tile;
         if (tileLayer == null)

@@ -15,7 +15,6 @@ import pojahn.lang.Int32;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,21 +43,25 @@ public abstract class Level {
         CUSTOM_10
     }
 
-    public static class TileLayer {
+    public static final class TileLayer {
 
         private int x, y;
-        private Tile[][] layer;
+        private final Tile[][] layer;
 
-        public TileLayer(final int width, final int height) {
-            setSize(width, height);
+        public TileLayer(final Tile[][] layer) {
+            this(layer, true);
         }
 
-        public int width() {
-            return layer.length;
-        }
+        private TileLayer(final Tile[][] layer, final boolean copy) {
+            if (copy) {
+                this.layer = new Tile[layer.length][layer[0].length];
 
-        public int height() {
-            return layer[0].length;
+                for (int i = 0; i < layer.length; i++) {
+                    System.arraycopy(layer[i], 0, this.layer[i], 0, layer[0].length);
+                }
+            } else {
+                this.layer = layer;
+            }
         }
 
         public void setPosition(final int x, final int y) {
@@ -66,25 +69,10 @@ public abstract class Level {
             this.y = y;
         }
 
-        public void setSize(final int width, final int height) {
-            layer = new Tile[width][height];
-        }
-
-        public void setTile(final int x, final int y, final Tile tile) {
-            layer[x][y] = tile;
-        }
-
-        public void fill(final Tile tile) {
-            for (final Tile[] layerRow : layer) {
-                Arrays.fill(layerRow, tile);
-            }
-        }
-
         public TileLayer copy() {
-            final TileLayer tileLayer = new TileLayer(0, 0);
+            final TileLayer tileLayer = new TileLayer(layer, false);
             tileLayer.x = x;
             tileLayer.y = y;
-            tileLayer.layer = layer;
 
             return tileLayer;
         }

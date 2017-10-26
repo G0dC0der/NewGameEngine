@@ -15,7 +15,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
-import pojahn.game.core.Level;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
 import pojahn.game.core.PlayableEntity;
@@ -152,7 +151,7 @@ public class Factory {
 
     public static Event solidify(final Entity entity) {
         final Image2D img = entity.getImage().getArray()[0];
-        final TileLayer tileLayer = Utils.from(img);
+        final TileLayer tileLayer = Utils.fromImage(img);
         final boolean[] once = new boolean[1];
         return () -> {
             if (!once[0]) {
