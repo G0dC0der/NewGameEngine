@@ -656,7 +656,7 @@ public class OrbitalStation extends TileBasedLevel {
         return crusher;
     }
 
-    private EvilDog getGuard(final float x, final float y) { //TODO: These don't talk much
+    private EvilDog getGuard(final float x, final float y) {
         final int talkDelay = MathUtils.random(120, 300);
         final Int32 counter = new Int32();
 
@@ -666,7 +666,7 @@ public class OrbitalStation extends TileBasedLevel {
         guard.setHitbox(Hitbox.PIXEL);
         guard.addEvent(Factory.hitMain(guard, man, -1));
         guard.zIndex(2000);
-        runOnceWhen(() -> res.getSound("guarding.wav").play(), () -> !guard.isFrozen() && ++counter.value % talkDelay == 0);
+        runWhile(() -> res.getSound("guarding.wav").play(), () -> !guard.isFrozen() && ++counter.value % talkDelay == 0);
 
         return guard;
     }

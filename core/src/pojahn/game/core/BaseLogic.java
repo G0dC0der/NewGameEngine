@@ -360,7 +360,7 @@ public class BaseLogic {
      * @return The point that contains the rotated coordinates.
      */
     public static Vector2 rotatePoint(final float x, final float y, final float cx, final float cy, final float rotation) {
-        if (rotation == 0)
+        if (rotation % 360 == 0)
             return new Vector2(x, y);
 
         final float angleInRadians = (float) (rotation * (Math.PI / 180));
@@ -369,8 +369,7 @@ public class BaseLogic {
 
         return new Vector2(
                 (cosTheta * (x - cx) - sinTheta * (y - cy) + cx),
-                (sinTheta * (x - cx) + cosTheta * (y - cy) + cy)
-        );
+                (sinTheta * (x - cx) + cosTheta * (y - cy) + cy));
     }
 
     public static Entity leftMost(final Entity e1, final Entity e2) {
@@ -533,6 +532,10 @@ public class BaseLogic {
         dy /= length;
 
         return new Vector2(Float.isNaN(dx) ? 0 : dx, Float.isNaN(dy) ? 0 : dy);
+    }
+
+    public static Vector2 normalize(final Vector2 v1, final Vector2 v2) {
+        return normalize(v1.x, v1.y, v2.x, v2.y);
     }
 
     public static Vector2 normalize(final Entity entity1, final Entity entity2) {

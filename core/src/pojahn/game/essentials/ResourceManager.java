@@ -164,15 +164,19 @@ public class ResourceManager {
     }
 
     private void tryDispose(final Object obj) {
-        if (obj instanceof Disposable)
-            ((Disposable) obj).dispose();
-        else if (obj.getClass().isArray()) {
-            final Object[] arr = (Object[]) obj;
+        try {
+            if (obj instanceof Disposable)
+                ((Disposable) obj).dispose();
+            else if (obj.getClass().isArray()) {
+                final Object[] arr = (Object[]) obj;
 
-            if (arr.length > 0 && arr[0] instanceof Disposable) {
-                for (final Object disposable : arr)
-                    ((Disposable) disposable).dispose();
+                if (arr.length > 0 && arr[0] instanceof Disposable) {
+                    for (final Object disposable : arr)
+                        ((Disposable) disposable).dispose();
+                }
             }
+        } catch (final Exception e) {
+            System.err.println("Failed to dispose resource: " + e.getMessage());
         }
     }
 }

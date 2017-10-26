@@ -60,4 +60,29 @@ public class Development {
         }
         System.out.println(builder.toString());
     }
+
+    public static Event steerEntity(final Entity entity, final float strength) {
+        return ()-> {
+            if (Gdx.input.isKeyPressed(Keys.A)) {
+                entity.bounds.pos.x--;
+            } else if (Gdx.input.isKeyPressed(Keys.D)) {
+                entity.bounds.pos.x++;
+            }
+            if (Gdx.input.isKeyPressed(Keys.W)) {
+                entity.bounds.pos.y--;
+            } else if (Gdx.input.isKeyPressed(Keys.S)) {
+                entity.bounds.pos.y++;
+            }
+
+            if (Gdx.input.isKeyPressed(Keys.R)) {
+                entity.bounds.rotation += strength;
+            } else if (Gdx.input.isKeyPressed(Keys.E)) {
+                entity.bounds.rotation -= strength;
+            }
+
+            if (Gdx.input.isKeyJustPressed(Keys.P)) {
+                System.out.println(String.format("Position: %s, %s\nRotation: %s", entity.x(), entity.y(), entity.getRotation()));
+            }
+        };
+    }
 }

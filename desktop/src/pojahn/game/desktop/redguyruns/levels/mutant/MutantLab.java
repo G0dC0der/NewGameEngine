@@ -1,6 +1,7 @@
 package pojahn.game.desktop.redguyruns.levels.mutant;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
@@ -19,12 +21,15 @@ import pojahn.game.entities.LaserDrone;
 import pojahn.game.entities.OneWay;
 import pojahn.game.entities.Particle;
 import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.Projectile;
+import pojahn.game.entities.ShrinkingParticle;
 import pojahn.game.entities.Shuttle;
 import pojahn.game.entities.SolidPlatform;
 import pojahn.game.entities.Weapon;
 import pojahn.game.entities.mains.GravityMan;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.CameraEffects;
+import pojahn.game.essentials.Development;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Factory;
@@ -36,6 +41,7 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
 import pojahn.game.essentials.stages.PixelBasedLevel;
 import pojahn.game.events.Event;
+import pojahn.lang.Int32;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
@@ -45,6 +51,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 import static pojahn.game.core.BaseLogic.distance;
+import static pojahn.game.core.BaseLogic.rotatePoint;
 
 public class MutantLab extends PixelBasedLevel {
 
@@ -112,7 +119,6 @@ public class MutantLab extends PixelBasedLevel {
          */
         play = ResourceUtil.getGravityMan(res);
         play.move(513, 460 - 1);
-        play.move(3112, 1473);
         play.touch(1);
         add(play);
 
@@ -381,82 +387,6 @@ public class MutantLab extends PixelBasedLevel {
         add(b.getClone().move(540, 1100));
         add(b.getClone().move(620, 1100));
 
-		/*
-		 * Turret & Projectile
-		 */
-        gunfire = new Particle();
-        gunfire.setIntroSound(res.getSound("firesound.wav"));
-        gunfire.sounds.useFalloff = true;
-        gunfire.sounds.maxDistance = 1300;
-
-        final Particle p = new Particle();
-        p.zIndex(4);
-        p.setImage(2, res.getAnimation("trailer"));
-
-        final Particle imp = new Particle();
-        imp.setImage(2, res.getAnimation("impact"));
-        imp.zIndex(200);
-        imp.setIntroSound(res.getSound("exp3.wav"));
-        imp.sounds.useFalloff = true;
-        imp.sounds.maxVolume = .7f;
-
-        proj = new Bullet(0, 0, play);
-        proj.zIndex(5);
-        proj.setImage(res.getImage("bullet.png"));
-        proj.setTrailer(p);
-        proj.setImpact(imp);
-
-        final int padY = 150;
-        final int padX = 100;
-
-        final Weapon wep1 = getWeapon();
-        wep1.move(3552, 1253);
-        wep1.appendPath(3552 + 32, 1213 - 32 - padY, 0, false, wep1::freeze);
-        wep1.appendPath(3976 + padX, 768, 0, false, wep1::freeze);
-
-        final Weapon wep2 = getWeapon();
-        wep2.move(3552 + 32, 1253);
-        wep2.appendPath(3552 + 32, 1213 - padY, 0, false, wep2::freeze);
-        wep2.appendPath(3976 - 32 + padX, 768, 0, false, wep2::freeze);
-
-        final Weapon wep3 = getWeapon();
-        wep3.move(3552 + (32 * 2), 1253);
-        wep3.appendPath(3552 + 32, 1213 + 32 - padY, 0, false, wep3::freeze);
-        wep3.appendPath(3976 - (32 * 2) + padX, 768, 0, false, wep3::freeze);
-
-        final Weapon wep4 = getWeapon();
-        wep4.move(3552, 1253 + 32);
-        wep4.appendPath(3584, 1325 - 32 - padY, 0, false, wep4::freeze);
-        wep4.appendPath(3976 - (32 * 3) + padX, 768, 0, false, wep4::freeze);
-
-        final Weapon wep5 = getWeapon();
-        wep5.move(3552 + 32, 1253 + 32);
-        wep5.appendPath(3584, 1325 - padY, 0, false, wep5::freeze);
-        wep5.appendPath(3976 - (32 * 4) + padX, 768, 0, false, wep5::freeze);
-
-        final Weapon wep6 = getWeapon();
-        wep6.move(3552 + (32 * 2), 1253 + 32);
-        wep6.appendPath(3584, 1325 + 32 - padY, 0, false, wep6::freeze);
-        wep6.appendPath(3976 - (32 * 5) + padX, 768, 0, false, wep6::freeze);
-
-        final Rectangle area1 = new Rectangle(3450, 1182, 300, 220);
-        final Rectangle area2 = new Rectangle(3441, 779, 362, 300);
-
-        runOnceWhen(() -> {
-            Stream.of(wep1, wep2, wep3, wep4, wep5, wep6).forEach(PathDrone::unfreeze);
-        }, () -> BaseLogic.rectanglesCollide(play.bounds.toRectangle(), area1));
-
-        runOnceWhen(() -> {
-            Stream.of(wep1, wep2, wep3, wep4, wep5, wep6).forEach(PathDrone::unfreeze);
-        }, () -> BaseLogic.rectanglesCollide(play.bounds.toRectangle(), area2));
-
-        add(wep1);
-        add(wep2);
-        add(wep3);
-        add(wep4);
-        add(wep5);
-        add(wep6);
-
         /*
          * Doors in Weapon area
          */
@@ -550,30 +480,89 @@ public class MutantLab extends PixelBasedLevel {
         });
         add(goal);
 
+        /*
+         * Eyenet
+         */
+        final Particle soundParticle = Particle.fromSound(res.getSound("plasma.wav"));
+        soundParticle.sounds.useFalloff = true;
+
+        final ShrinkingParticle trailer = new ShrinkingParticle(.01f);
+        trailer.setImage(3, res.getAnimation("ring"));
+        trailer.scaleX = trailer.scaleY = .6f;
+
+        final Bullet bullet = new Bullet(play);
+        bullet.bounds.size.set(5, 5);
+        bullet.setGunfire(soundParticle);
+        bullet.setTrailerDelay(3);
+        bullet.setTrailer(trailer);
+
+        addRopes(3465.0, 1292.0, -32,  5);
+        addEye(3602.0, 1380.0, bullet);
+        addRopes(3641.0, 1387.0, -26.5f,  4);
+        addRopes(3627.0, 1424.0, -130.5f,  5);
+        addRopes(3611.0, 1244.0, -81.5f,  4);
+        addEye(3578.0, 1211.0, bullet);
+        addRopes(3619.0, 1216.0, -18.5f,  4);
+        addRopes(3440.0, 1234.0, 8.5f,  4);
+        addRopes(3440.0, 1234.0, 8.5f,  4);
+        addRopes(3585.0, 1203.0, 47,  3);
+        addEye(3649.0, 1107.0, bullet);
+        addRopes(3650.0, 1103.0, 74,  10);
+        addRopes( 3691.0, 1111.0, -33,  4);
+        addRopes( 3563.0, 1017.0, -43.5f,  4);
+        addRopes( 3400.0, 1112.0, 41.5f,  5);
+        addRopes( 3534.0, 1003.0, 116.5f,  6);
+        addRopes( 3554.0, 1000.0, 59,  8);
+        addEye(3535.0, 995.0, bullet);
+
+        add(Development.steerEntity(latest, .5f));
+
 		/*
 		 * Finalize
 		 */
         play.setActionEvent((hitter) -> {
-            if (hitter.isCloneOf(proj) || monsters.stream().map(hitter::isCloneOf).findAny().orElse(false))
+            if (hitter.isCloneOf(proj) || hitter.isCloneOf(bullet) || monsters.stream().map(hitter::isCloneOf).findAny().orElse(false))
                 play.touch(-1);
         });
     }
 
-    private Weapon getWeapon() {
-        final Animation<Image2D> firingImage = new Animation<>(4, res.getAnimation("weapon"));
-        firingImage.setLoop(false);
+    private void addEye(final double x, final double y, final Projectile projectile) {
+        final Entity eyeSocket = new Entity();
+        eyeSocket.setImage(5, res.getAnimation("eyesocket"));
+        eyeSocket.zIndex(10);
+        eyeSocket.move((float)x ,(float)y);
 
-        final Weapon turr = new Weapon(3456, 768, 1, 1, 90, play);
-        turr.zIndex(1);
-        turr.setProjectile(proj);
-        turr.setImage(res.getAnimation("weapon")[6]);
-//        turr.setFiringImage(firingImage);
-//        turr.setFiringOffsets(turr.halfWidth(), turr.halfHeight());
-        turr.setFiringParticle(gunfire);
-        turr.setMoveSpeed(4);
-        turr.freeze();
+        final Animation<Image2D> eyeImg = new Animation<>(5, res.getAnimation("eye"));
+        eyeImg.setLoop(false);
+        final Int32 counter = new Int32();
+        final int blinkDelay = MathUtils.random(60, 150);
+        final Weapon eye = new Weapon((float)x + 5, (float)y + 9, 1, 1, 120, play);
+        eye.setProjectile(projectile);
+        eye.zIndex(11);
+        eye.setImage(eyeImg);
+        runWhile(eyeImg::reset, ()-> ++counter.value % blinkDelay == 0);
 
-        return turr;
+        add(eyeSocket);
+        add(eye);
+
+        latest = eye;
+    }
+
+    private Entity latest;
+
+    private void addRopes(final double startX, final double startY, final float rotation, final int amount) {
+        final EyeNet eyeNet = new EyeNet();
+        eyeNet.move((float)startX, (float)startY);
+        eyeNet.setRotation(rotation);
+        eyeNet.setCount(amount);
+        eyeNet.setPadding(4);
+        eyeNet.setRope(new Animation<>(5, res.getAnimation("rope")));
+        eyeNet.setConnector1(new Animation<>(1, res.getImage("connector1.png")));
+        eyeNet.setConnector2(new Animation<>(1, res.getImage("connector2.png")));
+
+        add(eyeNet);
+
+        latest = eyeNet;
     }
 
     private EvilDog getMetroid(final float x, final float y) {
@@ -637,7 +626,7 @@ public class MutantLab extends PixelBasedLevel {
         return m;
     }
 
-    SolidPlatform getDoor(final float x, final float y, final boolean horizontal) {
+    private SolidPlatform getDoor(final float x, final float y, final boolean horizontal) {
         final SolidPlatform solp;
         final Image2D lamp1 = res.getImage("lamp1.png");
         final Image2D lamp2 = res.getImage("lamp2.png");
