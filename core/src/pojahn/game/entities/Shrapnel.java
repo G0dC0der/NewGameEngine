@@ -5,8 +5,8 @@ import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Level;
 
 public class Shrapnel extends Particle {
+
     private final Projectile split;
-    private boolean once;
 
     public Shrapnel(final Projectile shrapnel) {
         this.split = shrapnel;
@@ -39,11 +39,6 @@ public class Shrapnel extends Particle {
             proj.setTarget(edgePoint);
             l.add(proj);
         }
-    }
-
-    @Override
-    protected void frameStep() {
-
     }
 
     private Vector2[] getEightDirection() {

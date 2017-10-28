@@ -63,7 +63,7 @@ public class Debris extends Particle {
     }
 
     @Override
-    protected void frameStep() {
+    protected void step() {
         drag();
         applyYForces();
         applyXForces();

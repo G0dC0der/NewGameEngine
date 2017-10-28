@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Image2D;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public abstract class Particle extends MobileEntity {
             introBits.forEach(bit -> getLevel().add(bit.getClone().center(this)));
         }
 
-        frameStep();
+        step();
 
         if (completed()) {
             outroBits.forEach(bit -> getLevel().add(bit.getClone().center(this)));
@@ -44,7 +43,7 @@ public abstract class Particle extends MobileEntity {
     protected void erupt() {
     }
 
-    protected void frameStep() {
+    protected void step() {
     }
 
     protected void outro() {
@@ -79,7 +78,7 @@ public abstract class Particle extends MobileEntity {
             }
 
             @Override
-            protected void frameStep() {
+            protected void step() {
                 tint.a -= fadeSpeed;
             }
 
@@ -104,7 +103,7 @@ public abstract class Particle extends MobileEntity {
             }
 
             @Override
-            protected void frameStep() {
+            protected void step() {
                 scaleX -= shrinkSpeed;
                 scaleY -= shrinkSpeed;
             }

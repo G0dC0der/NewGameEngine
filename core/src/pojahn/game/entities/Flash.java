@@ -52,5 +52,5 @@ public class Flash extends Particle {
     protected void erupt() {}
 
     @Override
-    protected void frameStep() {}
+    protected void step() {}
 }

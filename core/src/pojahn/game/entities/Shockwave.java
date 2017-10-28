@@ -20,11 +20,14 @@ public class Shockwave extends Particle {
     }
 
     @Override
-    public Particle getClone() {
-        final Shockwave shockwave = new Shockwave(size, freq);
-        copyData(shockwave);
+    public Shockwave getClone() {
+        final Shockwave clone = new Shockwave(size, freq);
+        copyData(clone);
+        if (cloneEvent != null) {
+            cloneEvent.handleClonded(clone);
+        }
 
-        return shockwave;
+        return clone;
     }
 
     @Override
@@ -43,23 +46,16 @@ public class Shockwave extends Particle {
     }
 
     @Override
-    protected void erupt() {
+    protected void step() {
         if (freq <= 0) {
             final int tileX = (int) (x() / tileWidth);
             final int tileY = (int) (y() / tileHeight);
             level.transformTiles(tileX, tileY, size, null);
-        } else {
-            getLevel().temp(() -> {
-                if (++counter == 0 || counter % freq == 0) {
-                    final int tileX = (int) (x() / tileWidth);
-                    final int tileY = (int) (y() / tileHeight);
+        } else if (size > radius && (++counter == 0 || counter % freq == 0)) {
+            final int tileX = (int) (x() / tileWidth);
+            final int tileY = (int) (y() / tileHeight);
 
-                    level.transformTiles(tileX, tileY, ++radius, null);
-                }
-            }, () -> radius > size);
+            level.transformTiles(tileX, tileY, ++radius, null);
         }
     }
-
-    @Override
-    protected void frameStep() {}
 }
