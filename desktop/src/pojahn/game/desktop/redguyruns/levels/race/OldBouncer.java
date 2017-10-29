@@ -4,7 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.mains.GravityMan;
+import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Direction;
 
 import java.util.Random;

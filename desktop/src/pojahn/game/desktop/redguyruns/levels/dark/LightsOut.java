@@ -11,11 +11,11 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.Missile;
-import pojahn.game.entities.Particle;
+import pojahn.game.entities.enemy.weapon.Missile;
+import pojahn.game.entities.particle.Particle;
 import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.SimpleWeapon;
-import pojahn.game.entities.SolidPlatform;
+import pojahn.game.entities.enemy.weapon.SimpleWeapon;
+import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.Thor;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
@@ -57,8 +57,8 @@ public class LightsOut extends PixelBasedLevel {
          */
         play = ResourceUtil.getGravityMan(res);
         play.move(1960, 1299);
-        play.deathImage.tint = Color.BLACK;
-        play.tint = Color.BLACK;
+        play.deathImage.tint.set(Color.BLACK);
+        play.tint.set(Color.BLACK);
         play.zIndex(2);
         add(play);
 
@@ -257,7 +257,7 @@ public class LightsOut extends PixelBasedLevel {
         }
     }
 
-    PathDrone addSaw(final int x, final int y) {
+    private PathDrone addSaw(final int x, final int y) {
         final PathDrone saw = new PathDrone(x * 30, y * 30);
         saw.setImage(res.getImage("saw90.png"));
         saw.addEvent(() -> saw.bounds.rotation += 7);

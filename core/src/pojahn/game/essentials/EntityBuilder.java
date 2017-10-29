@@ -1,5 +1,6 @@
 package pojahn.game.essentials;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
@@ -144,7 +145,7 @@ public class EntityBuilder {
         dest.setRotation(rotation);
         dest.zIndex(zIndex);
         dest.setHitbox(hitbox);
-        dest.identifier = "Entity Builder";
+        dest.setIdentifier("Entity Builder" + MathUtils.random());
         if (image != null)
             dest.setImage(image);
 

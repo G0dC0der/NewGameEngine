@@ -16,6 +16,7 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,7 @@ public abstract class Level {
     private List<PlayableEntity> mainCharacters;
     private List<Entity> focusObjects;
     private List<TileLayer> tileLayers;
+    private Set<String> identifiers;
     private CheckPointHandler cph;
     private List<Entity> soundListeners;
 
@@ -97,6 +99,7 @@ public abstract class Level {
         tileLayers = new ArrayList<>();
         mainCharacters = new ArrayList<>();
         focusObjects = new ArrayList<>();
+        identifiers = new HashSet<>();
         cph = new CheckPointHandler();
     }
 
@@ -408,6 +411,7 @@ public abstract class Level {
         deleteObjects.clear();
         gameObjects.forEach(Entity::dispose);
         gameObjects.clear();
+        identifiers.clear();
         mainCharacters.clear();
         tileLayers.clear();
         focusObjects.clear();
@@ -436,12 +440,12 @@ public abstract class Level {
                     if (play.isGhost())
                         buttonsDown = play.nextInput();
                     else if (engine.active() && play.isAlive())
-                        buttonsDown = engine.isReplaying() ? engine.getDevice().nextInput(play.identifier) : Keystrokes.from(play.getController());
+                        buttonsDown = engine.isReplaying() ? engine.getDevice().nextInput(play.getIdentifier()) : Keystrokes.from(play.getController());
                     else
                         buttonsDown = Keystrokes.AFK;
 
                     if (play.isAlive() && !play.isGhost() && engine.active() && !engine.isReplaying())
-                        engine.getDevice().addFrame(play.identifier, buttonsDown);
+                        engine.getDevice().addFrame(play.getIdentifier(), buttonsDown);
 
                     if (buttonsDown.suicide) {
                         play.setState(Vitality.DEAD);
@@ -510,6 +514,9 @@ public abstract class Level {
         gameObjects.remove(entity);
         entity.present = false;
         entity.dispose();
+        if (entity.getIdentifier() != null) {
+            identifiers.remove(entity.getIdentifier());
+        }
 
         if (entity instanceof PlayableEntity) {
             final PlayableEntity play = (PlayableEntity) entity;
@@ -528,16 +535,24 @@ public abstract class Level {
         entity.present = true;
         entity.init();
 
+        if (entity.getIdentifier() != null) {
+            if (identifiers.contains(entity.getIdentifier())) {
+                throw new RuntimeException("Identifier is already used: " + entity.getIdentifier());
+            } else {
+                identifiers.add(entity.getIdentifier());
+            }
+        }
+
         if (entity instanceof PlayableEntity) {
             final PlayableEntity play = (PlayableEntity) entity;
             if (!play.isGhost()) {
-                if (play.identifier == null) {
+                if (play.getIdentifier() == null) {
                     throw new RuntimeException("A non-ghost main character must have an identifier set!");
                 }
 
                 mainCharacters.add(play);
                 cph.addUser(play);
-                engine.getDevice().addEntry(play.identifier);
+                engine.getDevice().addEntry(play.getIdentifier());
             }
         }
     }

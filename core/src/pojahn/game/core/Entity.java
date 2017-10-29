@@ -29,8 +29,7 @@ public class Entity {
 
     public final Bounds bounds;
     public final SoundEmitter sounds;
-    public String identifier;
-    public Color tint;
+    public final Color tint;
     public float offsetX, offsetY, scaleX, scaleY;
     public boolean flipX, flipY;
 
@@ -38,9 +37,10 @@ public class Entity {
 
     Level level;
     Engine engine;
-    List<Event> events, deleteEvents;
     boolean present;
 
+    private String identifier;
+    private List<Event> events, deleteEvents;
     private Animation<Image2D> image;
     private Entity originator;
     private Hitbox hitbox;
@@ -51,13 +51,14 @@ public class Entity {
     public Entity() {
         bounds = new Bounds();
         sounds = new SoundEmitter(this);
-        offsetX = offsetY = 1;
         tint = Color.valueOf("fffffffe");
+        offsetX = offsetY = 1;
+        scaleX = scaleY = 1.0f;
         active = true;
+        visible = true;
         events = new ArrayList<>();
         hitbox = Hitbox.RECTANGLE;
         deleteEvents = new ArrayList<>();
-        scaleX = scaleY = 1.0f;
     }
 
     public void logistics() {
@@ -70,6 +71,17 @@ public class Entity {
             cloneEvent.handleClonded(clone);
 
         return clone;
+    }
+
+    public void setIdentifier(final String identifier) {
+        if (this.identifier != null || present) {
+            throw new IllegalArgumentException("Can only set identifier once before it's present.");
+        }
+        this.identifier = identifier;
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 
     public void setImage(final Image2D... images) {
@@ -122,12 +134,7 @@ public class Entity {
     }
 
     public void render(final SpriteBatch batch) {
-        if (visible && tint.a > 0.0f) {
-            final Color defColor = batch.getColor();
-            batch.setColor(tint);
-            basicRender(batch, nextImage());
-            batch.setColor(defColor);
-        }
+        basicRender(batch, nextImage());
     }
 
     public Engine getEngine() {
@@ -363,7 +370,7 @@ public class Entity {
         clone.bounds.size.height = bounds.size.height;
         clone.active = active;
         clone.visible = visible;
-        clone.tint = new Color(tint);
+        clone.tint.set(tint);
         clone.bounds.rotation = bounds.rotation;
         clone.zIndex = zIndex;
         clone.hitbox = hitbox;
@@ -388,6 +395,9 @@ public class Entity {
     }
 
     protected void basicRender(final SpriteBatch batch, final Image2D image, final float x, final float y) {
+        if (image == null)
+            return;
+
         batch.draw(image,
                 x + offsetX,
                 y + offsetY,

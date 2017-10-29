@@ -12,19 +12,19 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.BigImage;
-import pojahn.game.entities.BigImage.RenderStrategy;
-import pojahn.game.entities.Collectable;
+import pojahn.game.entities.image.BigImage;
+import pojahn.game.entities.image.BigImage.RenderStrategy;
+import pojahn.game.entities.object.Collectable;
 import pojahn.game.entities.LineMovement;
 import pojahn.game.entities.LineMovement.Movement;
-import pojahn.game.entities.Missile;
-import pojahn.game.entities.Particle;
+import pojahn.game.entities.enemy.weapon.Missile;
+import pojahn.game.entities.particle.Particle;
 import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.PushableObject;
-import pojahn.game.entities.Reloadable;
-import pojahn.game.entities.SolidPlatform;
-import pojahn.game.entities.SolidPlatform.FollowMode;
-import pojahn.game.entities.TilePlatform;
+import pojahn.game.entities.platform.PushableObject;
+import pojahn.game.entities.enemy.weapon.Reloadable;
+import pojahn.game.entities.platform.SolidPlatform;
+import pojahn.game.entities.platform.SolidPlatform.FollowMode;
+import pojahn.game.entities.platform.TilePlatform;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.CameraEffects;
 import pojahn.game.essentials.Direction;
@@ -98,13 +98,10 @@ public class SpiritTemple extends TileBasedLevel {
         final Entity darkShade = new Entity() {
             @Override
             public void render(final SpriteBatch batch) {
-                final Color defCol = batch.getColor();
                 final Dimension size = getEngine().getScreenSize();
                 getEngine().hudCamera();
-                batch.setColor(tint);
                 batch.draw(nextImage(), 0, 0, size.width, size.height);
                 getEngine().gameCamera();
-                batch.setColor(defCol);
             }
         };
         darkShade.tint.a = 0;

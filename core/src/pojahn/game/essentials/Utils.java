@@ -58,7 +58,7 @@ public class Utils {
         return new Entity() {
             {
                 this.zIndex(zIndex);
-                this.identifier = "WRAPPER";
+                this.setIdentifier("WRAPPER" + MathUtils.random(0, 10000));
             }
 
             @Override
@@ -99,10 +99,6 @@ public class Utils {
 
     public static TileLayer rectangularLayer(final int width, final int height, final Tile tile) {
         final Tile[][] tileLayer = new Tile[width][height];
-
-//        for (final Tile[] layerRow : tileLayer) {
-//            Arrays.fill(layerRow, tile);
-//        }
 
         for (int x = 0; x < tileLayer.length; x++) {
             for (int y = 0; y < tileLayer[x].length; y++) {

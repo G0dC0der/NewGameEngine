@@ -6,14 +6,16 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import pojahn.game.core.Entity;
+import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.BigImage;
-import pojahn.game.entities.BigImage.RenderStrategy;
-import pojahn.game.entities.Bouncer;
+import pojahn.game.entities.TmxEntity;
+import pojahn.game.entities.image.BigImage;
+import pojahn.game.entities.image.BigImage.RenderStrategy;
+import pojahn.game.entities.object.Bouncer;
 import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.SolidPlatform;
-import pojahn.game.entities.mains.GravityMan;
+import pojahn.game.entities.platform.SolidPlatform;
+import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Factory;
@@ -75,17 +77,14 @@ public class DontEatShroom extends TileBasedLevel {
          */
         play = ResourceUtil.getGravityMan(resources);
         play.move(25 * 24, 66 * 24);
-        play.addEvent(() -> {
-            if (play.y() - play.height() >= getHeight() - play.height())
-                play.touch(-10);
-        });
         add(play);
+        runOnceWhen(play::lose, ()-> play.y() + play.height() >= getHeight() - 2);
 
         /*
          * Background and foreground
          */
         add(getWorldImage());
-        final Entity bgTiles = Factory.construct(resources.getTiledMap("bgstuff.tmx"));
+        final Entity bgTiles = new TmxEntity(resources.getTiledMap("bgstuff.tmx"));
         bgTiles.zIndex(-1);
         add(bgTiles);
 
@@ -133,7 +132,7 @@ public class DontEatShroom extends TileBasedLevel {
         bouncer.setBouncingDirection(Direction.N);
         bouncer.setPower(550);
         bouncer.setImage(resources.getImage("bounce.png"));
-        bouncer.setBounceSound(resources.getSound("bounce.ogg"));
+        bouncer.setBounceSound(resources.getSound("bounce.wav"));
         add(bouncer);
 
         /*
@@ -203,10 +202,7 @@ public class DontEatShroom extends TileBasedLevel {
 
                 for (int x = 0; x < 20 * space; x += space) {
                     for (int y = 0; y < 20 * space; y += space) {
-                        final Color defColor = batch.getColor();
-                        batch.setColor(tint);
                         basicRender(batch, nextImage(), x + val, y);
-                        batch.setColor(defColor);
                     }
                 }
 

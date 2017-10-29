@@ -7,17 +7,17 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import pojahn.game.core.MobileEntity;
+import pojahn.game.core.Entity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TmxEntity extends SolidPlatform {
+public class TmxEntity extends Entity {
 
     private final TiledMap tiledMap;
     private final float width, height;
@@ -26,8 +26,7 @@ public class TmxEntity extends SolidPlatform {
     private OrthographicCamera camera;
     private float rotation;
 
-    public TmxEntity(final TiledMap tiledMap, final MobileEntity... subjects) {
-        super(0, 0, subjects);
+    public TmxEntity(final TiledMap tiledMap) {
         this.tiledMap = tiledMap;
 
         layers = new ArrayList<>(tiledMap.getLayers().getCount());
@@ -42,6 +41,8 @@ public class TmxEntity extends SolidPlatform {
 
         width = tilesX * tileWidth;
         height = tilesY * tileHeight;
+
+        updateDimensions();
     }
 
     @Override
@@ -63,8 +64,9 @@ public class TmxEntity extends SolidPlatform {
 
     @Override
     public void render(final SpriteBatch batch) {
-        if (tiledMapRenderer == null)
+        if (tiledMapRenderer == null) {
             tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, batch);
+        }
 
         updateDimensions();
         camera.position.set(getEngine().tx() - x(), getEngine().ty() - y(), 0);
@@ -76,14 +78,8 @@ public class TmxEntity extends SolidPlatform {
         //Should support rotation and flip
         camera.update();
 
-        final com.badlogic.gdx.graphics.Color color = batch.getColor();
-        batch.setColor(tint);
-
         tiledMapRenderer.setView(camera);
         layers.forEach(tiledMapRenderer::renderTileLayer);
-
-
-        batch.setColor(color);
     }
 
     private void updateDimensions() {

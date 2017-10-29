@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.SolidPlatform;
+import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;

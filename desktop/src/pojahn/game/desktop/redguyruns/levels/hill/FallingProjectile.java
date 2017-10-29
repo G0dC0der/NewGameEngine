@@ -2,7 +2,7 @@ package pojahn.game.desktop.redguyruns.levels.hill;
 
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
-import pojahn.game.entities.Bullet;
+import pojahn.game.entities.enemy.weapon.Bullet;
 
 public class FallingProjectile extends Bullet {
 

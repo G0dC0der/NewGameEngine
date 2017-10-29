@@ -13,6 +13,8 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
+import pojahn.game.core.MobileEntity;
+import pojahn.game.entities.TmxEntity;
 import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.geom.Size;
@@ -65,6 +67,9 @@ public abstract class TileBasedLevel extends Level {
         tileHeight = props.get("tileheight", Integer.class);
         encode();
     }
+
+    //TODO
+    //public abstract TiledMap getMap(); Try to remove parse method
 
     @Override
     public int getWidth() {
@@ -136,7 +141,7 @@ public abstract class TileBasedLevel extends Level {
     }
 
     public Entity getWorldImage() {
-        return Factory.construct(map);
+        return new TmxEntity(map);
     }
 
     public Rectangle getRectangle(final int tileX, final int tileY, final int tilesX, final int tilesY) {

@@ -18,7 +18,7 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
 import pojahn.game.core.PlayableEntity;
-import pojahn.game.entities.mains.GravityMan;
+import pojahn.game.entities.main.GravityMan;
 import pojahn.game.events.Event;
 import pojahn.game.events.TileEvent;
 import pojahn.lang.Bool;
@@ -46,37 +46,6 @@ public class Factory {
         return () -> {
             if (++c.value % delay == 0) {
                 emitter.sounds.play(sound);
-            }
-        };
-    }
-
-    public static Entity construct(final TiledMap tiledMap) {
-        return new Entity() {
-            TiledMapRenderer tiledMapRenderer;
-            List<TiledMapTileLayer> layers = new ArrayList<>();
-
-            {
-                tiledMap.getLayers().forEach(mapLayer -> layers.add((TiledMapTileLayer) mapLayer));
-                Collections.reverse(layers);
-            }
-
-            @Override
-            public void render(final SpriteBatch batch) {
-                if (tiledMapRenderer == null)
-                    tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, batch);
-
-                if (getRotation() != 0 || flipX || flipY)
-                    throw new RuntimeException("Rotation and flip are not supported for tile based image.");
-
-                final Color color = batch.getColor();
-                batch.setColor(tint);
-
-                final OrthographicCamera cam = getEngine().getGameCamera();
-                cam.update();
-                tiledMapRenderer.setView(cam);
-                layers.forEach(tiledMapRenderer::renderTileLayer);
-
-                batch.setColor(color);
             }
         };
     }

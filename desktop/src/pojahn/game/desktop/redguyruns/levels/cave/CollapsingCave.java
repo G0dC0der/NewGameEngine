@@ -13,9 +13,9 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.BigImage;
+import pojahn.game.entities.image.BigImage;
 import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.SolidPlatform;
+import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.TmxEntity;
 import pojahn.game.essentials.CameraEffects;
 import pojahn.game.essentials.EntityBuilder;
@@ -133,16 +133,17 @@ public class CollapsingCave extends TileBasedLevel {
         darkness.setImage(resources.getImage("darkness"));
         darkness.zIndex(1000);
         darkness.tint.a = ppFloat.get();
-        darkness.addEvent(() -> {
-            darkness.tint.a = ppFloat.get();
-        });
+        darkness.addEvent(() -> darkness.tint.a = ppFloat.get());
         add(darkness);
 
         /*
          * Collapsing roof
 		 */
-        crusher = new TmxEntity(resources.getTiledMap("crusher.tmx"), play);
-        crusher.move(0, -1406);
+        final TmxEntity tmxCrusher = new TmxEntity(resources.getTiledMap("crusher.tmx"));
+        tmxCrusher.zIndex(99);
+
+        crusher = new SolidPlatform(0, -1406, play);
+        crusher.bounds.size.set(tmxCrusher.width(), tmxCrusher.height());
         crusher.appendPath(0, -119, Integer.MAX_VALUE, false, () -> {
             drugEffect = false;
             collapsing.stop();
@@ -150,8 +151,9 @@ public class CollapsingCave extends TileBasedLevel {
             discard(vShake);
             discard(hShake);
         });
-        crusher.zIndex(99);
         crusher.setMoveSpeed(0);
+
+        tmxCrusher.addEvent(Factory.follow(crusher, tmxCrusher));
 
         /*
 		 * Camera
@@ -169,6 +171,8 @@ public class CollapsingCave extends TileBasedLevel {
         drill.setMoveSpeed(2);
         drill.zIndex(10);
         drill.setHitbox(Hitbox.PIXEL);
+        drill.sounds.useFalloff = true;
+        drill.sounds.maxDistance = 2000;
         drill.appendPath(547, 60, 0, false, () -> {
             drill.setMoveSpeed(.1f);
             camera.unfreeze();
@@ -187,6 +191,9 @@ public class CollapsingCave extends TileBasedLevel {
             drugEffect = true;
         });
         drill.addEvent(Factory.hitMain(drill, play, -1));
+        drill.addEvent(()-> {
+            drilling.setVolume(drill.sounds.calc());
+        });
 
         final PathDrone middlePart = new PathDrone(0, 0);
         middlePart.addEvent(Factory.follow(drill, middlePart, 8, 100));
@@ -205,6 +212,8 @@ public class CollapsingCave extends TileBasedLevel {
         add(middlePart);
         add(bottomPart);
         add(crusher);
+        add(tmxCrusher);
+
 
         /*
 		 * Collectable Items
@@ -243,6 +252,9 @@ public class CollapsingCave extends TileBasedLevel {
 		 * Particle Object
 		 */
         dust = new Entity() {
+            {
+                setVisible(true);
+            }
             @Override
             public void render(final SpriteBatch batch) {
                 ps.setPosition(drill.centerX(), drill.centerY());

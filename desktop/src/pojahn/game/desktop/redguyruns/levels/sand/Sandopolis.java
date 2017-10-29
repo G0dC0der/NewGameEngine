@@ -6,12 +6,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
+import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.BigImage;
-import pojahn.game.entities.Particle;
+import pojahn.game.entities.image.BigImage;
+import pojahn.game.entities.particle.Particle;
 import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.SolidPlatform;
+import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.TmxEntity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.EntityBuilder;
@@ -57,7 +58,6 @@ public class Sandopolis extends TileBasedLevel {
          */
         play = ResourceUtil.getGravityMan(res);
         play.move(48 * getTileWidth(), 18 * getTileHeight() - play.height() - 1);
-//        play.move(15 * getTileWidth(), 9 * getTileHeight() - play.height() - 1);
         add(play);
 
         /*

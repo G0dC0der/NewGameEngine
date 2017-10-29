@@ -2,8 +2,10 @@ package pojahn.game.desktop.redguyruns.gui;
 
 import pojahn.game.core.Engine;
 import pojahn.game.desktop.GameLauncher;
+import pojahn.game.desktop.redguyruns.levels.cave.CollapsingCave;
 import pojahn.game.desktop.redguyruns.levels.mutant.MutantLab;
 import pojahn.game.desktop.redguyruns.levels.orbit.OrbitalStation;
+import pojahn.game.desktop.redguyruns.levels.sand.Sandopolis;
 import pojahn.game.desktop.redguyruns.levels.shadow.ShadowSection;
 import pojahn.game.desktop.redguyruns.levels.sprit.SpiritTemple;
 import pojahn.game.desktop.redguyruns.levels.stress.StressLevel;
@@ -23,7 +25,7 @@ public class MainClass {
 //        Replay replay = (Replay) IO.importObjectCompressed(new FileHandle(System.getProperty("user.dir") + "\\replays\\In A Hurry 34.8 SUCCESS.rlp"));
 //        record = new PlaybackRecord(replay.keystrokes, replay.meta);
 
-        final Engine engine = new Engine(new OrbitalStation(), record);
+        final Engine engine = new Engine(new CollapsingCave(), record);
         engine.setGameStateEvent(GameState.SUCCESS, GameUtil.exportForGhostData(engine));
         GameLauncher.launch(engine, GameUtil.getBasicConfig());
     }

@@ -3,7 +3,7 @@ package pojahn.game.desktop.redguyruns.levels.orbit;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.MobileEntity;
-import pojahn.game.entities.SolidPlatform;
+import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.essentials.CameraEffects;
 
 class HugeCrusher extends SolidPlatform {

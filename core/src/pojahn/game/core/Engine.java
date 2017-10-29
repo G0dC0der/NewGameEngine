@@ -379,7 +379,16 @@ public class Engine {
 
         batch.begin();
 
-        level.gameObjects.forEach(entity -> entity.render(batch));
+        level.gameObjects.stream()
+            .filter(entity -> entity.isVisible() && entity.tint.a > 0.0f)
+            .forEach(entity -> {
+                final Color color = batch.getColor();
+                batch.setColor(entity.tint);
+
+                entity.render(batch);
+
+                batch.setColor(color);
+            });
 
         hudCamera();
         renderStatusBar();

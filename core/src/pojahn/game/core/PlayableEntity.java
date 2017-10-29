@@ -2,7 +2,7 @@ package pojahn.game.core;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import pojahn.game.entities.Particle;
+import pojahn.game.entities.particle.Particle;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Controller;
 import pojahn.game.essentials.Image2D;

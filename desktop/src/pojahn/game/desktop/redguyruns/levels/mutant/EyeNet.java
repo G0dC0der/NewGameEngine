@@ -51,9 +51,6 @@ public class EyeNet extends Entity {
     public void render(final SpriteBatch batch) {
         rotateWorld(batch);
 
-        final Color color = batch.getColor();
-        batch.setColor(this.tint);
-
         final Image2D ropeImg = rope.getObject();
         final Image2D con1Img = connector1.getObject();
         final Image2D con2Img = connector2.getObject();
@@ -69,7 +66,6 @@ public class EyeNet extends Entity {
         }
 
         restore();
-        batch.setColor(color);
     }
 
     private void restore() {
