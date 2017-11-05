@@ -6,7 +6,7 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.Trailer;
 import pojahn.game.essentials.EntityBuilder;

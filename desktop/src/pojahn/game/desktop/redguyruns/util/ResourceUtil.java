@@ -69,6 +69,11 @@ public class ResourceUtil {
         play.setHurtSound(res.getSound("mainhit.wav"));
         play.setDieSound(res.getSound("maindie.wav"));
         play.addEvent(play::face);
+        play.addEvent(()-> {
+            if (play.isAlive() && play.y() + play.height() >= play.getLevel().getHeight() - 2) {
+                play.lose();
+            }
+        });
         play.setFacings(2);
     }
 

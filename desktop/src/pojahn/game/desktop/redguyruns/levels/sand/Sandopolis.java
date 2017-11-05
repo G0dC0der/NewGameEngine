@@ -6,12 +6,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
-import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.TmxEntity;
 import pojahn.game.essentials.Animation;
@@ -66,7 +65,7 @@ public class Sandopolis extends TileBasedLevel {
         final Entity foreground = getWorldImage();
         foreground.zIndex(100);
         add(foreground);
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).move(0, 0).build(BigImage.class, BigImage.RenderStrategy.FIXED));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).move(0, 0).build(RepeatingParallaxImage.class));
 
         final TmxEntity bgStuff1 = new TmxEntity(res.getTiledMap("map_bg1.tmx"));
         bgStuff1.zIndex(-99);

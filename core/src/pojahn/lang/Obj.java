@@ -4,8 +4,13 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class Obj {
+
+    public static <T> T nonNull(final T defaultValue, final Supplier<T> valueSupplier) {
+        return defaultValue != null ? defaultValue : valueSupplier.get();
+    }
 
     public static <T> T nonNull(final T defaultValue, final T backupValue) {
         return defaultValue != null ? defaultValue : backupValue;

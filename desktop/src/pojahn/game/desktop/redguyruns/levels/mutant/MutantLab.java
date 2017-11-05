@@ -11,15 +11,16 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
 import pojahn.game.entities.enemy.weapon.Bullet;
 import pojahn.game.entities.enemy.EvilDog;
 import pojahn.game.entities.enemy.LaserDrone;
+import pojahn.game.entities.image.RepeatingParallaxImage;
+import pojahn.game.entities.movement.Waypoint;
 import pojahn.game.entities.object.OneWay;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.enemy.weapon.Projectile;
-import pojahn.game.entities.Shuttle;
+import pojahn.game.entities.movement.Shuttle;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.enemy.weapon.Weapon;
 import pojahn.game.entities.main.GravityMan;
@@ -47,7 +48,6 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 import static pojahn.game.core.BaseLogic.distance;
-import static pojahn.game.core.BaseLogic.rotatePoint;
 
 public class MutantLab extends PixelBasedLevel {
 
@@ -122,7 +122,7 @@ public class MutantLab extends PixelBasedLevel {
          * Background & Foreground
          */
         add(new EntityBuilder().image(res.getImage("foreground.png")).zIndex(100).build());
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(RepeatingParallaxImage.class));
 
         /*
          * Room Background
@@ -749,7 +749,7 @@ public class MutantLab extends PixelBasedLevel {
 
     private Vector2[] getLaserMonsterWP() {
         final int padding = 100;
-        final PathDrone.Waypoint[] pd = randomWallPoints(4704 + padding, 5597 - padding, 768 + padding, 1152 - padding);
+        final Waypoint[] pd = randomWallPoints(4704 + padding, 5597 - padding, 768 + padding, 1152 - padding);
         final Vector2[] wps = new Vector2[pd.length];
         for (int j = 0; j < wps.length; j++)
             wps[j] = new Vector2(pd[j].targetX, pd[j].targetY);
@@ -772,10 +772,10 @@ public class MutantLab extends PixelBasedLevel {
         return "Mutant Lab";
     }
 
-    private PathDrone.Waypoint[] randomWallPoints(final int minX, final int maxX, final int minY, final int maxY) {
+    private Waypoint[] randomWallPoints(final int minX, final int maxX, final int minY, final int maxY) {
         int last = -1;
         final int quantity = new Random().nextInt(100) + 100;
-        final List<PathDrone.Waypoint> pdlist = new ArrayList<>(quantity);
+        final List<Waypoint> pdlist = new ArrayList<>(quantity);
         final Random r = new Random();
 
         for (int i = 0; i < quantity; i++) {
@@ -784,12 +784,12 @@ public class MutantLab extends PixelBasedLevel {
                 last = dir;
 
                 final Point2D.Float point = getDirection(dir, minX, maxX, minY, maxY);
-                pdlist.add(new PathDrone.Waypoint(point.x, point.y, 0, false, null));
+                pdlist.add(new Waypoint(point.x, point.y, 0, false, null));
             } else
                 i--;
         }
 
-        return pdlist.toArray(new PathDrone.Waypoint[pdlist.size()]);
+        return pdlist.toArray(new Waypoint[pdlist.size()]);
     }
 
     private Point2D.Float getDirection(final int dir, final int minX, final int maxX, final int minY, final int maxY) {

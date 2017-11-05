@@ -6,16 +6,14 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import pojahn.game.core.Entity;
-import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.TmxEntity;
-import pojahn.game.entities.image.BigImage;
-import pojahn.game.entities.image.BigImage.RenderStrategy;
-import pojahn.game.entities.object.Bouncer;
-import pojahn.game.entities.PathDrone;
-import pojahn.game.entities.platform.SolidPlatform;
+import pojahn.game.entities.image.ParallaxImage;
 import pojahn.game.entities.main.GravityMan;
+import pojahn.game.entities.object.Bouncer;
+import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Factory;
@@ -78,7 +76,6 @@ public class DontEatShroom extends TileBasedLevel {
         play = ResourceUtil.getGravityMan(resources);
         play.move(25 * 24, 66 * 24);
         add(play);
-        runOnceWhen(play::lose, ()-> play.y() + play.height() >= getHeight() - 2);
 
         /*
          * Background and foreground
@@ -88,8 +85,10 @@ public class DontEatShroom extends TileBasedLevel {
         bgTiles.zIndex(-1);
         add(bgTiles);
 
-        final BigImage bg = new BigImage(RenderStrategy.PARALLAX);
-        bg.setRatio(.27f);
+        final ParallaxImage bg = new ParallaxImage();
+        bg.setRateX(0.27f);
+        bg.setRateY(0);
+        bg.bounds.pos.y = -400;
         bg.setImage(resources.getImage("background0.png"));
         bg.zIndex(-10);
         add(bg);

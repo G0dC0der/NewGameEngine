@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.essentials.Hitbox;
 import pojahn.lang.Obj;
 

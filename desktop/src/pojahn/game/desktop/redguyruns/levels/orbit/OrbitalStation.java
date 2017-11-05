@@ -9,16 +9,17 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
 import pojahn.game.entities.enemy.weapon.Bullet;
-import pojahn.game.entities.image.BigParallaxImage;
+import pojahn.game.entities.image.PartialParallaxImage;
+import pojahn.game.entities.image.RepeatingParallaxImage;
+import pojahn.game.entities.image.StaticImage;
 import pojahn.game.entities.object.Collectable;
 import pojahn.game.entities.enemy.EvilDog;
 import pojahn.game.entities.enemy.weapon.Missile;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.enemy.weapon.RotatingCannon;
-import pojahn.game.entities.Shuttle;
+import pojahn.game.entities.movement.Shuttle;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.enemy.TargetLaser;
 import pojahn.game.entities.platform.TilePlatform;
@@ -134,21 +135,21 @@ public class OrbitalStation extends TileBasedLevel {
         final Entity worldImage = getWorldImage();
         worldImage.zIndex(1000);
         add(worldImage);
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(RepeatingParallaxImage.class));
         add(new EntityBuilder().image(res.getImage("separator.png")).zIndex(-99).move(680, 480).build());
         add(new EntityBuilder().image(res.getImage("separator.png")).zIndex(-99).move(2729, 480).build());
-        final BigParallaxImage space = new BigParallaxImage();
-        space.setRateX(.2f);
+        final PartialParallaxImage space = new PartialParallaxImage();
+        space.setImage(res.getImage("space.png"));
+        space.setRateX(.3f);
         space.setRateY(0);
         space.zIndex(-50);
-        space.setImage(res.getImage("space.png"));
         add(space);
 
         /*
          * Heat Overlay
          */
         final PingPongFloat overlayAlpha = new PingPongFloat(0, 0, .005f);
-        final BigImage overlay = new BigImage(BigImage.RenderStrategy.FIXED);
+        final StaticImage overlay = new StaticImage();
         overlay.zIndex(5000);
         overlay.setImage(res.getImage("alphaImage.png"));
         overlay.addEvent(() -> overlay.tint.a = overlayAlpha.get());

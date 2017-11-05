@@ -20,7 +20,6 @@ import pojahn.game.core.Level.TileLayer;
 import pojahn.game.events.Event;
 import pojahn.game.events.RenderEvent;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,10 +47,6 @@ public class Utils {
             music1.play();
             music1.setPosition(seconds);
         });
-    }
-
-    public static Entity wrap(final RenderEvent renderEvent) {
-        return wrap(renderEvent, 0);
     }
 
     public static Entity wrap(final RenderEvent renderEvent, final int zIndex) {

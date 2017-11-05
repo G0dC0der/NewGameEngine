@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.HUDMessage;
 

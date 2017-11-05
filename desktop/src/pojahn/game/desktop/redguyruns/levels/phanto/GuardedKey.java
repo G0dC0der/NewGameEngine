@@ -9,10 +9,10 @@ import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
 import pojahn.game.entities.enemy.EvilDog;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Animation;
@@ -73,7 +73,7 @@ public class GuardedKey extends TileBasedLevel {
         final Entity foreground = getWorldImage();
         foreground.zIndex(100);
         add(foreground);
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(RepeatingParallaxImage.class));
 
         /*
          * Zapper

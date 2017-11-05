@@ -170,7 +170,7 @@ public class GravityMan extends PlayableEntity {
 
 
     protected void runLeft(final float targetX) {
-        for (float next = bounds.pos.x; next >= targetX; next -= 0.5f) {
+        for (float next = bounds.pos.x; next >= targetX; next -= 0.2f) {
             if (!occupiedAt(next, y())) {
                 bounds.pos.x = next;
                 if (!occupiedAt(x(), bounds.pos.y + 1) && occupiedAt(x(), bounds.pos.y + 2))
@@ -186,7 +186,7 @@ public class GravityMan extends PlayableEntity {
     }
 
     protected void runRight(final float targetX) {
-        for (float next = x(); next <= targetX; next += 0.5f) {
+        for (float next = x(); next <= targetX; next += 0.2f) {
             if (!occupiedAt(next, y())) {
                 bounds.pos.x = next;
                 if (!occupiedAt(x(), y() + 1) && occupiedAt(x(), y() + 2))

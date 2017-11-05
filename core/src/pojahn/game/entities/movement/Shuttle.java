@@ -1,4 +1,4 @@
-package pojahn.game.entities;
+package pojahn.game.entities.movement;
 
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;

@@ -5,9 +5,8 @@ import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
-import pojahn.game.entities.image.BigImage.RenderStrategy;
 import pojahn.game.entities.enemy.weapon.Bullet;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.platform.DestroyablePlatform;
 import pojahn.game.entities.enemy.weapon.Projectile;
 import pojahn.game.entities.enemy.weapon.SimpleWeapon;
@@ -61,7 +60,7 @@ public class AtariStyle extends PixelBasedLevel {
          * Background and foreground
          */
         add(new EntityBuilder().image(resources.getImage("foreground.png")).zIndex(0).build());
-        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-5).build(BigImage.class, RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-5).build(RepeatingParallaxImage.class));
 
 		/*
          * Lava
@@ -80,7 +79,6 @@ public class AtariStyle extends PixelBasedLevel {
         addLava(27, 52, 40, 2);
 
         addLava(32, 29, 2, 1);
-        addLava(37, 29, 3, 1);
         addLava(43, 29, 2, 1);
 
         addLava(36, 10, 1, 17);

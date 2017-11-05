@@ -3,7 +3,7 @@ package pojahn.game.entities.enemy;
 import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.lang.Obj;
 
 import java.util.List;

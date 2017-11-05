@@ -6,10 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
-import pojahn.game.entities.image.BigImage.RenderStrategy;
+import pojahn.game.entities.image.StaticImage;
 import pojahn.game.entities.object.OneWay;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.platform.SolidPlatform.FollowMode;
 import pojahn.game.entities.platform.TilePlatform;
@@ -76,7 +75,7 @@ public class SquareTown extends PixelBasedLevel {
          * Background and foreground
          */
         add(new EntityBuilder().image(resources.getImage("foreground.png")).zIndex(Integer.MAX_VALUE).build());
-        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-5).build(BigImage.class, RenderStrategy.FIXED));
+        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-5).build(StaticImage.class));
 
 		/*
          * Spikey
@@ -463,7 +462,7 @@ public class SquareTown extends PixelBasedLevel {
         return "Square Town";
     }
 
-    SolidPlatform getBlock(final float x, final float y, final Color color) {
+    private SolidPlatform getBlock(final float x, final float y, final Color color) {
         final Animation<Image2D> eyes = new Animation<>(6, resources.getAnimation("eyeImg"));
         eyes.stop(true);
         eyes.setLoop(false);
@@ -495,7 +494,7 @@ public class SquareTown extends PixelBasedLevel {
         return block;
     }
 
-    Entity getGem(final float x, final float y) {
+    private Entity getGem(final float x, final float y) {
         gems++;
 
         final Entity gem = new Entity();
@@ -512,7 +511,7 @@ public class SquareTown extends PixelBasedLevel {
         return gem;
     }
 
-    Entity getGem2(final float x, final float y) {
+    private Entity getGem2(final float x, final float y) {
         gems2++;
 
         final Animation<Image2D> gemImage = new Animation<>(4, resources.getAnimation("gem2Img"));
@@ -532,23 +531,23 @@ public class SquareTown extends PixelBasedLevel {
         return gem;
     }
 
-    float getSpikeySpeed() {
+    private float getSpikeySpeed() {
         return 6.0f;
     }
 
-    float getCrabSpeed() {
+    private float getCrabSpeed() {
         return 2.0f;
     }
 
-    int getCrabAnimationSpeed() {
+    private int getCrabAnimationSpeed() {
         return 4;
     }
 
-    float getWallSpeed() {
+    private float getWallSpeed() {
         return .8f;
     }
 
-    float getPushSpeed() {
+    private float getPushSpeed() {
         return 4;
     }
 

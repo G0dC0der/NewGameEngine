@@ -13,9 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
-import pojahn.game.core.MobileEntity;
 import pojahn.game.entities.TmxEntity;
-import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.geom.Size;
 import pojahn.game.events.Event;
@@ -25,27 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class TileBasedLevel extends Level {
-
-    public static class PositionedCell {
-        public Cell cell;
-        public int x, y;
-
-        public PositionedCell(final Cell cell, final int x, final int y) {
-            this.cell = cell;
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (obj instanceof PositionedCell) {
-                final PositionedCell pCell = (PositionedCell) obj;
-                return this.cell == pCell.cell && (x * 31 + y) == (pCell.x * 31 + pCell.y);
-            } else {
-                return false;
-            }
-        }
-    }
 
     private TiledMap map;
     private int tilesX, tilesY, tileWidth, tileHeight;
@@ -182,6 +159,27 @@ public abstract class TileBasedLevel extends Level {
                     pix.dispose();
                     return;
                 }
+            }
+        }
+    }
+
+    private static class PositionedCell {
+        Cell cell;
+        int x, y;
+
+        PositionedCell(final Cell cell, final int x, final int y) {
+            this.cell = cell;
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj instanceof PositionedCell) {
+                final PositionedCell pCell = (PositionedCell) obj;
+                return this.cell == pCell.cell && (x * 31 + y) == (pCell.x * 31 + pCell.y);
+            } else {
+                return false;
             }
         }
     }

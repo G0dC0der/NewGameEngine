@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.google.common.collect.ImmutableList;
 import pojahn.game.desktop.redguyruns.levels.training1.Friend;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
+import pojahn.game.entities.image.StaticImage;
 import pojahn.game.entities.object.Collectable;
 import pojahn.game.entities.platform.DestroyablePlatform;
 import pojahn.game.entities.main.GravityMan;
@@ -53,7 +53,7 @@ public class TrainingStage3 extends PixelBasedLevel {
          * Background & Foreground
          */
         add(new EntityBuilder().image(res.getImage("foreground.png")).zIndex(500).build());
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-5).build(BigImage.class, BigImage.RenderStrategy.FIXED));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-5).build(StaticImage.class));
 
         /*
          * Weak Platforms

@@ -7,8 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
-import pojahn.game.entities.image.BigImage.RenderStrategy;
+import pojahn.game.entities.image.ParallaxImage;
 import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Controller;
 import pojahn.game.essentials.EntityBuilder;
@@ -61,8 +60,16 @@ public class MountainRace extends TileBasedLevel {
          * Background and foreground
          */
         add(getWorldImage());
-        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-4).move(0, 736).alpha(.8f).build());
-        add(new EntityBuilder().image(resources.getImage("sky.png")).zIndex(-5).build(BigImage.class, RenderStrategy.PARALLAX));
+        add(new EntityBuilder().image(resources.getImage("sky.png")).zIndex(-5).build(ParallaxImage.class));
+        final ParallaxImage mountains = new EntityBuilder()
+            .image(resources.getImage("background.png"))
+            .zIndex(-4)
+            .move(0, -280)
+            .alpha(.8f)
+            .build(ParallaxImage.class);
+        mountains.setRateX(.4f);
+        mountains.setRateY(0);
+        add(mountains);
 
         /*
          * Flag

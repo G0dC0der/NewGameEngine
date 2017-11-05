@@ -5,10 +5,10 @@ import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
 import pojahn.game.entities.enemy.Boo;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Animation;
@@ -72,7 +72,7 @@ public class GhostBridge extends TileBasedLevel {
         worldImage.zIndex(2000);
         add(worldImage);
 
-        final BigImage bgImage = new BigImage(BigImage.RenderStrategy.PARALLAX_REPEAT);
+        final RepeatingParallaxImage bgImage = new RepeatingParallaxImage();
         bgImage.setImage(resources.getImage("background.png"));
         bgImage.zIndex(-100);
         add(bgImage);

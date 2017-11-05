@@ -12,14 +12,13 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
-import pojahn.game.entities.image.BigImage.RenderStrategy;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.object.Collectable;
-import pojahn.game.entities.LineMovement;
-import pojahn.game.entities.LineMovement.Movement;
+import pojahn.game.entities.movement.LineMovement;
+import pojahn.game.entities.movement.LineMovement.Movement;
 import pojahn.game.entities.enemy.weapon.Missile;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.platform.PushableObject;
 import pojahn.game.entities.enemy.weapon.Reloadable;
 import pojahn.game.entities.platform.SolidPlatform;
@@ -93,7 +92,7 @@ public class SpiritTemple extends TileBasedLevel {
          */
         add(getWorldImage());
         add(new EntityBuilder().image(resources.getImage("sky.png")).zIndex(-1).build());
-        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-2).build(BigImage.class, RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-2).build(RepeatingParallaxImage.class));
 
         final Entity darkShade = new Entity() {
             @Override

@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.Circle;
+import pojahn.game.entities.movement.Circle;
 import pojahn.game.entities.particle.Particle;
 import pojahn.game.entities.enemy.TargetLaser;
 import pojahn.game.essentials.EntityBuilder;

@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.lang.Obj;
 
 import java.util.List;

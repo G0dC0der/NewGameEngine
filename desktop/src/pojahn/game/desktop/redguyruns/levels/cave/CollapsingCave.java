@@ -13,8 +13,9 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
+import pojahn.game.entities.image.RepeatingParallaxImage;
+import pojahn.game.entities.image.StaticImage;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.TmxEntity;
 import pojahn.game.essentials.CameraEffects;
@@ -47,7 +48,6 @@ public class CollapsingCave extends TileBasedLevel {
     private Entity item1, flag, dust;
     private int soundCounter;
     private boolean coll1, coll2, coll3, coll4, done, drugEffect;
-    private float deadX, deadY;
 
     @Override
     public void init(final Serializable meta) throws Exception {
@@ -123,13 +123,13 @@ public class CollapsingCave extends TileBasedLevel {
          * Background and foreground
          */
         add(getWorldImage());
-        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-5).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-5).build(RepeatingParallaxImage.class));
 
         /*
          * Darkness
          */
         final PingPongFloat ppFloat = new PingPongFloat(.1f, .5f, .001f);
-        final BigImage darkness = new BigImage(BigImage.RenderStrategy.FIXED);
+        final StaticImage darkness = new StaticImage();
         darkness.setImage(resources.getImage("darkness"));
         darkness.zIndex(1000);
         darkness.tint.a = ppFloat.get();
@@ -163,6 +163,10 @@ public class CollapsingCave extends TileBasedLevel {
         camera.setMoveSpeed(7);
         camera.freeze();
 
+        addSoundListener(camera);
+        addFocusObject(camera);
+        runOnceAfter(camera::unfreeze, 85);
+
         /*
 		 * Drill
 		 */
@@ -175,11 +179,6 @@ public class CollapsingCave extends TileBasedLevel {
         drill.sounds.maxDistance = 2000;
         drill.appendPath(547, 60, 0, false, () -> {
             drill.setMoveSpeed(.1f);
-            camera.unfreeze();
-            addSoundListener(camera);
-            addFocusObject(camera);
-            removeFocusObject(drill);
-
             add(dust);
         });
         drill.appendPath(547, -100, Integer.MAX_VALUE, false, () -> {
@@ -206,7 +205,7 @@ public class CollapsingCave extends TileBasedLevel {
 
         play.addObstacle(middlePart);
         play.addObstacle(bottomPart);
-        addFocusObject(drill);
+//        addFocusObject(drill);
 
         add(drill);
         add(middlePart);
@@ -290,21 +289,21 @@ public class CollapsingCave extends TileBasedLevel {
     }
 
     private void extra() {
-        if (drill.getMoveSpeed() == .1f && crusher.getMoveSpeed() == 0 && ++soundCounter % 15 == 0) {
-
-            final double distance = BaseLogic.distance(play.x(), play.y(), drill.centerX(), drill.y());
-            final double candidate = 10 * Math.max((1 / Math.sqrt(distance)) - (1 / Math.sqrt(1200)), 0);
-            final float volume = (float) Math.min(candidate, 1);
+        if (drill.getMoveSpeed() == .1f && crusher.getMoveSpeed() == 0 && ++soundCounter % 6 == 0) {
 
             switch (r.nextInt(4)) {
                 case 0:
-                    exp1.play(volume);
+                    drill.sounds.play(exp1);
+                    break;
                 case 1:
-                    exp2.play(volume);
+                    drill.sounds.play(exp2);
+                    break;
                 case 2:
-                    exp3.play(volume);
+                    drill.sounds.play(exp3);
+                    break;
                 case 3:
-                    exp4.play(volume);
+                    drill.sounds.play(exp4);
+                    break;
             }
         }
 
@@ -317,7 +316,7 @@ public class CollapsingCave extends TileBasedLevel {
         if (coll1 && coll2 && coll3 && coll4 && flag.collidesWith(play))
             play.setState(Vitality.COMPLETED);
 
-        if (!done) {
+        if (!done && !camera.isFrozen()) {
             camera.moveTowards(play.x(), play.y());
             if (BaseLogic.distance(camera, play) < 200) {
                 done = true;

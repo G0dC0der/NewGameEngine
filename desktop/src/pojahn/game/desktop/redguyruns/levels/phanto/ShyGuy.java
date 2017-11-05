@@ -1,7 +1,7 @@
 package pojahn.game.desktop.redguyruns.levels.phanto;
 
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.entities.LineMovement;
+import pojahn.game.entities.movement.LineMovement;
 
 public class ShyGuy extends LineMovement {
 

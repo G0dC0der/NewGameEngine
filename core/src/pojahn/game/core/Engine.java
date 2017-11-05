@@ -61,9 +61,9 @@ public class Engine {
     Exception exception;
 
     private boolean replaying, flipY, showHelpText;
-    private int screenWidth, screenHeight, deathCounter;
+    private int deathCounter;
     private float rotation, musicVolume, prevTx, prevTy, time;
-    private long frameCounter, uniqueCounter;
+    private long frameCounter;
 
     public Engine(final Level level) {
         this(level, null);
@@ -124,12 +124,6 @@ public class Engine {
         this.playerName = playerName;
     }
 
-    public void setScreenSize(final int width, final int height) {
-        screenWidth = width;
-        screenHeight = height;
-        initCameras();
-    }
-
     public void setRotation(final float rotation) {
         gameCamera.rotate(-this.rotation);
         gameCamera.rotate(rotation);
@@ -182,7 +176,7 @@ public class Engine {
     }
 
     public Dimension getScreenSize() {
-        return new Dimension(screenWidth, screenHeight);
+        return new Dimension(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public void gameCamera() {
@@ -274,7 +268,7 @@ public class Engine {
 
         fromCp = fromCp && level.cpPresent() && !completed;
         time = !fromCp ? 0 : time;
-        uniqueCounter = frameCounter = 0;
+        frameCounter = 0;
 
         if (completed || lost && !fromCp) {
             if (isReplaying())
@@ -435,17 +429,11 @@ public class Engine {
     }
 
     private void initCameras() {
-        screenWidth = screenWidth == 0 ? Gdx.graphics.getWidth() : screenWidth;
-        screenHeight = screenHeight == 0 ? Gdx.graphics.getHeight() : screenHeight;
-
         gameCamera = new OrthographicCamera();
-        gameCamera.setToOrtho(flipY, screenWidth, screenHeight);
+        gameCamera.setToOrtho(flipY);
 
         hudCamera = new OrthographicCamera();
-        hudCamera.setToOrtho(true, screenWidth, screenHeight);
-
-        if (Gdx.graphics.getWidth() != screenWidth || Gdx.graphics.getHeight() != screenHeight)
-            Gdx.graphics.setWindowedMode(screenWidth, screenHeight);
+        hudCamera.setToOrtho(true);
     }
 
     private void statusControl() {
@@ -465,10 +453,6 @@ public class Engine {
             else
                 throw new IllegalStateException("Game is in a unknown state.");
         }
-    }
-
-    long provideBadge() {
-        return ++uniqueCounter;
     }
 
     boolean lost() {

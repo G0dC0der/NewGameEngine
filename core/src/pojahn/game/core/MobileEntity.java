@@ -2,6 +2,7 @@ package pojahn.game.core;
 
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.Direction;
 import pojahn.game.events.TileEvent;
@@ -376,7 +377,7 @@ public class MobileEntity extends Entity {
     protected void copyData(final MobileEntity clone) {
         super.copyData(clone);
         clone.moveSpeed = moveSpeed;
-        clone.obstacles = ImmutableSet.copyOf(obstacles);
+        clone.obstacles = Sets.newHashSet(obstacles);
         clone.smart = smart;
         clone.facings = facings;
     }

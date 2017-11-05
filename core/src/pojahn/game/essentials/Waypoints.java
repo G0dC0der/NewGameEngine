@@ -1,6 +1,6 @@
 package pojahn.game.essentials;
 
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 
 public class Waypoints {
 

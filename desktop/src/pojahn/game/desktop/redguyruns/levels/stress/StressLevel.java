@@ -5,14 +5,13 @@ import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.stages.PixelBasedLevel;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 

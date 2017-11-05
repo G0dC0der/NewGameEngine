@@ -5,7 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
+import pojahn.game.entities.image.ParallaxImage;
 import pojahn.game.entities.platform.DestroyablePlatform;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.EntityBuilder;
@@ -56,7 +56,7 @@ public class ForbiddenCastle extends PixelBasedLevel {
          * Background and foreground
          */
         add(new EntityBuilder().image(res.getImage("foreground.png")).zIndex(Integer.MAX_VALUE).build());
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-5).build(BigImage.class, BigImage.RenderStrategy.PARALLAX));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-5).build(ParallaxImage.class));
 
         /*
          * Weak Platforms

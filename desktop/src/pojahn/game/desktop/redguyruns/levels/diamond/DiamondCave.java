@@ -10,13 +10,14 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
 import pojahn.game.entities.enemy.weapon.Bullet;
-import pojahn.game.entities.Circle;
+import pojahn.game.entities.movement.Circle;
+import pojahn.game.entities.image.ParallaxImage;
+import pojahn.game.entities.movement.Waypoint;
 import pojahn.game.entities.platform.DestroyablePlatform;
 import pojahn.game.entities.object.OneWay;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.enemy.weapon.SimpleWeapon;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.essentials.Animation;
@@ -94,14 +95,14 @@ public class DiamondCave extends PixelBasedLevel {
          * Background and foreground
          */
         add(new EntityBuilder().image(res.getImage("foreground.png")).zIndex(Integer.MAX_VALUE).build());
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-5).build(BigImage.class, BigImage.RenderStrategy.PARALLAX));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-5).build(ParallaxImage.class));
 
         /*
          * Top Spikes
          */
         final Entity topSpikes = new Entity();
         topSpikes.move(3266, 305);
-        topSpikes.setImage(res.getImage("topSpikes.png"));
+        topSpikes.setImage(res.getImage("topspikes.png"));
         topSpikes.ifCollides(play).then(() -> play.touch(-1));
         add(topSpikes);
 
@@ -132,19 +133,19 @@ public class DiamondCave extends PixelBasedLevel {
         ram3.move(ram1.x(), ram1.y() + ram1.halfHeight() + 100);
         final int rotationSpeed = 15;
 
-        ram1.appendPath((PathDrone.Waypoint[]) res.getAsset("data1.obj"));
+        ram1.appendPath((Waypoint[]) res.getAsset("data1.obj"));
         ram1.addEvent(Factory.hitMain(ram1, play, -1));
         ram1.addObstacle(ram2);
         ram1.addObstacle(ram3);
         ram1.addEvent(() -> ram1.rotate(rotationSpeed));
 
-        ram2.appendPath((PathDrone.Waypoint[]) res.getAsset("data2.obj"));
+        ram2.appendPath((Waypoint[]) res.getAsset("data2.obj"));
         ram2.addEvent(Factory.hitMain(ram2, play, -1));
         ram2.addObstacle(ram1);
         ram2.addObstacle(ram3);
         ram2.addEvent(() -> ram2.rotate(rotationSpeed));
 
-        ram3.appendPath((PathDrone.Waypoint[]) res.getAsset("data3.obj"));
+        ram3.appendPath((Waypoint[]) res.getAsset("data3.obj"));
         ram3.addEvent(Factory.hitMain(ram3, play, -1));
         ram3.addObstacle(ram1);
         ram3.addObstacle(ram2);
@@ -361,8 +362,8 @@ public class DiamondCave extends PixelBasedLevel {
         add(getBacteria(5859, 252));
 
         /* Top Line */
-        add(getBacteria(new PathDrone.Waypoint(5589, 182), new PathDrone.Waypoint(5589, 122)));
-        add(getBacteria(new PathDrone.Waypoint(5559, 122), new PathDrone.Waypoint(5559, 182)));
+        add(getBacteria(new Waypoint(5589, 182), new Waypoint(5589, 122)));
+        add(getBacteria(new Waypoint(5559, 122), new Waypoint(5559, 182)));
         add(getBacteria(4929, 152));
         add(getBacteria(4929, 182));
         add(getBacteria(4929, 182 + 30));
@@ -422,10 +423,10 @@ public class DiamondCave extends PixelBasedLevel {
     }
 
     private PathDrone getBacteria(final float x, final float y) {
-        return getBacteria(new PathDrone.Waypoint(x, y, 0, false, null));
+        return getBacteria(new Waypoint(x, y, 0, false, null));
     }
 
-    private PathDrone getBacteria(final PathDrone.Waypoint... waypoints) {
+    private PathDrone getBacteria(final Waypoint... waypoints) {
         class Int32 {
             int i;
         }

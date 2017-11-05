@@ -4,13 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.enemy.weapon.Bullet;
-import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
 import pojahn.game.entities.enemy.weapon.Projectile;
 import pojahn.game.entities.enemy.weapon.Weapon;
 import pojahn.game.entities.main.GravityMan;
+import pojahn.game.entities.particle.Particle;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.Hitbox;
@@ -58,7 +57,7 @@ public class PiranhaHell extends PixelBasedLevel {
 
         //Background & Foreground
         add(new EntityBuilder().image(res.getImage("foreground.png")).zIndex(100).build());
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.FULL));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build());
 
         //Goal
         final Entity theFlag = new Entity();

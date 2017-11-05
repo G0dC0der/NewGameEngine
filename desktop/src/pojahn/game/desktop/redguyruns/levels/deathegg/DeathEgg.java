@@ -10,13 +10,13 @@ import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
 import pojahn.game.entities.enemy.weapon.Bullet;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.object.Button;
 import pojahn.game.entities.particle.Flash;
 import pojahn.game.entities.object.OneWay;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.enemy.weapon.SimpleWeapon;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.main.Flipper;
@@ -90,7 +90,6 @@ public class DeathEgg extends TileBasedLevel {
         play = ResourceUtil.getFlipper(res);
         play.move(20, 32 * 128 + (128 - play.height() - 1));
         add(play);
-//        play.move(19 * 128, 5 * 128 + (128 - play.height() - 1));
 
         /*
          * Backgrounds & Foreground
@@ -98,7 +97,7 @@ public class DeathEgg extends TileBasedLevel {
         final Entity foreground = getWorldImage();
         foreground.zIndex(100);
         add(foreground);
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(RepeatingParallaxImage.class));
 
         /*
          * Flip Buttons

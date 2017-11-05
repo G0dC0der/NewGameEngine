@@ -1,4 +1,4 @@
-package pojahn.game.entities;
+package pojahn.game.entities.movement;
 
 import pojahn.game.core.MobileEntity;
 

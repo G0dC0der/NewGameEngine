@@ -5,7 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Animation;
@@ -74,7 +74,7 @@ public class Race extends PixelBasedLevel {
          * Background & Foreground
          */
         add(new EntityBuilder().image(res.getImage("foreground.png")).zIndex(100).build());
-        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(BigImage.class, BigImage.RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(res.getImage("background.png")).zIndex(-100).build(RepeatingParallaxImage.class));
 
         /*
          * Hindrances

@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
-import pojahn.game.entities.PathDrone;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.particle.Particle;
 import pojahn.game.essentials.LaserBeam;
 import pojahn.lang.Obj;

@@ -6,8 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.BigImage;
-import pojahn.game.entities.image.BigImage.RenderStrategy;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.particle.Particle;
 import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.EntityBuilder;
@@ -48,11 +47,11 @@ public class InAHurry extends TileBasedLevel {
         main.move(4 * 28, 40 * 28);
         add(main);
 
-        /**
+        /*
          * Backgrounds and foreground
          */
         add(getWorldImage());
-        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-1).build(BigImage.class, RenderStrategy.PARALLAX_REPEAT));
+        add(new EntityBuilder().image(resources.getImage("background.png")).zIndex(-1).build(RepeatingParallaxImage.class));
 
         /*
          * Coin

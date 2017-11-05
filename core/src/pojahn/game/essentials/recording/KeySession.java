@@ -7,7 +7,7 @@ import java.util.List;
 
 public class KeySession implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1L;
 
     public final List<Keystrokes> keystrokes;
     final String identifier;
