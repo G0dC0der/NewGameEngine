@@ -752,7 +752,7 @@ public class MutantLab extends PixelBasedLevel {
         final Waypoint[] pd = randomWallPoints(4704 + padding, 5597 - padding, 768 + padding, 1152 - padding);
         final Vector2[] wps = new Vector2[pd.length];
         for (int j = 0; j < wps.length; j++)
-            wps[j] = new Vector2(pd[j].targetX, pd[j].targetY);
+            wps[j] = new Vector2(pd[j].targetX(), pd[j].getTargetY());
 
         return wps;
     }
@@ -784,7 +784,7 @@ public class MutantLab extends PixelBasedLevel {
                 last = dir;
 
                 final Point2D.Float point = getDirection(dir, minX, maxX, minY, maxY);
-                pdlist.add(new Waypoint(point.x, point.y, 0, false, null));
+                pdlist.add(new Waypoint.StaticWaypoint(point.x, point.y, 0, false, null));
             } else
                 i--;
         }

@@ -147,12 +147,11 @@ public abstract class Projectile extends MobileEntity {
             victim.runActionEvent(this);
 
         final Vector2 front = getFrontPosition();
-        final Level l = getLevel();
 
         if (impact != null)
-            l.add(impact.getClone().move(front.x - impact.halfWidth(), front.y - impact.halfHeight()));
+            getLevel().add(impact.getClone().move(front.x - impact.halfWidth(), front.y - impact.halfHeight()));
 
-        l.discard(this);
+        getLevel().discard(this);
     }
 
     protected void copyData(final Projectile clone) {

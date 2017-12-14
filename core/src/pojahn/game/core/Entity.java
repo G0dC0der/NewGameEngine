@@ -407,7 +407,7 @@ public class Entity {
                 bounds.size.height,
                 scaleX,
                 scaleY,
-                bounds.rotation % 360,
+                bounds.rotation,// % 360,
                 0,
                 0,
                 (int) bounds.size.width,

@@ -1,6 +1,7 @@
 package pojahn.game.entities.image;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import pojahn.game.core.Engine;
@@ -60,9 +61,10 @@ public class RepeatingParallaxImage extends Entity {
         batch.setProjectionMatrix(camera.combined);
 
         final Image2D image = nextImage();
+
         for (int x = 0; x < repeatX; x++)
             for (int y = 0; y < repeatY; y++)
-                batch.draw(image, x() + (x * width()), y() + (y * height()));
+                super.basicRender(batch, image, x() + (x * width()), y() + (y * height()));
 
         e.gameCamera();
     }

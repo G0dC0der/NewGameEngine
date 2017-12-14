@@ -7,6 +7,14 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.events.Event;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class Development {
 
     public static Event adjustColor(final Color color) {
@@ -84,5 +92,29 @@ public class Development {
                 System.out.println(String.format("Position: %s, %s\nRotation: %s", entity.x(), entity.y(), entity.getRotation()));
             }
         };
+    }
+
+    public static void splitImage(final int rows, final int cols, final File sourceImage) throws IOException {
+        final FileInputStream fis = new FileInputStream(sourceImage);
+        final BufferedImage image = ImageIO.read(fis);
+
+        final int chunks = rows * cols;
+
+        final int chunkWidth = image.getWidth() / cols;
+        final int chunkHeight = image.getHeight() / rows;
+        final BufferedImage[] imgs = new BufferedImage[chunks];
+        for (int x = 0, count = 0; x < rows; x++) {
+            for (int y = 0; y < cols; y++) {
+                imgs[count] = new BufferedImage(chunkWidth, chunkHeight, image.getType());
+
+                final Graphics2D gr = imgs[count++].createGraphics();
+                gr.drawImage(image, 0, 0, chunkWidth, chunkHeight, chunkWidth * y, chunkHeight * x, chunkWidth * y + chunkWidth, chunkHeight * x + chunkHeight, null);
+                gr.dispose();
+            }
+        }
+
+        for (int i = 0; i < imgs.length; i++) {
+            ImageIO.write(imgs[i], "png", new File("img" + i + ".png"));
+        }
     }
 }

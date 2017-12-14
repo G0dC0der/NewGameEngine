@@ -362,8 +362,8 @@ public class DiamondCave extends PixelBasedLevel {
         add(getBacteria(5859, 252));
 
         /* Top Line */
-        add(getBacteria(new Waypoint(5589, 182), new Waypoint(5589, 122)));
-        add(getBacteria(new Waypoint(5559, 122), new Waypoint(5559, 182)));
+        add(getBacteria(new Waypoint.StaticWaypoint(5589, 182), new Waypoint.StaticWaypoint(5589, 122)));
+        add(getBacteria(new Waypoint.StaticWaypoint(5559, 122), new Waypoint.StaticWaypoint(5559, 182)));
         add(getBacteria(4929, 152));
         add(getBacteria(4929, 182));
         add(getBacteria(4929, 182 + 30));
@@ -423,7 +423,7 @@ public class DiamondCave extends PixelBasedLevel {
     }
 
     private PathDrone getBacteria(final float x, final float y) {
-        return getBacteria(new Waypoint(x, y, 0, false, null));
+        return getBacteria(new Waypoint.StaticWaypoint(x, y, 0, false, null));
     }
 
     private PathDrone getBacteria(final Waypoint... waypoints) {
@@ -433,7 +433,7 @@ public class DiamondCave extends PixelBasedLevel {
         final Int32 value = new Int32();
         value.i = 0;
 
-        final PathDrone b = new PathDrone(waypoints[0].targetX, waypoints[0].targetY);
+        final PathDrone b = new PathDrone(waypoints[0].targetX(), waypoints[0].getTargetY());
         b.setImage(ThreadLocalRandom.current().nextInt(3, 8), res.getAnimation("bacteria"));
         b.setMoveSpeed(1.2f);
         b.setHitbox(Hitbox.PIXEL);

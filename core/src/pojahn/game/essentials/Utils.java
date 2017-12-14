@@ -14,12 +14,15 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.core.Level.TileLayer;
+import pojahn.game.entities.movement.EarthDrone;
 import pojahn.game.events.Event;
 import pojahn.game.events.RenderEvent;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -133,5 +136,28 @@ public class Utils {
         });
 
         return map;
+    }
+
+    public static void rectangularPath(final EarthDrone drone, final Rectangle rectangle, final boolean clockwise) {
+        drone.addPath(rectangle.x, rectangle.y);
+        if (clockwise) {
+            drone.addPath(rectangle.x + rectangle.width, rectangle.y);
+            drone.addPath(rectangle.x + rectangle.width, rectangle.y + rectangle.height);
+            drone.addPath(rectangle.x, rectangle.y + rectangle.height);
+        } else {
+            drone.addPath(rectangle.x, rectangle.y + rectangle.height);
+            drone.addPath(rectangle.x + rectangle.width, rectangle.y + rectangle.height);
+            drone.addPath(rectangle.x + rectangle.width, rectangle.y);
+        }
+    }
+
+    public static List<Animation<Image2D>> fromArray(final Image2D... arr) {
+        final List<Animation<Image2D>> list = new ArrayList<>(arr.length);
+
+        for (final Image2D img : arr) {
+            list.add(new Animation<>(3, img));
+        }
+
+        return list;
     }
 }

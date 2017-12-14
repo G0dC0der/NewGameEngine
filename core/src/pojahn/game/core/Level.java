@@ -458,7 +458,6 @@ public abstract class Level {
                             tileIntersection(play, play.getOccupyingCells());
 
                         play.updateFacing();
-                        play.setPrevs();
                     }
                 } else if (entity instanceof MobileEntity) {
                     final MobileEntity mobile = (MobileEntity) entity;
@@ -470,13 +469,17 @@ public abstract class Level {
                         tileIntersection(mobile, mobile.getOccupyingCells());
 
                     mobile.updateFacing();
-                    mobile.setPrevs();
                 } else {
                     entity.logistics();
                     entity.runEvents();
                 }
             }
         }
+
+        gameObjects.stream()
+            .filter(MobileEntity.class::isInstance)
+            .map(MobileEntity.class::cast)
+            .forEach(MobileEntity::setPrevs);
     }
 
     private void tileIntersection(final MobileEntity mobile, final Set<Tile> tiles) {

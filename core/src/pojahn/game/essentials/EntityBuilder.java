@@ -16,7 +16,8 @@ public class EntityBuilder {
     private int zIndex;
     private Animation<Image2D> image;
     private Hitbox hitbox;
-    private float x, y, width, height, offsetX, offsetY, alpha, rotation;
+    private float x, y, offsetX, offsetY, alpha, rotation;
+    private Float width, height;
     private List<Event> events;
 
     public static EntityBuilder fromVector(final Vector2 vector2) {
@@ -137,8 +138,6 @@ public class EntityBuilder {
     private void pasteData(final Entity dest) {
         dest.bounds.pos.x = x;
         dest.bounds.pos.y = y;
-        dest.bounds.size.width = width;
-        dest.bounds.size.height = height;
         dest.offsetX = offsetX;
         dest.offsetY = offsetY;
         dest.tint.a = alpha;
@@ -148,6 +147,10 @@ public class EntityBuilder {
         dest.setIdentifier("Entity Builder" + MathUtils.random());
         if (image != null)
             dest.setImage(image);
+        if (width != null)
+            dest.bounds.size.width = width;
+        if (height != null)
+            dest.bounds.size.height = height;
 
         events.forEach(dest::addEvent);
     }

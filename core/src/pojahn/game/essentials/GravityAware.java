@@ -6,6 +6,7 @@ import pojahn.game.core.MobileEntity;
 public class GravityAware {
 
     private final MobileEntity source;
+    private boolean solid;
     public final Vector2 velocity;
     public float accX, mass, gravity, damping, maxX, maxY, delta;
 
@@ -19,6 +20,10 @@ public class GravityAware {
         gravity = -500;
         damping = 0.0001f;
         delta = 1.0f/60.0f;
+    }
+
+    public void setSolid(final boolean solid) {
+        this.solid = solid;
     }
 
     public void glide() {
@@ -77,8 +82,9 @@ public class GravityAware {
 
         if (maxY < velocity.y) {
             velocity.y += (force / mass) * delta;
-        } else
+        } else {
             velocity.y -= (force / mass) * delta;
+        }
 
         moveToY();
     }
@@ -87,7 +93,9 @@ public class GravityAware {
         if (velocity.x != 0) {
             final float futureX = source.bounds.pos.x - velocity.x * delta;
 
-            if (!source.occupiedAt(futureX, source.y())) {
+            if (!solid) {
+                source.move(futureX, source.y());
+            } else if (!source.occupiedAt(futureX, source.y())) {
                 source.move(futureX, source.y());
             } else {
                 velocity.x = 0;
@@ -99,9 +107,16 @@ public class GravityAware {
         if (velocity.y != 0) {
             float futureY = source.bounds.pos.y - velocity.y * delta;
 
-            if (!source.occupiedAt(source.x(), futureY)) {
+            if (!solid) {
+                source.move(source.x(), futureY);
+            } else if (!source.occupiedAt(source.x(), futureY)) {
                 source.move(source.x(), futureY);
             } else {
+                if (velocity.y > 0) {
+                    source.tryUp(5);
+                } else if (velocity.y < 0) {
+                    source.tryDown(5);
+                }
                 velocity.y = 0;
             }
         }

@@ -2,27 +2,116 @@ package pojahn.game.entities.movement;
 
 import pojahn.game.events.Event;
 
-public class Waypoint implements java.io.Serializable {
+import java.io.Serializable;
+import java.util.function.Supplier;
 
-    public final float targetX, targetY;
-    public final int frames;
-    public final boolean jump;
-    public final Event event;
+public interface Waypoint {
 
-    public Waypoint(final float targetX, final float targetY, final int frames, final boolean jump, final Event event) {
-        this.targetX = targetX;
-        this.targetY = targetY;
-        this.frames = frames;
-        this.jump = jump;
-        this.event = event;
+    float targetX();
+
+    float getTargetY();
+
+    int freezeFrames();
+
+    boolean jump();
+
+    Event getEvent();
+
+    class StaticWaypoint implements Serializable, Waypoint {
+        private final float x, y;
+        private final int frames;
+        private final boolean jump;
+        private final Event event;
+
+        public StaticWaypoint(final float x, final float y, final int frames, final boolean jump, final Event event) {
+            this.x = x;
+            this.y = y;
+            this.frames = frames;
+            this.jump = jump;
+            this.event = event;
+        }
+
+        public StaticWaypoint(final float x, final float y) {
+            this(x, y, 0, false, null);
+        }
+
+        @Override
+        public float targetX() {
+            return x;
+        }
+
+        @Override
+        public float getTargetY() {
+            return y;
+        }
+
+        @Override
+        public int freezeFrames() {
+            return frames;
+        }
+
+        @Override
+        public boolean jump() {
+            return jump;
+        }
+
+        @Override
+        public Event getEvent() {
+            return event;
+        }
+
+        @Override
+        public String toString() {
+            return x + ":" + y + " " + frames + " - " + jump;
+        }
     }
 
-    public Waypoint(final float targetX, final float targetY) {
-        this(targetX, targetY, 0, false, null);
-    }
+    class DynamicWaypoint implements Serializable, Waypoint {
+        private final Supplier<Float> xSupplier;
+        private final Supplier<Float> ySupplier;
+        private final Supplier<Integer> framesSupplier;
+        private final Supplier<Boolean> jumpSupplier;
+        private final Supplier<Event> eventSupplier;
 
-    @Override
-    public String toString() {
-        return targetX + ":" + targetY + " " + frames + " - " + jump;
+        public DynamicWaypoint(final Supplier<Float> xSupplier,
+                               final Supplier<Float> ySupplier,
+                               final Supplier<Integer> framesSupplier,
+                               final Supplier<Boolean> jumpSupplier,
+                               final Supplier<Event> eventSupplier) {
+            this.xSupplier = xSupplier;
+            this.ySupplier = ySupplier;
+            this.framesSupplier = framesSupplier;
+            this.jumpSupplier = jumpSupplier;
+            this.eventSupplier = eventSupplier;
+        }
+
+        public DynamicWaypoint(final Supplier<Float> xSupplier, final Supplier<Float> ySupplier) {
+            this(xSupplier, ySupplier, ()-> 0, ()-> false, ()-> null);
+        }
+
+        @Override
+        public float targetX() {
+            return xSupplier.get();
+        }
+
+        @Override
+        public float getTargetY() {
+            return ySupplier.get();
+        }
+
+        @Override
+        public int freezeFrames() {
+            return framesSupplier.get();
+        }
+
+        @Override
+        public boolean jump() {
+            return jumpSupplier.get();
+        }
+
+        @Override
+        public Event getEvent() {
+            return eventSupplier.get();
+        }
     }
 }

@@ -89,7 +89,7 @@ public class SolidPlatform extends PathDrone {
         }
     }
 
-    public List<MobileEntity> getActiveSubjects() {
+    List<MobileEntity> getActiveSubjects() {
         return ImmutableList.copyOf(intersectors);
     }
 

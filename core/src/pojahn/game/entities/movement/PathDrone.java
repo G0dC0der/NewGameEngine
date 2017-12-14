@@ -40,15 +40,15 @@ public class PathDrone extends MobileEntity {
     }
 
     public void appendPath(final float x, final float y, final int frames, final boolean jump, final Event event) {
-        waypoints.add(new Waypoint(x, y, frames, jump, event));
+        waypoints.add(new Waypoint.StaticWaypoint(x, y, frames, jump, event));
     }
 
     public void appendPath(final Vector2 loc, final int frames, final boolean jump, final Event event) {
-        waypoints.add(new Waypoint(loc.x, loc.y, frames, jump, event));
+        waypoints.add(new Waypoint.StaticWaypoint(loc.x, loc.y, frames, jump, event));
     }
 
-    public void appendPath(final Waypoint pd) {
-        waypoints.add(pd);
+    public void appendPath(final Waypoint waypoint) {
+        waypoints.add(waypoint);
     }
 
     public void appendPath(final Waypoint[] list) {
@@ -60,11 +60,11 @@ public class PathDrone extends MobileEntity {
     }
 
     public void appendPath(final float x, final float y, final Event event) {
-        waypoints.add(new Waypoint(x, y, 0, false, event));
+        waypoints.add(new Waypoint.StaticWaypoint(x, y, 0, false, event));
     }
 
     public void appendPath() {
-        waypoints.add(new Waypoint(x(), y(), 0, false, null));
+        waypoints.add(new Waypoint.StaticWaypoint(x(), y(), 0, false, null));
     }
 
     public void appendReversed() {
@@ -92,7 +92,7 @@ public class PathDrone extends MobileEntity {
         dataCounter = index;
         stillCounter = 0;
         final Waypoint wp = waypoints.get(index);
-        move(wp.targetX, wp.targetY);
+        move(wp.targetX(), wp.getTargetY());
     }
 
     @Override
@@ -104,26 +104,27 @@ public class PathDrone extends MobileEntity {
             final Waypoint wp = waypoints.get(dataCounter);
 
             if (reached(wp)) {
-                if (++stillCounter > wp.frames)
+                if (++stillCounter > wp.freezeFrames())
                     dataCounter++;
 
                 forgetPast();
 
-                bounds.pos.x = wp.targetX;
-                bounds.pos.y = wp.targetY;
+                bounds.pos.x = wp.targetX();
+                bounds.pos.y = wp.getTargetY();
 
-                if (playEvent && wp.event != null) {
-                    wp.event.eventHandling();
+                final Event event = wp.getEvent();
+                if (playEvent && event != null) {
+                    event.eventHandling();
                     playEvent = false;
                 }
             } else {
                 playEvent = true;
                 stillCounter = 0;
 
-                if (wp.jump)
-                    move(wp.targetX, wp.targetY);
+                if (wp.jump())
+                    move(wp.targetX(), wp.getTargetY());
                 else
-                    moveTowards(wp.targetX, wp.targetY);
+                    moveTowards(wp.targetX(), wp.getTargetY());
             }
         }
     }
@@ -177,6 +178,6 @@ public class PathDrone extends MobileEntity {
     }
 
     private boolean reached(final Waypoint pd) {
-        return getMoveSpeed() > BaseLogic.distance(pd.targetX, pd.targetY, x(), y());
+        return getMoveSpeed() > BaseLogic.distance(pd.targetX(), pd.getTargetY(), x(), y());
     }
 }

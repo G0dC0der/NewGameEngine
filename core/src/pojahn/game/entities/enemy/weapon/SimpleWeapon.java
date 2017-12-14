@@ -64,6 +64,9 @@ public class SimpleWeapon extends MobileEntity {
 
     @Override
     public void logistics() {
+        if (isFrozen())
+            return;
+
         if (--reloadCounter < 0) {
             final Level l = getLevel();
             final float startX = bounds.pos.x + offsetX;
