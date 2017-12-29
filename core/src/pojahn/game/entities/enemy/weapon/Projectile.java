@@ -146,10 +146,9 @@ public abstract class Projectile extends MobileEntity {
         if (victim != null && victim.hasActionEvent())
             victim.runActionEvent(this);
 
-        final Vector2 front = getFrontPosition();
-
-        if (impact != null)
-            getLevel().add(impact.getClone().move(front.x - impact.halfWidth(), front.y - impact.halfHeight()));
+        if (impact != null) {
+            getLevel().add(impact.getClone().center(this));
+        }
 
         getLevel().discard(this);
     }

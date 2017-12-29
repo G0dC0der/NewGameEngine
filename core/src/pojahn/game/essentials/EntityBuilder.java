@@ -8,7 +8,7 @@ import pojahn.game.events.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class EntityBuilder {
@@ -18,7 +18,9 @@ public class EntityBuilder {
     private Hitbox hitbox;
     private float x, y, offsetX, offsetY, alpha, rotation;
     private Float width, height;
+    private Boolean flipX, flipY;
     private List<Event> events;
+    private List<Function<Entity, Event>> eventFunctions = new ArrayList<>();
 
     public static EntityBuilder fromVector(final Vector2 vector2) {
         return new EntityBuilder().move(vector2);
@@ -57,6 +59,16 @@ public class EntityBuilder {
 
     public EntityBuilder y(final float y) {
         this.y = y;
+        return this;
+    }
+
+    public EntityBuilder flipX(final boolean flipX) {
+        this.flipX = flipX;
+        return this;
+    }
+
+    public EntityBuilder flipY(final boolean flipY) {
+        this.flipY = flipY;
         return this;
     }
 
@@ -102,6 +114,11 @@ public class EntityBuilder {
         return this;
     }
 
+    public EntityBuilder event(final Function<Entity, Event> eventFunction) {
+        eventFunctions.add(eventFunction);
+        return this;
+    }
+
     public EntityBuilder events(final Event... events) {
         this.events.addAll(Arrays.asList(events));
         return this;
@@ -124,8 +141,8 @@ public class EntityBuilder {
             if (args.length == 0)
                 entity = clazz.newInstance();
             else {
-                final List<Class> clazzez = Stream.of(args).map(Object::getClass).collect(Collectors.toList());
-                entity = clazz.getDeclaredConstructor(clazzez.toArray(new Class[clazzez.size()])).newInstance(args);
+                final Class<?>[] classes = Stream.of(args).map(Object::getClass).toArray(Class[]::new);
+                entity = clazz.getDeclaredConstructor(classes).newInstance(args);
             }
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -151,7 +168,12 @@ public class EntityBuilder {
             dest.bounds.size.width = width;
         if (height != null)
             dest.bounds.size.height = height;
+        if (flipX != null)
+            dest.flipX = flipX;
+        if (flipY != null)
+            dest.flipY = flipY;
 
         events.forEach(dest::addEvent);
+        eventFunctions.forEach(eventFunction -> dest.addEvent(eventFunction.apply(dest)));
     }
 }

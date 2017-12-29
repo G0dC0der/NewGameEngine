@@ -371,6 +371,7 @@ public class MobileEntity extends Entity {
     protected Set<Entity> getObstacles() {
         return obstacles.stream()
             .filter(Entity::isActive)
+            .filter(Entity::available)
             .collect(toImmutableSet());
     }
 

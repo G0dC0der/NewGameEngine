@@ -31,7 +31,6 @@ public class SoundEmitter {
         }
     }
 
-    @Deprecated
     public float calc() {
         if (!useFalloff)
             return maxVolume;
@@ -39,7 +38,6 @@ public class SoundEmitter {
         return calc(getSoundListener());
     }
 
-    @Deprecated
     public float calc(final Entity listener) {
         return calc(listener.x(), listener.y());
     }

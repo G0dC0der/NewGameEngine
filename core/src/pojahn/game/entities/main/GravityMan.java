@@ -12,7 +12,7 @@ public class GravityMan extends PlayableEntity {
     public Vector2 vel, tVel, slidingTVel;
     public float accX, mass, gravity, damping, wallGravity, wallDamping, jumpStrength, wallJumpHorizontalStrength;
     private int jumpKeyDownCounter, shortJumpFrames;
-    private boolean isWallSliding, allowWallSlide, allowWallJump;
+    private boolean isWallSliding, allowWallSlide, allowWallJump, allowSlopeWalk;
     private Sound jumpSound, landingSound;
     private Keystrokes prevStrokes, currStrokes;
 
@@ -35,7 +35,7 @@ public class GravityMan extends PlayableEntity {
         wallDamping = 1.1f;
         wallJumpHorizontalStrength = 150;
 
-        allowWallSlide = allowWallJump = true;
+        allowWallSlide = allowWallJump = allowSlopeWalk = true;
         prevStrokes = Keystrokes.AFK;
     }
 
@@ -71,6 +71,10 @@ public class GravityMan extends PlayableEntity {
 
     public void setLandingSound(final Sound landingSound) {
         this.landingSound = landingSound;
+    }
+
+    public void setAllowSlopeWalk(final boolean allowSlopeWalk) {
+        this.allowSlopeWalk = allowSlopeWalk;
     }
 
     protected void wallSlide() {
@@ -173,9 +177,9 @@ public class GravityMan extends PlayableEntity {
         for (float next = bounds.pos.x; next >= targetX; next -= 0.2f) {
             if (!occupiedAt(next, y())) {
                 bounds.pos.x = next;
-                if (!occupiedAt(x(), bounds.pos.y + 1) && occupiedAt(x(), bounds.pos.y + 2))
+                if (!occupiedAt(x(), y() + 1) && occupiedAt(x(), y() + 2))
                     bounds.pos.y++;
-            } else if (canSlopeLeft(next)) {
+            } else if (allowSlopeWalk && canSlopeLeft(next)) {
                 move(next, bounds.pos.y - 1);
                 tryDown(1);
             } else {
@@ -191,7 +195,7 @@ public class GravityMan extends PlayableEntity {
                 bounds.pos.x = next;
                 if (!occupiedAt(x(), y() + 1) && occupiedAt(x(), y() + 2))
                     bounds.pos.y++;
-            } else if (canSlopeRight(next)) {
+            } else if (allowSlopeWalk && canSlopeRight(next)) {
                 move(next, y() - 1);
                 tryDown(1);
             } else {
@@ -202,7 +206,7 @@ public class GravityMan extends PlayableEntity {
     }
 
     protected boolean canSlopeLeft(final float targetX) {
-        final int y = (int) bounds.pos.y - 1;
+        final int y = (int) y() - 1;
         final int tar = (int) targetX;
         final Level l = getLevel();
 

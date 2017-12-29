@@ -71,22 +71,26 @@ public interface Waypoint {
         private final Supplier<Float> ySupplier;
         private final Supplier<Integer> framesSupplier;
         private final Supplier<Boolean> jumpSupplier;
-        private final Supplier<Event> eventSupplier;
+        private final Event event;
 
         public DynamicWaypoint(final Supplier<Float> xSupplier,
                                final Supplier<Float> ySupplier,
                                final Supplier<Integer> framesSupplier,
                                final Supplier<Boolean> jumpSupplier,
-                               final Supplier<Event> eventSupplier) {
+                               final Event event) {
             this.xSupplier = xSupplier;
             this.ySupplier = ySupplier;
             this.framesSupplier = framesSupplier;
             this.jumpSupplier = jumpSupplier;
-            this.eventSupplier = eventSupplier;
+            this.event = event;
+        }
+
+        public DynamicWaypoint(final Supplier<Float> xSupplier, final Supplier<Float> ySupplier, final Event event) {
+            this(xSupplier, ySupplier, ()-> 0, ()-> false, event);
         }
 
         public DynamicWaypoint(final Supplier<Float> xSupplier, final Supplier<Float> ySupplier) {
-            this(xSupplier, ySupplier, ()-> 0, ()-> false, ()-> null);
+            this(xSupplier, ySupplier, ()-> 0, ()-> false, null);
         }
 
         @Override
@@ -111,7 +115,7 @@ public interface Waypoint {
 
         @Override
         public Event getEvent() {
-            return eventSupplier.get();
+            return event;
         }
     }
 }

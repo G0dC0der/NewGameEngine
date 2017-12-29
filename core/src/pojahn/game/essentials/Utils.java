@@ -29,6 +29,23 @@ import java.util.Set;
 
 public class Utils {
 
+    public static void handleDistanceMusic(final Music music) {
+        music.setVolume(0);
+        music.setLooping(true);
+        if (!music.isPlaying()) {
+            music.play();
+        }
+    }
+
+    public static Entity stuckFollower(final Entity target, final Rectangle area) {
+        final Entity follower = new Entity();
+        follower.addEvent(()-> follower.move(
+            MathUtils.clamp(target.x(), area.x, area.x + area.width),
+            MathUtils.clamp(target.y(), area.y, area.y + area.height) ));
+
+        return follower;
+    }
+
     public static Image2D toImage(final Color color) {
         return toImage(color, 1, 1);
     }

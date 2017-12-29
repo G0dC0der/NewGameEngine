@@ -336,6 +336,18 @@ public abstract class Level {
         return wrapped;
     }
 
+    public Entity runOnceDelayed(final Event event, final int delay, final TaskEvent whenToRun) {
+        final Entity wrapper  = new Entity();
+        wrapper.addEvent(()-> {
+            if (whenToRun.eventHandling()) {
+                wrapper.die();
+                wrapper.getLevel().runOnceAfter(event, delay);
+            }
+        });
+
+        return wrapper;
+    }
+
     public void discard(final Entity entity) {
         discardAfter(entity, 0);
     }

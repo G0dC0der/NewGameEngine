@@ -67,10 +67,9 @@ public abstract class TileBasedLevel extends Level {
         if (cell != null) {
             final TextureRegion region = cell.getTile().getTextureRegion();
             final int regX = region.getRegionX();
-            int regY = region.getRegionY();
+            final int regY = region.getRegionY() - tileHeight;
             final int relX = x % tileWidth;
             final int relY = y % tileHeight;
-            regY -= tileHeight;
 
             return (tileSet.getPixel(regX + relX, regY + relY) & 0x000000FF) > 0 ? Tile.SOLID : Tile.HOLLOW;
         } else
@@ -128,6 +127,13 @@ public abstract class TileBasedLevel extends Level {
     public Vector2 center(final int tileX, final int tileY, final Size entitySize) {
         final float x = (tileX * getTileWidth()) + (getTileWidth() / 2) - (entitySize.width / 2);
         final float y = (tileY * getTileHeight()) + (getTileHeight() / 2) - (entitySize.height / 2);
+
+        return new Vector2(x, y);
+    }
+
+    public Vector2 standOn(final int tileX, final int tileY, final Size entitySize) {
+        final float x = (tileX * getTileWidth()) + (getTileWidth() / 2) - (entitySize.width / 2);
+        final float y = (tileY * getTileHeight()) + getTileHeight() - entitySize.height - 1;
 
         return new Vector2(x, y);
     }

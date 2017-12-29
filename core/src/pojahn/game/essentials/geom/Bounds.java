@@ -19,10 +19,6 @@ public class Bounds {
         return new Vector2(pos.x + size.width / 2, pos.y + size.height / 2);
     }
 
-    public Vector2 centerRelative() {
-        return new Vector2(size.width / 2, size.height / 2);
-    }
-
     public void set(final Bounds bounds) {
         pos.set(bounds.pos);
         rotation = bounds.rotation;
@@ -39,5 +35,31 @@ public class Bounds {
             throw new RuntimeException("Aborting toCircle because the outcome would be an oval.");
 
         return new Circle(center(), size.width / 2);
+    }
+
+    public void alignAbove(final Bounds bounds) {
+        final Vector2 center = bounds.center();
+        pos.x = center.x - (size.width / 2);
+        pos.y = bounds.pos.y - size.height;
+    }
+
+    public void alignBelow(final Bounds bounds) {
+        final Vector2 center = bounds.center();
+        pos.x = center.x - (size.width / 2);
+        pos.y = bounds.pos.y + bounds.size.height;
+    }
+
+    public void alignLeft(final Bounds bounds) {
+
+    }
+
+    public void alignRight(final Bounds bounds) {
+
+    }
+
+    public void center(final Bounds bounds) {
+        final Vector2 center = bounds.center();
+        pos.x = center.x - (size.width / 2);
+        pos.y = center.y - (size.height / 2);
     }
 }

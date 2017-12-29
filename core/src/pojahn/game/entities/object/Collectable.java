@@ -65,6 +65,10 @@ public class Collectable extends Entity {
         this.collectImage = collectImage;
     }
 
+    public boolean isCollected() {
+        return collected;
+    }
+
     @Override
     public void logistics() {
         if (!collected) {

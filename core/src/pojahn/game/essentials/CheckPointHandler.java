@@ -2,28 +2,13 @@ package pojahn.game.essentials;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import pojahn.game.core.BaseLogic;
+import com.google.common.collect.Lists;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
 
 import java.util.ArrayList;
 
 public class CheckPointHandler {
-
-    private static class Checkpoint {
-        float startX, startY, x, y, width, height;
-        boolean taken;
-
-        Checkpoint(final float startX, final float startY, final float x, final float y, final float width, final float height) {
-            super();
-            this.startX = startX;
-            this.startY = startY;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
-    }
 
     private ArrayList<Checkpoint> checkpoints;
     private ArrayList<Entity> users;
@@ -55,11 +40,15 @@ public class CheckPointHandler {
     }
 
     public void appendCheckpoint(final float startX, final float startY, final float x, final float y, final float width, final float height) {
-        checkpoints.add(new Checkpoint(startX, startY, x, y, width, height));
+        checkpoints.add(new Checkpoint.AreaCheckpoint(startX, startY, x, y, width, height));
+    }
+
+    public void appendCheckpoint(final Checkpoint checkpoint) {
+        checkpoints.add(checkpoint);
     }
 
     public void reset() {
-        checkpoints.forEach(cp -> cp.taken = false);
+        checkpoints.forEach(Checkpoint::reset);
     }
 
     public boolean available() {
@@ -67,18 +56,16 @@ public class CheckPointHandler {
     }
 
     public Vector2 getLatestCheckpoint() {
-        for (int i = checkpoints.size() - 1; i >= 0; i--) {
-            final Checkpoint cp = checkpoints.get(i);
-
-            if (cp.taken)
-                return new Vector2(cp.startX, cp.startY);
-        }
-
-        return null;
+        return Lists.reverse(checkpoints)
+            .stream()
+            .filter(Checkpoint::isTaken)
+            .map(Checkpoint::getStart)
+            .findFirst()
+            .orElse(null);
     }
 
     public boolean reached(final int cpIndex) {
-        return checkpoints.get(cpIndex).taken;
+        return checkpoints.get(cpIndex).isTaken();
     }
 
     public void setReachEvent(final Event reachEvent) {
@@ -100,10 +87,10 @@ public class CheckPointHandler {
     public void update() {
         Outer:
         for (final Checkpoint cp : checkpoints) {
-            if (!cp.taken) {
+            if (!cp.isTaken()) {
                 for (final Entity user : users) {
-                    if (BaseLogic.rectanglesCollide(user.x(), user.y(), user.width(), user.height(), cp.x, cp.y, cp.width, cp.height)) {
-                        cp.taken = true;
+                    if (cp.reached(user)) {
+                        cp.take();
                         if (reachEvent != null)
                             reachEvent.eventHandling();
 

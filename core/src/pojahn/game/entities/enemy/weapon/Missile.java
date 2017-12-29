@@ -12,6 +12,10 @@ public class Missile extends Projectile {
     private Vector2 velocity;
     private final List<Entity> scanTargets;
 
+    public Missile(final Entity... scanTargets) {
+        this(0,0, scanTargets);
+    }
+
     public Missile(final float x, final float y, final Entity... scanTargets) {
         super(x, y, scanTargets);
         velocity = new Vector2();

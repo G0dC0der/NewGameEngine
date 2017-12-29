@@ -2,6 +2,7 @@ package pojahn.game.core;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Hitbox;
@@ -16,12 +17,9 @@ import pojahn.game.events.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pojahn.game.core.BaseLogic.buildMatrix;
 import static pojahn.game.core.BaseLogic.circleRectangleCollide;
 import static pojahn.game.core.BaseLogic.circleVsCircle;
-import static pojahn.game.core.BaseLogic.getBoundingBox;
 import static pojahn.game.core.BaseLogic.pixelPerfect;
-import static pojahn.game.core.BaseLogic.pixelPerfectRotation;
 import static pojahn.game.core.BaseLogic.rectanglesCollide;
 import static pojahn.game.core.BaseLogic.rotatedRectanglesCollide;
 
@@ -179,6 +177,14 @@ public class Entity {
         deleteEvents.add(event);
     }
 
+    public boolean collidesWith(final Rectangle rectangle) {
+        return BaseLogic.rectanglesCollide(bounds.toRectangle(), rectangle);
+    }
+
+    public boolean collidesWith(final float x, final float y, final float width, final float height) {
+        return BaseLogic.rectanglesCollide(bounds.toRectangle(), x, y, width, height);
+    }
+
     public boolean collidesWith(final Entity entity) {
         final boolean rotated1 = bounds.rotation != 0 && !quickCollision;
         final boolean rotated2 = entity.bounds.rotation != 0 && !entity.quickCollision;
@@ -198,9 +204,9 @@ public class Entity {
         } else if (hitbox == Hitbox.CIRCLE && entity.hitbox == Hitbox.CIRCLE) {
             return circleVsCircle(bounds.toCircle(), entity.bounds.toCircle());
         } else if (hitbox == Hitbox.PIXEL || entity.hitbox == Hitbox.PIXEL) {
-            if (rotated1 || rotated2)
-                return rectanglesCollide(getBoundingBox(bounds), getBoundingBox(entity.bounds)) &&
-                        pixelPerfectRotation(buildMatrix(this), getImage().getCurrentObject(), buildMatrix(entity), entity.getImage().getCurrentObject());
+//            if (rotated1 || rotated2)
+//                return rectanglesCollide(getBoundingBox(bounds), getBoundingBox(entity.bounds)) &&
+//                        pixelPerfectRotation(buildMatrix(this), getImage().getCurrentObject(), buildMatrix(entity), entity.getImage().getCurrentObject());
 
             return rectanglesCollide(bounds.toRectangle(), entity.bounds.toRectangle()) &&
                     pixelPerfect(
