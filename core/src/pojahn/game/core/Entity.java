@@ -245,6 +245,14 @@ public class Entity {
         return bounds.pos.y;
     }
 
+    public float right() {
+        return bounds.pos.x + bounds.size.width;
+    }
+
+    public float bottom() {
+        return bounds.pos.y + bounds.size.height;
+    }
+
     public float width() {
         return bounds.size.width;
     }

@@ -14,6 +14,7 @@ import pojahn.game.entities.enemy.weapon.Missile;
 import pojahn.game.entities.enemy.weapon.Weapon;
 import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.main.GravityMan;
+import pojahn.game.entities.movement.Circle;
 import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.movement.Waypoint;
 import pojahn.game.entities.object.Collectable;
@@ -23,6 +24,7 @@ import pojahn.game.entities.particle.Shrapnel;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.platform.TilePlatform;
 import pojahn.game.essentials.Animation;
+import pojahn.game.essentials.Checkpoint;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Factory;
@@ -31,8 +33,7 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ItemCollection;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
-import pojahn.game.essentials.Vitality;
-import pojahn.game.essentials.geom.Bounds;
+import pojahn.game.essentials.geom.Size;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.game.events.Event;
 import pojahn.lang.PingPongFloat;
@@ -45,6 +46,7 @@ public class SteelFactory extends TileBasedLevel {
 
     private ResourceManager res;
     private GravityMan man;
+    private ItemCollection itemCollection, energyCollection;
 
     @Override
     public void init(final Serializable meta) throws Exception {
@@ -77,7 +79,14 @@ public class SteelFactory extends TileBasedLevel {
         Utils.playMusic(res.getMusic("music.ogg"), 4.48f, .7f);
 
         getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(res, this));
-        getCheckpointHandler().appendCheckpoint(new Vector2(1811, 4407 - 25), getRectangle(14, 34, 1, 1));
+        getCheckpointHandler().appendCheckpoint(new Checkpoint(standOn(62, 37, Size.from(res.getAnimation("main")[0]))){
+            @Override
+            public boolean reached(final Entity entity) {
+                final Rectangle rectangle = getRectangle(62, 37, 1, 1);
+                return getEnergyCollection().allCollected() && entity.collidesWith(rectangle);
+            }
+        });
+        getCheckpointHandler().appendCheckpoint(new Vector2(1811, 4407 - 25), new Rectangle(1811, 4405, 71, 2));
     }
 
     @Override
@@ -93,7 +102,6 @@ public class SteelFactory extends TileBasedLevel {
         man = ResourceUtil.getGravityMan(res);
         man.face(Direction.W);
         man.move(standOn(65, 8, man.bounds.size));
-        man.move(standOn(14, 33, man.bounds.size));
         man.setAllowSlopeWalk(false);
         add(man);
 
@@ -117,10 +125,12 @@ public class SteelFactory extends TileBasedLevel {
 
         add(ResourceUtil.getHearth(res, man).move(8040, 3582));
         add(ResourceUtil.getHearth(res, man).move(1992, 3123));
-        final ItemCollection energyCollection = new ItemCollection();
-//        addEnergyItem(7426, 3215 + 60, energyCollection);
-//        addEnergyItem(7426, 3580 - 60, energyCollection);
-//        addEnergyItem(8049, 3215 + 60, energyCollection);
+        energyCollection = new ItemCollection();
+        if (!getCheckpointHandler().reached(0)) {
+            addEnergyItem(7426, 3215 + 60);
+            addEnergyItem(7426, 3580 - 60);
+            addEnergyItem(8049, 3215 + 60);
+        }
 
         final SolidPlatform small = new SolidPlatform(7574, 3447, man);
         small.setImage(res.getImage("mini_platform.png"));
@@ -174,7 +184,7 @@ public class SteelFactory extends TileBasedLevel {
 
         final SolidPlatform pushUp = getPusher(5068, 4528, "UP");
         pushUp.setMoveSpeed(5);
-        pushUp.appendPath(5474, 4105, ()-> pushUp.setMoveSpeed(3.5f));
+        pushUp.appendPath(5474, 4305, ()-> pushUp.setMoveSpeed(3.35f));
         pushUp.appendPath(5474, 3840, ()-> {
             pushUp.freeze();
             pushUp.setMoveSpeed(15);
@@ -278,54 +288,59 @@ public class SteelFactory extends TileBasedLevel {
         /*
          * Fan, Engine & Zapper
          */
-        final PathDrone zapper = new PathDrone(1936 + 200, 4476);
-        zapper.setMoveSpeed(3);
-        zapper.setImage(2, res.getAnimation("zapper"));
-        zapper.setHitbox(Hitbox.PIXEL);
-        zapper.freeze();
-        zapper.zIndex(100);
-        zapper.appendPath(new Waypoint.DynamicWaypoint(()-> p8.x() - 150, ()-> 4476f));
-        zapper.appendPath(new Waypoint.DynamicWaypoint(()-> p8.x() + 150, ()-> 4476f));
-        zapper.appendPath(new Waypoint.DynamicWaypoint(()-> p8.x() - 150, ()-> 4476f));
-        zapper.appendPath(new Waypoint.DynamicWaypoint(()-> p8.x() + 150, ()-> 4476f));
-        zapper.appendPath(new Waypoint.DynamicWaypoint(()-> p8.x() - 150, ()-> 4476f));
-        zapper.appendPath(new Waypoint.DynamicWaypoint(()-> p8.x() + 150, ()-> 4476f));
-        zapper.appendPath(0, 4853, zapper::freeze);
-        zapper.addEvent(()-> {
-            if (!man.isHurt() && zapper.collidesWith(man)) {
-                man.touch(-1);
-                //TODO: Zap sound
-            }
-        });
-        add(zapper);
+        if (!getCheckpointHandler().reached(1)) {
+            final PathDrone zapperGhost = new PathDrone(1936 + 400, 4424);
+            zapperGhost.setMoveSpeed(2);
+            zapperGhost.freeze();
+            zapperGhost.appendPath(new Waypoint.DynamicWaypoint(p8::centerX, p8::centerY));
+            add(zapperGhost);
 
-        final PathDrone engine = new PathDrone(1936, 4424);
-        engine.setImage(1, res.getAnimation("engine"));
-        engine.setMoveSpeed(5);
-        engine.freeze();
-        engine.appendPath(new Waypoint.DynamicWaypoint(()-> p8.x() - 320, engine::y, ()-> engine.setMoveSpeed(p8.getMoveSpeed())));
-        engine.appendPath(0, engine.y());
-        add(engine);
-        runOnceWhen(()-> {
-            engine.unfreeze();
-            zapper.unfreeze();
-        }, ()-> p8.x() < 2970);
+            final Circle zapper = new Circle(zapperGhost.x(), zapperGhost.y(), 10, 0);
+            zapper.setMoveSpeed(.05f);
+            zapper.setCenterize(true);
+            zapper.setImage(2, res.getAnimation("zapper"));
+            zapper.setHitbox(Hitbox.PIXEL);
+            zapper.zIndex(100);
+            zapper.addEvent(()-> {
+                zapper.setCenter(zapperGhost.bounds.center());
+                if (!man.isHurt() && zapper.collidesWith(man)) {
+                    man.touch(-1);
+                    res.getSound("zap.wav").play();
+                }
+            });
+            add(zapper);
 
-        final Entity fan = new Entity();
-        fan.setImage(1, res.getAnimation("fan"));
-        fan.addEvent(Factory.hitMain(fan, man, -1));
-        fan.addEvent(()-> res.getMusic("propeller_music.wav").setVolume(fan.sounds.calc()));
-        fan.sounds.useFalloff = true;
-        fan.sounds.maxDistance = 1200;
-        fan.sounds.power = 40;
-        engine.addEvent(()-> fan.move(engine.x() + engine.width() - 23, engine.y() + 3));
-        add(fan);
+            final PathDrone engine = new PathDrone(1936, 4424);
+            engine.setImage(1, res.getAnimation("engine"));
+            engine.setMoveSpeed(5);
+            engine.freeze();
+            engine.appendPath(new Waypoint.DynamicWaypoint(()-> p8.x() - 320, engine::y, ()-> engine.setMoveSpeed(p8.getMoveSpeed())));
+            engine.appendPath(0, engine.y());
+            add(engine);
+            runOnceWhen(()-> {
+                engine.unfreeze();
+                zapperGhost.unfreeze();
+                addAfter(()-> {
+                    zapper.setRadius(Math.min(zapper.getRadius() + .30f, 50));
+                }, 100);
+            }, ()-> p8.x() < 2970);
 
-        final Wind wind = new Wind(0, 0, 30, 1, Direction.E, man);
-        wind.setHitbox(Hitbox.PIXEL);
-        wind.setImage(1, res.getAnimation("wind"));
-        add(wind);
-        fan.addEvent(()-> wind.move(fan.x() + 17, fan.y() + 10));
+            final Entity fan = new Entity();
+            fan.setImage(1, res.getAnimation("fan"));
+            fan.addEvent(Factory.hitMain(fan, man, -1));
+            fan.addEvent(()-> res.getMusic("propeller_music.wav").setVolume(fan.sounds.calc()));
+            fan.sounds.useFalloff = true;
+            fan.sounds.maxDistance = 1200;
+            fan.sounds.power = 40;
+            engine.addEvent(()-> fan.move(engine.x() + engine.width() - 23, engine.y() + 3));
+            add(fan);
+
+            final Wind wind = new Wind(0, 0, 50, 1, Direction.E, man);
+            wind.setHitbox(Hitbox.PIXEL);
+            wind.setImage(1, res.getAnimation("wind"));
+            add(wind);
+            fan.addEvent(()-> wind.move(fan.x() + 17, fan.y() + 10));
+        }
 
         /*
          * Lasers
@@ -402,13 +417,13 @@ public class SteelFactory extends TileBasedLevel {
         addRed(7896, 2397, false).flipX = true;
         addRed(7896, 2667, false).flipX = true;
 
-        final ItemCollection itemCollection = new ItemCollection();
-        addCollectable(7731, 2602, itemCollection);
-        addCollectable(7731, 2298, itemCollection);
-        addCollectable(7594, 2468, itemCollection);
-        addCollectable(7872, 2468, itemCollection);
-        addCollectable(7594, 2738, itemCollection);
-        addCollectable(7872, 2738, itemCollection);
+        itemCollection = new ItemCollection();
+        addCollectable(7731, 2602);
+        addCollectable(7731, 2298);
+        addCollectable(7594, 2468);
+        addCollectable(7872, 2468);
+        addCollectable(7594, 2738);
+        addCollectable(7872, 2738);
 
         runOnceWhen(()-> {
             discard(laserSoundEmitter);
@@ -469,7 +484,7 @@ public class SteelFactory extends TileBasedLevel {
          */
         final Entity powerSign = new Entity();
         powerSign.setImage(res.getImage("poweroff_sign.png"));
-        powerSign.move(7989, 4787);
+        powerSign.move(7989 - 30, 4787);
         powerSign.zIndex(-1);
         add(powerSign);
         runOnceWhen(()-> powerSign.setImage(res.getImage("poweron_sign.png")), energyCollection::allCollected);
@@ -593,11 +608,11 @@ public class SteelFactory extends TileBasedLevel {
         add(platform2Spikes);
     }
 
-    private void addEnergyItem(final float x, final float y, final ItemCollection itemCollection) {
+    private void addEnergyItem(final float x, final float y) {
         final Collectable item = new Collectable(x, y, man);
         item.setImage(2, res.getAnimation("energy"));
         item.setCollectSound(res.getSound("collectsound2.wav"));
-        itemCollection.add(item);
+        energyCollection.add(item);
         add(item);
     }
 
@@ -616,7 +631,7 @@ public class SteelFactory extends TileBasedLevel {
         add(electric);
     }
 
-    private void addCollectable(final float x, final float y, final ItemCollection itemCollection) {
+    private void addCollectable(final float x, final float y) {
         final Collectable item = new Collectable(x, y, man);
         item.setImage(res.getImage("collect.png"));
         item.setCollectSound(res.getSound("collectsound.wav"));
@@ -701,5 +716,13 @@ public class SteelFactory extends TileBasedLevel {
     @Override
     public Music getStageMusic() {
         return res.getMusic("music.ogg");
+    }
+
+    private ItemCollection getEnergyCollection() {
+        return energyCollection;
+    }
+
+    private ItemCollection getItemCollection() {
+        return itemCollection;
     }
 }
