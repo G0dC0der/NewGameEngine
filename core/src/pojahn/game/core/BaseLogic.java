@@ -150,7 +150,6 @@ public class BaseLogic {
                     dx += B.x;
                     ext2 += B.y;
                 }
-
                 ext2 *= x;
                 ext2 /= dx;
                 ext2 -= A.y;
