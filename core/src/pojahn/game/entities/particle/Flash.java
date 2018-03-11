@@ -2,8 +2,7 @@ package pojahn.game.entities.particle;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
-import java.awt.*;
+import pojahn.game.essentials.geom.Dimension;
 
 public class Flash extends Particle {
 

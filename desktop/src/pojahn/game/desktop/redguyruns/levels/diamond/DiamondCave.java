@@ -28,10 +28,9 @@ import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
+import pojahn.game.essentials.geom.Dimension;
 import pojahn.game.essentials.stages.PixelBasedLevel;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -449,8 +448,8 @@ public class DiamondCave extends PixelBasedLevel {
         return b;
     }
 
-    private Point2D.Float getDirection(final int dir) {
-        final Point2D.Float point = new Point2D.Float();
+    private Vector2 getDirection(final int dir) {
+        final Vector2 point = new Vector2();
         final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
         final int minX = 2303;
         final int maxX = 2553 - 32;

@@ -36,12 +36,12 @@ import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
+import pojahn.game.essentials.geom.Dimension;
 import pojahn.game.essentials.geom.Size;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.Bool;
 import pojahn.lang.Int32;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -15,6 +15,7 @@ import pojahn.game.essentials.HUDMessage;
 import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.Keystrokes;
 import pojahn.game.essentials.Vitality;
+import pojahn.game.essentials.geom.Dimension;
 import pojahn.game.essentials.recording.PlaybackRecord;
 import pojahn.game.essentials.recording.RecordingDevice;
 import pojahn.game.essentials.recording.Replay;
@@ -23,7 +24,6 @@ import pojahn.game.events.Event;
 import pojahn.lang.Obj;
 import pojahn.lang.OtherMath;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

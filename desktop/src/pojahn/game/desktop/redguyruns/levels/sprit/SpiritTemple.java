@@ -34,10 +34,10 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vibrator;
+import pojahn.game.essentials.geom.Dimension;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.game.events.Event;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.util.stream.Stream;
 

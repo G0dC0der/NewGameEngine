@@ -42,7 +42,7 @@ public class MainClass {
 //        Replay replay = (Replay) IO.importObjectCompressed(new FileHandle(System.getProperty("user.dir") + "\\replays\\In A Hurry 34.8 SUCCESS.rlp"));
 //        record = new PlaybackRecord(replay.keystrokes, replay.meta);
 
-        final Engine engine = new Engine(new SteelFactory(), record);
+        final Engine engine = new Engine(new GhostBridge(), record);
 //        engine.setGameStateEvent(GameState.SUCCESS, GameUtil.exportForGhostData(engine));
         GameLauncher.launch(engine, GameUtil.getBasicConfig());
     }

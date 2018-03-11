@@ -5,8 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
 import pojahn.game.essentials.ResourceManager;
-
-import java.awt.*;
+import pojahn.game.essentials.geom.Dimension;
 
 public class GFX {
 

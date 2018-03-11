@@ -8,11 +8,11 @@ import pojahn.game.essentials.CheckPointHandler;
 import pojahn.game.essentials.Keystrokes;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
+import pojahn.game.essentials.geom.Dimension;
 import pojahn.game.events.Event;
 import pojahn.game.events.TaskEvent;
 import pojahn.lang.Int32;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;

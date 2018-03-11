@@ -11,8 +11,8 @@ import pojahn.game.core.Entity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Hitbox;
 import pojahn.game.essentials.Image2D;
+import pojahn.game.essentials.geom.Dimension;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

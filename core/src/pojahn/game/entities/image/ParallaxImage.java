@@ -7,8 +7,7 @@ import pojahn.game.core.Engine;
 import pojahn.game.core.Entity;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Image2D;
-
-import java.awt.*;
+import pojahn.game.essentials.geom.Dimension;
 
 public class ParallaxImage extends Entity {
 

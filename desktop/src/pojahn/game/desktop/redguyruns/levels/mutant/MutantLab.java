@@ -26,7 +26,6 @@ import pojahn.game.entities.enemy.weapon.Weapon;
 import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.CameraEffects;
-import pojahn.game.essentials.Development;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Factory;
@@ -40,7 +39,6 @@ import pojahn.game.essentials.stages.PixelBasedLevel;
 import pojahn.game.events.Event;
 import pojahn.lang.Int32;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -511,8 +509,6 @@ public class MutantLab extends PixelBasedLevel {
         addRopes( 3554.0, 1000.0, 59,  8);
         addEye(3535.0, 995.0, bullet);
 
-        add(Development.steerEntity(latest, .5f));
-
 		/*
 		 * Finalize
 		 */
@@ -783,7 +779,7 @@ public class MutantLab extends PixelBasedLevel {
             if (dir != last) {
                 last = dir;
 
-                final Point2D.Float point = getDirection(dir, minX, maxX, minY, maxY);
+                final Vector2 point = getDirection(dir, minX, maxX, minY, maxY);
                 pdlist.add(new Waypoint.StaticWaypoint(point.x, point.y, 0, false, null));
             } else
                 i--;
@@ -792,8 +788,8 @@ public class MutantLab extends PixelBasedLevel {
         return pdlist.toArray(new Waypoint[pdlist.size()]);
     }
 
-    private Point2D.Float getDirection(final int dir, final int minX, final int maxX, final int minY, final int maxY) {
-        final Point2D.Float point = new Point2D.Float();
+    private Vector2 getDirection(final int dir, final int minX, final int maxX, final int minY, final int maxY) {
+        final Vector2 point = new Vector2();
         final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
 
         final Random r = new Random();

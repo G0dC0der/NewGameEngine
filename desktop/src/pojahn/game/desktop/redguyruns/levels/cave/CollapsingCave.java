@@ -26,10 +26,10 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.Vitality;
+import pojahn.game.essentials.geom.Dimension;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.PingPongFloat;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.util.Random;
 import java.util.stream.Stream;

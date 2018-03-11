@@ -7,9 +7,8 @@ import com.badlogic.gdx.math.MathUtils;
 import pojahn.game.core.Engine;
 import pojahn.game.core.Entity;
 import pojahn.game.essentials.Image2D;
+import pojahn.game.essentials.geom.Dimension;
 import pojahn.lang.Obj;
-
-import java.awt.Dimension;
 
 public class RepeatingParallaxImage extends Entity {
 

@@ -9,12 +9,11 @@ import pojahn.game.essentials.ControlledException;
 public class GameLauncher {
 
     public static void launch(final Engine engine, final Lwjgl3ApplicationConfiguration cfg) {
-        new Thread(() -> {
-            try {
-                new Lwjgl3Application(new GameContainer(engine), cfg);
-            } catch (ControlledException e) {
-                System.out.println("Exiting game.");
-            }
-        }).start();
+        try {
+            System.setProperty("java.awt.headless", Boolean.TRUE.toString());
+            new Lwjgl3Application(new GameContainer(engine), cfg);
+        } catch (final ControlledException e) {
+            System.out.println("Exiting game.");
+        }
     }
 }
