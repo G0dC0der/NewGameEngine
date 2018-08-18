@@ -2,6 +2,7 @@ package pojahn.game.desktop.redguyruns.levels.battery;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.ImmutableList;
@@ -61,7 +62,7 @@ public class FlyingBattery extends TileBasedLevel {
     private final int teslaFreq = 350, teslaDuration = 110;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -71,7 +72,6 @@ public class FlyingBattery extends TileBasedLevel {
         res.loadSound(Gdx.files.internal("res/cave/slam.wav"));
         getEngine().timeFont = res.getFont("sansserif32.fnt");
 
-        parse(res.getTiledMap("map.tmx"));
         Stream.of(res.getAnimation("main")).forEach(Image2D::createPixelData);
         Stream.of(res.getAnimation("flypbottom")).forEach(Image2D::createPixelData);
         Stream.of(res.getAnimation("bolter")).forEach(Image2D::createPixelData);
@@ -93,6 +93,11 @@ public class FlyingBattery extends TileBasedLevel {
         getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(res, this));
         getCheckpointHandler().appendCheckpoint(center(75, 3, mainSize), getRectangle(75, 3, 1, 1));
         getCheckpointHandler().appendCheckpoint(center(55, 29, mainSize), getRectangle(56, 22, 1, 8));
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return res.getTiledMap("map.tmx");
     }
 
     @Override
@@ -379,10 +384,10 @@ public class FlyingBattery extends TileBasedLevel {
                 clonie.sounds.play(res.getSound("block_collapse.wav"));
 
                 final List<Animation<Image2D>> debrisImages = ImmutableList.of(
-                    new Animation<>(3, res.getImage("part1.png")),
-                    new Animation<>(3, res.getImage("part2.png")),
-                    new Animation<>(3, res.getImage("part3.png")),
-                    new Animation<>(3, res.getImage("part4.png")));
+                    new Animation<Image2D>(3, res.getImage("part1.png")),
+                    new Animation<Image2D>(3, res.getImage("part2.png")),
+                    new Animation<Image2D>(3, res.getImage("part3.png")),
+                    new Animation<Image2D>(3, res.getImage("part4.png")));
 
                 final EntityExplosion blockExplode = new EntityExplosion(clonie, 2, 2, debrisImages);
                 add(blockExplode);
@@ -673,9 +678,8 @@ public class FlyingBattery extends TileBasedLevel {
     private void addTeslaSystem(final Vector2 start, final Vector2 count, final Vector2 distance) {
         for (int x = 0; x < count.x; x++) {
             for (int y = 0; y < count.y; y++) {
-                final Animation<Image2D> active = new Animation<>(3, res.getAnimation("bolter"));
-                final Animation<Image2D> idle = new Animation<>(3, res.getImage("bolteridle.png"));
-                final Int32 soundCounter = new Int32();
+                final Animation<Image2D> active = new Animation<Image2D>(3, res.getAnimation("bolter"));
+                final Animation<Image2D> idle = new Animation<Image2D>(3, res.getImage("bolteridle.png"));
 
                 final Entity teslaSphere = new Entity();
                 teslaSphere.move(
@@ -698,8 +702,8 @@ public class FlyingBattery extends TileBasedLevel {
                 
                 if (x < count.x - 1) {
                     for (int x2 = 0; x2 < (distance.x / 16) - 3; x2++) {
-                        final Animation<Image2D> wireActive = new Animation<>(5, res.getAnimation("wire-hori"));
-                        final Animation<Image2D> wireIdle = new Animation<>(3, res.getImage("wire-hori-idle.png"));
+                        final Animation<Image2D> wireActive = new Animation<Image2D>(5, res.getAnimation("wire-hori"));
+                        final Animation<Image2D> wireIdle = new Animation<Image2D>(3, res.getImage("wire-hori-idle.png"));
 
                         final Entity wire = new Entity();
                         wire.move(
@@ -722,8 +726,8 @@ public class FlyingBattery extends TileBasedLevel {
                 }
                 if (y < count.y - 1) {
                     for (int y2 = 0; y2 < (distance.y / 16) - 3; y2++) {
-                        final Animation<Image2D> wireActive = new Animation<>(5, res.getAnimation("wire-vert"));
-                        final Animation<Image2D> wireIdle = new Animation<>(3, res.getImage("wire-vert-idle.png"));
+                        final Animation<Image2D> wireActive = new Animation<Image2D>(5, res.getAnimation("wire-vert"));
+                        final Animation<Image2D> wireIdle = new Animation<Image2D>(3, res.getImage("wire-vert-idle.png"));
 
                         final Entity wire = new Entity();
                         wire.move(

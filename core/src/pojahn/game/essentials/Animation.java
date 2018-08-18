@@ -18,6 +18,11 @@ public class Animation<T> {
     private HashMap<Integer, Event> events;
     T[] objs, tmpObjs;
 
+    @SafeVarargs
+    public Animation(final T... objs) {
+        this(1, objs);
+    }
+
     /**
      * Constructs a {@code Frequency} object, with looping set to true and the limit set to the length of array.
      *

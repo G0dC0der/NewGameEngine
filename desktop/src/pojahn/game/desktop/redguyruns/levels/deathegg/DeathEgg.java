@@ -3,6 +3,7 @@ package pojahn.game.desktop.redguyruns.levels.deathegg;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -44,14 +45,13 @@ public class DeathEgg extends TileBasedLevel {
     private boolean energized, fieldOffline;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/deathegg"));
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
         getEngine().timeFont = res.getFont("sansserif32.fnt");
 
-        parse(res.getTiledMap("map.tmx"));
         res.addAsset("flash", Utils.toImage(Color.WHITE));
         Stream.of(res.getAnimation("main")).forEach(Image2D::createPixelData);
         Stream.of(res.getAnimation("gear")).forEach(Image2D::createPixelData);
@@ -75,6 +75,11 @@ public class DeathEgg extends TileBasedLevel {
         getCheckpointHandler().appendCheckpoint(new Vector2(2959, 4332 - 1), new Rectangle(2967, 4174, 221, 246));
         getCheckpointHandler().appendCheckpoint(new Vector2(3453, 2412 - 1), new Rectangle(3382, 1521, 415, 985));
         getCheckpointHandler().appendCheckpoint(new Vector2(479, 748 - 1), new Rectangle(64, 773, 415, 131));
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return res.getTiledMap("map.tmx");
     }
 
     @Override

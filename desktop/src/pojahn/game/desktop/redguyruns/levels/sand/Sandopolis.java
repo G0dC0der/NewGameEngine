@@ -3,6 +3,7 @@ package pojahn.game.desktop.redguyruns.levels.sand;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
@@ -34,20 +35,24 @@ public class Sandopolis extends TileBasedLevel {
     private UglySun uglySun;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
         res.loadContentFromDirectory(Gdx.files.internal("res/sandopolis"));
         getEngine().timeFont = res.getFont("sansserif32.fnt");
         getEngine().timeColor = Color.BLACK;
-        parse(res.getTiledMap("map.tmx"));
 
         Stream.of(res.getAnimation("main")).forEach(Image2D::createPixelData);
         Stream.of(res.getAnimation("flamer")).forEach(Image2D::createPixelData);
         Stream.of(res.getAnimation("flamer2")).forEach(Image2D::createPixelData);
 
         Utils.playMusic(res.getMusic("music.ogg"), 6, .35f);
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return res.getTiledMap("map.tmx");
     }
 
     @Override
@@ -133,9 +138,9 @@ public class Sandopolis extends TileBasedLevel {
          * Ugly sun
          */
         uglySun = new UglySun(play);
-        uglySun.setHappyImage(new Animation<>(1, res.getImage("sunhappy.png")));
-        uglySun.setAngryImage(new Animation<>(1, res.getImage("sunangry.png")));
-        uglySun.setPissedImage(new Animation<>(1, res.getImage("sunpissed.png")));
+        uglySun.setHappyImage(new Animation<Image2D>(1, res.getImage("sunhappy.png")));
+        uglySun.setAngryImage(new Animation<Image2D>(1, res.getImage("sunangry.png")));
+        uglySun.setPissedImage(new Animation<Image2D>(1, res.getImage("sunpissed.png")));
         uglySun.move(play.x(), play.y() - (getEngine().getScreenSize().height / 2));
         uglySun.setMoveSpeed(2.2f);
         uglySun.setRes(res);

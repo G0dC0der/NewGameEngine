@@ -4,6 +4,7 @@ import pojahn.game.core.Engine;
 import pojahn.game.desktop.GameLauncher;
 import pojahn.game.desktop.redguyruns.levels.atari.AtariStyle;
 import pojahn.game.desktop.redguyruns.levels.battery.FlyingBattery;
+import pojahn.game.desktop.redguyruns.levels.bcastle.BowsersCastle;
 import pojahn.game.desktop.redguyruns.levels.blocks.SquareTown;
 import pojahn.game.desktop.redguyruns.levels.cave.CollapsingCave;
 import pojahn.game.desktop.redguyruns.levels.climb.Climb;
@@ -42,7 +43,7 @@ public class MainClass {
 //        Replay replay = (Replay) IO.importObjectCompressed(new FileHandle(System.getProperty("user.dir") + "\\replays\\In A Hurry 34.8 SUCCESS.rlp"));
 //        record = new PlaybackRecord(replay.keystrokes, replay.meta);
 
-        final Engine engine = new Engine(new GhostBridge(), record);
+        final Engine engine = new Engine(new BowsersCastle(), record);
 //        engine.setGameStateEvent(GameState.SUCCESS, GameUtil.exportForGhostData(engine));
         GameLauncher.launch(engine, GameUtil.getBasicConfig());
     }

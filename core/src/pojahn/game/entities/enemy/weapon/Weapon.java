@@ -56,7 +56,7 @@ public class Weapon extends PathDrone {
         if (currTarget != null) {
             if (burst <= burstCounter)
                 reset();
-            else if ((firing || targeting) && ++delayCounter % burstDelay == 0) {
+            else if ((firing || targeting) && (burstDelay == 0 || ++delayCounter % burstDelay == 0)) {
                 rotationAllowed = false;
                 firing = true;
                 burstCounter++;

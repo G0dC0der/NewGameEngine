@@ -1,5 +1,6 @@
 package pojahn.game.desktop;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import pojahn.game.core.Engine;
@@ -14,6 +15,7 @@ public class GameLauncher {
             new Lwjgl3Application(new GameContainer(engine), cfg);
         } catch (final ControlledException e) {
             System.out.println("Exiting game.");
+            Gdx.app.exit();
         }
     }
 }

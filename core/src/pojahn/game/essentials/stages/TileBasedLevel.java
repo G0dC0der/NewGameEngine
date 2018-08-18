@@ -18,9 +18,10 @@ import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.geom.Size;
 import pojahn.game.events.Event;
 
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class TileBasedLevel extends Level {
 
@@ -34,7 +35,7 @@ public abstract class TileBasedLevel extends Level {
         orgTiles = new HashMap<>();
     }
 
-    public void parse(final TiledMap map) throws IOException {
+    private void parse(final TiledMap map) {
         this.map = map;
         final MapProperties props = map.getProperties();
         layer = (TiledMapTileLayer) map.getLayers().get(0);
@@ -44,9 +45,6 @@ public abstract class TileBasedLevel extends Level {
         tileHeight = props.get("tileheight", Integer.class);
         encode();
     }
-
-    //TODO
-    //public abstract TiledMap getMap(); Try to remove parse method
 
     @Override
     public int getWidth() {
@@ -74,6 +72,18 @@ public abstract class TileBasedLevel extends Level {
             return (tileSet.getPixel(regX + relX, regY + relY) & 0x000000FF) > 0 ? Tile.SOLID : Tile.HOLLOW;
         } else
             return Tile.HOLLOW;
+    }
+
+    public abstract TiledMap getTileMap();
+
+    public abstract void load(final Serializable serializable) throws Exception;
+
+    @Override
+    public final void init(final Serializable serializable) throws Exception {
+        load(serializable);
+
+        final TiledMap tiledMap = Objects.requireNonNull(getTileMap(), "Must return a tiled map");
+        parse(tiledMap);
     }
 
     public void setCell(final int tileX, final int tileY, final Cell cell) {
@@ -152,7 +162,7 @@ public abstract class TileBasedLevel extends Level {
         restoreTiles();
     }
 
-    private void encode() throws IOException {
+    private void encode() {
         for (int x = 0; x < tilesX; x++) {
             for (int y = 0; y < tilesY; y++) {
                 final Cell cell = layer.getCell(x, y);

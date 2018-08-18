@@ -16,7 +16,7 @@ public class EntityBuilder {
     private int zIndex;
     private Animation<Image2D> image;
     private Hitbox hitbox;
-    private float x, y, offsetX, offsetY, alpha, rotation;
+    private float x, y, offsetX, offsetY, alpha, rotation, scaleX, scaleY;
     private Float width, height;
     private Boolean flipX, flipY;
     private List<Event> events;
@@ -126,6 +126,16 @@ public class EntityBuilder {
 
     public EntityBuilder hitbox(final Hitbox hitbox) {
         this.hitbox = hitbox;
+        return this;
+    }
+
+    public EntityBuilder scaleX(final float scaleX) {
+        this.scaleX = scaleX;
+        return this;
+    }
+
+    public EntityBuilder scaleY(final float scaleY) {
+        this.scaleY = scaleY;
         return this;
     }
 

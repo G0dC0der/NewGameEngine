@@ -2,6 +2,7 @@ package pojahn.game.desktop.redguyruns.levels.phanto;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -38,14 +39,13 @@ public class GuardedKey extends TileBasedLevel {
     private Music music;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
         res.loadContentFromDirectory(Gdx.files.internal("res/phanto"));
         getEngine().timeFont = res.getFont("sansserif32.fnt");
 
-        parse(res.getTiledMap("map.tmx"));
         Stream.of(res.getAnimation("main")).forEach(Image2D::createPixelData);
         Stream.of(res.getAnimation("shyguy")).forEach(Image2D::createPixelData);
         res.getImage("phanto.png").createPixelData();
@@ -55,6 +55,11 @@ public class GuardedKey extends TileBasedLevel {
 
         getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(res, this));
         getCheckpointHandler().appendCheckpoint(new Vector2(1222, 480 - 21), new Rectangle(1195, 356, 200, 200));
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return res.getTiledMap("map.tmx");
     }
 
     @Override

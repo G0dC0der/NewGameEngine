@@ -2,6 +2,7 @@ package pojahn.game.desktop.redguyruns.levels.ghostbridge;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -34,14 +35,13 @@ public class GhostBridge extends TileBasedLevel {
     private boolean keyTaken;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/ghostbridge"));
 
         getEngine().timeFont = resources.getFont("sansserif32.fnt");
-        parse(resources.getTiledMap("map.tmx"));
 
         Stream.of(resources.getAnimation("main")).forEach(Image2D::createPixelData);
         resources.getImage("hide.png").createPixelData();
@@ -52,6 +52,11 @@ public class GhostBridge extends TileBasedLevel {
 
         music = resources.getMusic("music.ogg");
         Utils.playMusic(music, 17.55f, .7f);
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return resources.getTiledMap("map.tmx");
     }
 
     @Override
@@ -216,8 +221,8 @@ public class GhostBridge extends TileBasedLevel {
     }
 
     private Boo getBoo(final float x, final float y) {
-        final Animation<Image2D> booImg = new Animation<>(8, resources.getImage("hide.png"));
-        final Animation<Image2D> booAttackImg = new Animation<>(5, resources.getImage("attack.png"));
+        final Animation<Image2D> booImg = new Animation<Image2D>(8, resources.getImage("hide.png"));
+        final Animation<Image2D> booAttackImg = new Animation<Image2D>(5, resources.getImage("attack.png"));
 
         final Boo boo = new Boo(x, y, play);
         boo.setHideImage(booImg);

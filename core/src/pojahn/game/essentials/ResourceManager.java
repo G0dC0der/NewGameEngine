@@ -145,7 +145,7 @@ public class ResourceManager {
     }
 
     public void disposeAll() {
-        stuff.forEach((key, value) -> tryDispose(value));
+        stuff.values().forEach(this::tryDispose);
     }
 
     public void dispose(final String key) {
@@ -165,15 +165,19 @@ public class ResourceManager {
 
     private void tryDispose(final Object obj) {
         try {
-            if (obj instanceof Disposable)
+            if (obj instanceof Disposable) {
                 ((Disposable) obj).dispose();
+            }
             else if (obj.getClass().isArray()) {
                 final Object[] arr = (Object[]) obj;
 
                 if (arr.length > 0 && arr[0] instanceof Disposable) {
-                    for (final Object disposable : arr)
+                    for (final Object disposable : arr) {
                         ((Disposable) disposable).dispose();
+                    }
                 }
+            } else {
+                System.out.println("Didn't dispose resource: " + obj);
             }
         } catch (final Exception e) {
             System.err.println("Failed to dispose resource: " + e.getMessage());

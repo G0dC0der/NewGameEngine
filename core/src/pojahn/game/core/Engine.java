@@ -218,9 +218,10 @@ public class Engine {
     }
 
     public void exit() {
-        Gdx.app.postRunnable(() -> {
-            throw new ControlledException("Controlled termination.");
-        });
+        Gdx.app.exit();
+//        Gdx.app.postRunnable(() -> {
+//            throw new ControlledException("Controlled termination.");
+//        });
     }
 
     public Exception getException() {

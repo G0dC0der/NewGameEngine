@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.image.RepeatingParallaxImage;
@@ -28,17 +29,21 @@ public class InAHurry extends TileBasedLevel {
     private int timeLeft;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/hurry"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
         getEngine().timeFont = resources.getFont("sansserif32.fnt");
 
-        parse(resources.getTiledMap("map.tmx"));
         Stream.of(resources.getAnimation("main")).forEach(Image2D::createPixelData);
 
         Utils.playMusic(resources.getMusic("music.mp3"), 2.2400f, .7f);
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return resources.getTiledMap("map.tmx");
     }
 
     @Override

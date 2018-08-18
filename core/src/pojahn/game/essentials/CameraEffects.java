@@ -70,13 +70,6 @@ public class CameraEffects {
         };
     }
 
-    /**
-     * Vibrates the screen for the specified amount of frames.<br>
-     * The function {@code isDone()} returns true either when the duration have elapsed or the event is manually stopped with the {@code stop()} function.
-     *
-     * @param strength The strength of the vibration.
-     * @return The event.
-     */
     public static Entity vibration(final float strength) {
         return new Entity() {
             int counter, counter2;

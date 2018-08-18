@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
@@ -50,7 +51,7 @@ public class CollapsingCave extends TileBasedLevel {
     private boolean coll1, coll2, coll3, coll4, done, drugEffect;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -62,7 +63,6 @@ public class CollapsingCave extends TileBasedLevel {
         ps.getEmitters().get(0).setContinuous(true);
         ps.start();
         resources.addAsset("particle", ps);
-        parse(resources.getTiledMap("map.tmx"));
 
         final Dimension screenSize = getEngine().getScreenSize();
         final Pixmap pix = new Pixmap((int) screenSize.getWidth(), (int) screenSize.getHeight(), Pixmap.Format.RGBA8888);
@@ -88,6 +88,11 @@ public class CollapsingCave extends TileBasedLevel {
         music = resources.getMusic("music.ogg");
 
         Utils.playMusic(music, 0, .7f);
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return resources.getTiledMap("map.tmx");
     }
 
     @Override

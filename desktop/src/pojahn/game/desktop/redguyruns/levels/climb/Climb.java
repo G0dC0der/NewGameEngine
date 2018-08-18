@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
@@ -44,14 +45,13 @@ public class Climb extends TileBasedLevel {
     private Music music;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/climb"));
 
         getEngine().timeFont = resources.getFont("sansserif32.fnt");
-        parse(resources.getTiledMap("map.tmx"));
 
         Stream.of(resources.getAnimation("main")).forEach(Image2D::createPixelData);
         Stream.of(resources.getAnimation("rockworm")).forEach(Image2D::createPixelData);
@@ -71,6 +71,11 @@ public class Climb extends TileBasedLevel {
 
 //        getCheckpointHandler().appendCheckpoint(1765, 1370, 1688, 1372, 100, 100);
 //        getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(resources, this));
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return resources.getTiledMap("map.tmx");
     }
 
     @Override

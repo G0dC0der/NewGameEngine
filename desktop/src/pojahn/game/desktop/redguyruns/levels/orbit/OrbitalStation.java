@@ -3,6 +3,7 @@ package pojahn.game.desktop.redguyruns.levels.orbit;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import pojahn.game.core.Entity;
@@ -54,7 +55,7 @@ public class OrbitalStation extends TileBasedLevel {
     private Music music, spaceMusic, lavaMusic;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -69,7 +70,6 @@ public class OrbitalStation extends TileBasedLevel {
         Stream.of(res.getAnimation("guard")).forEach(Image2D::createPixelData);
         res.getImage("dangerzone.png").createPixelData();
 
-        parse(res.getTiledMap("map.tmx"));
         getEngine().timeFont = res.getFont("sansserif32.fnt");
 
         music = res.getMusic("music.ogg");
@@ -85,6 +85,11 @@ public class OrbitalStation extends TileBasedLevel {
         getCheckpointHandler().appendCheckpoint(center(40, 47, mainSize), getRectangle(34, 46, 2, 2));
         getCheckpointHandler().appendCheckpoint(center(66, 76, mainSize), getRectangle(66, 76, 1, 1));
         getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(res, this));
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return res.getTiledMap("map.tmx");
     }
 
     @Override

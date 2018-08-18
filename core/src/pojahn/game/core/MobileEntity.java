@@ -63,6 +63,10 @@ public class MobileEntity extends Entity {
         return frozen;
     }
 
+    public void moveTowards(final Vector2 vector2) {
+        moveTowards(vector2.x, vector2.y);
+    }
+
     public void moveTowards(final float targetX, final float targetY) {
         if (smart)
             smartMoveTowards(targetX, targetY, moveSpeed);

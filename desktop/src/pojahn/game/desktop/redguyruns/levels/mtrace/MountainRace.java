@@ -3,6 +3,7 @@ package pojahn.game.desktop.redguyruns.levels.mtrace;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.PlayableEntity;
@@ -31,7 +32,7 @@ public class MountainRace extends TileBasedLevel {
     private Music music;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -39,12 +40,16 @@ public class MountainRace extends TileBasedLevel {
 
         getEngine().timeFont = resources.getFont("sansserif32.fnt");
         getEngine().timeColor = Color.BLACK;
-        parse(resources.getTiledMap("map.tmx"));
 
         Stream.of(resources.getAnimation("main")).forEach(Image2D::createPixelData);
 
         music = resources.getMusic("music.ogg");
         Utils.playMusic(music, 8.45f, .6f);
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return resources.getTiledMap("map.tmx");
     }
 
     @Override

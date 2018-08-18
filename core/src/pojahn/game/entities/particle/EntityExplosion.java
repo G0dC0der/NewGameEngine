@@ -1,11 +1,8 @@
 package pojahn.game.entities.particle;
 
 import pojahn.game.core.Entity;
-import pojahn.game.entities.enemy.weapon.Projectile;
 import pojahn.game.essentials.Animation;
-import pojahn.game.essentials.Factory;
 import pojahn.game.essentials.Image2D;
-import pojahn.game.events.ActionEvent;
 
 import java.util.ArrayList;
 import java.util.List;

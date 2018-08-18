@@ -3,11 +3,11 @@ package pojahn.game.desktop.redguyruns.levels.orbit;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 
-class Fireball extends Entity {
+public class Fireball extends Entity {
 
     private float initialX, initialY, mass, gravity, damping, vy, flyPower;
 
-    Fireball(final float initialX, final float initialY, final float flyPower) {
+    public Fireball(final float initialX, final float initialY, final float flyPower) {
         move(initialX, initialY);
         this.initialX = initialX;
         this.initialY = initialY;

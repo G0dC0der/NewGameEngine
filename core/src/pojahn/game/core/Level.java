@@ -308,7 +308,7 @@ public abstract class Level {
 
     public Entity interval(final Event event, final int freq) {
         final Entity wrapped = new Entity();
-        final Int32 counter = new Int32();
+        final Int32 counter = new Int32(-1);
         wrapped.addEvent(() -> {
             if (++counter.value % freq == 0) {
                 event.eventHandling();

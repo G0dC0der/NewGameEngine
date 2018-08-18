@@ -2,6 +2,7 @@ package pojahn.game.desktop.redguyruns.levels.steel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -49,7 +50,7 @@ public class SteelFactory extends TileBasedLevel {
     private ItemCollection itemCollection, energyCollection;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -73,7 +74,6 @@ public class SteelFactory extends TileBasedLevel {
         res.getImage("pusher_down_follower.png").createPixelData();
         res.getImage("pusher_up_follower.png").createPixelData();
         res.getImage("laserbeam.png").createPixelData();
-        parse(res.getTiledMap("map.tmx"));
         getEngine().timeFont = res.getFont("sansserif32.fnt");
 
         Utils.playMusic(res.getMusic("music.ogg"), 4.48f, .7f);
@@ -87,6 +87,11 @@ public class SteelFactory extends TileBasedLevel {
             }
         });
         getCheckpointHandler().appendCheckpoint(new Vector2(1811, 4407 - 25), new Rectangle(1811, 4405, 71, 2));
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return res.getTiledMap("map.tmx");
     }
 
     @Override

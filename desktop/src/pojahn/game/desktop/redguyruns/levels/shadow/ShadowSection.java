@@ -3,6 +3,7 @@ package pojahn.game.desktop.redguyruns.levels.shadow;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.google.common.collect.ImmutableMap;
 import pojahn.game.core.BaseLogic;
@@ -45,7 +46,7 @@ public class ShadowSection extends TileBasedLevel {
     private PlayableEntity play;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         res = new ResourceManager();
         res.loadContentFromDirectory(Gdx.files.internal("res/data"));
         res.loadContentFromDirectory(Gdx.files.internal("res/general"));
@@ -54,11 +55,15 @@ public class ShadowSection extends TileBasedLevel {
         res.addAsset("black", Utils.toImage(Color.BLUE));
         getEngine().timeFont = res.getFont("sansserif32.fnt");
 
-        parse(res.getTiledMap("map.tmx"));
         Stream.of(res.getAnimation("main")).forEach(Image2D::createPixelData);
         res.getImage("enemy.png").createPixelData();
 
         Utils.playMusic(res.getMusic("music.ogg"), 16.13f, .7f);
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return res.getTiledMap("map.tmx");
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
@@ -47,7 +48,7 @@ public class SpiritTemple extends TileBasedLevel {
     private PlayableEntity main;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/spirit"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
@@ -55,8 +56,6 @@ public class SpiritTemple extends TileBasedLevel {
         resources.addAsset("push_2", Gdx.audio.newMusic(Gdx.files.internal("res/spirit/push_music.wav")));
         resources.addAsset("push_3", Gdx.audio.newMusic(Gdx.files.internal("res/spirit/push_music.wav")));
         getEngine().timeFont = resources.getFont("sansserif32.fnt");
-
-        parse(resources.getTiledMap("map.tmx"));
 
         final Pixmap pix = new Pixmap(1, 1, Format.RGBA8888);
         pix.setColor(Color.BLACK);
@@ -78,6 +77,11 @@ public class SpiritTemple extends TileBasedLevel {
 
         getCheckpointHandler().setReachEvent(() -> GFX.renderCheckpoint(resources, this));
         getCheckpointHandler().appendCheckpoint(5509, 3615, 5319, 3037, 440, 66);
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return resources.getTiledMap("map.tmx");
     }
 
     @Override
@@ -390,9 +394,9 @@ public class SpiritTemple extends TileBasedLevel {
         dieAnimation.zIndex(Integer.MAX_VALUE);
 
         final Boss boss = new Boss();
-        boss.setFullHealth(new Animation<>(1, resources.getImage("boss1.png")));
-        boss.setOnceHit(new Animation<>(1, resources.getImage("boss2.png")));
-        boss.setFinalLife(new Animation<>(1, resources.getImage("boss3.png")));
+        boss.setFullHealth(new Animation<Image2D>(1, resources.getImage("boss1.png")));
+        boss.setOnceHit(new Animation<Image2D>(1, resources.getImage("boss2.png")));
+        boss.setFinalLife(new Animation<Image2D>(1, resources.getImage("boss3.png")));
         boss.setSpinnerImage(resources.getImage("spinner.png"));
         boss.setDeathAnim(dieAnimation);
         boss.setHero(main);

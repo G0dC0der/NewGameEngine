@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -38,14 +39,13 @@ public class DontEatShroom extends TileBasedLevel {
     private float vibStrength;
 
     @Override
-    public void init(final Serializable meta) throws Exception {
+    public void load(final Serializable meta) throws Exception {
         resources = new ResourceManager();
         resources.loadContentFromDirectory(Gdx.files.internal("res/data"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/general"));
         resources.loadContentFromDirectory(Gdx.files.internal("res/shroom"));
 
         getEngine().timeFont = resources.getFont("sansserif32.fnt");
-        parse(resources.getTiledMap("map.tmx"));
 
         Stream.of(resources.getAnimation("main")).forEach(Image2D::createPixelData);
         Stream.of(resources.getAnimation("goldmouse")).forEach(Image2D::createPixelData);
@@ -56,6 +56,11 @@ public class DontEatShroom extends TileBasedLevel {
         music = resources.getMusic("music.ogg");
         noise = resources.getMusic("noise_music.wav");
         Utils.playMusic(music, 9.1022f, .5f);
+    }
+
+    @Override
+    public TiledMap getTileMap() {
+        return resources.getTiledMap("map.tmx");
     }
 
     @Override
