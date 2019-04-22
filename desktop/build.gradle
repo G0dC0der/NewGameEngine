@@ -4,7 +4,7 @@ apply plugin: "java"
 sourceCompatibility = 1.11
 sourceSets.main.java.srcDirs = [ "src/" ]
 
-project.ext.mainClassName = "pojahn.game.desktop.DesktopLauncher"
+project.ext.mainClassName = "pojahn.game.desktop.redguyruns.gui.MainClass"
 project.ext.assetsDir = new File("../core/assets");
 
 task run(dependsOn: classes, type: JavaExec) {

@@ -37,7 +37,7 @@ class Ghost extends PathDrone {
             if (firstEncounter) {
                 firstEncounter = false;
                 talkSound.play();
-                getLevel().temp(Factory.drawText(HUDMessage.getMessage("Stay close to the end and I shall give you a present.", x() - 120, y() - 20, Color.PURPLE), font), 200);
+                getLevel().temp(Factory.drawText(HUDMessage.getMessage("Keep a close proximity and I shall give you a present.", x() - 120, y() - 20, Color.PURPLE), font), 200);
                 getLevel().runOnceAfter(() -> {
                     distanceCheck = 430;
                     setMoveSpeed(1.8f);

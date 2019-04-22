@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -91,12 +92,13 @@ public class Engine {
     }
 
     public List<Replay> getRecordings() {
-        if (!isReplaying()) {
-            final List<Replay> recordings = new ArrayList<>(this.recordings);
-            this.recordings.clear();
-            return recordings;
+        if (isReplaying()) {
+            throw new IllegalStateException("Can not return any recordings when playbacking a record!");
         }
-        return Collections.emptyList();
+
+        final List<Replay> recordings = new ArrayList<>(this.recordings);
+        this.recordings.clear();
+        return recordings;
     }
 
     public boolean isReplaying() {
@@ -410,10 +412,8 @@ public class Engine {
     }
 
     void runStateEvent() {
-        final Event event = stateEvents.get(this.state);
-        if (event != null) {
-            eventExecutor.execute(event::eventHandling);
-        }
+        Optional.ofNullable(stateEvents.get(this.state))
+            .ifPresent(event -> eventExecutor.execute(event::eventHandling));
     }
 
     private void renderPause() {

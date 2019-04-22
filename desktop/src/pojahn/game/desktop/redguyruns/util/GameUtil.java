@@ -2,11 +2,14 @@ package pojahn.game.desktop.redguyruns.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
 import pojahn.game.core.Engine;
+import pojahn.game.essentials.GameState;
 import pojahn.game.essentials.recording.Replay;
 import pojahn.game.events.Event;
 import pojahn.lang.IO;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,32 +26,34 @@ public class GameUtil {
         return cfg;
     }
 
-    public static Event exportReplays(final Engine engine) {
+    public static Event exportReplays(final Engine engine, final GameState replayOutcome) {
         return () -> {
-            final List<Replay> replays = engine.getRecordings();
-            if (replays != null) {
-                for (final Replay replay : replays) {
+            engine.getRecordings()
+                .stream()
+                .filter(replay -> replay.outcome == replayOutcome)
+                .forEach(replay -> {
                     try {
-                        IO.exportObjectCompressed(replay, Gdx.files.internal("replays/" + String.format("%s %s %s.rlp", replay.levelName, replay.time, replay.outcome)));
+                        final File replayDir = new File("replays");
+                        replayDir.mkdirs();
+
+                        final File exportFile = new File(replayDir, String.format("%s %s %s.rlp", replay.levelName, replay.time, replay.outcome));
+                        IO.exportObject(replay, exportFile);
                     } catch (final IOException e) {
                         e.printStackTrace();
                     }
-                }
-            }
+                });
         };
     }
 
     public static Event exportForGhostData(final Engine engine) {
         return () -> {
-            final List<Replay> replays = engine.getRecordings();
-            if (replays != null && !replays.isEmpty()) {
-                final Replay r = replays.get(0);
+            engine.getRecordings().forEach(replay -> {
                 try {
-                    IO.exportObject(r.keystrokes.get(0), Gdx.files.internal("replays/ghost-" + r.levelName + ".rlp"));
+                    IO.exportObject(replay.keystrokes.get(0), new File("ghost-" + replay.levelName + ".rlp"));
                 } catch (final IOException e) {
                     e.printStackTrace();
                 }
-            }
+            });
         };
     }
 }

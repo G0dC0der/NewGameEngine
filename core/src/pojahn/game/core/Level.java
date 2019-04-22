@@ -177,9 +177,9 @@ public abstract class Level {
 
     public boolean outOfBounds(final float targetX, final float targetY) {
         return targetX >= getWidth() ||
-                targetY >= getHeight() ||
-                targetX < 0 ||
-                targetY < 0;
+            targetY >= getHeight() ||
+            targetX < 0 ||
+            targetY < 0;
     }
 
     public void add(final Entity entity) {
@@ -337,8 +337,8 @@ public abstract class Level {
     }
 
     public Entity runOnceDelayed(final Event event, final int delay, final TaskEvent whenToRun) {
-        final Entity wrapper  = new Entity();
-        wrapper.addEvent(()-> {
+        final Entity wrapper = new Entity();
+        wrapper.addEvent(() -> {
             if (whenToRun.eventHandling()) {
                 wrapper.die();
                 wrapper.getLevel().runOnceAfter(event, delay);
@@ -374,14 +374,14 @@ public abstract class Level {
 
     public List<PlayableEntity> getNonDeadMainCharacters() {
         return mainCharacters.stream()
-                .filter(el -> el.isAlive() || el.isDone())
-                .collect(Collectors.toList());
+            .filter(el -> el.isAlive() || el.isDone())
+            .collect(Collectors.toList());
     }
 
     public List<PlayableEntity> getAliveMainCharacters() {
         return mainCharacters.stream()
-                .filter(PlayableEntity::isAlive)
-                .collect(Collectors.toList());
+            .filter(PlayableEntity::isAlive)
+            .collect(Collectors.toList());
     }
 
     public List<? extends Entity> getSoundListeners() {
@@ -446,41 +446,9 @@ public abstract class Level {
         for (final Entity entity : gameObjects) {
             if (entity.isActive()) {
                 if (entity instanceof PlayableEntity) {
-                    final PlayableEntity play = (PlayableEntity) entity;
-                    final Keystrokes buttonsDown;
-
-                    if (play.isGhost())
-                        buttonsDown = play.nextInput();
-                    else if (engine.active() && play.isAlive())
-                        buttonsDown = engine.isReplaying() ? engine.getDevice().nextInput(play.getIdentifier()) : Keystrokes.from(play.getController());
-                    else
-                        buttonsDown = Keystrokes.AFK;
-
-                    if (play.isAlive() && !play.isGhost() && engine.active() && !engine.isReplaying())
-                        engine.getDevice().addFrame(play.getIdentifier(), buttonsDown);
-
-                    if (buttonsDown.suicide) {
-                        play.setState(Vitality.DEAD);
-                    } else {
-                        play.setKeysDown(buttonsDown);
-                        play.logistics();
-                        play.runEvents();
-
-                        if (play.tileEvents.size() > 0)
-                            tileIntersection(play, play.getOccupyingCells());
-
-                        play.updateFacing();
-                    }
+                    playableEntityUpdate((PlayableEntity) entity);
                 } else if (entity instanceof MobileEntity) {
-                    final MobileEntity mobile = (MobileEntity) entity;
-
-                    mobile.logistics();
-                    mobile.runEvents();
-
-                    if (mobile.tileEvents.size() > 0)
-                        tileIntersection(mobile, mobile.getOccupyingCells());
-
-                    mobile.updateFacing();
+                    mobileEntityUpdate((MobileEntity) entity);
                 } else {
                     entity.logistics();
                     entity.runEvents();
@@ -494,17 +462,49 @@ public abstract class Level {
             .forEach(MobileEntity::setPrevs);
     }
 
+    private void playableEntityUpdate(final PlayableEntity playableEntity) {
+        final Keystrokes buttonsDown;
+
+        if (playableEntity.isGhost())
+            buttonsDown = playableEntity.nextInput();
+        else if (engine.active() && playableEntity.isAlive())
+            buttonsDown = engine.isReplaying() ? engine.getDevice().nextInput(playableEntity.getIdentifier()) : Keystrokes.from(playableEntity.getController());
+        else
+            buttonsDown = Keystrokes.AFK;
+
+        if (playableEntity.isAlive() && !playableEntity.isGhost() && engine.active() && !engine.isReplaying())
+            engine.getDevice().addFrame(playableEntity.getIdentifier(), buttonsDown);
+
+        if (buttonsDown.suicide) {
+            playableEntity.setState(Vitality.DEAD);
+        } else {
+            playableEntity.setKeysDown(buttonsDown);
+            playableEntity.logistics();
+            playableEntity.runEvents();
+
+            if (playableEntity.tileEvents.size() > 0)
+                tileIntersection(playableEntity, playableEntity.getOccupyingCells());
+
+            playableEntity.updateFacing();
+        }
+    }
+
     private void tileIntersection(final MobileEntity mobile, final Set<Tile> tiles) {
         for (final Tile tile : tiles) {
-            switch (tile) {
-                case HOLLOW:
-                    /*/ Do nothing /*/
-                    break;
-                default:
-                    mobile.runTileEvents(tile);
-                    break;
+            if (tile != Tile.HOLLOW) {
+                mobile.runTileEvents(tile);
             }
         }
+    }
+
+    private void mobileEntityUpdate(final MobileEntity mobileEntity) {
+        mobileEntity.logistics();
+        mobileEntity.runEvents();
+
+        if (mobileEntity.tileEvents.size() > 0)
+            tileIntersection(mobileEntity, mobileEntity.getOccupyingCells());
+
+        mobileEntity.updateFacing();
     }
 
     void place() {

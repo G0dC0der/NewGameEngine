@@ -2,6 +2,7 @@ package pojahn.lang;
 
 import com.badlogic.gdx.files.FileHandle;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,12 +13,12 @@ import java.util.zip.GZIPOutputStream;
 
 public class IO {
 
-    public static void exportObject(final Object obj, final FileHandle dest) throws IOException {
-        if (!dest.file().exists()) {
-            dest.file().createNewFile();
+    public static void exportObject(final Object obj, final File dest) throws IOException {
+        if (!dest.exists()) {
+            dest.createNewFile();
         }
 
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dest.file()))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dest))) {
             out.writeObject(obj);
         }
     }

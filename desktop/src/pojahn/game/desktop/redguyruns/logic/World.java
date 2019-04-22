@@ -34,7 +34,7 @@ import java.util.List;
 
 public class World {
 
-    private static final List<Class<? extends Level>> LEVELS = new ArrayList<>() {{
+    public static final List<Class<? extends Level>> LEVELS = new ArrayList<>() {{
         add(TrainingStage1.class);
         add(TrainingStage2.class);
         add(TrainingStage3.class);
@@ -55,10 +55,10 @@ public class World {
         add(DiamondCave.class);
         add(GuardedKey.class);
         add(CollapsingCave.class);
+        add(OrbitalStation.class);
         add(FlyingBattery.class);
         add(MutantLab.class);
         add(ForbiddenCastle.class);
-        add(OrbitalStation.class);
         add(ShadowSection.class);
         add(DeathEgg.class);
         add(SteelFactory.class);
