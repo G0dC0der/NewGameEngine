@@ -35,14 +35,6 @@ public class Image2D extends Texture {
         return pixelData[x][y];
     }
 
-    public boolean hasPixelData() {
-        return pixelData != null;
-    }
-
-    public void setPixelData(final Image2D source) {
-        pixelData = source.pixelData;
-    }
-
     public void clearData() {
         pixelData = null;
     }
@@ -97,5 +89,13 @@ public class Image2D extends Texture {
         final int[][] first = images[0].pixelData;
         for (int i = 1; i < images.length; i++)
             images[i].pixelData = first;
+    }
+
+    public static Animation<Image2D> animation(final Image2D... images) {
+        return new Animation<Image2D>(images);
+    }
+
+    public static Animation<Image2D> animation(final int speed, final Image2D... images) {
+        return new Animation<Image2D>(speed, images);
     }
 }

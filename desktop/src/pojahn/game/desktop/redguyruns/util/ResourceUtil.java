@@ -2,10 +2,10 @@ package pojahn.game.desktop.redguyruns.util;
 
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
-import pojahn.game.entities.particle.Particle;
 import pojahn.game.entities.main.Flipper;
 import pojahn.game.entities.main.FlyMan;
 import pojahn.game.entities.main.GravityMan;
+import pojahn.game.entities.particle.Particle;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Controller;
 import pojahn.game.essentials.Factory;
@@ -60,7 +60,7 @@ public class ResourceUtil {
     private static void setMainAttributes(final ResourceManager res, final PlayableEntity play) {
         play.setIdentifier("main-char");
         play.setImage(4, res.getAnimation("main"));
-        play.healthHud = new Animation<>(3, res.getImage("hearth.png"));
+        play.healthHud = new Animation<Image2D>(3, res.getImage("hearth.png"));
         play.deathImage = Particle.imageParticle(4, res.getAnimation("maindeath"));
         play.setController(Controller.DEFAULT_CONTROLLER);
         play.addTileEvent(Factory.crushable(play));
@@ -78,15 +78,15 @@ public class ResourceUtil {
     }
 
     public static LaserBeam getFiringLaser(final ResourceManager res) {
-        final Animation<Image2D> laserFront = new Animation<>(5, res.getAnimation("laser_front"));
-        final Animation<Image2D> laserBeam = new Animation<>(4, res.getAnimation("laser"));
-        final Animation<Image2D> laserEnd = new Animation<>(4, res.getAnimation("laser_end"));
+        final Animation<Image2D> laserFront = Image2D.animation(5, res.getAnimation("laser_front"));
+        final Animation<Image2D> laserBeam = Image2D.animation(4, res.getAnimation("laser"));
+        final Animation<Image2D> laserEnd = Image2D.animation(4, res.getAnimation("laser_end"));
         laserEnd.pingPong(true);
 
         return Factory.threeStageLaser(laserFront, laserBeam, laserEnd);
     }
 
     public static LaserBeam getChargingLaser(final ResourceManager res) {
-        return Factory.threeStageLaser(null, new Animation<>(4, res.getAnimation("charge")), null);
+        return Factory.threeStageLaser(null, Image2D.animation(4, res.getAnimation("charge")), null);
     }
 }

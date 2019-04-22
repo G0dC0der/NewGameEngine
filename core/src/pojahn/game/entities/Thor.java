@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.entities.movement.PathDrone;
@@ -35,7 +34,7 @@ public class Thor extends PathDrone {
         bolts = 1;
         blend = true;
         fire = true;
-        boltColors = ImmutableList.of(Color.BLUE);
+        boltColors = List.of(Color.BLUE);
     }
 
     /**

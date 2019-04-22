@@ -10,7 +10,7 @@ public abstract class Shader {
     private final String fragmentShader;
     private ShaderProgram shader;
 
-    protected Shader(final String vertexShader, final String fragmentShader) {
+    Shader(final String vertexShader, final String fragmentShader) {
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
     }
@@ -33,7 +33,7 @@ public abstract class Shader {
         shader = new ShaderProgram(vertexShader, fragmentShader);
 
         if (!shader.isCompiled()) {
-            throw new RuntimeException("Failed to compile the shader DrugShader:\n" + shader.getLog());
+            throw new RuntimeException("Failed to compile the shader:\n" + shader.getLog());
         }
 
         return shader;

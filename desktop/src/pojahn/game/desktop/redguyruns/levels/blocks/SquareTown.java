@@ -7,8 +7,8 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.image.StaticImage;
-import pojahn.game.entities.object.OneWay;
 import pojahn.game.entities.movement.PathDrone;
+import pojahn.game.entities.object.OneWay;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.platform.SolidPlatform.FollowMode;
 import pojahn.game.entities.platform.TilePlatform;
@@ -463,7 +463,7 @@ public class SquareTown extends PixelBasedLevel {
     }
 
     private SolidPlatform getBlock(final float x, final float y, final Color color) {
-        final Animation<Image2D> eyes = new Animation<>(6, resources.getAnimation("eyeImg"));
+        final Animation<Image2D> eyes = Image2D.animation(6, resources.getAnimation("eyeImg"));
         eyes.stop(true);
         eyes.setLoop(false);
 
@@ -514,7 +514,7 @@ public class SquareTown extends PixelBasedLevel {
     private Entity getGem2(final float x, final float y) {
         gems2++;
 
-        final Animation<Image2D> gemImage = new Animation<>(4, resources.getAnimation("gem2Img"));
+        final Animation<Image2D> gemImage = Image2D.animation(4, resources.getAnimation("gem2Img"));
         gemImage.pingPong(true);
 
         final Entity gem = new Entity();

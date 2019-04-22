@@ -1,7 +1,6 @@
 package pojahn.game.entities.particle;
 
 import com.badlogic.gdx.audio.Sound;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.MobileEntity;
 import pojahn.game.essentials.Image2D;
 
@@ -56,11 +55,11 @@ public abstract class Particle extends MobileEntity {
     }
 
     public void setIntroBits(final Particle... introBits) {
-        this.introBits = ImmutableList.copyOf(introBits);
+        this.introBits = List.of(introBits);
     }
 
     public void setOutroBits(final Particle... outroBits) {
-        this.outroBits = ImmutableList.copyOf(outroBits);
+        this.outroBits = List.of(outroBits);
     }
 
     protected void copyData(final Particle clone) {

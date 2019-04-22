@@ -1,6 +1,5 @@
 package pojahn.game.desktop.redguyruns.levels.battery;
 
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
@@ -14,7 +13,7 @@ public class GroupedPlatform extends Entity {
     private List<MobileEntity> platforms;
 
     public GroupedPlatform(final MobileEntity target, final List<? extends MobileEntity> platforms) {
-        this.platforms = ImmutableList.copyOf(platforms);
+        this.platforms = List.copyOf(platforms);
         this.target = Objects.requireNonNull(target);
     }
 

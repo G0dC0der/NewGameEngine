@@ -87,7 +87,7 @@ public class Entity {
     }
 
     public void setImage(final int speed, final Image2D... images) {
-        setImage(new Animation<>(speed, images));
+        setImage(Image2D.animation(speed, images));
     }
 
     public void setImage(final Animation<Image2D> image) {

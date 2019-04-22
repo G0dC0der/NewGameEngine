@@ -1,6 +1,5 @@
 package pojahn.game.entities;
 
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.Entity;
 import pojahn.game.entities.movement.PathDrone;
 import pojahn.lang.Obj;
@@ -17,7 +16,7 @@ public class Trailer extends PathDrone {
     public Trailer(final float x, final float y, final int freq, final Entity... trailers) {
         super(x, y);
         this.freq = freq;
-        this.trailers = ImmutableList.copyOf(trailers);
+        this.trailers = List.of(trailers);
         stop = false;
         counter = counter2 = spitCounter = 0;
         limit = Integer.MAX_VALUE;

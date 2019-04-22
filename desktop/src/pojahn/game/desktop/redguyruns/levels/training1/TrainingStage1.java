@@ -2,7 +2,6 @@ package pojahn.game.desktop.redguyruns.levels.training1;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
@@ -13,6 +12,7 @@ import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.stages.PixelBasedLevel;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class TrainingStage1 extends PixelBasedLevel {
 
@@ -117,8 +117,8 @@ public class TrainingStage1 extends PixelBasedLevel {
         friend.setOffsetY(offsetY);
         friend.setFont(res.getFont("talking.fnt"));
         friend.setText(text);
-        friend.setSubjects(ImmutableList.of(play));
-        friend.setTalkingSounds(ImmutableList.of(res.getSound("talking.wav")));
+        friend.setSubjects(List.of(play));
+        friend.setTalkingSounds(List.of(res.getSound("talking.wav")));
 
         add(friend);
     }

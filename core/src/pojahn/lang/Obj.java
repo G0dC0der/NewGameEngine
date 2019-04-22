@@ -1,7 +1,5 @@
 package pojahn.lang;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -26,6 +24,6 @@ public class Obj {
             throw new IllegalArgumentException("List was expected not to be null.");
         }
 
-        return ImmutableList.copyOf(arr);
+        return List.of(arr);
     }
 }

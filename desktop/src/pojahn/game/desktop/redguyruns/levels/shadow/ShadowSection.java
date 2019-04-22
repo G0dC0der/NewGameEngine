@@ -5,19 +5,18 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
-import com.google.common.collect.ImmutableMap;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.image.RepeatingParallaxImage;
-import pojahn.game.entities.image.StaticImage;
-import pojahn.game.entities.object.Button;
-import pojahn.game.entities.object.Collectable;
 import pojahn.game.entities.enemy.EvilDog;
 import pojahn.game.entities.enemy.LaserDrone;
-import pojahn.game.entities.particle.Particle;
+import pojahn.game.entities.image.RepeatingParallaxImage;
+import pojahn.game.entities.image.StaticImage;
 import pojahn.game.entities.movement.PathDrone;
+import pojahn.game.entities.object.Button;
+import pojahn.game.entities.object.Collectable;
+import pojahn.game.entities.particle.Particle;
 import pojahn.game.entities.platform.PushableObject;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.essentials.Animation;
@@ -144,18 +143,17 @@ public class ShadowSection extends TileBasedLevel {
         /*
          * The Hive
          */
-        final Map<Integer, Integer> xMap = ImmutableMap.<Integer, Integer>builder()
-            .put(0, 672)
-            .put(1, 696)
-            .put(2, 720)
-            .build();
+        final Map<Integer, Integer> xMap = Map.of(
+            0, 672,
+            1, 696,
+            2, 720);
 
         final List<LaserDrone> lasers = IntStream.range(0, 3)
             .mapToObj(i -> new LaserDrone(xMap.get(i), 948, 40, 10, 60, play))
             .peek(laserDrone -> {
                 laserDrone.freeze();
-                laserDrone.setFiringBeam(Factory.threeStageLaser(null, new Animation<>(4, res.getAnimation("thinlaser")), null));
-                laserDrone.setChargeBeam(Factory.threeStageLaser(null, new Animation<>(4, res.getAnimation("thincharge")), null));
+                laserDrone.setFiringBeam(Factory.threeStageLaser(null, Image2D.animation(4, res.getAnimation("thinlaser")), null));
+                laserDrone.setChargeBeam(Factory.threeStageLaser(null, Image2D.animation(4, res.getAnimation("thincharge")), null));
                 laserDrone.setFiringSound(res.getSound("laserfire.wav"));
                 laserDrone.setStartupSound(res.getSound("lasercharge.wav"));
                 laserDrone.zIndex(200);
@@ -283,7 +281,7 @@ public class ShadowSection extends TileBasedLevel {
     }
 
     private PathDrone addEnemy(final int tileX, final int tileY, final int tilesX, final int tilesY) {
-        final Animation<Image2D> enemyImage = new Animation<>(4, res.getAnimation("ene"));
+        final Animation<Image2D> enemyImage = Image2D.animation(4, res.getAnimation("ene"));
         enemyImage.pingPong(true);
 
         final int left = tileX * getTileWidth();

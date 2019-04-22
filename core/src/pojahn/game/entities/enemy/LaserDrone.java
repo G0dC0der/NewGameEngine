@@ -14,8 +14,8 @@ import pojahn.lang.Obj;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.google.common.collect.ImmutableList.toImmutableList;
 import static pojahn.game.core.BaseLogic.findClosest;
 import static pojahn.game.core.BaseLogic.findClosestSeeable;
 
@@ -162,7 +162,7 @@ public class LaserDrone extends PathDrone {
     private List<Entity> getTargets() {
         return targets.stream()
             .filter(entity -> !ignoreInactive || entity.isActive())
-            .collect(toImmutableList());
+            .collect(Collectors.toUnmodifiableList());
     }
 
     @Override

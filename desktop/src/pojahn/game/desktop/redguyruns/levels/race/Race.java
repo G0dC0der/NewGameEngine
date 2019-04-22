@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.image.RepeatingParallaxImage;
-import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.main.GravityMan;
+import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Controller;
 import pojahn.game.essentials.Direction;
@@ -41,6 +41,9 @@ public class Race extends PixelBasedLevel {
 
         createMap(res.getPixmap("pixmap.png"));
         Stream.of(res.getAnimation("main")).forEach(Image2D::createPixelData);
+        Stream.of(res.getAnimation("cont1")).forEach(Image2D::createPixelData);
+        Stream.of(res.getAnimation("cont2")).forEach(Image2D::createPixelData);
+        Stream.of(res.getAnimation("cont3")).forEach(Image2D::createPixelData);
         Stream.of(res.getAnimation("bounce2")).forEach(Image2D::createPixelData);
 
         final Music music = res.getMusic("music.ogg");
@@ -80,7 +83,7 @@ public class Race extends PixelBasedLevel {
          * Hindrances
 		 */
         final SolidPlatform blocker1 = new SolidPlatform(1104, 511, play, cont1, cont2, cont3);
-        blocker1.setImage(new Animation<>(1, res.getImage("blocker.png")));
+        blocker1.setImage(Image2D.animation(1, res.getImage("blocker.png")));
         blocker1.setMoveSpeed(1);
         blocker1.setFollowMode(SolidPlatform.FollowMode.NORMAL);
         blocker1.appendPath(1104, 511, 0, false, null);
@@ -124,7 +127,7 @@ public class Race extends PixelBasedLevel {
         add(blocker6);
 
         final OldBouncer b = new OldBouncer(1670, 491, 360, 1, null, play, cont1, cont2, cont3);
-        b.setImage(new Animation<>(1, res.getImage("bounce.png")));
+        b.setImage(Image2D.animation(1, res.getImage("bounce.png")));
         b.setHitbox(Hitbox.CIRCLE);
         b.setMoveSpeed(2);
         b.setShake(true, 30, 1, 1);
@@ -134,7 +137,7 @@ public class Race extends PixelBasedLevel {
         b.sounds.useFalloff = true;
 
         final OldBouncer b2 = new OldBouncer(1800, 532, 400, 3, Direction.W, play, cont1, cont2, cont3);
-        b2.setImage(new Animation<>(5, res.getAnimation("bounce2")));
+        b2.setImage(Image2D.animation(5, res.getAnimation("bounce2")));
         b2.setHitbox(Hitbox.PIXEL);
         b2.setMoveSpeed(2);
         b2.appendPath(1800, 532, 0, false, null);
@@ -142,7 +145,7 @@ public class Race extends PixelBasedLevel {
         b2.setShakeSound(res.getSound("bounceblock.wav"), 5);
 
         final OldBouncer b3 = new OldBouncer(2110, 500, 400, 3, Direction.W, play, cont1, cont2, cont3);
-        b3.setImage(new Animation<>(5, res.getAnimation("bounce2")));
+        b3.setImage(Image2D.animation(5, res.getAnimation("bounce2")));
         b3.setHitbox(Hitbox.PIXEL);
         b3.setMoveSpeed(2);
         b3.appendPath(2110, 500, 0, false, null);
@@ -157,7 +160,7 @@ public class Race extends PixelBasedLevel {
 		 * Other
 		 */
         final Entity flag = new Entity();
-        flag.setImage(new Animation<>(6, res.getAnimation("flag")));
+        flag.setImage(Image2D.animation(6, res.getAnimation("flag")));
         flag.move(3912, 514);
         add(flag);
     }

@@ -11,17 +11,17 @@ import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
+import pojahn.game.entities.enemy.JumpingThwump;
 import pojahn.game.entities.image.StaticImage;
+import pojahn.game.entities.main.GravityMan;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.object.Bouncer;
 import pojahn.game.entities.object.Collectable;
+import pojahn.game.entities.object.Wind;
 import pojahn.game.entities.platform.DestroyablePlatform;
-import pojahn.game.entities.enemy.JumpingThwump;
-import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.entities.platform.SolidPlatform.FollowMode;
 import pojahn.game.entities.platform.TilePlatform;
-import pojahn.game.entities.object.Wind;
-import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
@@ -169,7 +169,7 @@ public class Climb extends TileBasedLevel {
         /*
          * Rock Worm
          */
-        final Animation<Image2D> rockwormImg = new Animation<>(6, resources.getAnimation("rockworm"));
+        final Animation<Image2D> rockwormImg = Image2D.animation(6, resources.getAnimation("rockworm"));
         rockwormImg.pingPong(true);
 
         final Entity rockworm = new Entity();

@@ -3,20 +3,20 @@ package pojahn.game.desktop.redguyruns.levels.training3;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.desktop.redguyruns.levels.training1.Friend;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.image.StaticImage;
+import pojahn.game.entities.main.GravityMan;
 import pojahn.game.entities.object.Collectable;
 import pojahn.game.entities.platform.DestroyablePlatform;
-import pojahn.game.entities.main.GravityMan;
-import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.EntityBuilder;
+import pojahn.game.essentials.Image2D;
 import pojahn.game.essentials.ResourceManager;
 import pojahn.game.essentials.Utils;
 import pojahn.game.essentials.stages.PixelBasedLevel;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class TrainingStage3 extends PixelBasedLevel {
 
@@ -60,7 +60,7 @@ public class TrainingStage3 extends PixelBasedLevel {
          */
         final DestroyablePlatform destP = new DestroyablePlatform(0, 0, man);
         destP.setImage(res.getImage("weak.png"));
-        destP.setDestroyImage(new Animation<>(1, res.getImage("weakdie.png")));
+        destP.setDestroyImage(Image2D.animation(1, res.getImage("weakdie.png")));
         destP.setDestroyFrames(90);
         destP.setBreakSound(res.getSound("collapsing.wav"));
 
@@ -100,8 +100,8 @@ public class TrainingStage3 extends PixelBasedLevel {
         friend.setOffsetY(offsetY);
         friend.setFont(res.getFont("talking.fnt"));
         friend.setText(text);
-        friend.setSubjects(ImmutableList.of(man));
-        friend.setTalkingSounds(ImmutableList.of(res.getSound("talking.wav")));
+        friend.setSubjects(List.of(man));
+        friend.setTalkingSounds(List.of(res.getSound("talking.wav")));
 
         add(friend);
     }

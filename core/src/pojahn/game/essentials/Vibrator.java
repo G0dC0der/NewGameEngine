@@ -2,7 +2,6 @@ package pojahn.game.essentials;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
@@ -71,7 +70,7 @@ public class Vibrator {
     }
 
     public void vibrate(final Entity producer, final VibDirection vibDirection, final Entity... consumers) {
-        final Entity closest = BaseLogic.findClosest(producer, ImmutableList.copyOf(consumers));
+        final Entity closest = BaseLogic.findClosest(producer, List.of(consumers));
         final Vector2 point = getPoint(producer, vibDirection);
         final float dist = (float) BaseLogic.distance(point.x, point.y, closest.x(), closest.y());
 

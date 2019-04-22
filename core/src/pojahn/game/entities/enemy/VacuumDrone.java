@@ -1,8 +1,8 @@
 package pojahn.game.entities.enemy;
 
 import com.badlogic.gdx.audio.Sound;
-import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.main.GravityMan;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.particle.Particle;
 import pojahn.lang.Obj;
 

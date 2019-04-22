@@ -9,8 +9,7 @@ import pojahn.game.essentials.Image2D;
 import pojahn.lang.Obj;
 
 import java.util.List;
-
-import static com.google.common.collect.ImmutableList.toImmutableList;
+import java.util.stream.Collectors;
 
 public class Boo extends MobileEntity {
 
@@ -77,7 +76,7 @@ public class Boo extends MobileEntity {
     private List<MobileEntity> getTargets() {
         return victims.stream()
                 .filter(mobileEntity -> !ignoreInactive || mobileEntity.isActive())
-                .collect(toImmutableList());
+                .collect(Collectors.toList());
     }
 
     @Override

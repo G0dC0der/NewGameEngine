@@ -1,47 +1,44 @@
 package pojahn.game.essentials.stages;
 
 import com.badlogic.gdx.graphics.Pixmap;
-import com.google.common.collect.ImmutableMap;
 import pojahn.game.core.Level;
 
+import java.util.AbstractMap;
 import java.util.Map;
 
 public abstract class PixelBasedLevel extends Level {
 
-    private static final Map<Integer, Byte> COLOR_BYTE_MAP = ImmutableMap.<Integer, Byte>builder()
-        .put(0x7d7d7dff, (byte) 0)
-        .put(0x5a5a5aff, (byte) 1)
-        .put(0xff0000ff, (byte) 2)
-        .put(0xffff00ff, (byte) 3)
-        .put(0x00ff00ff, (byte) 4)
-        .put(0x00dc00ff, (byte) 5)
-        .put(0x00be00ff, (byte) 6)
-        .put(0x00a000ff, (byte) 7)
-        .put(0x008200ff, (byte) 8)
-        .put(0x006400ff, (byte) 9)
-        .put(0x004600ff, (byte) 10)
-        .put(0x002800ff, (byte) 11)
-        .put(0x000a00ff, (byte) 12)
-        .put(0x000000ff, (byte) 13)
-        .build();
+    private static final Map<Integer, Byte> COLOR_BYTE_MAP = Map.ofEntries(
+        new AbstractMap.SimpleEntry<>(0x7d7d7dff, (byte) 0),
+        new AbstractMap.SimpleEntry<>(0x5a5a5aff, (byte) 1),
+        new AbstractMap.SimpleEntry<>(0xff0000ff, (byte) 2),
+        new AbstractMap.SimpleEntry<>(0xffff00ff, (byte) 3),
+        new AbstractMap.SimpleEntry<>(0x00ff00ff, (byte) 4),
+        new AbstractMap.SimpleEntry<>(0x00dc00ff, (byte) 5),
+        new AbstractMap.SimpleEntry<>(0x00be00ff, (byte) 6),
+        new AbstractMap.SimpleEntry<>(0x00a000ff, (byte) 7),
+        new AbstractMap.SimpleEntry<>(0x008200ff, (byte) 8),
+        new AbstractMap.SimpleEntry<>(0x006400ff, (byte) 9),
+        new AbstractMap.SimpleEntry<>(0x004600ff, (byte) 10),
+        new AbstractMap.SimpleEntry<>(0x002800ff, (byte) 11),
+        new AbstractMap.SimpleEntry<>(0x000a00ff, (byte) 12),
+        new AbstractMap.SimpleEntry<>(0x000000ff, (byte) 13));
 
-    private static final Map<Byte, Tile> BYTE_TILE_MAP = ImmutableMap.<Byte, Tile>builder()
-        .put((byte) 0, Tile.HOLLOW)
-        .put((byte) 1, Tile.SOLID)
-        .put((byte) 2, Tile.GOAL)
-        .put((byte) 3, Tile.LETHAL)
-        .put((byte) 4, Tile.CUSTOM_1)
-        .put((byte) 5, Tile.CUSTOM_2)
-        .put((byte) 6, Tile.CUSTOM_3)
-        .put((byte) 7, Tile.CUSTOM_4)
-        .put((byte) 8, Tile.CUSTOM_5)
-        .put((byte) 9, Tile.CUSTOM_6)
-        .put((byte) 10, Tile.CUSTOM_7)
-        .put((byte) 11, Tile.CUSTOM_8)
-        .put((byte) 12, Tile.CUSTOM_9)
-        .put((byte) 13, Tile.CUSTOM_10)
-        .build();
-
+    private static final Map<Byte, Tile> BYTE_TILE_MAP = Map.ofEntries(
+        new AbstractMap.SimpleEntry<>((byte) 0, Tile.HOLLOW),
+        new AbstractMap.SimpleEntry<>((byte) 1, Tile.SOLID),
+        new AbstractMap.SimpleEntry<>((byte) 2, Tile.GOAL),
+        new AbstractMap.SimpleEntry<>((byte) 3, Tile.LETHAL),
+        new AbstractMap.SimpleEntry<>((byte) 4, Tile.CUSTOM_1),
+        new AbstractMap.SimpleEntry<>((byte) 5, Tile.CUSTOM_2),
+        new AbstractMap.SimpleEntry<>((byte) 6, Tile.CUSTOM_3),
+        new AbstractMap.SimpleEntry<>((byte) 7, Tile.CUSTOM_4),
+        new AbstractMap.SimpleEntry<>((byte) 8, Tile.CUSTOM_5),
+        new AbstractMap.SimpleEntry<>((byte) 9, Tile.CUSTOM_6),
+        new AbstractMap.SimpleEntry<>((byte) 10, Tile.CUSTOM_7),
+        new AbstractMap.SimpleEntry<>((byte) 11, Tile.CUSTOM_8),
+        new AbstractMap.SimpleEntry<>((byte) 12, Tile.CUSTOM_9),
+        new AbstractMap.SimpleEntry<>((byte) 13, Tile.CUSTOM_10));
 
     private byte[][] stageData;
 

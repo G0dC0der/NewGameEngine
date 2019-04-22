@@ -22,7 +22,10 @@ public class StressLevel extends PixelBasedLevel {
 
     @Override
     public void init(final Serializable meta) throws Exception {
-
+        res = new ResourceManager();
+        res.loadContentFromDirectory(Gdx.files.internal("res/data"));
+        res.loadContentFromDirectory(Gdx.files.internal("res/general"));
+        res.loadContentFromDirectory(Gdx.files.internal("res/stress"));
         res.loadAnimation(Gdx.files.internal("res/mtrace/flag"));
 
         getEngine().timeFont = res.getFont("sansserif32.fnt");

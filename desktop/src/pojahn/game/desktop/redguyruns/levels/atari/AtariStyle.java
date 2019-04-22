@@ -6,10 +6,10 @@ import pojahn.game.core.Entity;
 import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.enemy.weapon.Bullet;
-import pojahn.game.entities.image.RepeatingParallaxImage;
-import pojahn.game.entities.platform.DestroyablePlatform;
 import pojahn.game.entities.enemy.weapon.Projectile;
 import pojahn.game.entities.enemy.weapon.SimpleWeapon;
+import pojahn.game.entities.image.RepeatingParallaxImage;
+import pojahn.game.entities.platform.DestroyablePlatform;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
@@ -253,7 +253,7 @@ public class AtariStyle extends PixelBasedLevel {
     void addWeak(final int x, final int y) {
         final DestroyablePlatform weak = new DestroyablePlatform(x * 30, y * 30, play);
         weak.setImage(resources.getAnimation("weak")[0]);
-        weak.setDestroyImage(new Animation<>(2, resources.getAnimation("weak")));
+        weak.setDestroyImage(Image2D.animation(2, resources.getAnimation("weak")));
         add(weak);
     }
 }

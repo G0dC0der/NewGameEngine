@@ -1,6 +1,5 @@
 package pojahn.game.entities.platform;
 
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
@@ -14,7 +13,7 @@ public class EarthSolidPlatform extends EarthDrone {
 
     public EarthSolidPlatform(final float x, final float y, final MobileEntity... subjects) {
         super(x, y);
-        this.subjects = ImmutableList.copyOf(subjects);
+        this.subjects = List.of(subjects);
         this.subjects.forEach(subject -> subject.addObstacle(this));
     }
 

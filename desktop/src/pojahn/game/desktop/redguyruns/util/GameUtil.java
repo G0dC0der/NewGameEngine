@@ -1,7 +1,7 @@
 package pojahn.game.desktop.redguyruns.util;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import pojahn.game.core.Engine;
 import pojahn.game.essentials.recording.Replay;
 import pojahn.game.events.Event;
@@ -12,12 +12,13 @@ import java.util.List;
 
 public class GameUtil {
 
-    public static Lwjgl3ApplicationConfiguration getBasicConfig() {
-        final Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
-        cfg.useOpenGL3(true, 3, 2);
-        cfg.setWindowedMode(800, 600);
-        cfg.setTitle("Red Guy Runs");
-        cfg.setResizable(false);
+    public static LwjglApplicationConfiguration getBasicConfig() {
+        final LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+        cfg.resizable = false;
+        cfg.useGL30 = true;
+        cfg.width = 800;
+        cfg.height = 600;
+        cfg.title = "Red Guy Runs";
 
         return cfg;
     }

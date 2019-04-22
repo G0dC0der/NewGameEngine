@@ -1,6 +1,5 @@
 package pojahn.game.entities.platform;
 
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
@@ -90,7 +89,7 @@ public class SolidPlatform extends PathDrone {
     }
 
     List<MobileEntity> getActiveSubjects() {
-        return ImmutableList.copyOf(intersectors);
+        return List.copyOf(intersectors);
     }
 
     @Override

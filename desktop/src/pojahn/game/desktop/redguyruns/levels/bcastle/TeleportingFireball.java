@@ -1,6 +1,5 @@
 package pojahn.game.desktop.redguyruns.levels.bcastle;
 
-import pojahn.game.core.BaseLogic;
 import pojahn.game.core.MobileEntity;
 
 public class TeleportingFireball extends MobileEntity {

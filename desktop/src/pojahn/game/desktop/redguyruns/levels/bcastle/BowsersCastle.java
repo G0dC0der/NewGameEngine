@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.levels.orbit.Fireball;
@@ -18,7 +17,14 @@ import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.particle.EntityExplosion;
 import pojahn.game.entities.particle.Particle;
 import pojahn.game.entities.platform.SolidPlatform;
-import pojahn.game.essentials.*;
+import pojahn.game.essentials.Animation;
+import pojahn.game.essentials.Direction;
+import pojahn.game.essentials.EntityBuilder;
+import pojahn.game.essentials.Factory;
+import pojahn.game.essentials.Hitbox;
+import pojahn.game.essentials.Image2D;
+import pojahn.game.essentials.ResourceManager;
+import pojahn.game.essentials.Vibrator;
 import pojahn.game.essentials.stages.TileBasedLevel;
 import pojahn.lang.PingPongFloat;
 
@@ -28,6 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.of;
 
 public class BowsersCastle extends TileBasedLevel {
 
@@ -45,8 +55,8 @@ public class BowsersCastle extends TileBasedLevel {
 
         getEngine().timeFont = res.getFont("sansserif32.fnt");
 
-        Stream.of(res.getAnimation("main")).forEach(Image2D::createPixelData);
-        Stream.of(res.getAnimation("teleporting-fireball")).forEach(Image2D::createPixelData);
+        of(res.getAnimation("main")).forEach(Image2D::createPixelData);
+        of(res.getAnimation("teleporting-fireball")).forEach(Image2D::createPixelData);
         res.getImage("thwump-awake.png").createPixelData();
         res.getImage("thwump-sleep.png").createPixelData();
         res.getImage("roller.png").createPixelData();
@@ -158,9 +168,9 @@ public class BowsersCastle extends TileBasedLevel {
                 .scanPadding(5)
                 .attackRecovery(40)
                 .sleepRecovery(15)
-                .targets(ImmutableList.of(man))
-                .attackImage(new Animation<>(res.getImage("thwump-awake.png")))
-                .sleepImage(new Animation<>(res.getImage("thwump-sleep.png")))
+                .targets(List.of(man))
+                .attackImage(Image2D.animation(res.getImage("thwump-awake.png")))
+                .sleepImage(Image2D.animation(res.getImage("thwump-sleep.png")))
                 .build();
             thwump.addEvent(Factory.hitMain(thwump, man, -1));
             thwump.setHitbox(Hitbox.PIXEL);
@@ -192,7 +202,7 @@ public class BowsersCastle extends TileBasedLevel {
             rollingThwump.setMoveSpeed(1);
             rollingThwump.setHitbox(Hitbox.CIRCLE);
             rollingThwump.addEvent(Factory.hitMain(rollingThwump, man, -1));
-            rollingThwump.setDieEntities(ImmutableList.<Entity>builder().addAll(thwomps).add(layingSpikes).build());
+            rollingThwump.setDieEntities(concat(of(layingSpikes), thwomps.stream()).collect(toList()));
 
             final Vibrator landingVib = new Vibrator(this, rollingThwump, Vibrator.VibDirection.CENTER, man);
             landingVib.setStrength(40);
@@ -204,7 +214,7 @@ public class BowsersCastle extends TileBasedLevel {
             dieVib.setDuration(20);
             dieVib.setRadius(400);
 
-            final EntityExplosion rollerDie = new EntityExplosion(rollingThwump, 8, 8, Arrays.stream(res.getAnimation("roller-die")).map(image2D -> new Animation<>(image2D)).collect(Collectors.toList()));
+            final EntityExplosion rollerDie = new EntityExplosion(rollingThwump, 8, 8, Arrays.stream(res.getAnimation("roller-die")).map(image2D -> Image2D.animation(image2D)).collect(toList()));
             rollerDie.setVx(150);
             rollerDie.setVy(200);
             rollerDie.setToleranceX(200);
@@ -317,7 +327,7 @@ public class BowsersCastle extends TileBasedLevel {
     }
 
     private void addFireBall(final float x, final float y) {
-        final Animation<Image2D> fireballImage = new Animation<>(3, res.getAnimation("fireball-enemy"));
+        final Animation<Image2D> fireballImage = Image2D.animation(3, res.getAnimation("fireball-enemy"));
         fireballImage.pingPong(true);
 
         final Fireball fireball = new Fireball(x, y, 900);

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 public class InvertShader extends Shader {
 
-    private static final String VERT = "#version 330 core\n" +
+    private static final String VERT = "#version 150 core\n" +
             "\n" +
             "attribute vec4 a_color;\n" +
             "attribute vec3 a_position;\n" +
@@ -22,7 +22,7 @@ public class InvertShader extends Shader {
             "\tgl_Position =  u_projTrans * vec4(a_position, 1.);\n" +
             "}\n";
 
-    private static final String FRAG = "#version 330 core\n" +
+    private static final String FRAG = "#version 150 core\n" +
             "\n" +
             "varying vec4 v_color;\n" +
             "varying vec2 v_texCoord0;\n" +

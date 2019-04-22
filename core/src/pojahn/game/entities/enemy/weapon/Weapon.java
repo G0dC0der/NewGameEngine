@@ -8,8 +8,7 @@ import pojahn.game.entities.particle.Particle;
 import pojahn.lang.Obj;
 
 import java.util.List;
-
-import static com.google.common.collect.ImmutableList.toImmutableList;
+import java.util.stream.Collectors;
 
 public class Weapon extends PathDrone {
 
@@ -138,7 +137,7 @@ public class Weapon extends PathDrone {
     private List<Entity> getTargets() {
         return targets.stream()
             .filter(Entity::isActive)
-            .collect(toImmutableList());
+            .collect(Collectors.toUnmodifiableList());
     }
 
     private void reset() {

@@ -134,7 +134,7 @@ public class ForbiddenCastle extends PixelBasedLevel {
     }
 
     void addWeak(final int x, final int y) {
-        final Animation<Image2D> destroyImg = new Animation<>(6, res.getAnimation("weak"));
+        final Animation<Image2D> destroyImg = Image2D.animation(6, res.getAnimation("weak"));
         destroyImg.setLoop(false);
 
         final DestroyablePlatform dp = new DestroyablePlatform(x * 30, y * 30, play);

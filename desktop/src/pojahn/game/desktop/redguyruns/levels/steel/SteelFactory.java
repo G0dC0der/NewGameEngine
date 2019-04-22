@@ -3,7 +3,6 @@ package pojahn.game.desktop.redguyruns.levels.steel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.BaseLogic;
@@ -629,7 +628,7 @@ public class SteelFactory extends TileBasedLevel {
         electric.addEvent(Factory.hitMain(electric, man, -1));
         electric.sounds.useFalloff = true;
 
-        final Animation<Image2D> electricImg = new Animation<>(2, res.getAnimation("electric"));
+        final Animation<Image2D> electricImg = Image2D.animation(2, res.getAnimation("electric"));
         electricImg.addEvent(()-> electric.sounds.play(res.getSound("buzz.wav")),27);
         electric.setImage(electricImg);
 

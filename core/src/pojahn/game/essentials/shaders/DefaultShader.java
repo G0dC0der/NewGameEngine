@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 public class DefaultShader extends Shader {
 
-    private static final String VERT = "#version 330 core\n"
+    private static final String VERT = "#version 150 core\n"
             + "in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
             + "in vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
             + "in vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
@@ -20,7 +20,7 @@ public class DefaultShader extends Shader {
             + "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
             + "}\n";
 
-    private static final String FRAG = "#version 330 core\n"
+    private static final String FRAG = "#version 150 core\n"
             + "#ifdef GL_ES\n" //
             + "#define LOWP lowp\n" //
             + "precision mediump float;\n" //

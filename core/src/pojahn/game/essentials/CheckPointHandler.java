@@ -2,11 +2,12 @@ package pojahn.game.essentials;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.google.common.collect.Lists;
 import pojahn.game.core.Entity;
 import pojahn.game.events.Event;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CheckPointHandler {
 
@@ -56,8 +57,10 @@ public class CheckPointHandler {
     }
 
     public Vector2 getLatestCheckpoint() {
-        return Lists.reverse(checkpoints)
-            .stream()
+        final List<Checkpoint> checkpoints = new ArrayList<>(this.checkpoints);
+        Collections.reverse(checkpoints);
+
+        return checkpoints.stream()
             .filter(Checkpoint::isTaken)
             .map(Checkpoint::getStart)
             .findFirst()

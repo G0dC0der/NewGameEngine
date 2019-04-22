@@ -1,7 +1,6 @@
 package pojahn.game.entities.enemy.weapon;
 
 import com.badlogic.gdx.math.Vector2;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.Level;
@@ -10,10 +9,10 @@ import pojahn.game.entities.particle.Particle;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.lang.Obj;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-
-import static java.util.stream.Stream.of;
+import java.util.stream.Stream;
 
 /**
  * You can see 'targets' as the objects the projectile can interact with and 'target' the object the projectile is firing at.
@@ -128,12 +127,8 @@ public abstract class Projectile extends MobileEntity {
         if (outOfBounds() || getOccupyingCells().contains(Level.Tile.SOLID)) {
             impact(null);
         } else {
-            ImmutableList.<Entity>builder()
-                .add(target)
-                .addAll(getObstacles())
-                .addAll(subjects)
-                .build()
-                .stream()
+            Stream.of(List.of(target), getObstacles(), subjects)
+                .flatMap(Collection::stream)
                 .distinct()
                 .filter(Entity::isActive)
                 .filter(this::collidesWith)

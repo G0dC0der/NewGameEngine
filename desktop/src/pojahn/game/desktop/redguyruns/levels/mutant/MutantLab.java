@@ -11,19 +11,19 @@ import com.badlogic.gdx.math.Vector2;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
-import pojahn.game.entities.enemy.weapon.Bullet;
 import pojahn.game.entities.enemy.EvilDog;
 import pojahn.game.entities.enemy.LaserDrone;
+import pojahn.game.entities.enemy.weapon.Bullet;
+import pojahn.game.entities.enemy.weapon.Projectile;
+import pojahn.game.entities.enemy.weapon.Weapon;
 import pojahn.game.entities.image.RepeatingParallaxImage;
+import pojahn.game.entities.main.GravityMan;
+import pojahn.game.entities.movement.PathDrone;
+import pojahn.game.entities.movement.Shuttle;
 import pojahn.game.entities.movement.Waypoint;
 import pojahn.game.entities.object.OneWay;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.movement.PathDrone;
-import pojahn.game.entities.enemy.weapon.Projectile;
-import pojahn.game.entities.movement.Shuttle;
 import pojahn.game.entities.platform.SolidPlatform;
-import pojahn.game.entities.enemy.weapon.Weapon;
-import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.CameraEffects;
 import pojahn.game.essentials.Direction;
@@ -278,7 +278,7 @@ public class MutantLab extends PixelBasedLevel {
 		/*
 		 * Alien
 		 */
-        final Animation<Image2D> smash = new Animation<>(4, res.getAnimation("alienattack"));
+        final Animation<Image2D> smash = Image2D.animation(4, res.getAnimation("alienattack"));
         smash.setLoop(false);
 
         final PathDrone monster = new PathDrone(1536, 2273);
@@ -524,7 +524,7 @@ public class MutantLab extends PixelBasedLevel {
         eyeSocket.zIndex(10);
         eyeSocket.move((float)x ,(float)y);
 
-        final Animation<Image2D> eyeImg = new Animation<>(5, res.getAnimation("eye"));
+        final Animation<Image2D> eyeImg = Image2D.animation(5, res.getAnimation("eye"));
         eyeImg.setLoop(false);
         final Int32 counter = new Int32();
         final int blinkDelay = MathUtils.random(60, 150);
@@ -548,9 +548,9 @@ public class MutantLab extends PixelBasedLevel {
         eyeNet.setRotation(rotation);
         eyeNet.setCount(amount);
         eyeNet.setPadding(4);
-        eyeNet.setRope(new Animation<>(5, res.getAnimation("rope")));
-        eyeNet.setConnector1(new Animation<>(1, res.getImage("connector1.png")));
-        eyeNet.setConnector2(new Animation<>(1, res.getImage("connector2.png")));
+        eyeNet.setRope(Image2D.animation(5, res.getAnimation("rope")));
+        eyeNet.setConnector1(Image2D.animation(1, res.getImage("connector1.png")));
+        eyeNet.setConnector2(Image2D.animation(1, res.getImage("connector2.png")));
 
         add(eyeNet);
 

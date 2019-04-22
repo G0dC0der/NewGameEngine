@@ -1,8 +1,6 @@
 package pojahn.game.core;
 
 import com.badlogic.gdx.math.Vector2;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import pojahn.game.core.Level.Tile;
 import pojahn.game.essentials.Direction;
 import pojahn.game.events.TileEvent;
@@ -11,8 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import java.util.stream.Collectors;
 
 public class MobileEntity extends Entity {
 
@@ -376,13 +373,13 @@ public class MobileEntity extends Entity {
         return obstacles.stream()
             .filter(Entity::isActive)
             .filter(Entity::available)
-            .collect(toImmutableSet());
+            .collect(Collectors.toSet());
     }
 
     protected void copyData(final MobileEntity clone) {
         super.copyData(clone);
         clone.moveSpeed = moveSpeed;
-        clone.obstacles = Sets.newHashSet(obstacles);
+        clone.obstacles = new HashSet<>(obstacles);
         clone.smart = smart;
         clone.facings = facings;
     }

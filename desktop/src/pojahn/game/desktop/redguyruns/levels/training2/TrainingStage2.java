@@ -5,13 +5,12 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.levels.training1.Friend;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
+import pojahn.game.entities.main.GravityMan;
 import pojahn.game.entities.object.Collectable;
 import pojahn.game.entities.platform.SolidPlatform;
-import pojahn.game.entities.main.GravityMan;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.EntityBuilder;
 import pojahn.game.essentials.Image2D;
@@ -21,6 +20,7 @@ import pojahn.game.essentials.stages.PixelBasedLevel;
 import pojahn.lang.Bool;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class TrainingStage2 extends PixelBasedLevel {
 
@@ -135,7 +135,7 @@ public class TrainingStage2 extends PixelBasedLevel {
     }
 
     private void addFriend(final float x, final float y, final float offsetX, final float offsetY, final String text) {
-        final ImmutableList<Sound> talkList = ImmutableList.of(res.getSound("talk1.wav"), res.getSound("talk2.wav"), res.getSound("talk3.wav"));
+        final List<Sound> talkList = List.of(res.getSound("talk1.wav"), res.getSound("talk2.wav"), res.getSound("talk3.wav"));
         final int talkDelay = 12;
 
         final Friend friend = new Friend();
@@ -146,7 +146,7 @@ public class TrainingStage2 extends PixelBasedLevel {
         friend.setOffsetY(offsetY);
         friend.setFont(res.getFont("talking.fnt"));
         friend.setText(text);
-        friend.setSubjects(ImmutableList.of(man));
+        friend.setSubjects(List.of(man));
         friend.setTalkEvent(()-> {
             runOnceAfter(()-> talkList.get(MathUtils.random(0 ,2)).play(), 0 * talkDelay);
             runOnceAfter(()-> talkList.get(MathUtils.random(0 ,2)).play(), 1 * talkDelay);
@@ -193,7 +193,7 @@ public class TrainingStage2 extends PixelBasedLevel {
     private void addGem(final float x, final float y) {
         gems++;
 
-        final Animation<Image2D> gemImage = new Animation<>(3, res.getAnimation("collect"));
+        final Animation<Image2D> gemImage = Image2D.animation(3, res.getAnimation("collect"));
         gemImage.pingPong(true);
 
         final Collectable gem = new Collectable(x, y, man);

@@ -2,7 +2,6 @@ package pojahn.game.entities.enemy.weapon;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.google.common.collect.ImmutableList;
 import pojahn.game.core.BaseLogic;
 import pojahn.game.core.Entity;
 import pojahn.game.core.MobileEntity;
@@ -36,7 +35,7 @@ public final class Thwump extends MobileEntity {
         this.sleepImage = Obj.nonNull(builder.sleepImage);
         this.attackImage = Obj.nonNull(builder.attackImage);
         this.direction = Obj.nonNull(builder.direction);
-        this.targets = ImmutableList.copyOf(builder.targets);
+        this.targets = List.copyOf(builder.targets);
 
         setImage(sleepImage);
         move(initialPosition);

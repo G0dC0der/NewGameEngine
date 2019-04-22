@@ -11,14 +11,14 @@ import pojahn.game.core.PlayableEntity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.enemy.weapon.Bullet;
-import pojahn.game.entities.movement.Circle;
+import pojahn.game.entities.enemy.weapon.SimpleWeapon;
 import pojahn.game.entities.image.ParallaxImage;
+import pojahn.game.entities.movement.Circle;
+import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.movement.Waypoint;
-import pojahn.game.entities.platform.DestroyablePlatform;
 import pojahn.game.entities.object.OneWay;
 import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.movement.PathDrone;
-import pojahn.game.entities.enemy.weapon.SimpleWeapon;
+import pojahn.game.entities.platform.DestroyablePlatform;
 import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Direction;
@@ -110,7 +110,7 @@ public class DiamondCave extends PixelBasedLevel {
 		 */
         final Bear b = new Bear(1544 - 3, 227, play);
         b.setImage(7, res.getAnimation("bear"));
-        b.setAttackImage(new Animation<>(6, res.getAnimation("bearAttack")));
+        b.setAttackImage(Image2D.animation(6, res.getAnimation("bearAttack")));
         b.zIndex(200);
         b.setHitbox(Hitbox.PIXEL);
         b.addEvent(Factory.hitMain(b, play, -1));
@@ -162,7 +162,7 @@ public class DiamondCave extends PixelBasedLevel {
             final DestroyablePlatform w = new DestroyablePlatform(x, y, play);
             w.move(x, y);
             w.setImage(res.getImage("weak.png"));
-            w.setDestroyImage(new Animation<>(10, weakDie));
+            w.setDestroyImage(Image2D.animation(10, weakDie));
             w.setDestroyFrames(120);
             add(w);
         }

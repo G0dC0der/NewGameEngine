@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
-import pojahn.game.essentials.ControlledException;
 import pojahn.game.essentials.GameState;
 import pojahn.game.essentials.HUDMessage;
 import pojahn.game.essentials.Image2D;

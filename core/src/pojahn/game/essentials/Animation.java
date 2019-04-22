@@ -18,7 +18,7 @@ public class Animation<T> {
     private HashMap<Integer, Event> events;
     T[] objs, tmpObjs;
 
-    @SafeVarargs
+//    @SafeVarargs
     public Animation(final T... objs) {
         this(1, objs);
     }
@@ -29,7 +29,7 @@ public class Animation<T> {
      * @param speed The speed.
      * @param objs  The objects array to use.
      */
-    @SafeVarargs
+//    @SafeVarargs
     public Animation(final int speed, final T... objs) {
         this.speed = speed;
         this.objs = objs;

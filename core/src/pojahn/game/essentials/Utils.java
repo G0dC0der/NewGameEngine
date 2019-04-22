@@ -22,10 +22,11 @@ import pojahn.game.entities.movement.EarthDrone;
 import pojahn.game.events.Event;
 import pojahn.game.events.RenderEvent;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -169,12 +170,8 @@ public class Utils {
     }
 
     public static List<Animation<Image2D>> fromArray(final Image2D... arr) {
-        final List<Animation<Image2D>> list = new ArrayList<>(arr.length);
-
-        for (final Image2D img : arr) {
-            list.add(new Animation<>(3, img));
-        }
-
-        return list;
+        return Arrays.stream(arr)
+            .map(image2D -> new Animation<Image2D>(3, image2D))
+            .collect(Collectors.toList());
     }
 }

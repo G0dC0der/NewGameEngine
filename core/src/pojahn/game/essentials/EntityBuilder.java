@@ -43,7 +43,7 @@ public class EntityBuilder {
     }
 
     public EntityBuilder image(final int speed, final Image2D... image) {
-        image(new Animation<>(speed, image));
+        image(Image2D.animation(speed, image));
         return this;
     }
 

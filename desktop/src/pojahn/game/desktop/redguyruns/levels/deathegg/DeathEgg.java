@@ -12,15 +12,15 @@ import pojahn.game.core.Entity;
 import pojahn.game.desktop.redguyruns.util.GFX;
 import pojahn.game.desktop.redguyruns.util.ResourceUtil;
 import pojahn.game.entities.enemy.weapon.Bullet;
-import pojahn.game.entities.image.RepeatingParallaxImage;
-import pojahn.game.entities.object.Button;
-import pojahn.game.entities.particle.Flash;
-import pojahn.game.entities.object.OneWay;
-import pojahn.game.entities.particle.Particle;
-import pojahn.game.entities.movement.PathDrone;
 import pojahn.game.entities.enemy.weapon.SimpleWeapon;
-import pojahn.game.entities.platform.SolidPlatform;
+import pojahn.game.entities.image.RepeatingParallaxImage;
 import pojahn.game.entities.main.Flipper;
+import pojahn.game.entities.movement.PathDrone;
+import pojahn.game.entities.object.Button;
+import pojahn.game.entities.object.OneWay;
+import pojahn.game.entities.particle.Flash;
+import pojahn.game.entities.particle.Particle;
+import pojahn.game.entities.platform.SolidPlatform;
 import pojahn.game.essentials.Animation;
 import pojahn.game.essentials.Direction;
 import pojahn.game.essentials.EntityBuilder;
@@ -141,7 +141,7 @@ public class DeathEgg extends TileBasedLevel {
         /*
          * Moving Platform
          */
-        final Animation<Image2D> solpImage = new Animation<>(4, res.getAnimation("band"));
+        final Animation<Image2D> solpImage = Image2D.animation(4, res.getAnimation("band"));
         solpImage.stop(true);
 
         final SolidPlatform solp = new SolidPlatform(2056, 3098, play);

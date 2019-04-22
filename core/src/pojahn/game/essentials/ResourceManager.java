@@ -12,6 +12,7 @@ import pojahn.lang.IO;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class ResourceManager {
 
@@ -78,7 +79,9 @@ public class ResourceManager {
     }
 
     public Pixmap getPixmap(final String key) {
-        return (Pixmap) stuff.get(key);
+        return Optional.ofNullable(stuff.get(key))
+            .map(Pixmap.class::cast)
+            .orElseThrow(() -> new RuntimeException("No pixmap with key: "  + key));
     }
 
     public Sound getSound(final String key) {
